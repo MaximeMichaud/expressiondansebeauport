@@ -2,6 +2,6 @@
 
 public class BookDto
 {
-    public string TitleFr { get; set; } = default!;
-    public string TitleEn { get; set; } = default!;
+    public string TitleFr { get; set; } = null!;
+    public string TitleEn { get; set; } = null!;
 }

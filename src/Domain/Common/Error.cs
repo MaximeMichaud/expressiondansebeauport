@@ -2,8 +2,8 @@ namespace Domain.Common;
 
 public class Error
 {
-    public string ErrorType { get; set; } = default!;
-    public string ErrorMessage { get; set; } = default!;
+    public string ErrorType { get; set; } = null!;
+    public string ErrorMessage { get; set; } = null!;
 
     public Error() {}
 

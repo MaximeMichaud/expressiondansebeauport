@@ -12,13 +12,13 @@ public class PhoneNumber : ValueObject, ISanitizable
 
     public PhoneNumber(string? numberWithExtension)
     {
-        Number = PhoneNumberHelper.RemoveExtensionFromPhoneNumber(numberWithExtension) ?? default!;
+        Number = PhoneNumberHelper.RemoveExtensionFromPhoneNumber(numberWithExtension) ?? null!;
         Extension = PhoneNumberHelper.FindExtensionInPhoneNumber(numberWithExtension);
     }
 
     public PhoneNumber(string? number, int? extension)
     {
-        Number = number ?? default!;
+        Number = number ?? null!;
         Extension = extension;
     }
 

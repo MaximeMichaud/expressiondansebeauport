@@ -73,7 +73,7 @@ public class GetAllBooksEndpointTests
     public async Task WhenHandleAsync_ThenReturnOkResult()
     {
         // Act
-        await _endPoint.HandleAsync(default);
+        await _endPoint.HandleAsync(CancellationToken.None);
 
         // Assert
         _endPoint.HttpContext.Response.StatusCode.ShouldBe(StatusCodes.Status200OK);
@@ -83,7 +83,7 @@ public class GetAllBooksEndpointTests
     public async Task WhenHandleAsync_ThenDelegateGettingBookWithIdToBookRepository()
     {
         // Act
-        await _endPoint.HandleAsync(default);
+        await _endPoint.HandleAsync(CancellationToken.None);
 
         // Assert
         _bookRepository.Verify(x => x.GetAll());
@@ -97,7 +97,7 @@ public class GetAllBooksEndpointTests
         _bookRepository.Setup(x => x.GetAll()).Returns(book.IntoList());
 
         // Act
-        await _endPoint.HandleAsync(default);
+        await _endPoint.HandleAsync(CancellationToken.None);
 
         // Assert
         _endPoint.Response.ShouldContain(x => x.Id == book.Id);

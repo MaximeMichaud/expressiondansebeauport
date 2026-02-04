@@ -35,7 +35,7 @@ public class SendGridSenderTests
         var errors = new List<SendGridError> { new() { Message = AnyErrorMessage } };
         _sendGridClient
             .Setup(x => x.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Response(HttpStatusCode.BadRequest, BuildSendGridResponseWithErrors(errors), default));
+            .ReturnsAsync(new Response(HttpStatusCode.BadRequest, BuildSendGridResponseWithErrors(errors), null));
 
         // Act
         var responseDto = await _sendGridSender.SendAsync(model);
@@ -52,7 +52,7 @@ public class SendGridSenderTests
         var errors = new List<SendGridError> { new() { Message = AnyErrorMessage } };
         _sendGridClient
             .Setup(x => x.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Response(HttpStatusCode.BadRequest, BuildSendGridResponseWithErrors(errors), default));
+            .ReturnsAsync(new Response(HttpStatusCode.BadRequest, BuildSendGridResponseWithErrors(errors), null));
 
         // Act
         var responseDto = await _sendGridSender.SendAsync(model);
@@ -68,7 +68,7 @@ public class SendGridSenderTests
         var model = new ForgotPasswordNotificationModel(AnyEmail, AnyLocale, AnyLink);
         _sendGridClient
             .Setup(x => x.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Response(HttpStatusCode.OK, default, default));
+            .ReturnsAsync(new Response(HttpStatusCode.OK, null, null));
 
         // Act
         var responseDto = await _sendGridSender.SendAsync(model);
@@ -84,7 +84,7 @@ public class SendGridSenderTests
         var model = new ForgotPasswordNotificationModel(AnyEmail, AnyLocale, AnyLink);
         _sendGridClient
             .Setup(x => x.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Response(HttpStatusCode.OK, default, default));
+            .ReturnsAsync(new Response(HttpStatusCode.OK, null, null));
 
         // Act
         var responseDto = await _sendGridSender.SendAsync(model);

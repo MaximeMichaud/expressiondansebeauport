@@ -2,7 +2,7 @@
 
 public class MailingSettings
 {
-    public string FromName { get; set; } = default!;
-    public string FromAddress { get; set; } = default!;
-    public string ToAddressForDevelopment { get; set; } = default!;
+    public string FromName { get; set; } = null!;
+    public string FromAddress { get; set; } = null!;
+    public string ToAddressForDevelopment { get; set; } = null!;
 }

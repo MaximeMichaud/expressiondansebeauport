@@ -4,18 +4,18 @@ namespace Domain.Entities.Books;
 
 public class Book : AuditableAndSoftDeletableEntity, ISanitizable
 {
-    public string NameFr { get; private set;} = default!;
-    public string NameEn { get; private set;} = default!;
-    public string DescriptionFr { get; private set;} = default!;
-    public string DescriptionEn { get; private set;} = default!;
+    public string NameFr { get; private set;} = null!;
+    public string NameEn { get; private set;} = null!;
+    public string DescriptionFr { get; private set;} = null!;
+    public string DescriptionEn { get; private set;} = null!;
     public decimal Price { get; set; }
-    public string Isbn { get; private set; } = default!;
-    public string Author { get; private set; } = default!;
-    public string Editor { get; private set; } = default!;
-    public string CardImage { get; private set; } = default!;
+    public string Isbn { get; private set; } = null!;
+    public string Author { get; private set; } = null!;
+    public string Editor { get; private set; } = null!;
+    public string CardImage { get; private set; } = null!;
     public int YearOfPublication { get; private set; }
     public int NumberOfPages { get; private set; }
-    public string Slug { get; private set; } = default!;
+    public string Slug { get; private set; } = null!;
 
     public void SetName(TranslatableString name)
     {

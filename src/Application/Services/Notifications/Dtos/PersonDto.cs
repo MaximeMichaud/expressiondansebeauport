@@ -2,9 +2,9 @@
 
 public class PersonDto
 {
-    public string FirstName { get; set; } = default!;
-    public string LastName { get; set; } = default!;
-    public string Email { get; set; } = default!;
+    public string FirstName { get; set; } = null!;
+    public string LastName { get; set; } = null!;
+    public string Email { get; set; } = null!;
     public string? PhoneNumber { get; set; }
     public int? Apartment { get; set; }
     public string? Street { get; set; }

@@ -4,8 +4,8 @@ namespace Web.Features.Public.Authentication.TwoFactor;
 
 public class TwoFactorRequest : ISanitizable
 {
-    public string Username { get; set; } = default!;
-    public string Code { get; set; } = default!;
+    public string Username { get; set; } = null!;
+    public string Code { get; set; } = null!;
 
     public void Sanitize()
     {

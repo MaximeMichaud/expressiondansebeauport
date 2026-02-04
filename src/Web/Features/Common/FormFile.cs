@@ -2,7 +2,7 @@
 
 public class FormFile
 {
-    public string ContentType { get; set; } = default!;
-    public string FileName { get; set; } = default!;
-    public string BodyStream { get; set; } = default!;
+    public string ContentType { get; set; } = null!;
+    public string FileName { get; set; } = null!;
+    public string BodyStream { get; set; } = null!;
 }
