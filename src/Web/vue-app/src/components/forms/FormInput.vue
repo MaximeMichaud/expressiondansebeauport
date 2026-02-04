@@ -18,14 +18,10 @@
       />
     </div>
 
-    <label :for="name" v-if="!noLabel">
+    <label :for="name">
       {{ label ? label : name }}
       <span v-if="isRequired" class="form__indicator">*</span>
-      <IconHelpCircle class="form__tooltip icon icon--green" v-if="tooltip" v-tippy="tooltip"/>
-
-      <span class="form__label-right">
-        <slot name="to-label-right"></slot>
-      </span>
+      <span v-if="tooltip" class="form__tooltip">{{ tooltip }}</span>
     </label>
 
     <span v-if="!status.valid" :id="`error__${name}`" class="form__error-message">

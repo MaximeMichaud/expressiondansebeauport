@@ -12,7 +12,7 @@ export class BookService extends ApiService implements IBookService {
   public async getAllBooks(): Promise<Book[]> {
     const response = await this
       ._httpClient
-      .get<AxiosResponse<Book[]>>(`${import.meta.env.VITE_API_BASE_URL}/api/books`)
+      .get<AxiosResponse<Book[]>>(`${import.meta.env.VITE_API_BASE_URL}/books`)
       .catch(function (error: AxiosError): AxiosResponse<Book[]> {
         return error.response as AxiosResponse<Book[]>
       })
@@ -22,7 +22,7 @@ export class BookService extends ApiService implements IBookService {
   public async getBook(bookId: string): Promise<Book> {
     const response = await this
       ._httpClient
-      .get<AxiosResponse<Book>>(`${import.meta.env.VITE_API_BASE_URL}/api/books/${bookId}`)
+      .get<AxiosResponse<Book>>(`${import.meta.env.VITE_API_BASE_URL}/books/${bookId}`)
       .catch(function (error: AxiosError): AxiosResponse<Book> {
         return error.response as AxiosResponse<Book>;
       });
@@ -32,7 +32,7 @@ export class BookService extends ApiService implements IBookService {
   public async deleteBook(bookId: string): Promise<SucceededOrNotResponse> {
     const response = await this
       ._httpClient
-      .delete<AxiosResponse<any>>(`${import.meta.env.VITE_API_BASE_URL}/api/books/${bookId}`)
+      .delete<AxiosResponse<any>>(`${import.meta.env.VITE_API_BASE_URL}/books/${bookId}`)
       .catch(function (error: AxiosError): AxiosResponse<SucceededOrNotResponse> {
         return error.response as AxiosResponse<SucceededOrNotResponse>
       })
@@ -43,7 +43,7 @@ export class BookService extends ApiService implements IBookService {
     const response = await this
       ._httpClient
       .post<ICreateBookRequest, AxiosResponse<any>>(
-        `${import.meta.env.VITE_API_BASE_URL}/api/books`,
+        `${import.meta.env.VITE_API_BASE_URL}/books`,
         request,
         this.headersWithFormDataContentType())
       .catch(function (error: AxiosError): AxiosResponse<SucceededOrNotResponse> {
@@ -57,7 +57,7 @@ export class BookService extends ApiService implements IBookService {
     const response = await this
       ._httpClient
       .put<ICreateBookRequest, AxiosResponse<any>>(
-        `${import.meta.env.VITE_API_BASE_URL}/api/books/${request.id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/books/${request.id}`,
         request,
         this.headersWithFormDataContentType())
       .catch(function (error: AxiosError): AxiosResponse<SucceededOrNotResponse> {
