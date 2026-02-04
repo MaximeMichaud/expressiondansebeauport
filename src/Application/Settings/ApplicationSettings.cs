@@ -2,8 +2,8 @@
 
 public class ApplicationSettings
 {
-    public string BaseUrl { get; set; } = default!;
-    public string RedirectUrl { get; set; } = default!;
-    public string ErrorNotificationDestination { get; set; } = default!;
+    public string BaseUrl { get; set; } = null!;
+    public string RedirectUrl { get; set; } = null!;
+    public string ErrorNotificationDestination { get; set; } = null!;
     public int TwoFactorAuthenticationDayDelay { get; set; }
 }

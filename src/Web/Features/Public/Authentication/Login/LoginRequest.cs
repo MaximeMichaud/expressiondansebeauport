@@ -4,8 +4,8 @@ namespace Web.Features.Public.Authentication.Login;
 
 public class LoginRequest : ISanitizable
 {
-    public string Username { get; set; } = default!;
-    public string Password { get; set; } = default!;
+    public string Username { get; set; } = null!;
+    public string Password { get; set; } = null!;
 
     public void Sanitize()
     {

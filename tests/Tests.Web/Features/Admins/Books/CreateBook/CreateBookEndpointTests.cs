@@ -110,7 +110,7 @@ public class EditBookEndpointTests
         var request = BuildValidRequest();
 
         // Act
-        await _endPoint.HandleAsync(request, default);
+        await _endPoint.HandleAsync(request, CancellationToken.None);
 
         // Assert
         _endPoint.Response.Succeeded.ShouldBeTrue();

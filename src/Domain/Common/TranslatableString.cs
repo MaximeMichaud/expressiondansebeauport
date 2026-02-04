@@ -3,10 +3,8 @@ namespace Domain.Common;
 
 public class TranslatableString
 {
-    public const string DB_DEFAULT_VALUE = "{\"En\": \"\", \"Fr\": \"\"}";
-
-    public string Fr { get; set; } = default!;
-    public string En { get; set; } = default!;
+    public string Fr { get; set; } = null!;
+    public string En { get; set; } = null!;
 
     public TranslatableString() { }
 

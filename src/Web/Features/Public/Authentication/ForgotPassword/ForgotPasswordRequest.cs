@@ -4,8 +4,8 @@ namespace Web.Features.Public.Authentication.ForgotPassword;
 
 public class ForgotPasswordRequest : ISanitizable
 {
-    public string Username { get; set; } = default!;
-    public string ResetPasswordRelativeUrl { get; set; } = default!;
+    public string Username { get; set; } = null!;
+    public string ResetPasswordRelativeUrl { get; set; } = null!;
 
     public void Sanitize()
     {

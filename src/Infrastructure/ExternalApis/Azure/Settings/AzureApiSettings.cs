@@ -2,5 +2,5 @@
 
 public class AzureApiSettings
 {
-    public string ConnectionString { get; set; } = default!;
+    public string ConnectionString { get; set; } = null!;
 }

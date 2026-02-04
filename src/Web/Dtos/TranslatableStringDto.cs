@@ -2,6 +2,6 @@
 
 public class TranslatableStringDto
 {
-    public string Fr { get; set; } = default!;
-    public string En { get; set; } = default!;
+    public string Fr { get; set; } = null!;
+    public string En { get; set; } = null!;
 }
