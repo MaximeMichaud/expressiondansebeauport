@@ -690,4 +690,3 @@ src/Web/wwwroot/js/*
 src/Web/wwwroot/vue
 src/Web/wwwroot/vue/*
 
-appsettings.Development.json
