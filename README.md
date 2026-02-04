@@ -34,7 +34,7 @@
     ```bash
     $ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
     ```
-- Copy the printed value to appsettings.Development.json JwtToken:SecretKey
+- Copy the printed value to `appsettings.Development.json` in `JwtToken:SecretKey`
 
 ### Run front-end Vue app
 ```bash
