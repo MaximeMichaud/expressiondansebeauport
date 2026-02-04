@@ -102,7 +102,7 @@
   }
 
   .previous-page__click-button {
-    margin-left: auto;
+    margin-left: auto!important;
 
     @media (hover: hover) {
       &:hover {
@@ -112,7 +112,7 @@
   }
 
   .next-page__click-button {
-    margin-right: auto;
+    margin-right: auto!important;
 
     @media (hover: hover) {
       &:hover {
@@ -135,19 +135,19 @@
     }
 
     .arrow {
-      background-image: url(@/assets/icons/icon__arrow--blue.png);
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: contain;
-      border: none;
-      width: 16px;
-      height: 16px;
-      transform: none;
-      display: flex;
+      background-image: url(@/assets/icons/icon__arrow--blue.png)!important;
+      background-repeat: no-repeat!important;
+      background-position: center!important;
+      background-size: contain!important;
+      border: none!important;
+      width: 16px!important;
+      height: 16px!important;
+      transform: none!important;
+      display: flex!important;
     }
 
     .arrow-right {
-      transform: rotate3d(0, 0, 1, 180deg);
+      transform: rotate3d(0, 0, 1, 180deg)!important;
     }
   }
 

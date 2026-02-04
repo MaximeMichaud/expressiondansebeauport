@@ -155,8 +155,17 @@ const router = createRouter({
 // eslint-disable-next-line
 router.beforeEach(async (to, from) => {
   const userStore = useUserStore()
+
+  // Handle root path redirect
+  if (to.path === "/") {
+    if (userStore.user.email)
+      return { name: "account" };
+    return { name: "login" };
+  }
+
   if (!to.meta.requiredRole)
     return;
+
   const isRoleArray = Array.isArray(to.meta.requiredRole)
   const doesNotHaveGivenRole = !isRoleArray && !userStore.hasRole(to.meta.requiredRole as Role);
   const hasNoRoleAmongRoleList = isRoleArray && !userStore.hasOneOfTheseRoles(to.meta.requiredRole as Role[]);
