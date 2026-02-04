@@ -2,21 +2,19 @@
   <div :class="{'error':!status.valid}" class="form__field">
     <slot name="before-input"></slot>
 
-    <div>
-      <input
-          :id="name"
-          v-model="inputValue"
-          :aria-describedby="`error__${name}`"
-          :aria-invalid="!status.valid"
-          :list="list"
-          :min="type == 'number' ? '0' : ''"
-          :name="name"
-          :placeholder="placeholder"
-          :type="type"
-          @blur="handleBlur"
-          @input="handleInput"
-      />
-    </div>
+    <input
+        :id="name"
+        v-model="inputValue"
+        :aria-describedby="`error__${name}`"
+        :aria-invalid="!status.valid"
+        :list="list"
+        :min="type == 'number' ? '0' : ''"
+        :name="name"
+        :placeholder="placeholder"
+        :type="type"
+        @blur="handleBlur"
+        @input="handleInput"
+    />
 
     <label :for="name">
       {{ label ? label : name }}

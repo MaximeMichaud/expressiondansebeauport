@@ -70,7 +70,7 @@
                  type="zip"
                  @validated="handleValidation"/>
     </FormRow>
-    <button class="form__submit btn btn--full">{{ t('global.save') }}</button>
+    <button class="form__submit btn btn--fullscreen">{{ t('global.save') }}</button>
   </form>
 </template>
 
