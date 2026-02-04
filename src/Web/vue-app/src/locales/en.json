@@ -1,0 +1,332 @@
+{
+  "routes": {
+    "login": {
+      "path": "/login",
+      "fullPath": "/login",
+      "name": "Login"
+    },
+    "twoFactor": {
+      "path": "/two-factor-authentication",
+      "fullPath": "/two-factor-authentication",
+      "name": "Two factor authentication"
+    },
+    "forgotPassword": {
+      "path": "/forgot-password",
+      "fullPath": "/forgot-password",
+      "name": "Forgot password"
+    },
+    "resetPassword": {
+      "path": "/reset-password",
+      "fullPath": "/reset-password",
+      "name": "Reset password"
+    },
+    "account": {
+      "path": "/my-account",
+      "fullPath": "/my-account",
+      "name": "My account"
+    },
+    "admin": {
+      "path": "/administration",
+      "fullPath": "/administration",
+      "name": "Administration",
+      "children": {
+        "members": {
+          "path": "members",
+          "fullPath": "/administration/members",
+          "name": "Members",
+          "add": {
+            "path": "add",
+            "fullPath": "/administration/members/add",
+            "name": "Add a member"
+          },
+          "edit": {
+            "path": ":id/edit",
+            "fullPath": "/administration/members/:id/edit",
+            "name": "Edit a member"
+          }
+        }
+      }
+    },
+    "books": {
+      "path": "/books",
+      "fullPath": "/books",
+      "name": "Books",
+      "children": {
+        "add": {
+          "path": "add",
+          "fullPath": "/books/add",
+          "name": "Add a book"
+        },
+        "edit": {
+          "path": ":id/edit",
+          "fullPath": "/books/:id/edit",
+          "name": "Edit a book"
+        }
+      }
+    }
+  },
+  "pages": {
+    "login": {
+      "submit": "Log in",
+      "forgotPassword": "Forgot password?",
+      "validation": {
+        "invalidUsername": "The username is not valid.",
+        "memberApprobationRevoked": "Your approbation was revoked.",
+        "errorOccured": "Username or password is not valid."
+      }
+    },
+    "twoFactor": {
+      "code": "Code",
+      "submit": "Log in",
+      "tooltip": "A code was sent by email. Please check your email and paste the code here.",
+      "validation": {
+        "invalidUsername": "The username is not valid.",
+        "invalidCode": "Code is not valid.",
+        "errorOccured": "An error occured while validating two factor authentication."
+      }
+    },
+    "forgotPassword": {
+      "tooltip": "If username is valid, an email will be sent to the address specified with a link to reset your password",
+      "validation": {
+        "success": "Reset password email sent.",
+        "invalidUsername": "The username is not valid.",
+        "invalidResetPasswordRelativeUrl": "The reset password URL could not be found.",
+        "errorOccured": "An error occured while sending reset password email."
+      }
+    },
+    "resetPassword": {
+      "validation": {
+        "success": "The password was successfully reset. You'll be redirected to the login page.",
+        "invalidUserId": "The user id is not valid.",
+        "invalidToken": "The reset password token is not valid.",
+        "invalidPassword": "The password is not valid.",
+        "invalidPasswordConfirmation": "The password confirmation is not valid",
+        "passwordTooShort": "Must be at least 8 characters.",
+        "passwordRequiresNonAlphanumeric": "Must contain a special character.",
+        "passwordRequiresDigit": "Must contain a digit.",
+        "passwordRequiresUpper": "Must contain uppercase letter.",
+        "passwordRequiresLower": "Must contain lowercase letter.",
+        "passwordMismatch": "The password entered does not match your current password.",
+        "passwordAndConfirmationMustMatch": "The password and its confirmation must match.",
+        "errorOccured": "An error occured during password reset."
+      }
+    },
+    "members": {
+      "create": {
+        "validation": {
+          "successMessage": "The member was successfully created.",
+          "failedMessage": "An error occured during member creation.",
+          "invalidFirstName": "The first name is invalid.",
+          "invalidLastName": "The last name is invalid.",
+          "invalidEmail": "The email is invalid.",
+          "invalidEmailFormat": "The email format is invalid.",
+          "invalidPhoneNumber": "The phone number is invalid.",
+          "invalidPhoneNumberFormat": "The phone number format is invalid.",
+          "invalidStreet": "The street is invalid.",
+          "invalidCity": "The city is invalid.",
+          "invalidZipCode": "The zip code is invalid.",
+          "invalidZipCodeFormat": "The zip code format is invalid.",
+          "invalidType": "The type must be man, woman or team.",
+          "invalidServiceRadius": "The service radius should be greater than zero.",
+          "invalidEnterpriseNumberFormat": "The enterprise number format is invalid.",
+          "invalidProvincialTaxNumberFormat": "The QST number format is invalid.",
+          "invalidFederalTaxNumberFormat": "The GST number format is invalid.",
+          "memberNotFoundException": "No member with specified reference code was found.",
+          "userWithEmailAlreadyExistsException": "A user with this email already exists."
+        }
+      },
+      "update": {
+        "validation": {
+          "successMessage": "The member was successfully updated.",
+          "failedMessage": "An error occured during member update.",
+          "invalidFirstName": "The first name is invalid.",
+          "invalidLastName": "The last name is invalid.",
+          "invalidEmail": "The email is invalid.",
+          "invalidEmailFormat": "The email format is invalid.",
+          "invalidPhoneNumber": "The phone number is invalid.",
+          "invalidPhoneNumberFormat": "The phone number format is invalid.",
+          "invalidStreet": "The street is invalid.",
+          "invalidCity": "The city is invalid.",
+          "invalidZipCode": "The zip code is invalid.",
+          "invalidZipCodeFormat": "The zip code format is invalid.",
+          "invalidType": "The type must be man, woman or team.",
+          "invalidServiceRadius": "The service radius should be greater than zero.",
+          "invalidEnterpriseNumberFormat": "The enterprise number format is invalid.",
+          "invalidProvincialTaxNumberFormat": "The QST number format is invalid.",
+          "invalidFederalTaxNumberFormat": "The GST number format is invalid.",
+          "userWithEmailAlreadyExistsException": "A user with this email already exists.",
+          "memberNotFoundException": "Could not find member.",
+          "teamLeaderNotFoundException": "No active member with the provided reference code was found.",
+          "forbidBeingOwnTeamLeaderException": "A member cannot be its own team leader. Leave the field empty."
+        }
+      },
+      "delete": {
+        "confirmation": "Are you sure you want to delete this member?",
+        "validation": {
+          "successMessage": "The member was successfully deleted.",
+          "failedMessage": "An error occured during member deletion.",
+          "memberNotFoundException": "Could not find member."
+        }
+      }
+    }
+  },
+  "products": {
+    "form": {
+      "image-card-tooltip": "Recommended format: width greater than 700px (2:1 aspect ratio).",
+      "image-page-tooltip": "Recommended format: width greater than 700px (5:4 aspect ratio).",
+      "image-card": "Image - Card",
+      "image-page": "Image - Page",
+      "image-text-fr": "Image Overlay Text - FR",
+      "image-text-en": "Image Overlay Text - EN",
+      "description-fr": "Description - FR",
+      "description-en": "Description - EN",
+      "name-fr": "Name - FR",
+      "name-en": "Name - EN",
+      "price": "Price",
+      "no-taxes": "(Excluding taxes)",
+      "category": "Category",
+      "fieldset-informations-book": "Book information",
+      "fieldset-informations-default": "Product information"
+    },
+    "book": "Book"
+  },
+  "book": {
+    "info": "Book info",
+    "title": "Title",
+    "titleFr": "Title - FR",
+    "titleEn": "Title - EN",
+    "summary": "Summary",
+    "summaryFr": "Summary - FR",
+    "summaryEn": "Summary - EN",
+    "isbn": "ISBN",
+    "author": "Author",
+    "editor": "Editor",
+    "yearOfPublication": "Year of publication",
+    "numberOfPages": "Number of pages"
+  },
+  "user": {
+    "roles": {
+      "admin": "Administrator"
+    }
+  },
+  "global": {
+    "free": "Free",
+    "menu": "Menu",
+    "title": "Title",
+    "date": "Date",
+    "at": "at",
+    "username": "Username",
+    "password": "Password",
+    "passwordConfirmation": "Password confirmation",
+    "submit": "Submit",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "fullName": "Full name",
+    "email": "Email",
+    "phoneNumber": "Phone number",
+    "phoneExtension": "Extension",
+    "apartment": "Office/suite number",
+    "street": "Address",
+    "city": "City",
+    "zipCode": "Zip code",
+    "roles": "Roles",
+    "name": "Name",
+    "download": "Download",
+    "add": "Add",
+    "cancel": "Cancel",
+    "important": "Important",
+    "addFile": "Add file",
+    "addFiles": "Add files",
+    "replaceFile": "Remplace file",
+    "replaceFiles": "Remplace files",
+    "removeFile": "Remove this file",
+    "uploadZippedFolder-tooltip": "If you want to transmit multiple documents, please upload <strong>a compressed folder.</strong>",
+    "update": "Update",
+    "delete": "Delete",
+    "deleted": "Deleted",
+    "save": "Save",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back",
+    "search": "Search",
+    "transfer": "Transfer",
+    "formErrorNotification": "There are errors in the form.",
+    "quickLinks": "Quick links",
+    "undefined": "N/A",
+    "logout": "Logout",
+    "table": {
+      "of": "of",
+      "noData": "No available data",
+      "actions": "Actions"
+    },
+    "actions": {
+      "view": "View",
+      "download": "Download",
+      "update": "Edit",
+      "delete": "Delete"
+    }
+  },
+  "textEditorLinkPopup": {
+    "addLink": "Add link",
+    "label": "Label",
+    "url": "Url",
+    "image": "The link will be added on the selected image.",
+    "tooltip": "To edit the link on images, click on the blue border around it."
+  },
+  "validation": {
+    "empty": "Please enter a value.",
+    "email": "Please enter valid email.",
+    "min": "The value must be at least {min}.",
+    "max": "The value must be lower or equal to {max}.",
+    "fileMin": "You must add at least {min} files.",
+    "fileMax": "The number of files must be smaller than {max}",
+    "fileType": "The acceptable files types are : {type}",
+    "checked": "Please check this box.",
+    "select": "Please select an option.",
+    "zipCode": "The zip code must respect format X0X X0X.",
+    "phoneNumber": "The phone number must respect format 555-555-5555.",
+    "errorsInForm": "There are errors in the form.",
+    "errorOccured": "An error occured.",
+    "book": {
+      "add": {
+        "success": "Book was successfully created.",
+        "errorOccured": "Error occured while creating book.",
+        "bookNotFoundException": "Could not find book.",
+        "bookWithIsbnAlreadyExistsException": "A book with same ISBN already exits.",
+        "invalidFrenchName": "Le titre du livre en français est manquant.",
+        "invalidEnglishName": "Le titre du livre en anglais est manquant.",
+        "invalidFrenchDescription": "La description du livre en français est manquante.",
+        "invalidEnglishDescription": "La description du livre en anglais est manquante.",
+        "invalidIsbn": "L'ISBN doit être de 17 caractères et contenir quatre tirets.",
+        "invalidAuthor": "L'auteur du livre est manquant.",
+        "invalidEditor": "L'éditeur du livre est manquant.",
+        "invalidYearOfPublication": "L'année de publication doit être plus grande que zéro.",
+        "invalidNumberOfPages": "Le nombre de pages doit être plus grand que zéro.",
+        "invalidPrice": "Le prix du livre doit être plus grand que zéro."
+      },
+      "edit": {
+        "success": "Book was successfully updated.",
+        "errorOccured": "Error occured while updating book.",
+        "bookNotFoundException": "Could not find book.",
+        "bookWithIsbnAlreadyExistsException": "Another book with same ISBN already exits.",
+        "emptyBookId": "The book id is missing.",
+        "invalidFrenchName": "The French book title is missing.",
+        "invalidEnglishName": "The English book title is missing.",
+        "invalidFrenchDescription": "The French book description is missing.",
+        "invalidEnglishDescription": "The English book description is missing.",
+        "invalidIsbn": "ISBN must be 17 characters and contain four dashes.",
+        "invalidAuthor": "The author of the book is missing.",
+        "invalidEditor": "The publisher of the book is missing.",
+        "invalidYearOfPublication": "The publication year must be greater than zero.",
+        "invalidNumberOfPages": "The number of pages must be greater than zero.",
+        "invalidPrice": "Book price must be greater than zero."
+      },
+      "delete": {
+        "confirmation": "Are you sure you want to delete this book ?",
+        "success": "Book was successfully deleted.",
+        "errorOccured": "Error occured while deleting book.",
+        "bookNotFoundException": "Could not find book."
+      }
+    }
+  }
+}

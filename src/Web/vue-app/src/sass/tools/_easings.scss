@@ -1,0 +1,18 @@
+$easings: ( 
+  default: cubic-bezier(.25,0.2,.25,1),
+  in: cubic-bezier(.6, .1, .8, .7), 
+  out: cubic-bezier(.2, .3, .4, .9), 
+  in-out: cubic-bezier(.5, .15, .4, 1), 
+  bounce: cubic-bezier(.4, .25, .3, 1.4), 
+  smooth: cubic-bezier(.65,.05,.01,.99), 
+  pete: cubic-bezier(.25,0.2,.25,1), 
+  snappy: cubic-bezier(.69,.33,.16,.97),
+  ease-in-quart: cubic-bezier(0.895, 0.03, 0.685, 0.22), 
+  ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1), 
+  ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1), 
+  ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+  ease-out-circ: cubic-bezier(0.075, 0.82, 0.165, 1), 
+  ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1), 
+  ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1), 
+  ease-in-out-quint: cubic-bezier(0.86, 0, 0.07, 1) 
+);

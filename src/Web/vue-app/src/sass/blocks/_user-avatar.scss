@@ -1,0 +1,24 @@
+@use "../tools" as *;
+.user-avatar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  @include text--body-big;
+  color: $color-green;
+
+  &__img-container {
+    overflow: hidden;
+    width: 36px;
+    height: 36px;
+    border-radius: 100%;
+    background-color: $color-green-light;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}

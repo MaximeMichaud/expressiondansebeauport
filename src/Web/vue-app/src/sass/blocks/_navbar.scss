@@ -1,0 +1,89 @@
+@use "../tools" as *;
+.navbar {
+  background-color: $color-green-medium;
+  padding-top: 0;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+
+  &__title,
+  &__drawer-btn {
+    width: calc(100% + #{$page-padding-small} * 2);
+    margin: 0 - $page-padding-small;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-family: $font-montserrat;
+  }
+
+  &__title {
+    background-color: $color-white;
+    font-size: rem(13);
+    line-height: rem(16);
+    border-top: 1px solid $color-green;
+  }
+
+  &__drawer-btn {
+    font-size: rem(16);
+    line-height: rem(16);
+    color: $color-white;
+    @include backgroundColorHover($color-green);
+
+    .icon {
+      flex-shrink: 0;
+      margin-left: 24px;
+      width: 10px;
+    }
+  }
+
+  &__nav {
+    padding: 16px 0;
+  }
+
+  &__navlink {
+    display: flex;
+    font-weight: 700;
+    font-family: $font-montserrat;
+    font-size: rem(16);
+    line-height: rem(16);
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: $common-border-radius;
+    @include colorHover($color-white);
+
+    &.router-link-active {
+      color: $color-white;
+      background-color: $color-green-medium;
+      pointer-events: none;
+    }
+  }
+
+  &__footer {
+    border-top: 1px solid $color-green-lighter;
+    padding: 40px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+  }
+}
+
+//Breakpoints ==================================
+@include breakpoint(md-up) {
+  .navbar {
+    position: sticky;
+    padding-top: 120px;
+    top: calc($header-height-scroll + 24px);
+
+    &__content {
+      overflow: auto;
+      max-height: calc(100vh - ($header-height-scroll + 24px));
+    }
+
+    &__nav {
+      padding: 0;
+    }
+  }
+}

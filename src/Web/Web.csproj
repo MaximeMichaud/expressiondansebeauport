@@ -1,0 +1,72 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<PreserveCompilationContext>true</PreserveCompilationContext>
+		<LangVersion>14</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Remove="Views\Emails\NewMember.cshtml" />
+		<Content Update="Web.develop.config">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+		</Content>
+		<Content Update="Web.main.config">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+		</Content>
+		<Content Update="Web.staging.config">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
+		</Content>
+		<Content Update="vue-app\public\favicon.ico">
+		  <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		  <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Core.Flash" Version="2.1.1" />
+		<PackageReference Include="FastEndpoints" Version="7.2.0" />
+		<PackageReference Include="FastEndpoints.Security" Version="7.2.0" />
+		<PackageReference Include="FastEndpoints.Swagger" Version="7.2.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="10.0.2" />
+		<PackageReference Include="Serilog" Version="4.3.0" />
+		<PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Domain\Domain.csproj" />
+		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+		<ProjectReference Include="..\Persistence\Persistence.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Domain\Domain.csproj" />
+		<ProjectReference Include="..\Persistence\Persistence.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="wwwroot\assets" />
+		<Folder Include="wwwroot\css" />
+		<Folder Include="wwwroot\icons" />
+		<Folder Include="wwwroot\js" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <_ContentIncludedByDefault Remove="Views\Authentication\Login.cshtml" />
+	  <_ContentIncludedByDefault Remove="Views\Authentication\TwoFactorAuthentication.cshtml" />
+	  <_ContentIncludedByDefault Remove="Views\ForgotPassword\Index.cshtml" />
+	  <_ContentIncludedByDefault Remove="Views\ResetPassword\Index.cshtml" />
+	  <_ContentIncludedByDefault Remove="Views\Layouts\_MasterLayout.cshtml" />
+	  <_ContentIncludedByDefault Remove="Views\Layouts\_VueAppLayout.cshtml" />
+	  <_ContentIncludedByDefault Remove="Views\Intranet\Index.cshtml" />
+	</ItemGroup>
+</Project>

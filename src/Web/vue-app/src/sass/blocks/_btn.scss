@@ -1,0 +1,64 @@
+@use "../tools" as *;
+.btn {
+  display: flex;
+  gap: 12px;
+  padding: 12px 8px;
+  font-size: rem(13);
+  line-height: rem(15);
+  font-weight: 700;
+  background-color: $color-green-light;
+  border: 1px solid $color-green;
+  border-radius: $common-border-radius;
+  cursor: pointer;
+  width: fit-content;
+  text-transform: none;
+  color: $color-text;
+
+  //States ----------
+  &--red {
+    border-color: $color-red;
+    background-color: rgba($color-red, 0.5);
+    @include btnHover($color-red, $color-text)
+  }
+
+  &--square {
+    padding: 4px;
+
+    .icon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &--link {
+    padding: 0;
+    font-weight: 700;
+    color: $color-black;
+    border: none;
+    text-decoration: underline;
+    background-color: unset;
+  }
+
+  &:disabled,
+  &--disabled {
+    pointer-events: none;
+    background-color: $color-grey-light;
+    border-color: $color-grey;
+    color: $color-grey;
+  }
+
+  &--fullscreen {
+    width: 100%;
+    justify-content: center;
+  }
+
+  &--icon-translate-hover {
+    @media (hover: hover) {
+      &:hover {
+        .icon {
+          transform: translate3d(2px, 0, 0);
+        }
+      }
+    }
+  }
+}

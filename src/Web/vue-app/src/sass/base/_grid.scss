@@ -1,0 +1,132 @@
+@use "../tools" as *;
+:root {
+	--gutter-width: #{rem(20)};
+}
+
+//ROW ===========================
+@mixin row($prefix) {
+	&#{$prefix} {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--gutter-width) 0;
+		margin-left: calc(var(--gutter-width) / 2 * -1);
+		margin-right: calc(var(--gutter-width) / 2 * -1);
+	}
+
+	@if $prefix == "" {
+		$prefix: "-";
+	}
+
+	&#{$prefix}-jcc {
+		justify-content: center;
+	}
+
+	&#{$prefix}-jcsa {
+		justify-content: space-around;
+	}
+
+	&#{$prefix}-jcsb {
+		justify-content: space-between;
+	}
+
+	&#{$prefix}-aic {
+		align-items: center;
+	}
+
+	&#{$prefix}-aife {
+		align-items: flex-end;
+	}
+}
+
+.grid__row {
+	@include row("");
+
+	@include breakpoint(xs-up) {
+		@include row("--xs");
+	}
+
+	@include breakpoint(sm-up) {
+		@include row("--sm");
+	}
+
+	@include breakpoint(sm-md-up) {
+		@include row("--sm-md");
+	}
+
+	@include breakpoint(md-up) {
+		@include row("--md");
+	}
+
+	@include breakpoint(lg-up) {
+		@include row("--lg");
+	}
+
+	@include breakpoint(xlg-up) {
+		@include row("--xlg");
+	}
+}
+
+//COLS =============================
+@mixin col($prefix) {
+	@for $i from 1 through 12 {
+		&#{$prefix}#{$i} {
+			width: 8.33% * $i;
+		}
+
+		&#{$prefix}offset-#{$i} {
+			margin-left: 8.33% * $i;
+		}
+	}
+
+	&#{$prefix}offset-0 {
+		margin-left: 0
+	}
+
+	&#{$prefix}sticky {
+		height: 100%;
+		position: sticky;
+		top: calc(var(--navbar-header-height) + 24px);
+		z-index: 1;
+	}
+
+	&#{$prefix}sticky-to-navbar {
+		height: 100%;
+		position: sticky;
+		top: var(--navbar-header-height);
+		z-index: 1;
+	}
+}
+
+[class*="grid__col"] {
+	width: 100%;
+	padding-left: calc(var(--gutter-width) / 2);
+	padding-right: calc(var(--gutter-width) / 2);
+}
+
+.grid__col {
+	@include col("--");
+
+	@include breakpoint(xs-up) {
+		@include col("--xs-");
+	}
+
+	@include breakpoint(sm-up) {
+		@include col("--sm-");
+	}
+
+	@include breakpoint(sm-md-up) {
+		@include col("--sm-md-");
+	}
+
+	@include breakpoint(md-up) {
+		@include col("--md-");
+	}
+
+	@include breakpoint(lg-up) {
+		@include col("--lg-");
+	}
+
+	@include breakpoint(xlg-up) {
+		@include col("--xlg-");
+	}
+}

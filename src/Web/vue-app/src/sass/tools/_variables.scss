@@ -1,0 +1,29 @@
+@use "colors" as *;
+@use "functions" as *;
+
+// fonts
+$font-montserrat: 'Montserrat', 'Helvetica Neue', Helvetica, arial, sans-serif;
+$font-karla: 'Karla', 'Helvetica Neue', Helvetica, arial, sans-serif;
+
+$zindex-popup: 70000;
+$zindex-subheader: 8000;
+$zindex-notifications: 90000;
+
+$gutter-width: 2rem; //32px
+
+// padding
+$page-padding-small: rem(32);
+$page-padding-medium: rem(32);
+$page-padding-large: rem(80);
+
+// border-radius
+$common-border-radius: 4px;
+
+//height
+$header-height-mobile: 128px;
+$header-height-desktop: 140px;
+$header-height-scroll: 78px;
+
+//shadows
+$bold-shadow: 2px 3px 16px 3px rgba($color-black, 0.15);
+$small-shadow: 2px 2px 4px rgba($color-black, 0.25);

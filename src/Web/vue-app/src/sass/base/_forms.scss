@@ -1,0 +1,458 @@
+@use "../tools" as *;
+.form,
+form {
+  //Structuring elements -----------------------
+  &__title {
+    text-align: center;
+
+    &:not(:last-child) {
+      margin-bottom: 40px;
+    }
+  }
+
+  &__fieldset {
+    margin-bottom: 24px;
+    border-bottom: 1px solid $color-border;
+    padding-bottom: 24px;
+
+    &:not(:last-child):not(:nth-last-child(2)) {
+      border-bottom: 1px solid $color-border;
+      padding-bottom: 24px;
+    }
+  }
+
+  //direct child of form only doesnt have a separator.
+  > .form__fieldset {
+    &:last-of-type {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+
+  &__fieldset-text {
+    font-size: rem(14);
+    line-height: rem(16);
+
+    &:not(:last-child) {
+      margin-bottom: 24px;
+    }
+  }
+
+  &__subfieldset {
+    &:not(:last-child) {
+      padding-bottom: 24px;
+      border-bottom: none;
+    }
+  }
+
+  &__legend,
+  &__sublegend {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+
+    .icon {
+      width: 20px;
+      height: 20px;
+      @include iconFillHover($color-green-medium);
+      cursor: pointer;
+    }
+  }
+
+  &__legend {
+    &:not(:last-child) {
+      margin-bottom: 24px;
+    }
+  }
+
+  &__sublegend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &:not(:last-child) {
+      margin-bottom: 8px;
+    }
+  }
+
+  &__row {
+    display: grid;
+    align-items: flex-start;
+    gap: 0 $gutter-width;
+
+    &:not(:last-child) {
+      margin-bottom: 24px;
+    }
+  }
+
+  &__duo-fields {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 0 8px;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    font-size: rem(14);
+    line-height: rem(24);
+  }
+
+  &__field-readonly {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  &__field,
+  &__fields-container {
+    &:not(:last-child) {
+      margin-bottom: 24px;
+    }
+  }
+
+  &__2fr-1fr-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 16px;
+
+    &.reverse {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    }
+  }
+
+  &__input {
+    border: 1px solid $color-border;
+    border-radius: $common-border-radius;
+    background-color: $color-white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+
+    :focus-within {
+      border-color: $color-green;
+    }
+
+    input {
+      border: none;
+      margin: -8px -16px;
+    }
+  }
+
+  &__label-right {
+    margin-left: auto;
+  }
+
+  &__tooltip {
+    display: block;
+    font-size: rem(13);
+    font-style: italic;
+    margin-bottom: 4px;
+  }
+
+  &__link {
+    margin-top: 4px;
+    color: $color-green;
+    width: fit-content;
+    @include underlineHover($color-green);
+  }
+
+  &__error-message {
+    color: $color-red;
+    font-size: rem(14);
+  }
+
+  &__indicator {
+    color: $color-red;
+  }
+
+  &__btn {
+    margin-top: 24px;
+  }
+
+  &__submit {
+    margin: 40px auto 0;
+    display: flex;
+    gap: 16px;
+  }
+
+  &--no-border {
+    .form__fieldset {
+      &:not(:last-child):not(:nth-last-child(2)) {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 40px;
+      }
+    }
+  }
+
+  //Inputs ---------------------------------------
+  label,
+  &__fields-title {
+    transition: color 0.2s cb(snappy);
+    color: $color-grey-medium;
+    order: -1;
+    font-size: rem(14);
+    line-height: rem(24);
+    display: flex;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    border: 1px solid $color-border;
+    border-radius: $common-border-radius;
+    padding: 8px;
+    transition: border-color 0.2s cb(snappy), background-color 0.2s cb(snappy);
+    background-color: $color-grey-lighter;
+
+    &:not(:read-only):not(:disabled) {
+      @media (hover: hover) {
+        &:focus,
+        &:hover {
+          outline: none;
+          border-color: $color-green;
+          background-color: $color-white;
+
+          + label {
+            color: $color-green;
+          }
+        }
+      }
+    }
+
+    &:disabled {
+      pointer-events: none;
+    }
+  }
+
+  input,
+  textarea {
+    //a select dont have a readonly attribute, if we add this rule to it, it will always be apply.
+    &:read-only {
+      pointer-events: none;
+      color: $color-grey-medium;
+    }
+  }
+
+  textarea {
+    min-height: 100px;
+    width: 100%;
+  }
+
+  select {
+    appearance: none;
+    background-image: url(@/assets/icons/icon__chevron--select.png);
+    background-repeat: no-repeat;
+    background-size: 14px;
+    background-position: calc(100% - 8px) center;
+  }
+
+  //Checkboxs & radios ----------------------------------------------------
+  &__checkboxes,
+  &__radios {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  &__checkbox,
+  &__radio {
+    @media (hover: hover) {
+      &:hover,
+      &:focus-within {
+        input[type="checkbox"]:not([disabled]) + label,
+        input[type="radio"]:not([disabled]) + label {
+          color: $color-black;
+
+          &:before {
+            border-color: $color-green;
+          }
+        }
+      }
+    }
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    //Make it diseappear
+    width: 0;
+    height: 0;
+    opacity: 0;
+    position: absolute;
+
+    & + label {
+      cursor: pointer;
+      display: flex;
+      gap: 8px;
+      color: $color-black;
+      line-height: rem(16);
+
+      &::before,
+      &::after {
+        content: "";
+        width: 16px;
+        height: 16px;
+        display: block;
+      }
+
+      &::before {
+        //Replace the default appearance of the checkbox
+        transition: border 0.2s ease-in-out;
+        flex-shrink: 0;
+        border-radius: 100%;
+        border: 2px solid $color-black;
+      }
+
+      &::after {
+        //Replace the checked state
+        z-index: 1;
+        opacity: 0;
+        background-image: url(@/assets/icons/icon__check--box.png);
+        background-size: 12px;
+        background-repeat: no-repeat;
+        background-position: center;
+        transition: opacity 0.2s ease-in-out;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    }
+
+    &:disabled + label {
+      opacity: 0.5;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    &:checked + label {
+      &::after {
+        opacity: 1;
+      }
+    }
+  }
+
+  input[type="checkbox"] {
+    & + label::before {
+      border-radius: $common-border-radius;
+    }
+  }
+
+  //Files ------------------------------------------
+  &__files {
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  //Errors ---------------------------------------
+  &__fields-container.error {
+    .btn {
+      color: $color-red;
+      border-color: $color-red;
+      background-color: rgba($color-red, 0.1);
+
+      .icon * {
+        fill: $color-red;
+      }
+    }
+
+    .form__fields-title {
+      color: $color-red;
+    }
+
+    .form__error-message {
+      display: block;
+      margin-top: 8px;
+    }
+  }
+
+  .form__field.error {
+    & input,
+    & select,
+    & textarea,
+    &.form-select-multiple > span:first-child {
+      border-color: $color-red;
+      background-color: rgba($color-red, 0.1);
+
+      + label {
+        color: $color-red;
+
+        + .form__error-message {
+          display: block;
+        }
+      }
+    }
+
+    & .form-select-multiple__selection {
+      border-color: $color-red;
+      background: transparent;
+    }
+  }
+
+  .form__field.error,
+  .form__fields-container.error {
+    & input[type="checkbox"],
+    & input[type="radio"] {
+      + label {
+        color: $color-red;
+
+        &::before {
+          border-color: $color-red;
+          background-color: rgba($color-red, 0.1);
+        }
+      }
+    }
+  }
+}
+
+//Breakpoints ==================================
+@include breakpoint(sm-up) {
+  form,
+  .form {
+    &__checkboxes,
+    &__radios {
+      flex-direction: row;
+    }
+  }
+}
+
+@include breakpoint(md-up) {
+  form,
+  .form {
+    &__subfieldset {
+      &:not(:last-child) {
+        padding-bottom: 24px;
+      }
+    }
+
+    &__row {
+      grid-template-columns: 1fr 1fr;
+
+      &.align-center {
+        align-items: center;
+      }
+
+      &.triple {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      &.quadruple {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+      }
+
+      .form__field,
+      .form__fields-container {
+        &:not(:last-child) {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}

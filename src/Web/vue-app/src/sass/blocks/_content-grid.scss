@@ -1,0 +1,71 @@
+@use "../tools" as *;
+.content-grid {
+  &,
+  &__transition {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  &__header,
+  &__subheader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    grid-column: span 2;
+  }
+
+  &__text {
+    @include text--body-small;
+    color: $color-green-dark;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 40px;
+  }
+
+  ~ .content-grid:not(:first-child) {
+    margin-top: 20px;
+  }
+}
+
+//Breakpoints ==================================
+@include breakpoint(sm-up) {
+  .content-grid {
+    &,
+    &__transition {
+      gap: 40px;
+    }
+
+    &__header {
+      &:not(:has(.content-grid__text)){
+        margin-bottom: 12px;
+      }
+    }
+
+    &__subheader {
+      &:has(+ .data-easy-table) {
+        margin-bottom: -8px;
+      }
+    }
+
+    &__actions {
+      margin-left: auto;
+      justify-content: flex-end;
+
+      .btn--link {
+        order: -1;
+      }
+    }
+
+    //States ---------------------------
+    &--double {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+    }
+  }
+}

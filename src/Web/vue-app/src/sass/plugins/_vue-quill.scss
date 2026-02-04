@@ -1,0 +1,48 @@
+@use "../tools" as *;
+.ql-toolbar {
+  border-top-left-radius: $common-border-radius;
+  border-top-right-radius: $common-border-radius;
+}
+
+.ql-container {
+  border-bottom-left-radius: $common-border-radius;
+  border-bottom-right-radius: $common-border-radius;
+  background-color: $color-grey-lighter;
+  font-family: $font-karla;
+}
+
+.ql-editor {
+  a {
+    display: inline-block;
+    background: $color-green;
+    color: white!important;
+    padding: 8px;
+
+    &:after {
+      content: none!important;
+    }
+  }
+}
+
+.ql-tooltip {
+  z-index: $zindex-popup;
+}
+
+.form__field.error {
+  .ql-toolbar {
+    border-color: $color-red;
+  }
+
+  .ql-container {
+    border-color: $color-red;
+    background-color: rgba($color-red, 0.1);
+
+    + label {
+      color: $color-red;
+
+      + .form__error-message {
+        display: block;
+      }
+    }
+  }
+}

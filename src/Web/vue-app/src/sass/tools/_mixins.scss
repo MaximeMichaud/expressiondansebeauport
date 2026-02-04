@@ -1,0 +1,267 @@
+@use "functions" as *;
+@use "colors" as *;
+@use "variables" as *;
+@use "mediaqueries" as *;
+
+// mixins
+
+// paddings ----------------------------------------------------
+@mixin pagePaddingLeft {
+  padding-left: $page-padding-small;
+
+  @include breakpoint(sm-up) {
+    padding-left: $page-padding-medium;
+  }
+
+  @include breakpoint(md-up) {
+    padding-left: $page-padding-large;
+  }
+}
+
+@mixin pageMarginLeft {
+  margin-left: $page-padding-small;
+
+  @include breakpoint(sm-up) {
+    margin-left: $page-padding-medium;
+  }
+
+  @include breakpoint(md-up) {
+    margin-left: $page-padding-large;
+  }
+}
+
+@mixin pagePaddingRight {
+  padding-right: $page-padding-small;
+
+  @include breakpoint(sm-up) {
+    padding-right: $page-padding-medium;
+  }
+
+  @include breakpoint(md-up) {
+    padding-right: $page-padding-large;
+  }
+}
+
+@mixin pagePadding() {
+  @include pagePaddingLeft();
+  @include pagePaddingRight();
+}
+
+@mixin sectionPadding() {
+  padding: $section-padding-mobile 0;
+
+  @include breakpoint(md-up) {
+    padding: $section-padding-desktop 0;
+  }
+}
+
+// typography --------------------------------------------------
+@mixin text--body {
+  font-family: $font-karla;
+  font-weight: 500;
+  font-size: rem(16);
+  line-height: rem(20);
+}
+
+@mixin text--body-small {
+  font-size: rem(14);
+  line-height: rem(20);
+}
+
+@mixin text--body-big {
+  font-size: rem(18);
+  line-height: rem(28);
+}
+
+@mixin text--big {
+  font-weight: 700;
+  font-size: rem(16);
+  line-height: rem(18);
+
+  @include breakpoint(md-up) {
+    font-size: rem(20);
+    line-height: rem(24);
+  }
+}
+
+// misc ----------------------------------------------------------
+@mixin clearfix {
+  &::after {
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+    content: "";
+  }
+}
+
+@mixin bgCover($pos: center) {
+  background-repeat: no-repeat;
+  background-position: $pos;
+  background-size: cover;
+}
+
+@mixin screen-reader-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+@mixin longWordWrap {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+@mixin absoluteCentering {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+}
+
+//Hover -------------------------------------------------------------
+@mixin underlineHover($color, $height: 1px) {
+  &::after {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: $height;
+    bottom: 0;
+    left: 0;
+    background-color: $color;
+    transform: scale3d(0, 1, 0);
+    transition: transform 0.2s cb(snappy);
+    transform-origin: top left;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      &::after {
+        transform: scale3d(1, 1, 1);
+      }
+    }
+  }
+}
+
+@mixin fillHover($color) {
+  & *,
+  .icon * {
+    fill: $color;
+  }
+}
+
+@mixin colorHover($color) {
+  transition: color 0.2s cb(snappy);
+
+  @media (hover: hover) {
+    &:hover {
+      color: $color;
+    }
+  }
+}
+
+@mixin backgroundColorHover($color) {
+  transition: background-color 0.2s cb(snappy);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: $color;
+    }
+  }
+}
+
+@mixin iconFillHover($color) {
+  *,
+  .icon * {
+    transition: fill 0.2s cb(snappy);
+  }
+
+  @media (hover: hover) {
+    &:hover *,
+    &:hover .icon * .icon:hover * {
+      fill: $color;
+    }
+  }
+}
+
+@mixin opacityHover($opacity: 0.8) {
+  transition: opacity 0.2s cb(snappy);
+
+  @media (hover: hover) {
+    &:hover {
+      opacity: $opacity;
+    }
+  }
+}
+
+@mixin scaleHover($size: 1.025) {
+  transition: transform 0.2s cb(snappy);
+
+  @media (hover: hover) {
+    &:hover {
+      transform: scale3d($size, $size, $size);
+    }
+  }
+}
+
+@mixin btnHover($bg-color, $text-color, $border-color: transparent) {
+  transition: color 0.2s cb(snappy), background-color 0.2s cb(snappy),
+    border-color 0.2s cb(snappy);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: $bg-color;
+      border-color: $border-color;
+      color: $text-color;
+
+      .btn__icon {
+        background-color: $bg-color;
+      }
+
+      .icon {
+        & * {
+          fill: $text-color;
+        }
+      }
+    }
+  }
+}
+
+@mixin textTruncateWithEllipsis($cut-on-line: 1) {
+  @if($cut-on-line: 1) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: calc(100%);
+  }
+  @else {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $cut-on-line;
+    overflow: hidden;
+  }
+}
+
+//Images ratio -------------------------------------------------------
+@mixin imgRatio-container {
+  height: 0;
+  overflow: hidden;
+  display: block;
+}
+
+@mixin imgRatio-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+}

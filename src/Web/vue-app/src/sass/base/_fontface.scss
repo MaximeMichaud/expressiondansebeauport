@@ -1,0 +1,110 @@
+@use "../tools" as *;
+//Montserrat ======================================================
+@font-face {
+ font-family: "Montserrat";
+ src: url(@/assets/fonts/montserrat/Montserrat-Medium.woff2) format("woff2"),
+   url(@/assets/fonts/montserrat/Montserrat-Medium.woff) format("woff"),
+   url(@/assets/fonts/montserrat/Montserrat-Medium.ttf) format("truetype");
+ font-weight: 500;
+ font-style: normal;
+}
+
+@font-face {
+ font-family: "Montserrat";
+ src: url(@/assets/fonts/montserrat/Montserrat-MediumItalic.woff2) format("woff2"),
+   url(@/assets/fonts/montserrat/Montserrat-MediumItalic.woff) format("woff"),
+   url(@/assets/fonts/montserrat/Montserrat-MediumItalic.ttf) format("truetype");
+ font-weight: 500;
+ font-style: italic;
+}
+
+@font-face {
+ font-family: "Montserrat";
+ src: url(@/assets/fonts/montserrat/Montserrat-SemiBold.woff2) format("woff2"),
+   url(@/assets/fonts/montserrat/Montserrat-SemiBold.woff) format("woff"),
+   url(@/assets/fonts/montserrat/Montserrat-SemiBold.ttf) format("truetype");
+ font-weight: 600;
+ font-style: normal;
+}
+
+@font-face {
+ font-family: "Montserrat";
+ src: url(@/assets/fonts/montserrat/Montserrat-SemiBoldItalic.woff2) format("woff2"),
+   url(@/assets/fonts/montserrat/Montserrat-SemiBoldItalic.woff) format("woff"),
+   url(@/assets/fonts/montserrat/Montserrat-SemiBoldItalic.ttf) format("truetype");
+ font-weight: 600;
+ font-style: italic;
+}
+
+@font-face {
+ font-family: "Montserrat";
+ src: url(@/assets/fonts/montserrat/Montserrat-Bold.woff2) format("woff2"),
+   url(@/assets/fonts/montserrat/Montserrat-Bold.woff) format("woff"),
+   url(@/assets/fonts/montserrat/Montserrat-Bold.ttf) format("truetype");
+ font-weight: 700;
+ font-style: normal;
+}
+
+@font-face {
+ font-family: "Montserrat";
+ src: url(@/assets/fonts/montserrat/Montserrat-BoldItalic.woff2) format("woff2"),
+   url(@/assets/fonts/montserrat/Montserrat-BoldItalic.woff) format("woff"),
+   url(@/assets/fonts/montserrat/Montserrat-BoldItalic.ttf) format("truetype");
+ font-weight: 700;
+ font-style: italic;
+}
+
+//Karla ======================================================
+@font-face {
+ font-family: "Karla";
+ src: url(@/assets/fonts/karla/Karla-MediumItalic.woff2) format("woff2"),
+   url(@/assets/fonts/karla/Karla-MediumItalic.woff) format("woff"),
+   url(@/assets/fonts/karla/Karla-MediumItalic.ttf) format("truetype");
+ font-weight: 500;
+ font-style: italic;
+}
+
+@font-face {
+ font-family: "Karla";
+ src: url(@/assets/fonts/karla/Karla-Medium.woff2) format("woff2"),
+   url(@/assets/fonts/karla/Karla-Medium.woff) format("woff"),
+   url(@/assets/fonts/karla/Karla-Medium.ttf) format("truetype");
+ font-weight: 500;
+ font-style: normal;
+}
+
+@font-face {
+ font-family: "Karla";
+ src: url(@/assets/fonts/karla/Karla-BoldItalic.woff2) format("woff2"),
+   url(@/assets/fonts/karla/Karla-BoldItalic.woff) format("woff"),
+   url(@/assets/fonts/karla/Karla-BoldItalic.ttf) format("truetype");
+ font-weight: 700;
+ font-style: italic;
+}
+
+@font-face {
+ font-family: "Karla";
+ src: url(@/assets/fonts/karla/Karla-Bold.woff2) format("woff2"),
+   url(@/assets/fonts/karla/Karla-Bold.woff) format("woff"),
+   url(@/assets/fonts/karla/Karla-Bold.ttf) format("truetype");
+ font-weight: 700;
+ font-style: normal;
+}
+
+@font-face {
+ font-family: "Karla";
+ src: url(@/assets/fonts/karla/Karla-ExtraBold.woff2) format("woff2"),
+   url(@/assets/fonts/karla/Karla-ExtraBold.woff) format("woff"),
+   url(@/assets/fonts/karla/Karla-ExtraBold.ttf) format("truetype");
+ font-weight: 800;
+ font-style: normal;
+}
+
+@font-face {
+ font-family: "Karla";
+ src: url(@/assets/fonts/karla/Karla-ExtraBoldItalic.woff2) format("woff2"),
+   url(@/assets/fonts/karla/Karla-ExtraBoldItalic.woff) format("woff"),
+   url(@/assets/fonts/karla/Karla-ExtraBoldItalic.ttf) format("truetype");
+ font-weight: 800;
+ font-style: italic;
+}

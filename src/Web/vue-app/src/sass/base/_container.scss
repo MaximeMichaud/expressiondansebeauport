@@ -1,0 +1,10 @@
+@use "../tools" as *;
+// container
+.container {
+  @include pagePadding();
+
+  &--maxwidth-lg {
+    margin: 0 auto;
+    max-width: calc(1440px - (#{$page-padding-large}*2));
+  }
+}

@@ -1,0 +1,186 @@
+@use "../tools" as *;
+.vue3-easy-data-table {
+  //we stan this plugin with an easy overwriting process <3
+  --easy-table-border: 1px solid #{$color-green};
+  --easy-table-row-border: 1px solid #{$color-green-lighter};
+
+  //header
+  --easy-table-header-font-size: #{rem(14)};
+  --easy-table-header-font-color: #{$color-grey-medium};
+  --easy-table-header-item-padding: 24px 16px 8px;
+
+  //body
+  --easy-table-body-row-font-size: #{rem(14)};
+  --easy-table-body-row-font-color: #{$color-text};
+  --easy-table-body-row-hover-font-color: #{$color-text};
+  --easy-table-body-row-hover-background-color: #{$color-green-light};
+  --easy-table-body-row-background-color: #{$color-green-lighter};
+  --easy-table-body-even-row-background-color: #{$color-white};
+  --easy-table-body-item-padding: 16px;
+
+  //scrollbar
+  --easy-table-scrollbar-track-color: #{$color-green-lighter};
+  --easy-table-scrollbar-thumb-color: #{$color-green};
+
+  //footer
+  --easy-table-footer-font-size: #{rem(14)};
+  --easy-table-rows-per-page-selector-option-padding: 8px;
+  --easy-table-footer-font-color: #{$color-black};
+  --easy-table-footer-height: 54px;
+
+  //Custom styles ========================================================
+  border-radius: $common-border-radius;
+  overflow: hidden;
+
+  &__main {
+    th,
+    td {
+      font-weight: 700;
+      transition: background-color 0.2s cb(snappy);
+    }
+  }
+
+  //Header ----------------------
+  &__header-item {
+    //cant change this classname, so overwriting time!
+    .header {
+      position: relative;
+      inset: initial;
+      width: initial;
+      background-color: transparent;
+      z-index: 0;
+      box-shadow: none;
+    }
+  }
+
+  .sortType-icon {
+    border: none;
+    margin: 0;
+    margin-left: 4px;
+    background-image: url(@/assets/icons/icon__chevron--select.png);
+    background-size: cover;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    transform: rotate3d(0, 0, 1, 180deg);
+
+    &.desc {
+      transform: none;
+    }
+  }
+
+  //Actions -----------------
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    .vue3-easy-data-table__action::after {
+      content: none;//remove default link hover
+    }
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: $common-border-radius;
+    background-color: $color-green;
+    @include backgroundColorHover($color-green-medium);
+
+    &.red-bg {
+      background-color: rgba($color-red, 0.8);
+      @include backgroundColorHover($color-red)
+    }
+  }
+
+  //Footer ------------------
+  .pagination__items-index {
+    position: absolute;
+    font-size: rem(12);
+  }
+
+  .previous-page__click-button {
+    margin-left: auto;
+
+    @media (hover: hover) {
+      &:hover {
+        transform: translate3d(-4px, 0, 0);
+      }
+    }
+  }
+
+  .next-page__click-button {
+    margin-right: auto;
+
+    @media (hover: hover) {
+      &:hover {
+        transform: translate3d(4px, 0, 0);
+      }
+    }
+  }
+
+  .next-page__click-button,
+  .previous-page__click-button {
+    padding: 2.5px;
+    border: 2px solid $color-green;
+    transition: transform 0.2s cb(snappy);
+
+    &.first-page,
+    &.last-page {
+      pointer-events: none;
+      filter: grayscale(1);
+      opacity: 0.5;
+    }
+
+    .arrow {
+      background-image: url(@/assets/icons/icon__arrow--blue.png);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      border: none;
+      width: 16px;
+      height: 16px;
+      transform: none;
+      display: flex;
+    }
+
+    .arrow-right {
+      transform: rotate3d(0, 0, 1, 180deg);
+    }
+  }
+
+  .buttons-pagination {
+    gap: 4px;
+  }
+
+  .item {
+    &.omission {
+      //= ...
+      border: none;
+      pointer-events: none;
+    }
+
+    &.button {
+      border: none;
+      border-radius: 0;
+      @include btnHover($color-green-medium, $color-white);
+      font-weight: 700;
+
+      &.active {
+        text-decoration: underline;
+        pointer-events: none;
+      }
+    }
+  }
+
+  //Special hovers ----------------------
+  @media(hover:hover){
+    tr:hover {
+      .tag {
+        background-color: $color-green-lighter;
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+@use "../tools" as *;
+.notifications {
+  position: sticky;
+  top: 0;
+  z-index: $zindex-notifications;
+
+  &--in-page-flow {
+    width: 100% !important;
+    position: relative !important;
+    margin: 0 !important;
+
+    .vue-notification-group {
+      position: static!important;
+      margin: 0;
+      width: 100%!important;
+    }
+  }
+}
+
+.vue-notification-group {
+  margin: 16px + 68px 16px;
+  position: absolute;
+}
+
+//Breakpoints ==================================
+@include breakpoint(md-up) {
+  .vue-notification-group {
+    margin: 16px;
+  }
+}

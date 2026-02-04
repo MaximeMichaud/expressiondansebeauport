@@ -1,0 +1,96 @@
+﻿@use "../tools" as *;
+.form-select-multiple {
+  &__selection {
+    //common select styles
+    min-height: 35px;
+    border: 1px solid $color-border;
+    border-radius: $common-border-radius;
+    padding: 8px;
+    transition: border-color 0.2s cb(snappy), background-color 0.2s cb(snappy);
+    background-color: $color-grey-lighter;
+
+    //arrow
+    background-image: url(@/assets/icons/icon__chevron--select.svg);
+    background-repeat: no-repeat;
+    background-size: 10px 6px;
+    background-position: calc(100% - 8px) 14.5px;
+
+    //specific to multiple
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  &__selection-option {
+    padding: 4px 8px 4px 4px;
+    background-color: $color-green;
+    color: $color-white;
+    font-size: rem(14);
+    line-height: rem(14);
+    cursor: pointer;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    transition: background-color 0.2s cb(snappy);
+
+    &::after {
+      content: "x";
+      display: flex;
+      line-height: 0;
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: $color-green-medium;
+      }
+    }
+  }
+
+  &__options {
+    border-radius: $common-border-radius;
+    border: 1px solid $color-border;
+    max-height: 200px;
+    overflow: auto;
+  }
+
+  &__option {
+    padding: 0 8px;
+    line-height: rem(18);
+    cursor: default;
+
+    &.selected {
+      background-color: $color-green;
+      color: $color-white;
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: $color-green-medium;
+        color: $color-white;
+      }
+    }
+  }
+
+  //States -----------------------------
+  @media (hover: hover) {
+    &:focus,
+    &:hover {
+      .form-select-multiple__selection {
+        outline: none;
+        border-color: $color-green;
+        background-color: $color-white;
+      }
+
+      label {
+        color: $color-green;
+      }
+    }
+  }
+
+  @media(hover:none){
+    //bigger for touch
+    .form-select-multiple__option {
+      padding: 16px 8px;
+    }
+  }
+}

@@ -1,0 +1,74 @@
+@use "../tools" as *;
+/* icon */
+.icon {
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-decoration: inherit;
+  text-align: center;
+  text-transform: none;
+  display: inline-block;
+  line-height: inherit;
+  width: 1rem;
+  height: 1rem;
+  speak: none;
+  vertical-align: middle;
+  margin: 0;
+  flex-shrink: 0;
+
+  ////Transitions --------------------
+  //transform: translate3d(var(--icon-translate-x), var(--icon-translate-y), 0) rotate3d(0, 0, 1, var(--icon-rotate-deg));
+  //
+  //&,
+  //& * {
+  //  transition: fill 0.3s cb(pete), transform 0.3s cb(pete), width 0.3s cb(pete), d 0.3s cb(pete);
+  //}
+
+  //Colors -------------------------
+  &--white {
+    * {
+      fill: $color-white;
+    }
+  }
+
+  &--black {
+    * {
+      fill: $color-black;
+    }
+  }
+
+  &--blue {
+    * {
+      fill: $color-green;
+    }
+  }
+
+  &--grey {
+    * {
+      fill: $color-grey-medium;
+    }
+  }
+
+  &--green {
+    * {
+      fill: $color-green;
+    }
+  }
+
+  //Transforms ---------------------
+  &--rotate-45 {
+    transform: rotate3d(0, 0, 1, 45deg);
+  }
+
+  &--rotate-90 {
+    transform: rotate3d(0, 0, 1, 90deg);
+  }
+
+  &--rotate-180 {
+    transform: rotate3d(0, 0, 1, 180deg);
+  }
+
+  &--rotate-270 {
+    transform: rotate3d(0, 0, 1, 270deg);
+  }
+}

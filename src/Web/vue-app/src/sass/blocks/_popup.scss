@@ -1,0 +1,97 @@
+@use "../tools" as *;
+.popup {
+  position: fixed;
+  inset: 0;
+  z-index: $zindex-popup;
+
+  &__bg {
+    background-color: $color-grey-dark;
+    opacity: 0.5;
+    position: absolute;
+    inset: 0;
+  }
+
+  &__container {
+    margin: 10vh 24px;
+    max-height: 80vh;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    background-color: $color-white;
+    border-radius: $common-border-radius;
+    overflow: hidden;
+  }
+
+  &__header {
+    padding: 32px 40px;
+    border-bottom: 1px solid $color-green-light;
+    text-align: center;
+  }
+
+  &__title {
+    text-transform: uppercase;
+  }
+
+  &__content {
+    overflow: auto;
+  }
+
+  &__block {
+    padding: 32px 16px;
+  }
+
+  &__cta {
+    background-color: $color-green;
+  }
+
+  &__cta-title {
+    &:not(:last-child) {
+      margin-bottom: 8px;
+    }
+  }
+
+  &__cta-text {
+    font-size: rem(16);
+    line-height: rem(24);
+    @include text--big;
+
+    &:not(:last-child) {
+      margin-bottom: 24px;
+    }
+  }
+
+  //States ----------------------------------
+  &--logout {
+    .popup__block {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+
+      .progress-ring {
+        flex-shrink: 0;
+      }
+    }
+
+    .popup__btn {
+      width: 100%;
+      border-radius: 0;
+    }
+  }
+}
+
+//Breakpoints ============================================
+@include breakpoint(xs-up) {
+  .popup {
+    &__container {
+      margin: 10vh auto;
+    }
+  }
+}
+
+@include breakpoint(sm-up) {
+  .popup {
+    &__block {
+      padding: 40px;
+    }
+  }
+}

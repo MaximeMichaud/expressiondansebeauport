@@ -1,0 +1,335 @@
+{
+  "routes": {
+    "login": {
+      "path": "/connexion",
+      "fullPath": "/connexion",
+      "name": "Connexion"
+    },
+    "twoFactor": {
+      "path": "/authentification-a-deux-facteurs",
+      "fullPath": "/authentification-a-deux-facteurs",
+      "name": "Authentification à deux facteurs"
+    },
+    "forgotPassword": {
+      "path": "/mot-de-passe-oublie",
+      "fullPath": "/mot-de-passe-oublie",
+      "name": "Mot de passe oublié"
+    },
+    "resetPassword": {
+      "path": "/reinitialiser-mot-de-passe",
+      "fullPath": "/reinitialiser-mot-de-passe",
+      "name": "Réinitialiser mot de passe"
+    },
+    "account": {
+      "path": "/mon-compte",
+      "fullPath": "/mon-compte",
+      "name": "Mon compte"
+    },
+    "admin": {
+      "path": "/administration",
+      "fullPath": "/administration",
+      "name": "Administration",
+      "children": {
+        "members": {
+          "path": "membres",
+          "fullPath": "/administration/membres",
+          "name": "Membres",
+          "add": {
+            "path": "ajouter",
+            "fullPath": "/administration/membres/ajouter",
+            "name": "Ajouter un membre"
+          },
+          "edit": {
+            "path": ":id/modifier",
+            "fullPath": "/administration/membres/:id/modifier",
+            "name": "Modifier un membre"
+          }
+        }
+      }
+    },
+    "books": {
+      "path": "/livres",
+      "fullPath": "/livres",
+      "name": "Livres",
+      "children": {
+        "add": {
+          "path": "ajouter",
+          "fullPath": "/livres/ajouter",
+          "name": "Ajouter un livre"
+        },
+        "edit": {
+          "path": ":id/modifier",
+          "fullPath": "/livres/:id/modifier",
+          "name": "Modifier un livre"
+        }
+      }
+    }
+  },
+  "pages": {
+    "login": {
+      "username": "Nom d'utilisateur",
+      "password": "Mot de passe",
+      "passwordConfirmation": "Confirmation du mot de passe",
+      "submit": "Se connecter",
+      "forgotPassword": "Mot de passe oublié ?",
+      "validation": {
+        "invalidUsername": "Le nom d'utilisateur est invalide.",
+        "memberApprobationRevoked": "Votre approbation a été révoquée.",
+        "errorOccured": "Nom d'utilisateur ou mot de passe invalide."
+      }
+    },
+    "twoFactor": {
+      "code": "Code",
+      "submit": "Se connecter",
+      "tooltip": "Un code a été envoyé par email. Veuillez vérifier votre boîte de courriel et coller le code ici.",
+      "validation": {
+        "invalidUsername": "Le nom d'utilisateur est invalide.",
+        "invalidCode": "Le code est invalide.",
+        "errorOccured": "Une erreur est survenue lors de la validation de l'authentification à deux facteurs."
+      }
+    },
+    "forgotPassword": {
+      "tooltip": "Si le nom d'utilisateur est valide, un email sera envoyé à l'adresse indiquée avec un lien pour réinitialiser votre mot de passe",
+      "validation": {
+        "success": "Courriel de réinitalisation du mot de passe envoyé.",
+        "invalidUsername": "Le nom d'utilisateur est invalide.",
+        "invalidResetPasswordRelativeUrl": "L'URL de réinitialisation du mot de passe est introuvable.",
+        "errorOccured": "Une erreur est survenue lors de l'envoi du courriel de réinitialisation du mot de passe."
+      }
+    },
+    "resetPassword": {
+      "validation": {
+        "success": "Mot de passe réinitalisé avec succès. Vous serez redirigé à la page de connexion.",
+        "invalidUserId": "L'identifiant de l'utilisateur est invalide.",
+        "invalidToken": "Le token de réinitalisation du mot de passe est invalide.",
+        "invalidPassword": "Le mot de passe est invalide.",
+        "invalidPasswordConfirmation": "La confirmation du mot de passe est invalide.",
+        "passwordTooShort": "Doit contenir au moins 8 caractères.",
+        "passwordRequiresNonAlphanumeric": "Doit contenir un caractère spécial.",
+        "passwordRequiresDigit": "Doit contenir un chiffre.",
+        "passwordRequiresUpper": "Doit contenir une majuscule.",
+        "passwordRequiresLower": "Doit contenir une minuscule.",
+        "passwordMismatch": "Le mot de passe entré ne correspond pas à votre mot de passe actuel.",
+        "passwordAndConfirmationMustMatch": "Le mot de passe et sa confirmation doivent être identiques.",
+        "errorOccured": "Une erreur est survenue lors de la réinitialisation du mot de passe."
+      }
+    },
+    "members": {
+      "create": {
+        "validation": {
+          "successMessage": "Le membre a été créé avec succès.",
+          "failedMessage": "Une erreur s'est produite lors de la création du membre.",
+          "invalidFirstName": "Le prénom est invalide.",
+          "invalidLastName": "Le nom est invalide.",
+          "invalidEmail": "Le courriel est invalide.",
+          "invalidEmailFormat": "Le format du courriel est invalide.",
+          "invalidPhoneNumber": "Le numéro de téléphone est invalide.",
+          "invalidPhoneNumberFormat": "Le format du numéro de téléphone est invalide.",
+          "invalidStreet": "L'adresse est invalide.",
+          "invalidCity": "La ville est invalide.",
+          "invalidZipCode": "Le code postal est invalide.",
+          "invalidZipCodeFormat": "Le format du code postal est invalide.",
+          "invalidType": "Le type doit être homme, femme ou équipe.",
+          "invalidServiceRadius": "Le rayon de service devrait être supérieur à zéro.",
+          "invalidEnterpriseNumberFormat": "Le format du numéro d'entreprise est invalide.",
+          "invalidProvincialTaxNumberFormat": "Le format du numéro de TVQ est invalide.",
+          "invalidFederalTaxNumberFormat": "Le format du numéro de TPS est invalide.",
+          "memberNotFound": "Aucun membre avec le code de référence spécifié existe.",
+          "userWithEmailAlreadyExistsException": "Un utilisateur avec ce courriel existe déjà."
+        }
+      },
+      "update": {
+        "validation": {
+          "successMessage": "Le membre a été modifié avec succès.",
+          "failedMessage": "Une erreur s'est produite lors de la modification du membre.",
+          "invalidFirstName": "Le prénom est invalide.",
+          "invalidLastName": "Le nom est invalide.",
+          "invalidEmail": "Le courriel est invalide.",
+          "invalidEmailFormat": "Le format du courriel est invalide.",
+          "invalidPhoneNumber": "Le numéro de téléphone est invalide.",
+          "invalidPhoneNumberFormat": "Le format du numéro de téléphone est invalide.",
+          "invalidStreet": "L'adresse est invalide.",
+          "invalidCity": "La ville est invalide.",
+          "invalidZipCode": "Le code postal est invalide.",
+          "invalidZipCodeFormat": "Le format du code postal est invalide.",
+          "invalidType": "Le type doit être homme, femme ou équipe.",
+          "invalidServiceRadius": "Le rayon de service devrait être supérieur à zéro.",
+          "invalidEnterpriseNumberFormat": "Le format du numéro d'entreprise est invalide.",
+          "invalidProvincialTaxNumberFormat": "Le format du numéro de TVQ est invalide.",
+          "invalidFederalTaxNumberFormat": "Le format du numéro de TPS est invalide.",
+          "userWithEmailAlreadyExistsException": "Un utilisateur avec ce courriel existe déjà.",
+          "memberNotFoundException": "Le membre n'a pas pu être trouvé.",
+          "teamLeaderNotFoundException": "Aucun membre actif avec le code de référence fourni a été trouvé.",
+          "forbidBeingOwnTeamLeaderException": "Un membre ne peut pas être son propre leader d'équipe. Laissez le champ vide."
+        }
+      },
+      "delete": {
+        "confirmation": "Êtes-vous sûr de vouloir supprimer ce membre?",
+        "validation": {
+          "successMessage": "Le membre a été supprimé avec succès.",
+          "failedMessage": "Une erreur s'est produite lors de la suppression du membre.",
+          "memberNotFoundException": "Le membre n'a pas pu être trouvé."
+        }
+      }
+    }
+  },
+  "products": {
+    "form": {
+      "image-card-tooltip": "Format recommandé : largeur supérieur à 700px (ratio 2:1)",
+      "image-page-tooltip": "Format recommandé : largeur supérieur à 700px (ratio 5:4).",
+      "image-card": "Image - Carte",
+      "image-page": "Image - Page",
+      "image-text-fr": "Bandeau sur l'image - FR",
+      "image-text-en": "Bandeau sur l'image - EN",
+      "description-fr": "Description - FR",
+      "description-en": "Description - EN",
+      "name-fr": "Nom - FR",
+      "name-en": "Nom - EN",
+      "price": "Prix",
+      "no-taxes": "(Hors taxes)",
+      "category": "Catégorie",
+      "fieldset-informations-book": "Informations sur le livre",
+      "fieldset-informations-default": "Informations sur le produit"
+    },
+    "book": "Livre"
+  },
+  "book": {
+    "info": "Informations du livre",
+    "title": "Titre",
+    "titleFr": "Titre - FR",
+    "titleEn": "Titre - EN",
+    "summary": "Résumé",
+    "summaryFr": "Résumé - FR",
+    "summaryEn": "Résumé - EN",
+    "isbn": "ISBN",
+    "author": "Auteur",
+    "editor": "Éditeur",
+    "yearOfPublication": "Année de publication",
+    "numberOfPages": "Nombre de pages"
+  },
+  "user": {
+    "roles": {
+      "admin": "Administrateur"
+    }
+  },
+  "global": {
+    "free": "Gratuit(e)",
+    "menu": "Menu",
+    "title": "Titre",
+    "date": "Date",
+    "at": "à",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "passwordConfirmation": "Confirmation du mot de passe",
+    "submit": "Soumettre",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "fullName": "Nom complet",
+    "email": "Courriel",
+    "phoneNumber": "Numéro de téléphone",
+    "phoneExtension": "Poste",
+    "apartment": "Numéro de bureau/suite",
+    "street": "Adresse",
+    "city": "Ville",
+    "zipCode": "Code postal",
+    "roles": "Rôles",
+    "name": "Nom",
+    "download": "Télécharger",
+    "add": "Ajouter",
+    "cancel": "Annuler",
+    "important": "Important",
+    "addFile": "Ajouter un document",
+    "addFiles": "Ajouter des documents",
+    "replaceFile": "Remplacer le document",
+    "replaceFiles": "Remplacer les documents",
+    "removeFile": "Retirer ce document",
+    "uploadZippedFolder-tooltip": "Si vous désirez transmettre plusieurs documents, veuillez uploader <strong>un dossier compressé.</strong>",
+    "update": "Modifier",
+    "delete": "Supprimer",
+    "deleted": "Supprimé(e)",
+    "save": "Sauvegarder",
+    "back": "Retour",
+    "yes": "Oui",
+    "no": "Non",
+    "search": "Rechercher",
+    "transfer": "Transférer",
+    "formErrorNotification": "Il y a des erreurs dans le formulaire.",
+    "quickLinks": "Liens rapides",
+    "undefined": "ND",
+    "logout": "Déconnexion",
+    "table": {
+      "of": "de",
+      "noData": "Aucune données disponibles",
+      "actions": "Actions"
+    },
+    "actions": {
+      "view": "Voir",
+      "download": "Télécharger",
+      "update": "Modifier",
+      "delete": "Supprimer"
+    }
+  },
+  "textEditorLinkPopup": {
+    "addLink": "Ajouter un lien",
+    "label": "Libellé",
+    "url": "Url",
+    "image": "Le lien sera ajouté sur l'image sélectionnée.",
+    "tooltip": "Pour éditer le lien sur une image, cliquer sur la bordure bleue autour de celle-ci."
+  },
+  "validation": {
+    "empty": "Veuillez renseigner ce champ.",
+    "email": "Veuillez entrer un adresse courriel valide.",
+    "min": "La valeur doit être d'au moins {min}.",
+    "max": "La valeur doit être plus petite ou égale à {max}.",
+    "fileMin": "Un minimum de {min} fichier{s} est requis.",
+    "fileMax": "Un maximum de {max} fichier{s} est permis.",
+    "fileType": "Les types de fichier permis sont: {type}",
+    "checked": "Veuillez cocher cette case.",
+    "select": "Veuillez sélectionner une option.",
+    "zipCode": "Le code postal doit respecter le format X0X X0X.",
+    "phoneNumber": "Le numéro de téléphone doit respecter le format 555-555-5555.",
+    "errorsInForm": "Il y a des erreurs dans le formulaire.",
+    "errorOccured": "Une erreur est survenue.",
+    "book": {
+      "add": {
+        "success": "Le livre a été créé avec succès.",
+        "errorOccured": "Une erreur est survenue lors de la création du livre.",
+        "bookNotFoundException": "Le livre n'a pu être trouvé.",
+        "bookWithIsbnAlreadyExistsException": "Un livre avec le même ISBN existe déjà.",
+        "invalidFrenchName": "Le titre du livre en français est manquant.",
+        "invalidEnglishName": "Le titre du livre en anglais est manquant.",
+        "invalidFrenchDescription": "La description du livre en français est manquante.",
+        "invalidEnglishDescription": "La description du livre en anglais est manquante.",
+        "invalidIsbn": "L'ISBN doit être de 17 caractères et contenir quatre tirets.",
+        "invalidAuthor": "L'auteur du livre est manquant.",
+        "invalidEditor": "L'éditeur du livre est manquant.",
+        "invalidYearOfPublication": "L'année de publication doit être plus grande que zéro.",
+        "invalidNumberOfPages": "Le nombre de pages doit être plus grand que zéro.",
+        "invalidPrice": "Le prix du livre doit être plus grand que zéro."
+      },
+      "edit": {
+        "success": "Le livre a été modifié avec succès.",
+        "errorOccured": "Une erreur est survenue lors de la modification du livre.",
+        "bookNotFoundException": "Le livre n'a pu être trouvé.",
+        "bookWithIsbnAlreadyExistsException": "Un autre livre avec le même ISBN existe déjà.",
+        "emptyBookId": "L'id du livre est manquant.",
+        "invalidFrenchName": "Le titre du livre en français est manquant.",
+        "invalidEnglishName": "Le titre du livre en anglais est manquant.",
+        "invalidFrenchDescription": "La description du livre en français est manquante.",
+        "invalidEnglishDescription": "La description du livre en anglais est manquante.",
+        "invalidIsbn": "L'ISBN doit être de 17 caractères et contenir quatre tirets.",
+        "invalidAuthor": "L'auteur du livre est manquant.",
+        "invalidEditor": "L'éditeur du livre est manquant.",
+        "invalidYearOfPublication": "L'année de publication doit être plus grande que zéro.",
+        "invalidNumberOfPages": "Le nombre de pages doit être plus grand que zéro.",
+        "invalidPrice": "Le prix du livre doit être plus grand que zéro."
+      },
+      "delete": {
+        "confirmation": "Êtes-vous sûr de vouloir supprimer ce livre ?",
+        "success": "Le livre a été supprimé avec succès.",
+        "errorOccured": "Une erreur est survenue lors de la suppression du livre.",
+        "bookNotFoundException": "Le livre n'a pu être trouvé."
+      }
+    }
+  }
+}

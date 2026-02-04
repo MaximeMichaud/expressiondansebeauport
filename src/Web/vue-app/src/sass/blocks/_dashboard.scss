@@ -1,0 +1,34 @@
+@use "../tools" as *;
+.dashboard {
+  height: auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  &__content {
+    flex: 1;
+    padding: 24px 0 48px;
+    @include pagePadding;
+    background-color: $color-green-lighter;
+  }
+
+  &__content-header {
+    display: flex;
+    justify-content: flex-end;
+    gap: 32px;
+    margin-bottom: 60px;
+  }
+}
+
+//Breakpoints ==================================
+@include breakpoint(md-up) {
+  .dashboard {
+    display: grid;
+    min-height: 100vh;
+    grid-template-columns: minmax(250px, 2fr) minmax(0, 10fr);
+
+    &__content {
+      padding-left: 40px;
+    }
+  }
+}

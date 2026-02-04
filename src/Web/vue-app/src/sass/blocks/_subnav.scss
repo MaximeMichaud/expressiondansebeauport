@@ -1,0 +1,65 @@
+@use "../tools" as *;
+.subnav {
+  border-radius: $common-border-radius;
+  transition: background-color 0.2s cb(snappy), margin 0.2s cb(snappy);
+
+  &__title {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-weight: 700;
+    font-family: $font-montserrat;
+    font-size: rem(16);
+    line-height: rem(16);
+    padding: 12px 20px;
+    border-radius: $common-border-radius;
+    @include colorHover($color-white);
+    @include iconFillHover($color-white);
+
+    .icon {
+      flex-shrink: 0;
+      padding: 4px;
+      border-radius: 100%;
+      background-color: $color-green-medium;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &__content {
+    padding: 8px 20px;
+  }
+
+  &__navlink {
+    display: flex;
+    font-weight: 600;
+    font-size: rem(14);
+    line-height: rem(14);
+    width: 100%;
+    padding: 8px;
+    border-radius: $common-border-radius;
+    color: $color-white;
+    @include colorHover($color-black);
+
+    &.router-link-active {
+      color: $color-black;
+      background-color: $color-green-lighter;
+      pointer-events: none;
+    }
+  }
+
+  &--expand {
+    margin: 8px 0;
+    background-color: $color-green-medium;
+
+    .subnav__title {
+      color: $color-white;
+
+      .icon {
+        background-color: $color-green;
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+@use "../tools" as *;
+// util
+
+/* For hidden <h1> elements and other screen-reader-targeted stuff */
+.util {
+  &--screen-reader {
+    @include screen-reader-only;
+  }
+
+  &--focusable-only {
+    @include screen-reader-only;
+
+    &:focus {
+      clip: auto;
+      height: auto;
+      margin: 0;
+      overflow: visible;
+      position: static;
+      width: auto;
+    }
+  }
+
+  &--hidden {
+    display: none !important;
+  }
+
+  &--hide-for-medium-up {
+    @include breakpoint(md-up) {
+      display: none !important;
+    }
+  }
+
+  &--hide-for-small-up {
+    @include breakpoint(sm-up) {
+      display: none !important;
+    }
+  }
+
+  &--hide-for-xs-down {
+    @include breakpoint(xs-down) {
+      display: none !important;
+    }
+  }
+
+  &--hide-for-small-down {
+    @include breakpoint(sm-down) {
+      display: none !important;
+    }
+  }
+  
+  &--with-bottom-margin {
+    margin-bottom: 24px;
+  }
+
+  &--with-top-margin {
+    margin-top: 24px;
+  }
+
+  &--ml-auto {
+    margin-left: auto;
+  }
+}

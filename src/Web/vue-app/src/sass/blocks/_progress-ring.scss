@@ -1,0 +1,23 @@
+@use "../tools" as *;
+.progress-ring {
+  font-weight: 700;
+  font-size: rem(13);
+  color: $color-green;
+  border: 3px solid $color-green-lighter;
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__line {
+    position: absolute;
+
+    circle {
+      transition: stroke-dashoffset 0.35s;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      stroke: $color-green;
+      fill: transparent;
+    }
+  }
+}

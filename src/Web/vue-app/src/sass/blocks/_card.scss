@@ -1,0 +1,115 @@
+@use "../tools" as *;
+.card {
+  background-color: $color-white;
+  border-radius: $common-border-radius;
+  border: 1px solid $color-green;
+  padding: 12px;
+  height: auto;
+
+  &__expand-trigger {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__title-container {
+    transition: padding 0.2s cb(snappy);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__title-subcontainer {
+    display: flex;
+    gap: 16px;
+    position: relative;
+
+    & > .tag {
+      position: relative;
+      top: -3px;
+    }
+  }
+
+  &__title {
+    margin-bottom: 0;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+
+    //if its a table
+    .vue3-easy-data-table {
+      border: none;
+      margin-left: -12px;
+      margin-right: -12px;
+
+      &:first-child {
+        margin-top: -12px;
+      }
+
+      &:last-child {
+        margin-bottom: -12px;
+      }
+    }
+  }
+
+  //States -----------------
+  &--expand {
+    .card__title-container {
+      padding-bottom: 16px;
+    }
+  }
+
+  &--row-content {
+    .card__content {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+//Breakpoints ==================================
+@include breakpoint(sm-up) {
+  .card {
+    padding: 24px 16px;
+
+    &__expand-trigger {
+      padding-bottom: 24px;
+    }
+
+    &__title-container {
+      width: 100%;
+      flex-direction: row;
+      justify-content: space-between;
+
+      .btn {
+        margin-top: -8px;
+      }
+    }
+
+    &__content {
+      //if its a table
+      .vue3-easy-data-table {
+        margin-left: -16px;
+        margin-right: -16px;
+
+        &:first-child {
+          margin-top: -24px;
+        }
+
+        &:last-child {
+          margin-bottom: -24px;
+        }
+      }
+    }
+
+    //States -----------------
+    &--expand {
+      .card__title {
+        padding-bottom: 24px;
+      }
+    }
+  }
+}

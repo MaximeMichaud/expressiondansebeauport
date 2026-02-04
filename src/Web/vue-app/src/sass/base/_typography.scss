@@ -1,0 +1,104 @@
+@use "../tools" as *;
+// typography
+
+// Titles
+h1,
+.h1-like {
+  font-weight: 700;
+  font-size: rem(20);
+  line-height: rem(20);
+  text-transform: none;
+}
+
+h2,
+.h2-like {
+  font-weight: 700;
+  font-size: rem(20);
+  line-height: rem(20);
+  text-transform: none;
+}
+
+h3,
+.h3-like {
+  font-weight: 700;
+  font-size: rem(18);
+  line-height: rem(18);
+  text-transform: none;
+}
+
+
+h4,
+.h4-like {
+  font-weight: 700;
+  font-size: rem(14);
+  line-height: rem(14);
+  color: $color-grey-medium;
+  text-transform: none;
+
+  @include breakpoint(md-up) {
+    font-size: rem(16);
+    line-height: rem(16);
+  }
+}
+
+h5,
+.h5-like {
+  font-weight: 700;
+  font-size: rem(13);
+  line-height: rem(15);
+  color: $color-grey-dark;
+  text-transform: none;
+}
+
+// text standard styles
+a {
+  text-decoration: none;
+}
+
+p {
+  a:not(.btn) {
+    color: $color-green;
+    text-decoration: underline;
+    @include underlineHover($color-green);
+    font-weight: 800;
+  }
+}
+
+strong {
+  font-weight: 800;
+
+  em {
+    font-weight: inherit;
+  }
+}
+
+em {
+  font-style: italic;
+  font-weight: inherit;
+
+  strong {
+    font-style: inherit;
+  }
+}
+
+sup,
+sub {
+  text-transform: none;
+}
+
+small {
+  font-size: smaller;
+
+  * {
+    font-size: inherit;
+  }
+}
+
+details {
+  padding-left: 0.5rem;
+
+  summary {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
+}

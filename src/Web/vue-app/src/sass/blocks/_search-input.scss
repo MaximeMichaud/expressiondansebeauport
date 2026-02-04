@@ -1,0 +1,32 @@
+@use "../tools" as *;
+.search-input {
+  border-radius: $common-border-radius;
+  border: 1px solid $color-border;
+  width: fit-content;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 8px;
+  padding: 8px;
+  transition: border-color 0.2s cb(snappy);
+
+  input {
+    &::placeholder {
+      color: $color-black;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &:focus-within,
+  &:hover {
+    border-color: $color-green;
+
+    .icon {
+      * {
+        fill: $color-green;
+      }
+    }
+  }
+}

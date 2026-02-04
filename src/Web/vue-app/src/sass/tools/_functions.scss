@@ -1,0 +1,20 @@
+@use "sass:map";
+@use "sass:math";
+@use "easings" as *;
+
+// functions
+
+// cubic-bezier
+@function cb($fn: out) {
+  @return map.get($easings, $fn);
+}
+
+// em
+@function em($pixels, $context: 16) {
+  @return #{math.div($pixels, $context)}em;
+}
+
+// rem
+@function rem($pixels, $context: 16) {
+  @return #{math.div($pixels, $context)}rem;
+}

@@ -1,0 +1,74 @@
+version: 1.0.{build}
+
+image: Visual Studio 2022
+
+branches:
+  only:
+    - staging
+    - main
+
+clone_depth: 1
+
+environment:
+  nodejs_version: "22"
+
+install:
+  - ps: Install-Product node $env:nodejs_version
+
+init:
+  - net start MSSQL$SQL2019
+
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+
+before_build:
+  - node --version
+  - ps: Remove-Item -Path src\Web\web.config
+  - ps: Move-Item -Path src\Web\web.$env:APPVEYOR_REPO_BRANCH.config -Destination src\Web\web.config
+  - cd %APPVEYOR_BUILD_FOLDER%\src\Web\vue-app
+  - move /y .env.%APPVEYOR_REPO_BRANCH% .env
+  - npm install
+  - cd %APPVEYOR_BUILD_FOLDER%
+
+build_script:
+  - dotnet --version
+  - cd %APPVEYOR_BUILD_FOLDER%\tests\Tests.Common
+  - mv -f appsettings.appveyor.json appsettings.json
+  - cd %APPVEYOR_BUILD_FOLDER%\src\Web\vue-app
+  - npm run build
+  - cd ..
+  - dotnet publish .\ -o __publish -c Release
+  - 7z a .\Web.zip .\__publish\* .\__publish\**\*
+  - cd ..\..
+
+test_script:
+  - dotnet build
+  - dotnet test --no-build .\tests\Tests.Infrastructure
+  - dotnet test --no-build .\tests\Tests.Application
+  - dotnet test --no-build .\tests\Tests.Domain\
+  - dotnet test --no-build .\tests\Tests.Web\
+
+artifacts:
+  - path: ./src/Web/__publish
+    name: garneau-template.web
+
+deploy:
+  - provider: Environment
+    name: garneau-template
+    website: {azure-website-name}
+    username: ${azure-user}
+    password:
+      secure: {azure-password}
+    aspnet_core: true
+    aspnet_core_force_restart: true
+    app_offline: true
+    remove_files: true
+    skip_dirs: \\App_Data;\\.well-known;
+    on:
+      branch: staging

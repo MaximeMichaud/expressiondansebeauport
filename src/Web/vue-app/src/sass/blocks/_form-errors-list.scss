@@ -1,0 +1,30 @@
+@use "../tools" as *;
+.form-errors-list {
+  font-size: rem(14);
+  color: $color-red;
+
+  &__title {
+    display: flex;
+    gap: 8px;
+    font-weight: 800;
+
+    .icon {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &__list {
+    list-style-type: "-";
+    margin-left: 36px; //20px icon + 8px gap + 8px basic margin of list.
+    margin-top: 8px;
+  }
+
+  &__item {
+    padding-left: 8px;
+  }
+
+  &:not(:last-child) {
+    margin-bottom: 24px;
+  }
+}

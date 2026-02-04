@@ -1,0 +1,58 @@
+@use "functions" as *;
+
+// media queries
+
+@mixin breakpoint($point) {
+
+	@if $point == lg-down {
+		@media only screen and (max-width: em(1599))  { @content ; }
+	}
+	@else if $point == md-down {
+		@media only screen and (max-width: em(1399))  { @content ; }
+	}
+	@else if $point == sm-down {
+		@media only screen and (max-width: em(1224))  { @content ; }
+	}
+	@else if $point == xs-down {
+		@media only screen and (max-width: em(767))  { @content ; }
+	}
+	@else if $point == xxs-down {
+		@media only screen and (max-width: em(479))  { @content ; }
+	}	
+	
+	@else if $point == xs-up {
+		@media only screen and (min-width: em(480)) { @content ; }
+	}
+	@else if $point == sm-up {
+		@media only screen and (min-width: em(768)) { @content ; }
+	}
+	@else if $point == md-up {
+		@media only screen and (min-width: em(1225)) { @content ; }
+	}
+	@else if $point == lg-up {
+		@media only screen and (min-width: em(1400)) { @content ; }
+	}
+	@else if $point == xlg-up {
+		@media only screen and (min-width: em(1600)) { @content ; }
+	}
+	@else if $point == xxl-up {
+		@media only screen and (min-width: em(1921)) { @content ; }
+	}
+}
+
+
+// Set media-queries order
+// because of mqpacker in gulpfile.js --> @see https://www.npmjs.com/package/css-mqpacker#the-first-win-algorithm
+
+@include breakpoint(lg-down) {/* max-width: em(1599) */}
+@include breakpoint(md-down) {/* max-width: em(1299) */}
+@include breakpoint(sm-down) {/* max-width: em(999) */}
+@include breakpoint(xs-down) {/* max-width: em(699) */}
+@include breakpoint(xxs-down) {/* max-width: em(479) */}
+
+@include breakpoint(xs-up) {/* min-width: em(480) */}
+@include breakpoint(sm-up) {/* min-width: em(700) */}
+@include breakpoint(md-up) {/* min-width: em(1000) */}
+@include breakpoint(lg-up) {/* min-width: em(1300) */}
+@include breakpoint(xlg-up) {/* min-width: em(1600) */}
+@include breakpoint(xxl-up) {/* min-width: em(1921) */}

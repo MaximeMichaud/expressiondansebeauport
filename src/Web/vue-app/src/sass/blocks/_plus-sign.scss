@@ -1,0 +1,63 @@
+@use "../tools" as *;
+.plus-sign {
+  height: 24px;
+  width: 24px;
+  transition: background-color 0.15s ease-in-out;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    display: block;
+    background-color: $color-black;
+    left: 50%;
+    top: 50%;
+  }
+
+  &::before {
+    width: 8px;
+    height: 2px;
+    margin-left: -4px;
+    margin-top: -1px;
+  }
+
+  &::after {
+    margin-left: -1px;
+    margin-top: -4px;
+    width: 2px;
+    height: 8px;
+  }
+
+
+  //States ------------------------------------------------------
+  &--minus {
+    &::before,
+    &::after {
+      transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+      transform: rotate(-90deg);
+    }
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &--plus {
+    &::before,
+    &::after {
+      transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+      transform: rotate(90deg);
+    }
+
+    &::before {
+      opacity: 0;
+    }
+  }
+
+  &--red {
+    &::before,
+    &::after {
+      background-color: $color-red;
+    }
+  }
+}

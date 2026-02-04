@@ -1,0 +1,56 @@
+@use "../tools" as *;
+.tooltip {
+  padding: 12px 8px;
+  border-radius: $common-border-radius;
+  border: 1px solid $color-green-dark;
+  color: $color-green-dark;
+  background-color: $color-green-light;
+  font-size: rem(14);
+  line-height: rem(16);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 550px;
+  margin-bottom: 24px;
+
+  &--warning {
+    color: $color-yellow-dark;
+    border-color: $color-yellow-dark;
+    background-color: $color-yellow-light;
+  }
+
+  &--full {
+    max-width: unset;
+  }
+
+  &--success {
+    color: $color-green-dark;
+    border-color: $color-green-dark;
+    background-color: $color-green-light;
+  }
+
+  &--error {
+    color: $color-red-dark;
+    border-color: $color-red-dark;
+    background-color: $color-red-light;
+  }
+
+  &--notification {
+    margin: 4px;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+@include breakpoint(sm-up) {
+  .tooltip {
+    flex-direction: row;
+    align-items: center;
+  }
+}

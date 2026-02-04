@@ -1,0 +1,58 @@
+@use "../tools" as *;
+.lang-switcher {
+  gap: 8px;
+  color: $color-green;
+  font-size: rem(18);
+  line-height: rem(28);
+  text-transform: capitalize;
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    @include colorHover($color-green-light);
+  }
+
+  &__option-text {
+    padding-top: 6px;
+  }
+
+  //States ---------------------------------
+  &--green-light {
+    color: $color-green-light;
+
+    .lang-switcher__option {
+      @include colorHover($color-green-lighter);
+    }
+  }
+
+  &--white {
+    color: $color-white;
+
+    .lang-switcher__option {
+      @include colorHover($color-green-lighter);
+    }
+  }
+
+  &--green {
+    * {
+      fill: $color-green;
+    }
+  }
+
+  &--authentication-page {
+    position: fixed;
+    top: 16px;
+    right: $page-padding-small;
+  }
+}
+
+//Breakpoints ==================================
+@include breakpoint(md-up) {
+  .lang-switcher {
+    &--authentication-page {
+      top: 40px;
+      right: $page-padding-large;
+    }
+  }
+}
