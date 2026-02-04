@@ -13,8 +13,8 @@
 
 ## Installation
 
-- Install latest SDK of .NET Core 10 [here] (https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
-- Install .NET EF CORE CLI tool [here] (https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
+- Install latest SDK of .NET Core 10 [here](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+- Install .NET EF CORE CLI tool [here](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
 - Restore nuget package
 - Install [Sql Server](https://www.microsoft.com/en-ca/sql-server/sql-server-downloads)
 - Install [SSMS](https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16)
