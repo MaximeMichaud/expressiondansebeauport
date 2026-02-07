@@ -1,14 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 import {
-  ICreateBookRequest,
-  IEditBookRequest,
   IForgotPasswordRequest,
   ILoginRequest,
   IResetPasswordRequest,
   ITwoFactorRequest
 } from "@/types/requests"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
-import {Administrator, Book, Member, User} from "@/types/entities"
+import {Administrator, Member, User} from "@/types/entities"
 import {Guid} from "@/types";
 
 export interface IApiService {
@@ -49,18 +47,6 @@ export interface IMemberService {
   updateMember(member: Member): Promise<SucceededOrNotResponse>
 
   deleteMember(id: Guid): Promise<SucceededOrNotResponse>
-}
-
-export interface IBookService {
-  getAllBooks(): Promise<Book[]>
-
-  getBook(bookId: string): Promise<Book>
-
-  deleteBook(bookId: string): Promise<SucceededOrNotResponse>
-
-  createBook(request: ICreateBookRequest): Promise<SucceededOrNotResponse>
-
-  editBook(request: IEditBookRequest): Promise<SucceededOrNotResponse>
 }
 
 export interface IUserService {

@@ -46,23 +46,6 @@
           }
         }
       }
-    },
-    "books": {
-      "path": "/books",
-      "fullPath": "/books",
-      "name": "Books",
-      "children": {
-        "add": {
-          "path": "add",
-          "fullPath": "/books/add",
-          "name": "Add a book"
-        },
-        "edit": {
-          "path": ":id/edit",
-          "fullPath": "/books/:id/edit",
-          "name": "Edit a book"
-        }
-      }
     }
   },
   "pages": {
@@ -185,24 +168,8 @@
       "price": "Price",
       "no-taxes": "(Excluding taxes)",
       "category": "Category",
-      "fieldset-informations-book": "Book information",
       "fieldset-informations-default": "Product information"
-    },
-    "book": "Book"
-  },
-  "book": {
-    "info": "Book info",
-    "title": "Title",
-    "titleFr": "Title - FR",
-    "titleEn": "Title - EN",
-    "summary": "Summary",
-    "summaryFr": "Summary - FR",
-    "summaryEn": "Summary - EN",
-    "isbn": "ISBN",
-    "author": "Author",
-    "editor": "Editor",
-    "yearOfPublication": "Year of publication",
-    "numberOfPages": "Number of pages"
+    }
   },
   "user": {
     "roles": {
@@ -287,47 +254,6 @@
     "zipCode": "The zip code must respect format X0X X0X.",
     "phoneNumber": "The phone number must respect format 555-555-5555.",
     "errorsInForm": "There are errors in the form.",
-    "errorOccured": "An error occured.",
-    "book": {
-      "add": {
-        "success": "Book was successfully created.",
-        "errorOccured": "Error occured while creating book.",
-        "bookNotFoundException": "Could not find book.",
-        "bookWithIsbnAlreadyExistsException": "A book with same ISBN already exits.",
-        "invalidFrenchName": "Le titre du livre en français est manquant.",
-        "invalidEnglishName": "Le titre du livre en anglais est manquant.",
-        "invalidFrenchDescription": "La description du livre en français est manquante.",
-        "invalidEnglishDescription": "La description du livre en anglais est manquante.",
-        "invalidIsbn": "L'ISBN doit être de 17 caractères et contenir quatre tirets.",
-        "invalidAuthor": "L'auteur du livre est manquant.",
-        "invalidEditor": "L'éditeur du livre est manquant.",
-        "invalidYearOfPublication": "L'année de publication doit être plus grande que zéro.",
-        "invalidNumberOfPages": "Le nombre de pages doit être plus grand que zéro.",
-        "invalidPrice": "Le prix du livre doit être plus grand que zéro."
-      },
-      "edit": {
-        "success": "Book was successfully updated.",
-        "errorOccured": "Error occured while updating book.",
-        "bookNotFoundException": "Could not find book.",
-        "bookWithIsbnAlreadyExistsException": "Another book with same ISBN already exits.",
-        "emptyBookId": "The book id is missing.",
-        "invalidFrenchName": "The French book title is missing.",
-        "invalidEnglishName": "The English book title is missing.",
-        "invalidFrenchDescription": "The French book description is missing.",
-        "invalidEnglishDescription": "The English book description is missing.",
-        "invalidIsbn": "ISBN must be 17 characters and contain four dashes.",
-        "invalidAuthor": "The author of the book is missing.",
-        "invalidEditor": "The publisher of the book is missing.",
-        "invalidYearOfPublication": "The publication year must be greater than zero.",
-        "invalidNumberOfPages": "The number of pages must be greater than zero.",
-        "invalidPrice": "Book price must be greater than zero."
-      },
-      "delete": {
-        "confirmation": "Are you sure you want to delete this book ?",
-        "success": "Book was successfully deleted.",
-        "errorOccured": "Error occured while deleting book.",
-        "bookNotFoundException": "Could not find book."
-      }
-    }
+    "errorOccured": "An error occured."
   }
 }

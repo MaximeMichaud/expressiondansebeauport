@@ -1,7 +1,5 @@
 export * from './changeEmailRequest'
 export * from './changePasswordRequest'
-export * from './createBookRequest'
-export * from './editBookRequest'
 export * from './forgotPasswordRequest'
 export * from './loginRequest'
 export * from './resetPasswordRequest'

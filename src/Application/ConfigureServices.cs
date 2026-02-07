@@ -1,10 +1,8 @@
 ﻿using Application.Interfaces.Services.Admins;
-using Application.Interfaces.Services.Books;
 using Application.Interfaces.Services.Members;
 using Application.Interfaces.Services.Notifications;
 using Application.Interfaces.Services.Users;
 using Application.Services.Admins;
-using Application.Services.Books;
 using Application.Services.Members;
 using Application.Services.Notifications;
 using Application.Services.Users;
@@ -27,8 +25,6 @@ public static class ConfigureServices
         services.AddScoped<ISlugHelper, SlugHelper>();
 
         services.AddScoped<IAuthenticatedAdminService, AuthenticatedAdminService>();
-        services.AddScoped<IBookCreationService, BookCreationService>();
-        services.AddScoped<IBookUpdateService, BookUpdateService>();
         services.AddScoped<IUserCreationService, UserCreationService>();
         services.AddScoped<IMemberRegistrationService, MemberRegistrationService>();
         services.AddScoped<INotificationService, EmailNotificationService>();
