@@ -49,6 +49,9 @@
     }
   },
   "pages": {
+    "account": {
+      "loginInfos": "Login information"
+    },
     "login": {
       "submit": "Log in",
       "forgotPassword": "Forgot password?",
