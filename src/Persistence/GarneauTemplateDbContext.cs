@@ -2,7 +2,6 @@ using System.Reflection;
 using Domain.Common;
 using Domain.Entities;
 using Domain.Entities.Authentication;
-using Domain.Entities.Books;
 using Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -39,7 +38,6 @@ public class GarneauTemplateDbContext : IdentityDbContext<User, Role, Guid,
 
     public DbSet<Administrator> Administrators { get; set; } = null!;
     public DbSet<Member> Members { get; set; } = null!;
-    public DbSet<Book> Books { get; set; } = null!;
     public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
 
     public GarneauTemplateDbContext()
@@ -65,8 +63,6 @@ public class GarneauTemplateDbContext : IdentityDbContext<User, Role, Guid,
 
             entityType.AddSoftDeleteQueryFilter();
         }
-
-        builder.Entity<Book>().Property(b => b.Price).HasPrecision(18, 2);
 
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }

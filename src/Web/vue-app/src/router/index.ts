@@ -13,11 +13,6 @@ import AdminMemberIndex from "@/views/admin/members/AdminMemberIndex.vue";
 import AdminAddMemberForm from "@/views/admin/members/AdminAddMemberForm.vue";
 import AdminEditMemberForm from "@/views/admin/members/AdminEditMemberForm.vue";
 
-import Books from "../views/member/Books.vue";
-import BookIndex from "@/views/member/BookIndex.vue";
-import AddBookForm from "@/views/member/AddBookForm.vue";
-import EditBookForm from "@/views/member/EditBookForm.vue";
-
 import {getLocalizedRoutes} from "@/locales/helpers";
 import {useUserStore} from "@/stores/userStore";
 
@@ -107,45 +102,6 @@ const router = createRouter({
               props: true
             },
           ],
-        }
-      ]
-    },
-    {
-      path: i18n.t("routes.books.path"),
-      alias: getLocalizedRoutes("routes.books.path"),
-      name: "books",
-      component: Books,
-      meta: {
-        requiredRole: Role.Member,
-        title: "routes.books.name"
-      },
-      children: [
-        {
-          path: "",
-          name: "books.index",
-          component: BookIndex,
-          meta: {
-            title: "routes.books.name"
-          }
-        },
-        {
-          path: i18n.t("routes.books.children.add.path"),
-          alias: getLocalizedRoutes("routes.books.children.add.path"),
-          name: "books.children.add",
-          component: AddBookForm,
-          meta: {
-            title: "routes.books.children.add.name"
-          }
-        },
-        {
-          path: i18n.t("routes.books.children.edit.path"),
-          alias: getLocalizedRoutes("routes.books.children.edit.path"),
-          name: "books.children.edit",
-          component: EditBookForm,
-          props: true,
-          meta: {
-            title: "routes.books.children.edit.name"
-          }
         }
       ]
     },

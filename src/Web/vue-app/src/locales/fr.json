@@ -46,23 +46,6 @@
           }
         }
       }
-    },
-    "books": {
-      "path": "/livres",
-      "fullPath": "/livres",
-      "name": "Livres",
-      "children": {
-        "add": {
-          "path": "ajouter",
-          "fullPath": "/livres/ajouter",
-          "name": "Ajouter un livre"
-        },
-        "edit": {
-          "path": ":id/modifier",
-          "fullPath": "/livres/:id/modifier",
-          "name": "Modifier un livre"
-        }
-      }
     }
   },
   "pages": {
@@ -188,24 +171,8 @@
       "price": "Prix",
       "no-taxes": "(Hors taxes)",
       "category": "Catégorie",
-      "fieldset-informations-book": "Informations sur le livre",
       "fieldset-informations-default": "Informations sur le produit"
-    },
-    "book": "Livre"
-  },
-  "book": {
-    "info": "Informations du livre",
-    "title": "Titre",
-    "titleFr": "Titre - FR",
-    "titleEn": "Titre - EN",
-    "summary": "Résumé",
-    "summaryFr": "Résumé - FR",
-    "summaryEn": "Résumé - EN",
-    "isbn": "ISBN",
-    "author": "Auteur",
-    "editor": "Éditeur",
-    "yearOfPublication": "Année de publication",
-    "numberOfPages": "Nombre de pages"
+    }
   },
   "user": {
     "roles": {
@@ -290,47 +257,6 @@
     "zipCode": "Le code postal doit respecter le format X0X X0X.",
     "phoneNumber": "Le numéro de téléphone doit respecter le format 555-555-5555.",
     "errorsInForm": "Il y a des erreurs dans le formulaire.",
-    "errorOccured": "Une erreur est survenue.",
-    "book": {
-      "add": {
-        "success": "Le livre a été créé avec succès.",
-        "errorOccured": "Une erreur est survenue lors de la création du livre.",
-        "bookNotFoundException": "Le livre n'a pu être trouvé.",
-        "bookWithIsbnAlreadyExistsException": "Un livre avec le même ISBN existe déjà.",
-        "invalidFrenchName": "Le titre du livre en français est manquant.",
-        "invalidEnglishName": "Le titre du livre en anglais est manquant.",
-        "invalidFrenchDescription": "La description du livre en français est manquante.",
-        "invalidEnglishDescription": "La description du livre en anglais est manquante.",
-        "invalidIsbn": "L'ISBN doit être de 17 caractères et contenir quatre tirets.",
-        "invalidAuthor": "L'auteur du livre est manquant.",
-        "invalidEditor": "L'éditeur du livre est manquant.",
-        "invalidYearOfPublication": "L'année de publication doit être plus grande que zéro.",
-        "invalidNumberOfPages": "Le nombre de pages doit être plus grand que zéro.",
-        "invalidPrice": "Le prix du livre doit être plus grand que zéro."
-      },
-      "edit": {
-        "success": "Le livre a été modifié avec succès.",
-        "errorOccured": "Une erreur est survenue lors de la modification du livre.",
-        "bookNotFoundException": "Le livre n'a pu être trouvé.",
-        "bookWithIsbnAlreadyExistsException": "Un autre livre avec le même ISBN existe déjà.",
-        "emptyBookId": "L'id du livre est manquant.",
-        "invalidFrenchName": "Le titre du livre en français est manquant.",
-        "invalidEnglishName": "Le titre du livre en anglais est manquant.",
-        "invalidFrenchDescription": "La description du livre en français est manquante.",
-        "invalidEnglishDescription": "La description du livre en anglais est manquante.",
-        "invalidIsbn": "L'ISBN doit être de 17 caractères et contenir quatre tirets.",
-        "invalidAuthor": "L'auteur du livre est manquant.",
-        "invalidEditor": "L'éditeur du livre est manquant.",
-        "invalidYearOfPublication": "L'année de publication doit être plus grande que zéro.",
-        "invalidNumberOfPages": "Le nombre de pages doit être plus grand que zéro.",
-        "invalidPrice": "Le prix du livre doit être plus grand que zéro."
-      },
-      "delete": {
-        "confirmation": "Êtes-vous sûr de vouloir supprimer ce livre ?",
-        "success": "Le livre a été supprimé avec succès.",
-        "errorOccured": "Une erreur est survenue lors de la suppression du livre.",
-        "bookNotFoundException": "Le livre n'a pu être trouvé."
-      }
-    }
+    "errorOccured": "Une erreur est survenue."
   }
 }
