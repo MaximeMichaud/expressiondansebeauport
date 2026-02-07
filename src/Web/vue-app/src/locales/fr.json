@@ -134,7 +134,7 @@
           "invalidEnterpriseNumberFormat": "Le format du numéro d'entreprise est invalide.",
           "invalidProvincialTaxNumberFormat": "Le format du numéro de TVQ est invalide.",
           "invalidFederalTaxNumberFormat": "Le format du numéro de TPS est invalide.",
-          "memberNotFound": "Aucun membre avec le code de référence spécifié existe.",
+          "memberNotFoundException": "Aucun membre avec le code de référence spécifié existe.",
           "userWithEmailAlreadyExistsException": "Un utilisateur avec ce courriel existe déjà."
         }
       },
