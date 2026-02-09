@@ -14,7 +14,7 @@
       alternating
       buttons-pagination
       header-item-class-name="vue3-easy-data-table__header-item"
-      theme-color="#528965"
+      theme-color="#be1e2c"
   >
     <template #item-status="item">
       <div class="tag">
@@ -63,7 +63,7 @@ import IconView from "@/assets/icons/icon__view.svg"
 
 const {t} = useI18n()
 
-// eslint-disable-next-line
+ 
 defineProps<{
   headers: Header[],
   items: Item[],
@@ -73,7 +73,7 @@ defineProps<{
   isSoloItem?: boolean
 }>()
 
-// eslint-disable-next-line
+ 
 const emit = defineEmits<{
   (event: "delete", item: any): void
 }>()
