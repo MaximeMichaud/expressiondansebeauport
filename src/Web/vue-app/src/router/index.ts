@@ -72,6 +72,7 @@ const router = createRouter({
     },
     {
       path: i18n.t("routes.admin.path"),
+      alias: getLocalizedRoutes("routes.admin.path"),
       name: "admin",
       component: Admin,
       meta: {
@@ -81,6 +82,7 @@ const router = createRouter({
       children: [
         {
           path: i18n.t("routes.admin.children.members.path"),
+          alias: getLocalizedRoutes("routes.admin.children.members.path"),
           name: "admin.children.members",
           component: Admin,
           children: [
@@ -91,12 +93,13 @@ const router = createRouter({
             },
             {
               path: i18n.t("routes.admin.children.members.add.path"),
+              alias: getLocalizedRoutes("routes.admin.children.members.add.path"),
               name: "admin.children.members.add",
               component: AdminAddMemberForm,
             },
             {
               path: i18n.t("routes.admin.children.members.edit.path"),
-              alias: i18n.t("routes.admin.children.members.edit.path"),
+              alias: getLocalizedRoutes("routes.admin.children.members.edit.path"),
               name: "admin.children.members.edit",
               component: AdminEditMemberForm,
               props: true
