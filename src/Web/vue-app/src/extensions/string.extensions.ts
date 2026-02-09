@@ -40,7 +40,7 @@ String.prototype.toCamelCase = function (): string {
 
 String.prototype.truncateString = function truncateString(maxLength: number): string {
   if (this.length > maxLength) {
-    return this.substr(0, maxLength) + "...";
+    return this.substring(0, maxLength) + "...";
   }
   return this.toString();
 };

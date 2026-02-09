@@ -2,13 +2,10 @@
 using AutoMapper;
 using Domain.Common;
 using Domain.Entities;
-using Domain.Entities.Books;
 using Domain.Entities.Identity;
 using Web.Dtos;
 using Web.Features.Admins.Members.CreateMember;
 using Web.Features.Admins.Members.UpdateMember;
-using Web.Features.Members.Books.CreateBook;
-using Web.Features.Members.Books.EditBook;
 
 namespace Web.Mapping.Profiles;
 
@@ -17,10 +14,6 @@ public class RequestMappingProfile : Profile
     public RequestMappingProfile()
     {
         CreateMap<TranslatableStringDto, TranslatableString>().ReverseMap();
-
-        CreateMap<CreateBookRequest, Book>();
-
-        CreateMap<EditBookRequest, Book>();
 
         CreateMap<CreateMemberRequest, MemberRegistrationDto>();
 

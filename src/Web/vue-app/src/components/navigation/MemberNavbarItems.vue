@@ -5,11 +5,6 @@
         {{ t('routes.account.name') }}
       </RouterLink>
     </li>
-    <li>
-      <RouterLink :to="t('routes.books.path')" class="navbar__navlink">
-        {{ t('routes.books.name') }}
-      </RouterLink>
-    </li>
   </ul>
 </template>
 

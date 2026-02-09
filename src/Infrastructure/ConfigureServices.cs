@@ -9,7 +9,6 @@ using Infrastructure.ExternalApis.Azure.Http;
 using Infrastructure.Mailing;
 using Infrastructure.Repositories.Admins;
 using Infrastructure.Repositories.Authentication;
-using Infrastructure.Repositories.Books;
 using Infrastructure.Repositories.Members;
 using Infrastructure.Repositories.Users;
 using Infrastructure.Services;
@@ -62,7 +61,6 @@ public static class ConfigureServices
         services.AddSingleton<IHttpContextUserService, HttpContextUserService>();
 
         services.AddScoped<IAdministratorRepository, AdministratorRepository>();
-        services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<IMemberRepository, MemberRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
