@@ -61,10 +61,10 @@ artifacts:
 deploy:
   - provider: Environment
     name: garneau-template
-    website: {azure-website-name}
-    username: ${azure-user}
+    website: expressiondansebeauport
+    username: $expressiondansebeauport
     password:
-      secure: {azure-password}
+      secure: EZWkwEJZeRA8gbjYfJ/o1lWP4YGO3KMmB3doSoREpBW3ST3GlTC+ikdbNemjuty6QIzTjxvPjyppJQY+/GHSENg==
     aspnet_core: true
     aspnet_core_force_restart: true
     app_offline: true
