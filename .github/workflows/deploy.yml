@@ -1,0 +1,43 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: src/Web/vue-app/package-lock.json
+
+      - name: Install Vue dependencies
+        run: npm ci
+        working-directory: src/Web/vue-app
+
+      - name: Build Vue app
+        run: npm run build
+        working-directory: src/Web/vue-app
+
+      - name: Publish .NET app
+        run: dotnet publish src/Web/Web.csproj -c Release -o ./publish
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: expressiondansebeauport
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./publish
