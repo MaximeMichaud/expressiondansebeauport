@@ -59,8 +59,8 @@ artifacts:
     name: garneau-template.web
 
 deploy:
-  - provider: Environment
-    name: garneau-template
+  - provider: WebDeploy
+    server: https://expressiondansebeauport.scm.azurewebsites.net:443/msdeploy.axd?site=expressiondansebeauport
     website: expressiondansebeauport
     username: $expressiondansebeauport
     password:
@@ -71,4 +71,4 @@ deploy:
     remove_files: true
     skip_dirs: \\App_Data;\\.well-known;
     on:
-      branch: staging
+      branch: main
