@@ -64,8 +64,7 @@ deploy:
     server: https://expressiondansebeauport.scm.azurewebsites.net:443/msdeploy.axd?site=expressiondansebeauport
     website: expressiondansebeauport
     username: $expressiondansebeauport
-    password:
-      secure: EZWkwEJZeRA8gbjYfJ/o1lWP4YGO3KMmB3doSoREpBW3ST3GlTC+ikdbNemjuty6QIzTjxvPjyppJQY+/GHSENg==
+    password: $(DEPLOY_PASSWORD)
     aspnet_core: true
     aspnet_core_force_restart: true
     app_offline: true
