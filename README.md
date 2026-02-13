@@ -3,9 +3,9 @@
 
 ## LIENS IMPORTANTS
 
-GitHub : https://github.com/MaximeMichaud/expressiondansebeauport
-Trello : https://trello.com/b/cn6UmcsK/projet-integrateur
-Hébergement : https://expressiondansebeauport.azurewebsites.net
+- **GitHub :** https://github.com/MaximeMichaud/expressiondansebeauport
+- **Trello :** https://trello.com/b/cn6UmcsK/projet-integrateur
+- **Hébergement :** https://expressiondansebeauport.azurewebsites.net
 
 ## DESCRIPTION
 
