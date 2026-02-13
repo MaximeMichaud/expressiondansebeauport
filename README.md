@@ -1,94 +1,149 @@
-# Garneau Template
+# Expression Danse de Beauport
+.NET CI
 
-## Stack
+## LIENS IMPORTANTS
 
-- .NET 10
-- SQL database
+GitHub : https://github.com/MaximeMichaud/expressiondansebeauport
+Trello : https://trello.com/b/cn6UmcsK/projet-integrateur
+Hébergement : https://expressiondansebeauport.azurewebsites.net
 
-## Dependencies
+## DESCRIPTION
 
-- FastEndpoint
-- Entity Framework Core 8
-- Argon2PasswordHasher
+Ce projet consiste en le développement d'une application web pour Expression Danse de Beauport inc., un organisme à but non lucratif offrant des cours de danse à Québec depuis plus de 30 ans, dans le cadre du cours Projet intégrateur au Cégep Garneau.
 
-## Installation
+L'application permet la gestion administrative de l'école de danse : gestion des membres, des produits, authentification sécurisée avec 2FA, interface bilingue (fr/en) et intégration avec des services externes (Xero, SendGrid, Azure Blob Storage).
 
-- Install latest SDK of .NET Core 10 [here](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
-- Install .NET EF CORE CLI tool [here](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
-- Restore nuget package
-- Install [Sql Server](https://www.microsoft.com/en-ca/sql-server/sql-server-downloads)
-- Install [SSMS](https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16)
-- Create dev user with rights to create tables :
-  - In `Security` folder, right click on `Logins` and select `New login`
-  - Select SQL Server authentication
-  - Login name : `dev`
-  - Password : `dev`
-  - Click OK
-- Install nvm
-- Install node latest LTS 
-    ```bash
-    $ nvm install 24
-    $ nvm use 24.13.0
-    ```
-- Run this command to generate JWT token secret key
-    ```bash
-    $ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-    ```
-- Copy the printed value to `appsettings.Development.json` in `JwtToken:SecretKey`
+## FONCTIONNALITÉS PRINCIPALES
 
-### Run front-end Vue app
+- **Gestion des membres** : Création, modification, suppression et recherche de membres
+- **Gestion des produits** : Catalogue de produits avec formulaires dynamiques
+- **Authentification sécurisée** : JWT, Argon2, authentification à deux facteurs (2FA)
+- **Interface bilingue** : Français (fr-CA) et anglais (en-CA)
+- **Tableau de bord administratif** : Interface complète de gestion
+- **Intégrations externes** : Xero (comptabilité), SendGrid (courriels), Azure Blob Storage (fichiers)
+
+## TECHNOLOGIES UTILISÉES
+
+### Backend
+
+- **Framework** : ASP.NET Core avec FastEndpoints
+- **Langage** : C# (.NET 10)
+- **Base de données** : SQL Server 2022
+- **ORM** : Entity Framework Core 10
+- **Authentification** : JWT Bearer + Argon2
+- **Architecture** : Clean Architecture (Domain, Application, Infrastructure, Persistence, Web)
+
+### Frontend
+
+- **Framework** : Vue 3 (Composition API)
+- **Build** : Vite 7
+- **Langage** : TypeScript
+- **CSS** : Tailwind CSS 4
+- **State** : Pinia
+- **Routing** : Vue Router 5
+- **UI** : Reka-ui, Lucide Icons
+- **i18n** : vue3-i18n
+
+### Outils de développement
+
+- **Gestion de version** : Git / GitHub
+- **Gestion de projet** : Trello
+- **CI/CD** : GitHub Actions
+- **Conteneurisation** : Docker / Docker Compose
+
+## PRÉREQUIS
+
+- .NET SDK 10
+- Node.js 22+ (via nvm)
+- SQL Server 2022 (ou Docker)
+- Git
+- dotnet-ef CLI tool
+
+## INSTALLATION
+
+### Démarrage rapide (Docker)
+
 ```bash
-$ cd .\src\Web\vue-app
-# Installs dependencies
-$ npm install
+# 1. Cloner le repository
+git clone https://github.com/MaximeMichaud/expressiondansebeauport.git
+cd expressiondansebeauport
 
-# To allow back-end URL to serve vue-app files at localhost:7101
-$ npm run dev
+# 2. Lancer avec Docker
+docker compose up
 ```
 
-### Run back-end .NET Core app
+L'application sera accessible à : http://localhost:8080/
+
+### Développement local
+
 ```bash
-$ cd .\src\Web
-# To remove warning "The ASP.NET Core developer certificate is not trusted."
-$ dotnet dev-certs https --trust 
-# Run the back-end .NET Core app
-$ dotnet run 
-# You can also run with hot reload on file change
-$ dotnet watch run
+# 1. Installer les dépendances frontend
+cd src/Web/vue-app
+npm install
+
+# 2. Générer une clé secrète JWT
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+# Copier la valeur dans appsettings.Development.json -> JwtToken:SecretKey
+
+# 3. Lancer le frontend (watch mode)
+npm run dev
+
+# 4. Lancer le backend (dans un autre terminal)
+cd src/Web
+dotnet dev-certs https --trust
+dotnet watch run
 ```
 
 ### Seed
-- Default user is `admin@gmail.com` with password `Qwerty123!`
+
+- Utilisateur par défaut : `admin@gmail.com` / `Qwerty123!`
 
 ### Migrations
 
-From the Infrastructure assembly:
-
 ```bash
-$ cd .\src\Persistence
+cd src/Persistence
 
-$ dotnet ef migrations add {MigrationName} --startup-project ..\Web\
+# Créer une migration
+dotnet ef migrations add {NomMigration} --startup-project ../Web/
 
-$ dotnet ef database update --startup-project ../Web/
+# Appliquer les migrations
+dotnet ef database update --startup-project ../Web/
 ```
 
-## Instant
-An instant represents a moment in time and is always in UTC. Hence, `InstantHelper.GetUtcNow()` will return UTC current date and time. 
-However, if you parse a string to an Instant (using `ParseFromString` for example) the Instant will contain the same date as the string but it will be saved in UTC. 
-For example, 
-- If you parse the string `2023-10-12` to an Instant, the Instant object will contain `2023-10-12 00:00:00` and not `2023-10-11 20:00:00` (which is UTC equivalent of `2023-10-12 00:00:00`)
-- But, `2023-10-11 20:00:00-04` will be saved in database
-- But, when getting object from database after saving it, the Instant will be `2023-10-12 00:00:00` and not `2023-10-11 20:00:00`
-- It is parsed automatically when getting object from database
+## STRUCTURE DU PROJET
 
-In conclusion, you don't need to worry about the timezone when parsing a string to an Instant or when getting an Instant from database. The timezone will be your local timezone.
-Also, you don't need (and should not) compare your object's Instant with `InstantHelper.GetUtcNow()` because the Instant will be in your local timezone and not in UTC.
+```
+expressiondansebeauport/
+├── src/
+│   ├── Domain/              # Entités, value objects, interfaces repositories
+│   ├── Application/         # Services, DTOs, mappings, exceptions
+│   ├── Infrastructure/      # Intégrations externes (Xero, SendGrid, Azure)
+│   ├── Persistence/         # DbContext, migrations, configurations EF
+│   └── Web/                 # API FastEndpoints + frontend Vue
+│       ├── Features/        # Endpoints organisés par fonctionnalité
+│       └── vue-app/         # Application Vue 3 SPA
+├── tests/
+│   ├── Tests.Application/
+│   ├── Tests.Domain/
+│   ├── Tests.Infrastructure/
+│   ├── Tests.Web/
+│   └── Tests.Common/
+├── docker-compose.yml
+├── Dockerfile
+└── .github/workflows/       # CI GitHub Actions
+```
 
-#### Comparing object's Instant to current date
-Although, your object's Instant will be in your local timezone, it will be saved in UTC. 
+## INSTANT (NodaTime)
 
-Here's a list of conversion methods offered with Instant and what they do to an Instant that contains `2023-10-10 00:00:00`
-1. `ToDateTimeUtc()` : will return DateTime with `2023-10-10 00:00:00`
-2. `ToDateTimeOffset()` : will return DateTime and offset with `2023-10-10 00:00:00 +00:00`
+Un `Instant` représente un moment dans le temps, toujours en UTC. `InstantHelper.GetUtcNow()` retourne la date/heure UTC courante.
 
-So to compare your object's instant to current date time, I suggest doing `myObject.ItsInstant.ToDateTimeUtc() < DateTime.Now`
+Lors du parsing d'une chaîne vers un Instant, la date est conservée telle quelle mais sauvegardée en UTC en base de données. La conversion est automatique à la lecture.
+
+**Comparaison avec la date courante :**
+```csharp
+myObject.ItsInstant.ToDateTimeUtc() < DateTime.Now
+```
+
+## LICENCE
+
+Ce projet est développé dans le cadre du cours Projet intégrateur au Cégep Garneau.
