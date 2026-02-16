@@ -34,22 +34,22 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from "vue"
+import { computed, onMounted, ref, type ComponentPublicInstance } from "vue"
 import { useI18n } from "vue3-i18n"
 import { notifyError } from "@/notify"
 import { Status } from "@/validation"
 import FormInput from "@/components/forms/FormInput.vue"
 import { Link } from "@/types";
-import { Quill, QuillEditor } from "@vueup/vue-quill";
+import { Quill } from "@vueup/vue-quill";
 import FormTooltip from "@/components/forms/FormTooltip.vue";
 
-// eslint-disable-next-line no-undef
+ 
 const props = defineProps<{
   name: string;
-  quillEditor: typeof QuillEditor
+  quillEditor: any
 }>()
 
-// eslint-disable-next-line
+ 
 const emit = defineEmits<{
   (event: "closePopup"): void
 }>()
@@ -83,15 +83,15 @@ onMounted( () => {
 });
 
 function getSelectionHtml(selectedContent:any) {
-  let tempContainer = document.createElement('div')
-  let tempQuill = new Quill(tempContainer);
+  const tempContainer = document.createElement('div')
+  const tempQuill = new Quill(tempContainer);
   
   tempQuill.setContents(selectedContent);
   return tempContainer.querySelector('.ql-editor')?.innerHTML;
 }
 
 function handleSubmit() {
-  formInputs.value.forEach((x: typeof FormInput) => x?.validateInput())
+  formInputs.value.forEach((x: any) => x?.validateInput())
   
   if (Object.values(inputValidationStatuses).some(x => x === false)) {
     notifyError(t('global.formErrorNotification'))
@@ -132,12 +132,12 @@ function closePopup() {
 }
 
 //Validation =================================
-const formInputs = ref<(typeof FormInput)[]>([])
+const formInputs = ref<ComponentPublicInstance[]>([])
 const inputValidationStatuses: any = {}
 
-function addFormInputRef(ref: typeof FormInput) {
-  if (!formInputs.value.includes(ref))
-    formInputs.value.push(ref)
+function addFormInputRef(el: Element | ComponentPublicInstance | null) {
+  if (!formInputs.value.includes(el as ComponentPublicInstance))
+    formInputs.value.push(el as ComponentPublicInstance)
 }
 
 async function handleValidation(name: string, validationStatus: Status) {
