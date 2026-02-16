@@ -8,6 +8,7 @@ import {
   IApiService,
   IAuthenticationService,
   IMemberService,
+  IPageService,
   IUserService
 } from "@/injection/interfaces";
 import {
@@ -17,6 +18,7 @@ import {
   UserService
 } from "@/services";
 import {AdministratorService} from "@/services/administratorService";
+import {PageService} from "@/services/pageService";
 
 const dependencyInjection = new Container();
 dependencyInjection.bind<AxiosInstance>(TYPES.AxiosInstance).toConstantValue(axios.create())
@@ -24,6 +26,7 @@ dependencyInjection.bind<IApiService>(TYPES.IApiService).to(ApiService).inSingle
 dependencyInjection.bind<IAdministratorService>(TYPES.IAdministratorService).to(AdministratorService).inSingletonScope()
 dependencyInjection.bind<IAuthenticationService>(TYPES.IAuthenticationService).to(AuthenticationService).inSingletonScope()
 dependencyInjection.bind<IMemberService>(TYPES.IMemberService).to(MemberService).inSingletonScope()
+dependencyInjection.bind<IPageService>(TYPES.IPageService).to(PageService).inSingletonScope()
 dependencyInjection.bind<IUserService>(TYPES.IUserService).to(UserService).inSingletonScope()
 
 function useAdministratorService() {
@@ -38,6 +41,10 @@ function useMemberService() {
   return dependencyInjection.get<IMemberService>(TYPES.IMemberService);
 }
 
+function usePageService() {
+  return dependencyInjection.get<IPageService>(TYPES.IPageService);
+}
+
 function useUserService() {
   return dependencyInjection.get<IUserService>(TYPES.IUserService);
 }
@@ -48,5 +55,6 @@ export {
   useAdministratorService,
   useAuthenticationService,
   useMemberService,
+  usePageService,
   useUserService
 };

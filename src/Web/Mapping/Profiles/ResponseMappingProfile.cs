@@ -35,5 +35,8 @@ public class ResponseMappingProfile : Profile
             .ForMember(x => x.Roles, opt => opt.MapFrom(x => x.User.RoleNames))
             .ForMember(x => x.PhoneNumber, opt => opt.MapFrom(x => x.PhoneNumber!.Number))
             .ForMember(x => x.PhoneExtension, opt => opt.MapFrom(x => x.PhoneNumber!.Extension));
+
+        CreateMap<Page, PageDto>();
+        CreateMap<PageSection, PageSectionDto>();
     }
 }

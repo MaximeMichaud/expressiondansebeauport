@@ -17,9 +17,9 @@
       <div class="public-navbar__menu" :class="{ 'is-open': isMenuOpen }">
         <ul class="public-navbar__links">
           <li v-for="link in navLinks" :key="link.key">
-            <a href="#" class="public-navbar__link" @click="isMenuOpen = false">
+            <RouterLink :to="{ name: 'publicPage', params: { slug: link.slug } }" class="public-navbar__link" @click="isMenuOpen = false">
               {{ t(`public.nav.${link.key}`) }}
-            </a>
+            </RouterLink>
           </li>
         </ul>
 
@@ -45,11 +45,11 @@ const isMenuOpen = ref(false);
 const isScrolled = ref(false);
 
 const navLinks = [
-  { key: "school" },
-  { key: "recreational" },
-  { key: "summerCamp" },
-  { key: "troupes" },
-  { key: "contact" },
+  { key: "school", slug: "notre-ecole" },
+  { key: "recreational", slug: "cours-recreatifs" },
+  { key: "summerCamp", slug: "camp-dete" },
+  { key: "troupes", slug: "troupes-competitives" },
+  { key: "contact", slug: "nous-joindre" },
 ];
 
 function onScroll() {

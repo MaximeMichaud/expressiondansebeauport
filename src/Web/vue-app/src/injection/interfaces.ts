@@ -6,7 +6,7 @@ import {
   ITwoFactorRequest
 } from "@/types/requests"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
-import {Administrator, Member, User} from "@/types/entities"
+import {Administrator, Member, Page, User} from "@/types/entities"
 import {Guid} from "@/types";
 
 export interface IApiService {
@@ -47,6 +47,16 @@ export interface IMemberService {
   updateMember(member: Member): Promise<SucceededOrNotResponse>
 
   deleteMember(id: Guid): Promise<SucceededOrNotResponse>
+}
+
+export interface IPageService {
+  getAll(): Promise<Page[]>
+
+  getPage(id: string): Promise<Page>
+
+  getPageBySlug(slug: string): Promise<Page>
+
+  updatePage(page: Page): Promise<SucceededOrNotResponse>
 }
 
 export interface IUserService {
