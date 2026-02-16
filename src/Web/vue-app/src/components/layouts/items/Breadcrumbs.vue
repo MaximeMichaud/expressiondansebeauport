@@ -19,7 +19,7 @@ import { useI18n } from "vue3-i18n";
 
 const {t} = useI18n()
 
-// eslint-disable-next-line
+ 
 defineProps<{
   title: string;
 }>();

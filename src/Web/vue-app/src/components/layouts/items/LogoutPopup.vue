@@ -44,7 +44,7 @@ watch(needToLogout, () => {
   }, 1000);
 });
 
-let interval = ref();
+const interval = ref();
 const timeLeftBeforeReturnToHome = ref<number>(10);
 const percentageLeftBeforeReturnHome = computed(
   () => (timeLeftBeforeReturnToHome.value * 100) / 10

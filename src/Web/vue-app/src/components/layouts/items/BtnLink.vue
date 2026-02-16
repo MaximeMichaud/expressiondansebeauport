@@ -17,7 +17,7 @@
 <script lang="ts" setup>
 import IconArrow from "@/assets/icons/icon__arrow.svg";
 
-// eslint-disable-next-line
+ 
 defineProps<{
   name: string;
   path?: any;

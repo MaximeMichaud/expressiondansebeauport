@@ -7,7 +7,7 @@
 <script lang="ts" setup>
 import {computed} from "vue";
 
-// eslint-disable-next-line
+ 
 const props = defineProps<{
   centerFields?: boolean;
   withThreeColumns?: boolean;
