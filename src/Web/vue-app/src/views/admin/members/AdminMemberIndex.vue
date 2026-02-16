@@ -19,8 +19,6 @@
         :items="tableMembers"
         :total-items="paginatedResponse.totalItems"
         :search-value="searchValue"
-        @accept="accept"
-        @decline="decline"
         @delete="onDelete"
         @reload="loadPageClients"
     />
@@ -76,7 +74,7 @@ onMounted(async () => {
 
 async function loadPageClients(pageIndex: number, pageSize: number) {
   membersAreLoading.value = true;
-  let response = await memberService.search(pageIndex, pageSize, searchValue.value);
+  const response = await memberService.search(pageIndex, pageSize, searchValue.value);
   if (response) {
     paginatedResponse.value = response;
     if (response.items)
@@ -90,20 +88,20 @@ async function onDelete(item: any) {
 
   preventMultipleSubmit.value = true;
 
-  let confirmApprobation = confirm(t("pages.members.delete.confirmation"));
+  const confirmApprobation = confirm(t("pages.members.delete.confirmation"));
   if (!confirmApprobation) {
     preventMultipleSubmit.value = false;
     return;
   }
 
-  let succeededOrNotResponse = await memberService.deleteMember(item.id)
+  const succeededOrNotResponse = await memberService.deleteMember(item.id)
   if (succeededOrNotResponse && succeededOrNotResponse.succeeded) {
-    let memberIndex = pageMembers.value.indexOf(pageMembers.value.filter(x => x.id == item.id)[0])
+    const memberIndex = pageMembers.value.indexOf(pageMembers.value.filter(x => x.id == item.id)[0])
     pageMembers.value.splice(memberIndex, 1)
     notifySuccess(t('pages.members.delete.validation.successMessage'))
     preventMultipleSubmit.value = false;
   } else {
-    let errorMessages = succeededOrNotResponse.getErrorMessages('pages.members.delete.validation');
+    const errorMessages = succeededOrNotResponse.getErrorMessages('pages.members.delete.validation');
     if (errorMessages.length == 0)
       notifyError(t('validation.errorOccured'))
     else

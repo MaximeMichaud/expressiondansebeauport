@@ -20,7 +20,7 @@
   </Card>
 </template>
 <script lang="ts" setup>
-import {ref} from "vue"
+import {ref, type ComponentPublicInstance} from "vue"
 import {useI18n} from "vue3-i18n"
 import {required} from "@/validation/rules"
 import {useRouter} from "vue-router";
@@ -46,14 +46,14 @@ const authenticationService = useAuthenticationService()
 
 const code = ref<string>('')
 
-const formInputs = ref<(typeof FormInput)[]>([])
+const formInputs = ref<ComponentPublicInstance[]>([])
 const inputValidationStatuses: any = {}
 
 const preventMultipleSubmit = ref<boolean>(false);
 
-function addFormInputRef(ref: typeof FormInput) {
-  if (!formInputs.value.includes(ref))
-    formInputs.value.push(ref)
+function addFormInputRef(el: Element | ComponentPublicInstance | null) {
+  if (!formInputs.value.includes(el as ComponentPublicInstance))
+    formInputs.value.push(el as ComponentPublicInstance)
 }
 
 async function handleValidation(name: string, validationStatus: Status) {
@@ -65,17 +65,17 @@ async function sendTwoFactorAuthenticationRequest() {
 
   preventMultipleSubmit.value = true;
   
-  formInputs.value.forEach((x: typeof FormInput) => x.validateInput())
+  formInputs.value.forEach((x: any) => x.validateInput())
   if (Object.values(inputValidationStatuses).some(x => x === false)) {
     notifyError(t('validation.errorsInForm'))
     preventMultipleSubmit.value = false;
     return
   }
 
-  let request = {username: userStore.username, code: code.value} as ITwoFactorRequest
-  let twoFactorResponse = await authenticationService.twoFactor(request)
+  const request = {username: userStore.username, code: code.value} as ITwoFactorRequest
+  const twoFactorResponse = await authenticationService.twoFactor(request)
   if (!twoFactorResponse.succeeded) {
-    let errorMessages = twoFactorResponse.getErrorMessages('pages.twoFactor.validation');
+    const errorMessages = twoFactorResponse.getErrorMessages('pages.twoFactor.validation');
     if (errorMessages.length == 0)
       notifyError(t('pages.twoFactor.validation.errorOccured'))
     else
@@ -86,7 +86,7 @@ async function sendTwoFactorAuthenticationRequest() {
     return;
   }
 
-  let user = await userService.getCurrentUser()
+  const user = await userService.getCurrentUser()
   userStore.setUser(user)
   apiStore.setNeedToLogout(false)
   await router.push(t("routes.account.path"))

@@ -60,11 +60,11 @@ const isMobile = computed(() => width.value < 1200);
 onMounted(async () => {
   userIsLoading.value = true
   if (userStore.hasRole(Role.Member)) {
-    let member = await memberService.getAuthenticated() as Member;
+    const member = await memberService.getAuthenticated() as Member;
     personStore.setPerson(member)
     memberStore.setMember(member)
   } else {
-    let administrator = await administratorService.getAuthenticated() as Administrator;
+    const administrator = await administratorService.getAuthenticated() as Administrator;
     personStore.setPerson(administrator)
     administratorStore.setAdministrator(administrator)
   }

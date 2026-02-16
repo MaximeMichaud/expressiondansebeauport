@@ -50,13 +50,13 @@ const {t} = useI18n()
 
 const userStore = useUserStore()
 
-let isExpanded = ref<boolean>(true);
-let content = ref<HTMLElement>();
-let height = ref<string>();
+const isExpanded = ref<boolean>(true);
+const content = ref<HTMLElement>();
+const height = ref<string>();
 
 const router = useRouter();
 const currentRoute = ref(router.currentRoute);
-let rootRouteName = computed(() => {
+const rootRouteName = computed(() => {
   let name = currentRoute.value.name;
 
   if (currentRoute.value.matched[0] != null) {

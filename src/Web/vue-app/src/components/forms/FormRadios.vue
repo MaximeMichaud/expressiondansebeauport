@@ -36,7 +36,7 @@ import { Status} from '@/validation'
 import { ref } from "vue";
 import { useI18n } from "vue3-i18n";
 
-// eslint-disable-next-line
+ 
 const props = defineProps<{
   title?: string;
   name: string;
@@ -45,13 +45,13 @@ const props = defineProps<{
   required?: boolean;
 }>();
 
-// eslint-disable-next-line
+ 
 defineExpose({
   //to call validation in parent.
   validateInput: validateRadios
 })
 
-// eslint-disable-next-line
+ 
 const emit = defineEmits<{
   // states that the event has to be called 'update:modelValue'
   (event: "update:modelValue", value: string): void;

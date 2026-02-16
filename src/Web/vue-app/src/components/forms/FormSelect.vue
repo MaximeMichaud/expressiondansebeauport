@@ -29,7 +29,7 @@ import {required, Rule} from '@/validation/rules'
 import {ref, watch} from "vue";
 import { useI18n } from "vue3-i18n";
 
-// eslint-disable-next-line
+ 
 const props = defineProps<{
   name: string;
   modelValue: string;
@@ -39,13 +39,13 @@ const props = defineProps<{
   noLabel?: boolean;
 }>();
 
-// eslint-disable-next-line
+ 
 defineExpose({
   //to call validation in parent.
     validateInput
 })
 
-// eslint-disable-next-line
+ 
 const emit = defineEmits<{
   // states that the event has to be called 'update:modelValue'
   (event: "update:modelValue", value: string): void;
@@ -68,7 +68,7 @@ function handleBlur() {
 }
 
 function validateInput() {
-  let validationRules = props.rules ? props.rules : [required]
+  const validationRules = props.rules ? props.rules : [required]
   status.value = validate(inputValue.value, validationRules)
 
   emit("validated", props.name, status.value);

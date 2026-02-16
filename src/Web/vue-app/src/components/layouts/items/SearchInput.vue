@@ -20,12 +20,12 @@ import { useI18n } from "vue3-i18n";
 
 const { t } = useI18n();
 
-// eslint-disable-next-line
+ 
 defineProps<{
   modelValue: string | undefined
 }>();
 
-// eslint-disable-next-line
+ 
 const emit = defineEmits<{
   // states that the event has to be called 'update:modelValue'
   (event: "update:modelValue", value: string): void;

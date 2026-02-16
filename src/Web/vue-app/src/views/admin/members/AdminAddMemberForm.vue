@@ -37,7 +37,7 @@ async function handleSubmit(member: Member) {
 
   preventMultipleSubmit.value = true;
   
-  let succeededOrNotResponse = await memberService.createMember(member)
+  const succeededOrNotResponse = await memberService.createMember(member)
   if (succeededOrNotResponse.succeeded) {
     preventMultipleSubmit.value = false;
     notifySuccess(t('pages.members.create.validation.successMessage'))
@@ -47,7 +47,7 @@ async function handleSubmit(member: Member) {
     return;
   }
 
-  let errorMessages = succeededOrNotResponse.getErrorMessages('pages.members.create.validation');
+  const errorMessages = succeededOrNotResponse.getErrorMessages('pages.members.create.validation');
   if (errorMessages.length == 0)
     notifyError(t('pages.members.create.validation.failedMessage'))
   else

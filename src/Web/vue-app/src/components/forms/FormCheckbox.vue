@@ -26,7 +26,7 @@ import { Status, validateBoolean } from '@/validation'
 import { requiredBoolean } from '@/validation/rules';
 import {ref} from "vue";
 
-// eslint-disable-next-line
+ 
 const props = defineProps<{
   name: string
   modelValue: boolean,
@@ -34,13 +34,13 @@ const props = defineProps<{
   required?: boolean
 }>();
 
-// eslint-disable-next-line
+ 
 defineExpose({
   //to call validation in parent.
   validateInput: validateCheckbox
 })
 
-// eslint-disable-next-line
+ 
 const emit = defineEmits<{
   // states that the event has to be called 'update:modelValue'
   (event: "update:modelValue", value: boolean): void;
