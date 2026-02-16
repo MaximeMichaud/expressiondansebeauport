@@ -30,7 +30,7 @@
   </Card>
 </template>
 <script lang="ts" setup>
-import { ref } from "vue"
+import { ref, type ComponentPublicInstance } from "vue"
 import { useI18n } from "vue3-i18n"
 import { required } from "@/validation/rules"
 import { useRouter } from "vue-router";
@@ -56,14 +56,14 @@ const authenticationService = useAuthenticationService()
 
 const loginRequest = ref<ILoginRequest>({ username: '', password: '' })
 
-const formInputs = ref<(typeof FormInput)[]>([])
+const formInputs = ref<ComponentPublicInstance[]>([])
 const inputValidationStatuses: any = {}
 
 const preventMultipleSubmit = ref<boolean>(false);
 
-function addFormInputRef(ref: typeof FormInput) {
-  if (!formInputs.value.includes(ref))
-    formInputs.value.push(ref)
+function addFormInputRef(el: Element | ComponentPublicInstance | null) {
+  if (!formInputs.value.includes(el as ComponentPublicInstance))
+    formInputs.value.push(el as ComponentPublicInstance)
 }
 
 async function handleValidation(name: string, validationStatus: Status) {
@@ -75,16 +75,16 @@ async function sendLoginRequest() {
 
   preventMultipleSubmit.value = true;
 
-  formInputs.value.forEach((x: typeof FormInput) => x.validateInput())
+  formInputs.value.forEach((x: any) => x.validateInput())
   if (Object.values(inputValidationStatuses).some(x => x === false)) {
     notifyError(t('validation.errorsInForm'))
     preventMultipleSubmit.value = false;
     return
   }
 
-  let succeededOrNotResponse = await authenticationService.login(loginRequest.value)
+  const succeededOrNotResponse = await authenticationService.login(loginRequest.value)
   if (succeededOrNotResponse.succeeded) {
-    let user = await userService.getCurrentUser()
+    const user = await userService.getCurrentUser()
     userStore.setUser(user)
     userStore.setUsername(loginRequest.value.username)
     apiStore.setNeedToLogout(false)
@@ -93,7 +93,7 @@ async function sendLoginRequest() {
     return;
   }
 
-  let twoFactorRequired = succeededOrNotResponse.errors.some(x => x.errorType == "TwoFactorRequired")
+  const twoFactorRequired = succeededOrNotResponse.errors.some(x => x.errorType == "TwoFactorRequired")
   if (twoFactorRequired) {
     userStore.setUsername(loginRequest.value.username)
     await router.push(t("routes.twoFactor.path"))
@@ -101,7 +101,7 @@ async function sendLoginRequest() {
     return;
   }
 
-  let errorMessages = succeededOrNotResponse.getErrorMessages('pages.login.validation');
+  const errorMessages = succeededOrNotResponse.getErrorMessages('pages.login.validation');
   if (errorMessages.length == 0)
     notifyError(t('pages.login.validation.errorOccured'))
   else

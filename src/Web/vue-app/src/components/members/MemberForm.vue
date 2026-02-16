@@ -79,7 +79,7 @@ import {useI18n} from "vue3-i18n"
 import {notifyError} from "@/notify"
 import {Status} from "@/validation"
 import {Member} from "@/types/entities"
-import {ref} from "vue"
+import {ref, type ComponentPublicInstance} from "vue"
 import {
   mustMatchPhoneNumberFormat,
   mustMatchZipCodeFormat,
@@ -88,12 +88,12 @@ import {
 import FormRow from "@/components/forms/FormRow.vue"
 import FormInput from "@/components/forms/FormInput.vue"
 
-// eslint-disable-next-line no-undef
+ 
 const props = defineProps<{
   member?: Member
 }>()
 
-// eslint-disable-next-line
+ 
 const emit = defineEmits<{
   (event: "formSubmit", member: Member): void
 }>()
@@ -105,9 +105,9 @@ const member = ref<Member>(props.member ?? {})
 const formInputs = ref<any[]>([])
 const inputValidationStatuses: any = {}
 
-function addFormInputRef(ref: typeof FormInput) {
-  if (!formInputs.value.includes(ref) && ref)
-    formInputs.value.push(ref)
+function addFormInputRef(el: Element | ComponentPublicInstance | null) {
+  if (!formInputs.value.includes(el as ComponentPublicInstance) && el)
+    formInputs.value.push(el as ComponentPublicInstance)
 }
 
 async function handleValidation(name: string, validationStatus: Status) {
@@ -115,7 +115,7 @@ async function handleValidation(name: string, validationStatus: Status) {
 }
 
 async function handleSubmit() {
-  formInputs.value.forEach((x: typeof FormInput) => x.validateInput())
+  formInputs.value.forEach((x: any) => x.validateInput())
   if (Object.values(inputValidationStatuses).some(x => x === false)) {
     notifyError(t('validation.errorsInForm'))
     return

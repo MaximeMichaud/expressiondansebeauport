@@ -74,7 +74,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, type ComponentPublicInstance } from "vue";
 import { Status } from "@/validation";
 import { required, min } from "@/validation/rules";
 import { useI18n } from "vue3-i18n";
@@ -87,7 +87,7 @@ import FormTextEditor from "@/components/forms/FormTextEditor.vue";
 
 const { t } = useI18n();
 
-// eslint-disable-next-line no-undef
+ 
 const props = defineProps<{
     product: Product,
     title: string
@@ -97,16 +97,16 @@ const props = defineProps<{
     descriptionEnLabel?: string
 }>()
 
-// eslint-disable-next-line
+ 
 const emit = defineEmits<{
     (event: "handleValidation", name: string, validationStatus: Status): void
-    (event: "registerFormInputRef", ref: typeof FormInput): void
+    (event: "registerFormInputRef", ref: Element | ComponentPublicInstance | null): void
 }>()
 
 const product = ref<Product>(props.product)
 
-function addFormInputRef(ref: typeof FormInput) {
-    emit("registerFormInputRef", ref);
+function addFormInputRef(el: Element | ComponentPublicInstance | null) {
+    emit("registerFormInputRef", el);
 }
 
 async function onImageChange(event: any, type: string) {

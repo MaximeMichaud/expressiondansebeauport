@@ -29,12 +29,11 @@
 </template>
 
 <script lang="ts" setup>
-import IconHelpCircle from "vue-material-design-icons/HelpCircle.vue"
 import {Rule} from '@/validation/rules'
 import {Status, validate} from '@/validation'
 import {ref, watch} from "vue";
 
-// eslint-disable-next-line
+ 
 const props = defineProps<{
   name: string
   label?: string
@@ -46,7 +45,7 @@ const props = defineProps<{
   list?: string
 }>();
 
-// eslint-disable-next-line
+ 
 defineExpose({
   //to call validation in parent.
   validateInput
@@ -55,7 +54,7 @@ defineExpose({
 const inputValue = ref<string | number | undefined>(props.modelValue === '' ? undefined : props.modelValue);
 watch(props, () => inputValue.value = props.modelValue === '' ? undefined : props.modelValue)
 
-// eslint-disable-next-line
+ 
 const emit = defineEmits<{
   // states that the event has to be called 'update:modelValue'
   (event: "update:modelValue", value: string | number | undefined): void;
@@ -76,7 +75,7 @@ function handleBlur() {
 }
 
 function validateInput() {
-  let validationRules = props.rules ? props.rules : []
+  const validationRules = props.rules ? props.rules : []
   status.value = validate(inputValue.value as string, validationRules)
   emit("validated", props.name, status.value);
 }

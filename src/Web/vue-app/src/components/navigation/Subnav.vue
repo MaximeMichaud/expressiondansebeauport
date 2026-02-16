@@ -29,7 +29,7 @@ import { useI18n } from "vue3-i18n";
 import { useRouter } from "vue-router";
 import { getChildPath } from "@/router/helpers";
 
-// eslint-disable-next-line
+ 
 const props = defineProps<{
   routeKey: string
 }>();
@@ -43,9 +43,9 @@ const directChildRoutes = computed(() => {
   return routes.filter(r => r.path == t(`routes.${props.routeKey}.path`))[0].children;
 })
 
-let isExpanded = ref<boolean>(true);
-let content = ref<HTMLElement>();
-let height = ref<string>();
+const isExpanded = ref<boolean>(true);
+const content = ref<HTMLElement>();
+const height = ref<string>();
 
 onMounted(() => {
   height.value = `${

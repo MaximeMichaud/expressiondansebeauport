@@ -17,7 +17,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-// eslint-disable-next-line
+ 
 const props = defineProps<{
   label: number
   radius: number
@@ -25,11 +25,11 @@ const props = defineProps<{
   stroke: number
 }>();
 
-let normalizedRadius = computed(() => props.radius - props.stroke * 2);
-let circumference = computed(() => normalizedRadius.value * 2 * Math.PI);
-let strokeDashoffset = computed(() => circumference.value - props.progress / 100 * circumference.value);
-let dimension = computed(() => props.radius * 2);
-let styles = computed(() => {
+const normalizedRadius = computed(() => props.radius - props.stroke * 2);
+const circumference = computed(() => normalizedRadius.value * 2 * Math.PI);
+const strokeDashoffset = computed(() => circumference.value - props.progress / 100 * circumference.value);
+const dimension = computed(() => props.radius * 2);
+const styles = computed(() => {
   return {
     height: dimension.value - 8 + 'px',
     width: dimension.value - 8 + 'px',

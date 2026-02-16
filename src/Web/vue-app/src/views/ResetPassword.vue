@@ -23,7 +23,7 @@
   </Card>
 </template>
 <script lang="ts" setup>
-import {ref} from "vue"
+import {ref, type ComponentPublicInstance} from "vue"
 import {useI18n} from "vue3-i18n"
 import {required} from "@/validation/rules"
 import {useAuthenticationService} from "@/inversify.config";
@@ -36,7 +36,7 @@ import {Guid} from "@/types";
 import {useRouter} from "vue-router";
 import Loader from "@/components/layouts/items/Loader.vue";
 
-// eslint-disable-next-line no-undef
+ 
 const props = defineProps<{
   userId: Guid
   token: string
@@ -53,14 +53,14 @@ const resetPasswordRequest = ref<IResetPasswordRequest>({
   passwordConfirmation: ''
 })
 
-const formInputs = ref<(typeof FormInput)[]>([])
+const formInputs = ref<ComponentPublicInstance[]>([])
 const inputValidationStatuses: any = {}
 
 const preventMultipleSubmit = ref<boolean>(false);
 
-function addFormInputRef(ref: typeof FormInput) {
-  if (!formInputs.value.includes(ref))
-    formInputs.value.push(ref)
+function addFormInputRef(el: Element | ComponentPublicInstance | null) {
+  if (!formInputs.value.includes(el as ComponentPublicInstance))
+    formInputs.value.push(el as ComponentPublicInstance)
 }
 
 async function handleValidation(name: string, validationStatus: Status) {
@@ -72,14 +72,14 @@ async function sendResetPasswordRequest() {
 
   preventMultipleSubmit.value = true;
   
-  formInputs.value.forEach((x: typeof FormInput) => x.validateInput())
+  formInputs.value.forEach((x: any) => x.validateInput())
   if (Object.values(inputValidationStatuses).some(x => x === false)) {
     notifyError(t('validation.errorsInForm'))
     preventMultipleSubmit.value = false;
     return;
   }
 
-  let resetPasswordResponse = await authenticationService.resetPassword(resetPasswordRequest.value)
+  const resetPasswordResponse = await authenticationService.resetPassword(resetPasswordRequest.value)
   if (resetPasswordResponse.succeeded) {
     preventMultipleSubmit.value = false;
     notifySuccess(t('pages.resetPassword.validation.success'))
@@ -89,7 +89,7 @@ async function sendResetPasswordRequest() {
     return;
   }
 
-  let errorMessages = resetPasswordResponse.getErrorMessages('pages.resetPassword.validation');
+  const errorMessages = resetPasswordResponse.getErrorMessages('pages.resetPassword.validation');
   if (errorMessages.length == 0)
     notifyError(t('pages.resetPassword.validation.errorOccured'))
   else

@@ -25,7 +25,7 @@ import Card from "@/components/layouts/items/Card.vue";
 import BackLink from "@/components/layouts/items/BackLink.vue";
 import Loader from "@/components/layouts/items/Loader.vue";
 
-// eslint-disable-next-line no-undef
+ 
 const props = defineProps<{
   id: string
 }>();
@@ -43,7 +43,7 @@ async function handleSubmit(member: Member) {
 
   preventMultipleSubmit.value = true;
 
-  let succeededOrNotResponse = await memberService.updateMember(member)
+  const succeededOrNotResponse = await memberService.updateMember(member)
   if (succeededOrNotResponse.succeeded) {
     preventMultipleSubmit.value = false;
     notifySuccess(t('pages.members.update.validation.successMessage'))
@@ -53,7 +53,7 @@ async function handleSubmit(member: Member) {
     return;
   }
 
-  let errorMessages = succeededOrNotResponse.getErrorMessages('pages.members.update.validation');
+  const errorMessages = succeededOrNotResponse.getErrorMessages('pages.members.update.validation');
   if (errorMessages.length == 0)
     notifyError(t('pages.members.update.validation.failedMessage'))
   else

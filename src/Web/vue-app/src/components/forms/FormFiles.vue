@@ -68,7 +68,7 @@ import { useI18n } from "vue3-i18n";
 
 const { t } = useI18n();
 
-// eslint-disable-next-line
+ 
 const props = defineProps<{
   name: string;
   label?: string;
@@ -82,13 +82,13 @@ const props = defineProps<{
   canDelete?:boolean
 }>();
 
-// eslint-disable-next-line
+ 
 defineExpose({
   //to call validation in parent.
    validateInput
 });
 
-// eslint-disable-next-line
+ 
 const emit = defineEmits<{
   // states that the event has to be called 'update:modelValue'
   (event: "update:modelValue", value: File | Array<File> | undefined): void;
@@ -96,8 +96,8 @@ const emit = defineEmits<{
   (event: "on-default-selected-files-change", value: string): void;
 }>();
 
-let minNbFiles = computed(() => props.min != null ? props.min : 0);
-let maxNbFiles = computed(() => props.max != null ? props.max : -1);
+const minNbFiles = computed(() => props.min != null ? props.min : 0);
+const maxNbFiles = computed(() => props.max != null ? props.max : -1);
 
 const defaultSelectedFiles = ref(props.defaultSelectedFiles);
 watch(defaultSelectedFiles, (newValue) => emit("on-default-selected-files-change", newValue?.length ? newValue[0].toString() : "") , { deep: true, immediate: true });
@@ -109,9 +109,9 @@ const status = ref<Status>({ valid: true });
 const files = ref<Array<File>>();
 const filesInput = ref<HTMLInputElement>();
 
-let btnLabelKey = computed(() => {
-  let isReplacing = (files.value && files.value.length > 0) || (defaultSelectedFiles.value && defaultSelectedFiles.value.length > 0);
-  let isPlural = maxNbFiles.value > 1 || props.isMultiple || (files.value && files.value.length > 1);
+const btnLabelKey = computed(() => {
+  const isReplacing = (files.value && files.value.length > 0) || (defaultSelectedFiles.value && defaultSelectedFiles.value.length > 0);
+  const isPlural = maxNbFiles.value > 1 || props.isMultiple || (files.value && files.value.length > 1);
   
   return `global.${isReplacing ? 'replace' : 'add'}File${isPlural ? 's' : ''}`
 })

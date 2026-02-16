@@ -53,7 +53,7 @@ import {requiredArray, RuleArray} from '@/validation/rules'
 import {ref, watch} from "vue";
 import {useI18n} from "vue3-i18n";
 
-// eslint-disable-next-line
+ 
 const props = defineProps<{
   name: string;
   modelValue: FormOption[];
@@ -64,13 +64,13 @@ const props = defineProps<{
   maxItems?: number;
 }>();
 
-// eslint-disable-next-line
+ 
 defineExpose({
   //to call validation in parent.
   validateInput
 })
 
-// eslint-disable-next-line
+ 
 const emit = defineEmits<{
   // states that the event has to be called 'update:modelValue'
   (event: "onOptionChange", value: FormOption[]): void;
@@ -95,14 +95,14 @@ const popperOptions: Partial<import("@popperjs/core").Options> = {
       phase: "beforeWrite",
       requires: ["computeStyles"],
       effect: ({state}) => {
-        state.elements.popper.style.width = `${state.elements.reference.clientWidth}px`;
+        state.elements.popper.style.width = `${state.elements.reference.getBoundingClientRect().width}px`;
       },
     },
   ],
 }
 
 function toggleOption(option: FormOption) {
-  let options = selectedOptions.value && selectedOptions.value.find(o => o.name == option.name)
+  const options = selectedOptions.value && selectedOptions.value.find(o => o.name == option.name)
     ? selectedOptions.value.filter(o => o.name != option.name)
     : [...selectedOptions.value, option];
   if (props.maxItems && options.length > props.maxItems)
@@ -115,7 +115,7 @@ function toggleOption(option: FormOption) {
 }
 
 function validateInput() {
-  let validationRules = props.rules ? props.rules : [requiredArray]
+  const validationRules = props.rules ? props.rules : [requiredArray]
   status.value = validateArray(selectedOptions.value, validationRules)
 
   emit("validated", props.name, status.value);

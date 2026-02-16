@@ -41,7 +41,7 @@ import { ref, onMounted } from "vue";
 import BtnLink from "@/components/layouts/items/BtnLink.vue";
 import IconDownload from "@/assets/icons/icon__download.svg";
 
-// eslint-disable-next-line
+ 
 defineProps<{
   title?: string;
   linkText?: string;
@@ -49,11 +49,11 @@ defineProps<{
   downloadLabel?: string;
 }>();
 
-let isExpanded = ref<boolean>(true);
-let content = ref<HTMLElement>();
-let height = ref<string>();
+const isExpanded = ref<boolean>(true);
+const content = ref<HTMLElement>();
+const height = ref<string>();
 
-// eslint-disable-next-line
+ 
 const emit = defineEmits<{
   (event: "download"): void
 }>()

@@ -21,7 +21,7 @@
   </Card>
 </template>
 <script lang="ts" setup>
-import {ref} from "vue"
+import {ref, type ComponentPublicInstance} from "vue"
 import {useI18n} from "vue3-i18n"
 import {required} from "@/validation/rules"
 import {useAuthenticationService} from "@/inversify.config";
@@ -39,14 +39,14 @@ const authenticationService = useAuthenticationService()
 
 const username = ref<string>('')
 
-const formInputs = ref<(typeof FormInput)[]>([])
+const formInputs = ref<ComponentPublicInstance[]>([])
 const inputValidationStatuses: any = {}
 
 const preventMultipleSubmit = ref<boolean>(false);
 
-function addFormInputRef(ref: typeof FormInput) {
-  if (!formInputs.value.includes(ref))
-    formInputs.value.push(ref)
+function addFormInputRef(el: Element | ComponentPublicInstance | null) {
+  if (!formInputs.value.includes(el as ComponentPublicInstance))
+    formInputs.value.push(el as ComponentPublicInstance)
 }
 
 async function handleValidation(name: string, validationStatus: Status) {
@@ -58,18 +58,18 @@ async function sendForgotPasswordRequest() {
 
   preventMultipleSubmit.value = true;
   
-  formInputs.value.forEach((x: typeof FormInput) => x.validateInput())
+  formInputs.value.forEach((x: any) => x.validateInput())
   if (Object.values(inputValidationStatuses).some(x => x === false)) {
     notifyError(t('validation.errorsInForm'))
     preventMultipleSubmit.value = false;
     return
   }
 
-  let request = {
+  const request = {
     username: username.value,
     resetPasswordRelativeUrl: t('routes.resetPassword.path')
   } as IForgotPasswordRequest
-  let forgotPasswordResponse = await authenticationService.forgotPassword(request)
+  const forgotPasswordResponse = await authenticationService.forgotPassword(request)
   if (!forgotPasswordResponse.succeeded) {
     notifyError(t('pages.forgotPassword.validation.errorOccured'))
     preventMultipleSubmit.value = false;
