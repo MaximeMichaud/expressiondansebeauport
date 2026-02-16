@@ -26,6 +26,7 @@
     <button class="btn btn--full btn--purple btn--big" @click="sendLoginRequest" :disabled="preventMultipleSubmit">
       {{ t('pages.login.submit') }}
     </button>
+    <p class="mt-4 text-center text-sm text-gray-500">CI/CD test - AppVeyor deploy works!</p>
   </Card>
 </template>
 <script lang="ts" setup>

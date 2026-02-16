@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Domain.Common;
 using Microsoft.AspNetCore.Identity;
 using Tests.Common.Mapping;
 using Tests.Web.TestCollections;
