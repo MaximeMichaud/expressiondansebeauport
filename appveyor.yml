@@ -14,6 +14,7 @@ environment:
 
 install:
   - ps: Install-Product node $env:nodejs_version
+  - ps: Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "$env:TEMP\dotnet-install.ps1"; & "$env:TEMP\dotnet-install.ps1" -Channel 10.0
 
 init:
   - net start MSSQL$SQL2019
@@ -59,16 +60,15 @@ artifacts:
     name: garneau-template.web
 
 deploy:
-  - provider: Environment
-    name: garneau-template
-    website: {azure-website-name}
-    username: ${azure-user}
-    password:
-      secure: {azure-password}
+  - provider: WebDeploy
+    server: https://expressiondansebeauport.scm.azurewebsites.net:443/msdeploy.axd?site=expressiondansebeauport
+    website: expressiondansebeauport
+    username: $expressiondansebeauport
+    password: $(DEPLOY_PASSWORD)
     aspnet_core: true
     aspnet_core_force_restart: true
     app_offline: true
     remove_files: true
     skip_dirs: \\App_Data;\\.well-known;
     on:
-      branch: staging
+      branch: main
