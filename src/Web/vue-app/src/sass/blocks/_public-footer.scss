@@ -1,0 +1,121 @@
+@use "../tools" as *;
+.public-footer {
+  background-color: $color-grey-darker;
+  color: $color-white;
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    @include pagePadding;
+    padding-top: 48px;
+    padding-bottom: 32px;
+  }
+
+  &__col {
+    &--brand {
+      max-width: 300px;
+    }
+  }
+
+  &__logo {
+    display: block;
+    height: 56px;
+    width: 56px;
+    margin-bottom: 16px;
+
+    * {
+      fill: $color-white !important;
+    }
+  }
+
+  &__description {
+    font-size: rem(14);
+    line-height: 1.6;
+    color: $color-grey;
+  }
+
+  &__heading {
+    font-family: $font-montserrat;
+    font-weight: 700;
+    font-size: rem(14);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: $color-white;
+    margin-bottom: 8px;
+
+    &:not(:first-child) {
+      margin-top: 20px;
+    }
+  }
+
+  p {
+    font-size: rem(14);
+    line-height: 1.6;
+    color: $color-grey;
+    margin: 0;
+  }
+
+  a {
+    color: $color-grey;
+    text-decoration: none;
+    @include colorHover($color-white);
+  }
+
+  &__social-links {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: $color-grey-medium;
+      @include backgroundColorHover($color-green);
+    }
+
+    .material-design-icon {
+      display: flex;
+    }
+  }
+
+  &__lang-switcher {
+    .lang-switcher {
+      color: $color-grey;
+
+      .lang-switcher__option {
+        @include colorHover($color-white);
+      }
+    }
+  }
+
+  &__copyright {
+    border-top: 1px solid $color-grey-medium;
+    @include pagePadding;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: center;
+
+    p {
+      font-size: rem(13);
+    }
+  }
+}
+
+//Breakpoints ==================================
+@include breakpoint(sm-up) {
+  .public-footer {
+    &__inner {
+      flex-direction: row;
+      gap: 48px;
+    }
+
+    &__col {
+      flex: 1;
+    }
+  }
+}

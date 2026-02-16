@@ -2,6 +2,7 @@ import i18n from "@/i18n";
 import {Role} from "@/types/enums";
 import {createRouter, createWebHistory} from "vue-router";
 
+import Home from "@/views/public/Home.vue";
 import Login from "@/views/Login.vue";
 import TwoFactor from "@/views/TwoFactor.vue";
 import ForgotPassword from "@/views/ForgotPassword.vue";
@@ -24,6 +25,14 @@ const router = createRouter({
   },
   history: createWebHistory(),
   routes: [
+    {
+      path: "/",
+      name: "home",
+      component: Home,
+      meta: {
+        title: "routes.home.name"
+      }
+    },
     {
       path: i18n.t("routes.login.path"),
       alias: getLocalizedRoutes("routes.login.path"),
@@ -114,13 +123,6 @@ const router = createRouter({
 // eslint-disable-next-line
 router.beforeEach(async (to, from) => {
   const userStore = useUserStore()
-
-  // Handle root path redirect
-  if (to.path === "/") {
-    if (userStore.user.email)
-      return { name: "account" };
-    return { name: "login" };
-  }
 
   if (!to.meta.requiredRole)
     return;

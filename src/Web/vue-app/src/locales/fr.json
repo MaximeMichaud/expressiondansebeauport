@@ -1,5 +1,10 @@
 {
   "routes": {
+    "home": {
+      "path": "/",
+      "fullPath": "/",
+      "name": "Accueil"
+    },
     "login": {
       "path": "/connexion",
       "fullPath": "/connexion",
@@ -238,6 +243,24 @@
       "download": "Télécharger",
       "update": "Modifier",
       "delete": "Supprimer"
+    }
+  },
+  "public": {
+    "nav": {
+      "school": "Notre école",
+      "recreational": "Récréatif",
+      "summerCamp": "Camp d'été",
+      "troupes": "Troupes compétitives",
+      "contact": "Nous joindre",
+      "register": "S'inscrire"
+    },
+    "footer": {
+      "address": "Adresse",
+      "phone": "Téléphone",
+      "email": "Courriel",
+      "followUs": "Suivez-nous",
+      "copyright": "Expression Danse de Beauport inc. Tous droits réservés.",
+      "description": "École de danse offrant des cours pour tous les âges et tous les niveaux à Beauport, Québec."
     }
   },
   "textEditorLinkPopup": {
