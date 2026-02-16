@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Tests.Common.Mapping;
 using Tests.Web.TestCollections;
 using Web.Constants;
+using Domain.Common;
 using Web.Mapping.Profiles;
 
 namespace Tests.Web.Mapping.Profiles;
