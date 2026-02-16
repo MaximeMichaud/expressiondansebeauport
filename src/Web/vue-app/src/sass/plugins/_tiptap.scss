@@ -1,0 +1,138 @@
+@use "../tools" as *;
+
+.tiptap-wrapper {
+  border: 1px solid $color-border;
+  border-radius: $common-border-radius;
+  overflow: hidden;
+}
+
+.tiptap-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  border-bottom: 1px solid $color-border;
+  background: $color-white;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 3px;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: $color-grey-dark;
+
+    &:hover {
+      background: $color-grey-light;
+    }
+
+    &.is-active {
+      background: $color-grey;
+      color: $color-black;
+    }
+  }
+
+  &__separator {
+    width: 1px;
+    height: 20px;
+    margin: 0 4px;
+    background: $color-border;
+  }
+
+  &__select {
+    height: 28px;
+    padding: 0 4px;
+    border: 1px solid $color-border;
+    border-radius: 3px;
+    background: $color-white;
+    font-size: 13px;
+    cursor: pointer;
+  }
+}
+
+.tiptap-color-swatch {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  border: 1px solid $color-border;
+}
+
+.tiptap-icon {
+  font-style: normal;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.tiptap {
+  padding: 12px 15px;
+  min-height: 150px;
+  background-color: $color-grey-lighter;
+  font-family: $font-karla;
+  outline: none;
+
+  > * + * {
+    margin-top: 0.75em;
+  }
+
+  ul, ol {
+    padding-left: 1.5em;
+  }
+
+  ul {
+    list-style: disc;
+  }
+
+  ol {
+    list-style: decimal;
+  }
+
+  h2, h3, h4 {
+    font-weight: 700;
+  }
+
+  a {
+    display: inline-block;
+    background: $color-green;
+    color: white !important;
+    padding: 8px;
+
+    &:after {
+      content: none !important;
+    }
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+
+    &.ProseMirror-selectednode {
+      outline: 2px solid $color-green;
+    }
+  }
+}
+
+.form__field.error {
+  .tiptap-wrapper {
+    border-color: $color-red;
+  }
+
+  .tiptap {
+    background-color: rgba($color-red, 0.1);
+  }
+
+  .tiptap-wrapper + label {
+    color: $color-red;
+
+    + .form__error-message {
+      display: block;
+    }
+  }
+}
