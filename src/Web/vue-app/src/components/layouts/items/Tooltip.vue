@@ -18,7 +18,7 @@ import IconAlert from "vue-material-design-icons/Alert.vue";
 import IconCheckCircle from "vue-material-design-icons/CheckCircle.vue";
 import IconCloseCircle from "vue-material-design-icons/CloseCircle.vue";
 
-// eslint-disable-next-line
+ 
 defineProps<{
   isWarning?: boolean;
   isSuccess?: boolean;

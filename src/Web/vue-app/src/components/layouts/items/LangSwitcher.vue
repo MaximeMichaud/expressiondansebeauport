@@ -34,7 +34,7 @@ const currentLocale = computed(() => getLocale());
 const router = useRouter();
 
 const authenticationRoutes = ['login', 'twoFactor', 'forgotPassword', 'resetPassword']
-let isAuthenticationPath = computed(() => {
+const isAuthenticationPath = computed(() => {
   return authenticationRoutes.includes(router.currentRoute.value.name as string)
 });
 

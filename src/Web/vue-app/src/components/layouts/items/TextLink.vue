@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts" setup>
-// eslint-disable-next-line
+ 
 defineProps<{
   text: string;
   path?: any;

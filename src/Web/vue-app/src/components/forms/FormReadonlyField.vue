@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import {useI18n} from "vue3-i18n";
 
-// eslint-disable-next-line no-undef
+ 
 defineProps<{
   name: string
   label?:string

@@ -9,7 +9,7 @@
 import IconBack from "@/assets/icons/icon__back.svg";
 import { useRouter } from "vue-router";
 
-// eslint-disable-next-line
+ 
 defineProps<{
   title: string;
 }>();

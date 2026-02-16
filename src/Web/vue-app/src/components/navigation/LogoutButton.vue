@@ -27,7 +27,7 @@ const administratorStore = useAdministratorStore();
 const authenticationService = useAuthenticationService()
 
 async function logout() {
-  let succeededOrNotResponse = await authenticationService.logout()
+  const succeededOrNotResponse = await authenticationService.logout()
   if (succeededOrNotResponse.succeeded) {
     userStore.reset()
     personStore.reset()

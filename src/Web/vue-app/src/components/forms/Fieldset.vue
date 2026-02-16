@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts" setup>
-// eslint-disable-next-line
+ 
 defineProps<{
   title?: string
 }>();
