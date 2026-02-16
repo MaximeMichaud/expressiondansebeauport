@@ -4,7 +4,7 @@ import App from "./App.vue";
 import { pinia } from "@/stores/pinia";
 import { Router } from "./router";
 import i18n from "@/i18n";
-import { createUnhead } from "@unhead/vue";
+import { createHead } from "@unhead/vue/client";
 import { VueWindowSizePlugin } from 'vue-window-size/plugin';
 import Notifications from "@kyvg/vue3-notification";
 import Vue3EasyDataTable from "vue3-easy-data-table";
@@ -12,7 +12,7 @@ import "vue3-easy-data-table/dist/style.css";
 import "@/assets/css/globals.css";
 import VueTippy from 'vue-tippy'
 
-const head = createUnhead();
+const head = createHead();
 
 createApp(App)
   .use(head)
