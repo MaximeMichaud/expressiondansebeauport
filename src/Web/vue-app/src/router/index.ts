@@ -3,6 +3,7 @@ import {Role} from "@/types/enums";
 import {createRouter, createWebHistory} from "vue-router";
 
 import Home from "@/views/public/Home.vue";
+import PublicPage from "@/views/public/PublicPage.vue";
 import Login from "@/views/Login.vue";
 import TwoFactor from "@/views/TwoFactor.vue";
 import ForgotPassword from "@/views/ForgotPassword.vue";
@@ -13,6 +14,8 @@ import Admin from "../views/admin/Admin.vue";
 import AdminMemberIndex from "@/views/admin/members/AdminMemberIndex.vue";
 import AdminAddMemberForm from "@/views/admin/members/AdminAddMemberForm.vue";
 import AdminEditMemberForm from "@/views/admin/members/AdminEditMemberForm.vue";
+import AdminPageIndex from "@/views/admin/pages/AdminPageIndex.vue";
+import AdminEditPageForm from "@/views/admin/pages/AdminEditPageForm.vue";
 
 import {getLocalizedRoutes} from "@/locales/helpers";
 import {useUserStore} from "@/stores/userStore";
@@ -114,8 +117,34 @@ const router = createRouter({
               props: true
             },
           ],
+        },
+        {
+          path: i18n.t("routes.admin.children.pages.path"),
+          alias: getLocalizedRoutes("routes.admin.children.pages.path"),
+          name: "admin.children.pages",
+          component: Admin,
+          children: [
+            {
+              path: "",
+              name: "admin.children.pages.index",
+              component: AdminPageIndex,
+            },
+            {
+              path: i18n.t("routes.admin.children.pages.edit.path"),
+              alias: getLocalizedRoutes("routes.admin.children.pages.edit.path"),
+              name: "admin.children.pages.edit",
+              component: AdminEditPageForm,
+              props: true
+            },
+          ],
         }
       ]
+    },
+    {
+      path: "/:slug",
+      name: "publicPage",
+      component: PublicPage,
+      props: true
     },
   ]
 });

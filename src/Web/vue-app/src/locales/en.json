@@ -49,11 +49,40 @@
             "fullPath": "/administration/members/:id/edit",
             "name": "Edit a member"
           }
+        },
+        "pages": {
+          "path": "pages",
+          "fullPath": "/administration/pages",
+          "name": "Pages",
+          "edit": {
+            "path": ":id/edit",
+            "fullPath": "/administration/pages/:id/edit",
+            "name": "Edit a page"
+          }
         }
       }
     }
   },
   "pages": {
+    "pages": {
+      "title": "Title",
+      "slug": "Slug",
+      "sectionsCount": "Sections",
+      "sections": "Sections",
+      "section": "Section",
+      "sectionTitle": "Section title",
+      "sectionContent": "Content",
+      "sectionImageUrl": "Image URL",
+      "addSection": "Add a section",
+      "removeSection": "Remove",
+      "update": {
+        "validation": {
+          "successMessage": "The page was successfully updated.",
+          "failedMessage": "An error occurred while updating the page.",
+          "pageNotFoundException": "The page could not be found."
+        }
+      }
+    },
     "account": {
       "loginInfos": "Login information"
     },

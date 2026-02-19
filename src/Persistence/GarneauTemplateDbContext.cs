@@ -38,6 +38,8 @@ public class GarneauTemplateDbContext : IdentityDbContext<User, Role, Guid,
 
     public DbSet<Administrator> Administrators { get; set; } = null!;
     public DbSet<Member> Members { get; set; } = null!;
+    public DbSet<Page> Pages { get; set; } = null!;
+    public DbSet<PageSection> PageSections { get; set; } = null!;
     public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
 
     public GarneauTemplateDbContext()
