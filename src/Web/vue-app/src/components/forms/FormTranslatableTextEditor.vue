@@ -59,7 +59,7 @@ function addFormInputRef(el: Element | ComponentPublicInstance | null) {
 }
 
 function validateInput() {
-    formInputs.value.forEach((x: any) => x.validateTextEditor())
+    formInputs.value.forEach((x: any) => x.validateInput())
 }
 
 async function handleValidation(name: string, validationStatus: Status) {

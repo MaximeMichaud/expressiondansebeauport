@@ -67,7 +67,7 @@ export const required: Rule = (value?: string): Status => {
 };
 
 export const requiredTextEditor: Rule = (value: string): Status => {
-  const result = Boolean(value !== "" && value !== "<p><br></p>");
+  const result = Boolean(value !== "" && value !== "<p><br></p>" && value !== "<p></p>");
 
   return {
     valid: result,
