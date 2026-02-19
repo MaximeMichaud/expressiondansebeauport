@@ -52,12 +52,12 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      - name: Configure test database
+        run: cp tests/Tests.Common/appsettings.ci.json tests/Tests.Common/appsettings.json
+
       - run: dotnet restore
 
       - run: dotnet build --no-restore
-
-      - name: Configure test database
-        run: cp tests/Tests.Common/appsettings.ci.json tests/Tests.Common/appsettings.json
 
       - name: Test
         run: dotnet test --no-build
