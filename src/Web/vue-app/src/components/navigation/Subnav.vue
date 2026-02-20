@@ -39,8 +39,8 @@ const router = useRouter();
 
 const directChildRoutes = computed(() => {
   const routes = router.getRoutes();
-
-  return routes.filter(r => r.path == t(`routes.${props.routeKey}.path`))[0].children;
+  const match = routes.find(r => r.path == t(`routes.${props.routeKey}.path`));
+  return match?.children ?? [];
 })
 
 const isExpanded = ref<boolean>(true);

@@ -13,6 +13,13 @@ import Admin from "../views/admin/Admin.vue";
 import AdminMemberIndex from "@/views/admin/members/AdminMemberIndex.vue";
 import AdminAddMemberForm from "@/views/admin/members/AdminAddMemberForm.vue";
 import AdminEditMemberForm from "@/views/admin/members/AdminEditMemberForm.vue";
+import AdminMediaLibrary from "@/views/admin/media/AdminMediaLibrary.vue";
+import AdminPageIndex from "@/views/admin/pages/AdminPageIndex.vue";
+import AdminPageEditor from "@/views/admin/pages/AdminPageEditor.vue";
+import AdminMenuIndex from "@/views/admin/menus/AdminMenuIndex.vue";
+import AdminCustomizer from "@/views/admin/customizer/AdminCustomizer.vue";
+import AdminSiteHealth from "@/views/admin/health/AdminSiteHealth.vue";
+import AdminImportExport from "@/views/admin/importexport/AdminImportExport.vue";
 
 import {getLocalizedRoutes} from "@/locales/helpers";
 import {useUserStore} from "@/stores/userStore";
@@ -88,6 +95,7 @@ const router = createRouter({
         requiredRole: Role.Admin,
         noLinkInBreadcrumbs: true,
       },
+      redirect: {name: 'admin.children.members.index'},
       children: [
         {
           path: i18n.t("routes.admin.children.members.path"),
@@ -114,6 +122,62 @@ const router = createRouter({
               props: true
             },
           ],
+        },
+        {
+          path: i18n.t("routes.admin.children.media.path"),
+          alias: getLocalizedRoutes("routes.admin.children.media.path"),
+          name: "admin.children.media",
+          component: AdminMediaLibrary,
+        },
+        {
+          path: i18n.t("routes.admin.children.pages.path"),
+          alias: getLocalizedRoutes("routes.admin.children.pages.path"),
+          name: "admin.children.pages",
+          component: Admin,
+          children: [
+            {
+              path: "",
+              name: "admin.children.pages.index",
+              component: AdminPageIndex,
+            },
+            {
+              path: i18n.t("routes.admin.children.pages.add.path"),
+              alias: getLocalizedRoutes("routes.admin.children.pages.add.path"),
+              name: "admin.children.pages.add",
+              component: AdminPageEditor,
+            },
+            {
+              path: i18n.t("routes.admin.children.pages.edit.path"),
+              alias: getLocalizedRoutes("routes.admin.children.pages.edit.path"),
+              name: "admin.children.pages.edit",
+              component: AdminPageEditor,
+              props: true
+            },
+          ],
+        },
+        {
+          path: i18n.t("routes.admin.children.menus.path"),
+          alias: getLocalizedRoutes("routes.admin.children.menus.path"),
+          name: "admin.children.menus",
+          component: AdminMenuIndex,
+        },
+        {
+          path: i18n.t("routes.admin.children.customizer.path"),
+          alias: getLocalizedRoutes("routes.admin.children.customizer.path"),
+          name: "admin.children.customizer",
+          component: AdminCustomizer,
+        },
+        {
+          path: i18n.t("routes.admin.children.siteHealth.path"),
+          alias: getLocalizedRoutes("routes.admin.children.siteHealth.path"),
+          name: "admin.children.siteHealth",
+          component: AdminSiteHealth,
+        },
+        {
+          path: i18n.t("routes.admin.children.importExport.path"),
+          alias: getLocalizedRoutes("routes.admin.children.importExport.path"),
+          name: "admin.children.importExport",
+          component: AdminImportExport,
         }
       ]
     },
