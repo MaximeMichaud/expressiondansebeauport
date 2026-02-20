@@ -19,11 +19,11 @@ public class SiteSettingsConfiguration : IEntityTypeConfiguration<SiteSettings>
         builder.HasOne(s => s.LogoMediaFile)
             .WithMany()
             .HasForeignKey(s => s.LogoMediaFileId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasOne(s => s.FaviconMediaFile)
             .WithMany()
             .HasForeignKey(s => s.FaviconMediaFileId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

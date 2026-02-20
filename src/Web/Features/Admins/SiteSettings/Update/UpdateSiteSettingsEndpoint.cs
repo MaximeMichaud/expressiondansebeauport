@@ -78,7 +78,7 @@ public class UpdateSiteSettingsEndpoint : Endpoint<UpdateSiteSettingsRequest, Si
 
     public override async Task HandleAsync(UpdateSiteSettingsRequest req, CancellationToken ct)
     {
-        var settings = _settingsRepository.Get();
+        var settings = await _settingsRepository.Get();
         settings.SetSiteTitle(req.SiteTitle);
         settings.SetTagline(req.Tagline);
         settings.SetPrimaryColor(req.PrimaryColor);

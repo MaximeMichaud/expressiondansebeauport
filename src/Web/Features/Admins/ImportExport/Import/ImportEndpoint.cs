@@ -83,7 +83,7 @@ public class ImportEndpoint : Endpoint<ImportRequest, ImportResponse>
         {
             try
             {
-                var settings = _settingsRepository.Get();
+                var settings = await _settingsRepository.Get();
                 if (settingsEl.TryGetProperty("SiteTitle", out var titleEl))
                     settings.SetSiteTitle(titleEl.GetString()!);
                 if (settingsEl.TryGetProperty("Tagline", out var taglineEl))

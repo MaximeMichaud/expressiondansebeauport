@@ -50,11 +50,11 @@ public class UploadMediaEndpoint : Endpoint<UploadMediaRequest, MediaFileDto>
 
     public override async Task HandleAsync(UploadMediaRequest req, CancellationToken ct)
     {
-        var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(req.File.FileName)}";
         var blobUrl = await _fileStorage.UploadFileAsync(req.File);
+        var storedFileName = Path.GetFileName(blobUrl);
 
         var mediaFile = new MediaFile(
-            uniqueFileName,
+            storedFileName,
             req.File.FileName,
             req.File.ContentType,
             req.File.Length,

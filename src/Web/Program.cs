@@ -1,9 +1,11 @@
 using Application;
+using Application.Interfaces.FileStorage;
 using Domain.Common;
 using Domain.Extensions;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Infrastructure;
+using Infrastructure.ExternalApis.Local;
 using Microsoft.AspNetCore.Diagnostics;
 using Persistence;
 using Serilog;
@@ -16,6 +18,13 @@ builder.Services
     .AddApplicationServices(builder.Configuration)
     .AddPersistenceServices(builder.Configuration)
     .AddInfrastructureServices(builder.Configuration);
+
+// Use local file storage in development (Azure Blob not configured)
+if (builder.Environment.IsDevelopment())
+{
+    var webRootPath = builder.Environment.WebRootPath ?? Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
+    builder.Services.AddScoped<IFileStorageApiConsumer>(_ => new LocalFileStorageConsumer(webRootPath));
+}
 
 builder.Services.AddSignalR();
 builder.Configuration.AddJsonFile("appsettings.local.json", true);
@@ -103,6 +112,6 @@ app.UseFastEndpoints(config => { config.Endpoints.RoutePrefix = "api"; });
 app.UseSwaggerGen();
 
 // SPA fallback - serve Vue app for any non-API route
-app.MapFallbackToFile("vue/index.html");
+app.MapFallbackToFile("index.html");
 
 app.Run();
