@@ -31,24 +31,64 @@
       "name": "Mon compte"
     },
     "admin": {
-      "path": "/administration",
-      "fullPath": "/administration",
+      "path": "/admin",
+      "fullPath": "/admin",
       "name": "Administration",
       "children": {
         "members": {
           "path": "membres",
-          "fullPath": "/administration/membres",
+          "fullPath": "/admin/membres",
           "name": "Membres",
           "add": {
             "path": "ajouter",
-            "fullPath": "/administration/membres/ajouter",
+            "fullPath": "/admin/membres/ajouter",
             "name": "Ajouter un membre"
           },
           "edit": {
             "path": ":id/modifier",
-            "fullPath": "/administration/membres/:id/modifier",
+            "fullPath": "/admin/membres/:id/modifier",
             "name": "Modifier un membre"
           }
+        },
+        "media": {
+          "path": "medias",
+          "fullPath": "/admin/medias",
+          "name": "Médiathèque"
+        },
+        "pages": {
+          "path": "pages",
+          "fullPath": "/admin/pages",
+          "name": "Pages",
+          "add": {
+            "path": "ajouter",
+            "fullPath": "/admin/pages/ajouter",
+            "name": "Ajouter une page"
+          },
+          "edit": {
+            "path": ":id/modifier",
+            "fullPath": "/admin/pages/:id/modifier",
+            "name": "Modifier une page"
+          }
+        },
+        "menus": {
+          "path": "menus",
+          "fullPath": "/admin/menus",
+          "name": "Menus"
+        },
+        "customizer": {
+          "path": "personnalisation",
+          "fullPath": "/admin/personnalisation",
+          "name": "Personnalisation"
+        },
+        "siteHealth": {
+          "path": "sante-du-site",
+          "fullPath": "/admin/sante-du-site",
+          "name": "Santé du site"
+        },
+        "importExport": {
+          "path": "import-export",
+          "fullPath": "/admin/import-export",
+          "name": "Import / Export"
         }
       }
     }
@@ -162,6 +202,143 @@
           "memberNotFoundException": "Le membre n'a pas pu être trouvé."
         }
       }
+    },
+    "media": {
+      "upload": {
+        "validation": {
+          "successMessage": "Le fichier a été téléversé avec succès.",
+          "failedMessage": "Une erreur s'est produite lors du téléchargement."
+        }
+      },
+      "update": {
+        "validation": {
+          "successMessage": "Le média a été modifié avec succès.",
+          "failedMessage": "Une erreur s'est produite lors de la modification."
+        }
+      },
+      "delete": {
+        "confirmation": "Êtes-vous sûr de vouloir supprimer ce fichier?",
+        "validation": {
+          "successMessage": "Le fichier a été supprimé avec succès.",
+          "failedMessage": "Une erreur s'est produite lors de la suppression."
+        }
+      },
+      "altText": "Texte alternatif",
+      "dimensions": "Dimensions"
+    },
+    "pages": {
+      "slug": "Slug",
+      "status": "Statut",
+      "content": "Contenu",
+      "metaDescription": "Meta description",
+      "publishPanel": "Publication",
+      "sortOrder": "Ordre de tri",
+      "allStatuses": "Tous les statuts",
+      "published": "Publié",
+      "draft": "Brouillon",
+      "create": {
+        "title": "Ajouter une page",
+        "validation": {
+          "successMessage": "La page a été créée avec succès.",
+          "failedMessage": "Une erreur s'est produite lors de la création de la page."
+        }
+      },
+      "update": {
+        "title": "Modifier une page",
+        "validation": {
+          "successMessage": "La page a été modifiée avec succès.",
+          "failedMessage": "Une erreur s'est produite lors de la modification de la page."
+        }
+      },
+      "delete": {
+        "confirmation": "Êtes-vous sûr de vouloir supprimer cette page?",
+        "validation": {
+          "successMessage": "La page a été supprimée avec succès.",
+          "failedMessage": "Une erreur s'est produite lors de la suppression de la page."
+        }
+      }
+    },
+    "menus": {
+      "selectMenu": "Sélectionner un menu",
+      "addItem": "Ajouter un élément de menu",
+      "location": "Emplacement",
+      "url": "URL",
+      "editItem": "Modifier l'élément de menu",
+      "deleteMenu": "Supprimer ce menu",
+      "label": "Libellé",
+      "target": "Cible",
+      "locationPrimary": "Principal",
+      "locationFooter": "Pied de page",
+      "targetSelf": "Même fenêtre",
+      "targetBlank": "Nouvelle fenêtre",
+      "create": {
+        "validation": {
+          "successMessage": "Le menu a été créé avec succès.",
+          "failedMessage": "Une erreur s'est produite lors de la création du menu."
+        }
+      },
+      "delete": {
+        "confirmation": "Êtes-vous sûr de vouloir supprimer ce menu?",
+        "validation": {
+          "successMessage": "Le menu a été supprimé avec succès.",
+          "failedMessage": "Une erreur s'est produite lors de la suppression du menu."
+        }
+      },
+      "item": {
+        "create": {
+          "successMessage": "L'élément de menu a été ajouté avec succès.",
+          "failedMessage": "Une erreur s'est produite lors de l'ajout de l'élément."
+        },
+        "update": {
+          "successMessage": "L'élément de menu a été modifié avec succès.",
+          "failedMessage": "Une erreur s'est produite lors de la modification de l'élément."
+        },
+        "delete": {
+          "confirmation": "Êtes-vous sûr de vouloir retirer cet élément de menu?",
+          "successMessage": "L'élément de menu a été retiré avec succès.",
+          "failedMessage": "Une erreur s'est produite lors de la suppression de l'élément."
+        }
+      }
+    },
+    "customizer": {
+      "identity": "Identité du site",
+      "siteTitle": "Titre du site",
+      "tagline": "Slogan",
+      "logo": "Logo",
+      "favicon": "Favicon",
+      "colors": "Couleurs",
+      "primaryColor": "Couleur primaire",
+      "secondaryColor": "Couleur secondaire",
+      "typography": "Typographie",
+      "headingFont": "Police des titres",
+      "bodyFont": "Police du corps",
+      "branding": "Image de marque",
+      "logoUpdated": "Logo mis à jour.",
+      "faviconUpdated": "Favicon mis à jour.",
+      "update": {
+        "validation": {
+          "successMessage": "Les paramètres ont été mis à jour avec succès.",
+          "failedMessage": "Une erreur s'est produite lors de la mise à jour des paramètres."
+        }
+      }
+    },
+    "siteHealth": {
+      "refresh": "Rafraîchir"
+    },
+    "importExport": {
+      "exportTitle": "Exporter",
+      "exportDescription": "Télécharger toutes les données du site en fichier JSON.",
+      "importTitle": "Importer",
+      "importDescription": "Télécharger un fichier JSON pour importer les données du site. Cela fusionnera avec les données existantes.",
+      "exportValidation": {
+        "successMessage": "L'exportation a été complétée avec succès.",
+        "failedMessage": "Une erreur s'est produite lors de l'exportation."
+      },
+      "importConfirmation": "Êtes-vous sûr de vouloir importer ce fichier? Cela peut écraser les données existantes.",
+      "importValidation": {
+        "successMessage": "L'importation a été complétée avec succès.",
+        "failedMessage": "Une erreur s'est produite lors de l'importation."
+      }
     }
   },
   "products": {
@@ -261,6 +438,11 @@
       "followUs": "Suivez-nous",
       "copyright": "Expression Danse de Beauport inc. Tous droits réservés.",
       "description": "École de danse offrant des cours pour tous les âges et tous les niveaux à Beauport, Québec."
+    },
+    "page": {
+      "notFound": "Page introuvable",
+      "notFoundMessage": "La page que vous recherchez n'existe pas ou a été déplacée.",
+      "backHome": "Retour à l'accueil"
     }
   },
   "textEditorLinkPopup": {
