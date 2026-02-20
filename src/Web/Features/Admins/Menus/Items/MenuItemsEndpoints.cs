@@ -83,6 +83,20 @@ public class UpdateMenuItemRequest
     public string Target { get; set; } = "Self";
 }
 
+public class UpdateMenuItemValidator : Validator<UpdateMenuItemRequest>
+{
+    public UpdateMenuItemValidator()
+    {
+        RuleFor(x => x.Label)
+            .NotNull().NotEmpty()
+            .WithErrorCode("LabelRequired")
+            .WithMessage("Label is required.")
+            .MaximumLength(50)
+            .WithErrorCode("LabelTooLong")
+            .WithMessage("Label must be 50 characters or less.");
+    }
+}
+
 public class UpdateMenuItemEndpoint : Endpoint<UpdateMenuItemRequest, NavigationMenuItemDto>
 {
     private readonly GarneauTemplateDbContext _context;
@@ -104,7 +118,7 @@ public class UpdateMenuItemEndpoint : Endpoint<UpdateMenuItemRequest, Navigation
 
     public override async Task HandleAsync(UpdateMenuItemRequest req, CancellationToken ct)
     {
-        var item = _context.NavigationMenuItems.FirstOrDefault(i => i.Id == req.Id && i.MenuId == req.MenuId);
+        var item = await _context.NavigationMenuItems.FirstOrDefaultAsync(i => i.Id == req.Id && i.MenuId == req.MenuId, ct);
         if (item is null)
         {
             await Send.NotFoundAsync(ct);
@@ -151,7 +165,7 @@ public class DeleteMenuItemEndpoint : Endpoint<DeleteMenuItemRequest, EmptyRespo
 
     public override async Task HandleAsync(DeleteMenuItemRequest req, CancellationToken ct)
     {
-        var item = _context.NavigationMenuItems.FirstOrDefault(i => i.Id == req.Id && i.MenuId == req.MenuId);
+        var item = await _context.NavigationMenuItems.FirstOrDefaultAsync(i => i.Id == req.Id && i.MenuId == req.MenuId, ct);
         if (item is null)
         {
             await Send.NotFoundAsync(ct);
@@ -195,7 +209,7 @@ public class ReorderMenuItemsEndpoint : Endpoint<ReorderMenuItemsRequest, EmptyR
 
     public override async Task HandleAsync(ReorderMenuItemsRequest req, CancellationToken ct)
     {
-        var menuItems = _context.NavigationMenuItems.Where(i => i.MenuId == req.MenuId).ToList();
+        var menuItems = await _context.NavigationMenuItems.Where(i => i.MenuId == req.MenuId).ToListAsync(ct);
         foreach (var reorder in req.Items)
         {
             var item = menuItems.FirstOrDefault(i => i.Id == reorder.Id);

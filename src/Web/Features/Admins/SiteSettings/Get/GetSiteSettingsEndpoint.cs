@@ -27,7 +27,7 @@ public class GetSiteSettingsEndpoint : EndpointWithoutRequest<SiteSettingsDto>
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var settings = _settingsRepository.Get();
+        var settings = await _settingsRepository.Get();
         await Send.OkAsync(_mapper.Map<SiteSettingsDto>(settings), cancellation: ct);
     }
 }

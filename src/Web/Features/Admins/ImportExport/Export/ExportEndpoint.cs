@@ -42,7 +42,7 @@ public class ExportEndpoint : EndpointWithoutRequest
         var allMedia = _mediaFileRepository.GetAllPaginated(1, 10000);
         var allPages = _pageRepository.GetAllPaginated(1, 10000);
         var allMenus = _menuRepository.GetAll();
-        var settings = _settingsRepository.Get();
+        var settings = await _settingsRepository.Get();
 
         var export = new
         {

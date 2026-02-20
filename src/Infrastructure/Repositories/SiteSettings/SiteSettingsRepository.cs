@@ -14,18 +14,18 @@ public class SiteSettingsRepository : ISiteSettingsRepository
         _context = context;
     }
 
-    public Domain.Entities.SiteSettings Get()
+    public async Task<Domain.Entities.SiteSettings> Get()
     {
-        var settings = _context.SiteSettings
+        var settings = await _context.SiteSettings
             .Include(s => s.LogoMediaFile)
             .Include(s => s.FaviconMediaFile)
-            .FirstOrDefault();
+            .FirstOrDefaultAsync();
 
         if (settings is not null) return settings;
 
         settings = new Domain.Entities.SiteSettings();
         _context.SiteSettings.Add(settings);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         return settings;
     }
 

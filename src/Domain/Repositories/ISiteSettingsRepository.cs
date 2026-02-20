@@ -4,6 +4,6 @@ namespace Domain.Repositories;
 
 public interface ISiteSettingsRepository
 {
-    SiteSettings Get();
+    Task<SiteSettings> Get();
     Task Update(SiteSettings settings);
 }
