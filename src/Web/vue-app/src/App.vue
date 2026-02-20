@@ -12,14 +12,16 @@ import PublicLayout from "@/components/layouts/PublicLayout.vue";
 import AuthenticationLayout from "@/components/layouts/AuthenticationLayout.vue";
 import DashboardLayout from "@/components/layouts/DashboardLayout.vue";
 import {useUserService} from "@/inversify.config";
+import i18n from "@/i18n";
 
 const router = useRouter();
 const userStore = useUserStore();
 const userService = useUserService();
 
-const publicRoutes = ['home']
+const publicRoutes = ['home', 'publicPage']
 const isPublicPath = computed(() => {
   return publicRoutes.includes(router.currentRoute.value.name as string)
+    || router.currentRoute.value.meta?.public === true
 });
 
 const authenticationRoutes = ['login', 'twoFactor', 'forgotPassword', 'resetPassword']
@@ -33,8 +35,11 @@ onMounted(async () => {
 
   if (!userStore.user.email) {
     const user = await userService.getCurrentUser().catch(() => null)
-    if (user)
+    if (user) {
       userStore.setUser(user)
+    } else if (!isAuthenticationPath.value) {
+      await router.push(i18n.t("routes.login.path"))
+    }
   }
 });
 
