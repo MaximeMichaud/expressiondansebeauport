@@ -39,6 +39,11 @@ public class GarneauTemplateDbContext : IdentityDbContext<User, Role, Guid,
     public DbSet<Administrator> Administrators { get; set; } = null!;
     public DbSet<Member> Members { get; set; } = null!;
     public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
+    public DbSet<MediaFile> MediaFiles { get; set; } = null!;
+    public DbSet<SiteSettings> SiteSettings { get; set; } = null!;
+    public DbSet<NavigationMenu> NavigationMenus { get; set; } = null!;
+    public DbSet<NavigationMenuItem> NavigationMenuItems { get; set; } = null!;
+    public DbSet<Page> Pages { get; set; } = null!;
 
     public GarneauTemplateDbContext()
     {

@@ -9,7 +9,10 @@ using Infrastructure.ExternalApis.Azure.Http;
 using Infrastructure.Mailing;
 using Infrastructure.Repositories.Admins;
 using Infrastructure.Repositories.Authentication;
+using Infrastructure.Repositories.Media;
 using Infrastructure.Repositories.Members;
+using Infrastructure.Repositories.Menus;
+using Infrastructure.Repositories.Pages;
 using Infrastructure.Repositories.Users;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -65,6 +68,10 @@ public static class ConfigureServices
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IMediaFileRepository, MediaFileRepository>();
+        services.AddScoped<ISiteSettingsRepository, Infrastructure.Repositories.SiteSettings.SiteSettingsRepository>();
+        services.AddScoped<INavigationMenuRepository, NavigationMenuRepository>();
+        services.AddScoped<IPageRepository, PageRepository>();
 
         services.AddScoped<IFileStorageApiConsumer, AzureBlobApiConsumer>();
         services.AddScoped<IAzureApiHttpClient, AzureApiHttpClient>();

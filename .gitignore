@@ -689,4 +689,18 @@ src/Web/wwwroot/js
 src/Web/wwwroot/js/*
 src/Web/wwwroot/vue
 src/Web/wwwroot/vue/*
+src/Web/wwwroot/uploads/
+
+# WordPress core files (not part of this project)
+wp-*.php
+wp-admin/
+wp-content/
+wp-includes/
+index.php
+license.txt
+readme.html
+xmlrpc.php
+
+# TaskMaster
+.taskmaster/
 
