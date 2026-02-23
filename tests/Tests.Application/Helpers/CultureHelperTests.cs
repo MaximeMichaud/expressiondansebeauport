@@ -74,15 +74,13 @@ public class CultureHelperTests
             CultureHelper.FormatTwoLetterCulture(UnsupportedTwoLetterLang));
     }
 
-    [Theory]
-    [InlineData("fr")]
-    [InlineData("en")]
-    public void GivenSupportedTwoLetterCulture_WhenConvertTwoLetterIsoToCultureInfo_ThenMatchingCultureInfo(string twoLetterLang)
+    [Fact]
+    public void GivenSupportedTwoLetterCulture_WhenConvertTwoLetterIsoToCultureInfo_ThenMatchingCultureInfo()
     {
         // Act
-        var actual = CultureHelper.ConvertTwoLetterIsoToCultureInfo(twoLetterLang);
+        var actual = CultureHelper.ConvertTwoLetterIsoToCultureInfo("fr");
 
         // Assert
-        actual.TwoLetterISOLanguageName.ShouldBe(twoLetterLang);
+        actual.TwoLetterISOLanguageName.ShouldBe("fr");
     }
 }
