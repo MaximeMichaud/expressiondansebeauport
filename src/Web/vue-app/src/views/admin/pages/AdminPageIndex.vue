@@ -51,13 +51,18 @@ const paginatedResponse = ref<PaginatedResponse<Page>>({totalItems: 0})
 const statusFilter = ref("")
 const pageSize = Tables.DefaultRowsPerPage
 
+const statusLabels: Record<string, string> = {
+  Published: t('pages.pages.published'),
+  Draft: t('pages.pages.draft'),
+}
+
 const tablePages = computed(() => {
   return pageItems.value.map((x: Page) => {
     return {
       id: x.id,
       title: x.title,
       slug: `/${x.slug}`,
-      status: x.status,
+      status: statusLabels[x.status ?? ''] ?? x.status,
       actions: {
         edit: {name: 'admin.children.pages.edit', params: {id: x.id}},
         delete: true
