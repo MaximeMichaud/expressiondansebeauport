@@ -31,24 +31,64 @@
       "name": "My account"
     },
     "admin": {
-      "path": "/administration",
-      "fullPath": "/administration",
+      "path": "/admin",
+      "fullPath": "/admin",
       "name": "Administration",
       "children": {
         "members": {
           "path": "members",
-          "fullPath": "/administration/members",
+          "fullPath": "/admin/members",
           "name": "Members",
           "add": {
             "path": "add",
-            "fullPath": "/administration/members/add",
+            "fullPath": "/admin/members/add",
             "name": "Add a member"
           },
           "edit": {
             "path": ":id/edit",
-            "fullPath": "/administration/members/:id/edit",
+            "fullPath": "/admin/members/:id/edit",
             "name": "Edit a member"
           }
+        },
+        "media": {
+          "path": "media",
+          "fullPath": "/admin/media",
+          "name": "Media Library"
+        },
+        "pages": {
+          "path": "pages",
+          "fullPath": "/admin/pages",
+          "name": "Pages",
+          "add": {
+            "path": "add",
+            "fullPath": "/admin/pages/add",
+            "name": "Add a page"
+          },
+          "edit": {
+            "path": ":id/edit",
+            "fullPath": "/admin/pages/:id/edit",
+            "name": "Edit a page"
+          }
+        },
+        "menus": {
+          "path": "menus",
+          "fullPath": "/admin/menus",
+          "name": "Menus"
+        },
+        "customizer": {
+          "path": "customizer",
+          "fullPath": "/admin/customizer",
+          "name": "Customizer"
+        },
+        "siteHealth": {
+          "path": "site-health",
+          "fullPath": "/admin/site-health",
+          "name": "Site Health"
+        },
+        "importExport": {
+          "path": "import-export",
+          "fullPath": "/admin/import-export",
+          "name": "Import / Export"
         }
       }
     }
@@ -159,6 +199,143 @@
           "memberNotFoundException": "Could not find member."
         }
       }
+    },
+    "media": {
+      "upload": {
+        "validation": {
+          "successMessage": "The file was successfully uploaded.",
+          "failedMessage": "An error occurred during file upload."
+        }
+      },
+      "update": {
+        "validation": {
+          "successMessage": "The media was successfully updated.",
+          "failedMessage": "An error occurred during media update."
+        }
+      },
+      "delete": {
+        "confirmation": "Are you sure you want to delete this file?",
+        "validation": {
+          "successMessage": "The file was successfully deleted.",
+          "failedMessage": "An error occurred during file deletion."
+        }
+      },
+      "altText": "Alt text",
+      "dimensions": "Dimensions"
+    },
+    "pages": {
+      "slug": "Slug",
+      "status": "Status",
+      "content": "Content",
+      "metaDescription": "Meta description",
+      "publishPanel": "Publish",
+      "sortOrder": "Sort order",
+      "allStatuses": "All statuses",
+      "published": "Published",
+      "draft": "Draft",
+      "create": {
+        "title": "Add a page",
+        "validation": {
+          "successMessage": "The page was successfully created.",
+          "failedMessage": "An error occurred during page creation."
+        }
+      },
+      "update": {
+        "title": "Edit a page",
+        "validation": {
+          "successMessage": "The page was successfully updated.",
+          "failedMessage": "An error occurred during page update."
+        }
+      },
+      "delete": {
+        "confirmation": "Are you sure you want to delete this page?",
+        "validation": {
+          "successMessage": "The page was successfully deleted.",
+          "failedMessage": "An error occurred during page deletion."
+        }
+      }
+    },
+    "menus": {
+      "selectMenu": "Select a menu",
+      "addItem": "Add a menu item",
+      "location": "Location",
+      "url": "URL",
+      "editItem": "Edit menu item",
+      "deleteMenu": "Delete this menu",
+      "label": "Label",
+      "target": "Target",
+      "locationPrimary": "Primary",
+      "locationFooter": "Footer",
+      "targetSelf": "Same window",
+      "targetBlank": "New window",
+      "create": {
+        "validation": {
+          "successMessage": "The menu was successfully created.",
+          "failedMessage": "An error occurred during menu creation."
+        }
+      },
+      "delete": {
+        "confirmation": "Are you sure you want to delete this menu?",
+        "validation": {
+          "successMessage": "The menu was successfully deleted.",
+          "failedMessage": "An error occurred during menu deletion."
+        }
+      },
+      "item": {
+        "create": {
+          "successMessage": "The menu item was successfully added.",
+          "failedMessage": "An error occurred during item creation."
+        },
+        "update": {
+          "successMessage": "The menu item was successfully updated.",
+          "failedMessage": "An error occurred during item update."
+        },
+        "delete": {
+          "confirmation": "Are you sure you want to remove this menu item?",
+          "successMessage": "The menu item was successfully removed.",
+          "failedMessage": "An error occurred during item deletion."
+        }
+      }
+    },
+    "customizer": {
+      "identity": "Site Identity",
+      "siteTitle": "Site title",
+      "tagline": "Tagline",
+      "logo": "Logo",
+      "favicon": "Favicon",
+      "colors": "Colors",
+      "primaryColor": "Primary color",
+      "secondaryColor": "Secondary color",
+      "typography": "Typography",
+      "headingFont": "Heading font",
+      "bodyFont": "Body font",
+      "branding": "Branding",
+      "logoUpdated": "Logo updated.",
+      "faviconUpdated": "Favicon updated.",
+      "update": {
+        "validation": {
+          "successMessage": "The settings were successfully updated.",
+          "failedMessage": "An error occurred during settings update."
+        }
+      }
+    },
+    "siteHealth": {
+      "refresh": "Refresh"
+    },
+    "importExport": {
+      "exportTitle": "Export",
+      "exportDescription": "Download all site data as a JSON file.",
+      "importTitle": "Import",
+      "importDescription": "Upload a JSON file to import site data. This will merge with existing data.",
+      "exportValidation": {
+        "successMessage": "Export completed successfully.",
+        "failedMessage": "An error occurred during export."
+      },
+      "importConfirmation": "Are you sure you want to import this file? This may overwrite existing data.",
+      "importValidation": {
+        "successMessage": "Import completed successfully.",
+        "failedMessage": "An error occurred during import."
+      }
     }
   },
   "products": {
@@ -258,6 +435,11 @@
       "followUs": "Follow Us",
       "copyright": "Expression Danse de Beauport inc. All rights reserved.",
       "description": "Dance school offering classes for all ages and levels in Beauport, Quebec."
+    },
+    "page": {
+      "notFound": "Page not found",
+      "notFoundMessage": "The page you are looking for does not exist or has been moved.",
+      "backHome": "Back to home"
     }
   },
   "textEditorLinkPopup": {

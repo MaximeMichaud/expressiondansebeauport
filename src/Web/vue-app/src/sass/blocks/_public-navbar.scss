@@ -17,8 +17,14 @@
     background-color: $color-white;
   }
 
+  &.is-solid {
+    background-color: $color-white;
+    box-shadow: $small-shadow;
+  }
+
   &.is-scrolled,
-  &.is-menu-open {
+  &.is-menu-open,
+  &.is-solid {
     .public-navbar__link {
       color: $color-grey-dark;
 
