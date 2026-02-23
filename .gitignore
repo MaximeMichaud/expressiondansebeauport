@@ -689,4 +689,8 @@ src/Web/wwwroot/js
 src/Web/wwwroot/js/*
 src/Web/wwwroot/vue
 src/Web/wwwroot/vue/*
+src/Web/wwwroot/uploads/
+
+# TaskMaster
+.taskmaster/
 
