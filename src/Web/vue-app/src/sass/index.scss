@@ -9,7 +9,7 @@
 @use "base/util";
 @use "base/icon";
 @use "plugins/vue-notification";
-@use "plugins/vue-quill";
+@use "plugins/tiptap";
 @use "plugins/vue3-easy-data-table";
 @use "plugins/vue-tippy";
 @use "blocks/authentification-page";
@@ -38,3 +38,4 @@
 @use "blocks/public-layout";
 @use "blocks/public-navbar";
 @use "blocks/public-footer";
+
