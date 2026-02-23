@@ -10,9 +10,9 @@ export default defineConfig({
     svgLoader(),
     tailwindcss()
   ],
-  base: '/vue/',
+  base: '/',
   build: {
-    outDir: '../wwwroot/vue',
+    outDir: '../wwwroot',
     emptyOutDir: true,
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
@@ -39,6 +39,11 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false
+      },
+      '/uploads': {
+        target: 'https://localhost:7101',
         changeOrigin: true,
         secure: false
       }

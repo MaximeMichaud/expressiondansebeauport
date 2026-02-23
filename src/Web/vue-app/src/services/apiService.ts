@@ -118,7 +118,7 @@ export class ApiService implements IApiService {
   public headersWithFormDataContentType() {
     return {
       headers: {
-        "Content-Type": '"multipart/form-data"',
+        "Content-Type": 'multipart/form-data',
       },
     };
   }
