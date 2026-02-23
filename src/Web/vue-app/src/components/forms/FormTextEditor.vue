@@ -1,23 +1,78 @@
 <template>
   <div class="form__field" :class="{'error':!status.valid}">
     <FormTextEditorLinkPopup
-      v-if="showQuillEditorLinkPopup"
-      @close-popup="() => showQuillEditorLinkPopup = false"
-      :quill-editor="quillEditor"
+      v-if="showLinkPopup"
+      @close-popup="() => showLinkPopup = false"
+      :editor="editor!"
       :name="name"
     />
-    <QuillEditor
-      ref="quillEditor"
-      :toolbar="toolbarOptions"
-      :modules="modules"
-      content-type="html"
-      v-model:content="contentModel"
-      :id="name"
-      @update:content="handleChange"
-      @blur="handleBlur"
-      :aria-invalid="!status.valid"
-      :aria-describedby="`error__${name}`"
-    />
+
+    <div class="tiptap-wrapper" v-if="editor">
+      <div class="tiptap-toolbar">
+        <button type="button" @click="editor!.chain().focus().unsetAllMarks().clearNodes().run()" :title="t('textEditor.clean')">
+          <i class="tiptap-icon">&#x2715;</i>
+        </button>
+
+        <span class="tiptap-toolbar__separator"></span>
+
+        <button type="button" @click="editor!.chain().focus().toggleBold().run()" :class="{ 'is-active': editor!.isActive('bold') }">
+          <b>B</b>
+        </button>
+        <button type="button" @click="editor!.chain().focus().toggleItalic().run()" :class="{ 'is-active': editor!.isActive('italic') }">
+          <i>I</i>
+        </button>
+
+        <span class="tiptap-toolbar__separator"></span>
+
+        <button type="button" @click="editor!.chain().focus().toggleOrderedList().run()" :class="{ 'is-active': editor!.isActive('orderedList') }">
+          <i class="tiptap-icon">&#x2630;</i>
+        </button>
+        <button type="button" @click="editor!.chain().focus().toggleBulletList().run()" :class="{ 'is-active': editor!.isActive('bulletList') }">
+          <i class="tiptap-icon">&#x2022;</i>
+        </button>
+
+        <span class="tiptap-toolbar__separator"></span>
+
+        <select class="tiptap-toolbar__select" @change="handleHeadingChange">
+          <option value="0" :selected="!editor!.isActive('heading')">{{ t('textEditor.normal') }}</option>
+          <option value="2" :selected="editor!.isActive('heading', { level: 2 })">H2</option>
+          <option value="3" :selected="editor!.isActive('heading', { level: 3 })">H3</option>
+          <option value="4" :selected="editor!.isActive('heading', { level: 4 })">H4</option>
+        </select>
+
+        <span class="tiptap-toolbar__separator"></span>
+
+        <button type="button" @click="setColor('#be1e2c')" :class="{ 'is-active': editor!.isActive('textStyle', { color: '#be1e2c' }) }">
+          <span class="tiptap-color-swatch" style="background:#be1e2c"></span>
+        </button>
+        <button type="button" @click="setColor('#000000')" :class="{ 'is-active': editor!.isActive('textStyle', { color: '#000000' }) }">
+          <span class="tiptap-color-swatch" style="background:#000000"></span>
+        </button>
+
+        <span class="tiptap-toolbar__separator"></span>
+
+        <button type="button" @click="editor!.chain().focus().setTextAlign('left').run()" :class="{ 'is-active': editor!.isActive({ textAlign: 'left' }) }">
+          <i class="tiptap-icon">&#x2261;</i>
+        </button>
+        <button type="button" @click="editor!.chain().focus().setTextAlign('center').run()" :class="{ 'is-active': editor!.isActive({ textAlign: 'center' }) }">
+          <i class="tiptap-icon">&#x2550;</i>
+        </button>
+        <button type="button" @click="editor!.chain().focus().setTextAlign('right').run()" :class="{ 'is-active': editor!.isActive({ textAlign: 'right' }) }">
+          <i class="tiptap-icon">&#x2262;</i>
+        </button>
+
+        <span class="tiptap-toolbar__separator"></span>
+
+        <button type="button" @click="showLinkPopup = true">
+          <i class="tiptap-icon">&#x1F517;</i>
+        </button>
+        <button type="button" @click="addImage">
+          <i class="tiptap-icon">&#x1F5BC;</i>
+        </button>
+      </div>
+
+      <EditorContent :editor="editor" />
+    </div>
 
     <label :for="name">
       {{ label ? label : name }}
@@ -37,19 +92,17 @@
 <script setup lang="ts">
 import { requiredTextEditor, Rule } from '@/validation/rules'
 import { Status, validate } from '@/validation'
-import { ref, watch } from "vue";
-import { QuillEditor } from "@vueup/vue-quill";
-import BlotFormatter from "quill-blot-formatter";
-import MagicUrl from 'quill-magic-url'
+import { ref, watch, onBeforeUnmount } from "vue";
+import { useEditor, EditorContent } from "@tiptap/vue-3";
+import StarterKit from "@tiptap/starter-kit";
+import Link from "@tiptap/extension-link";
+import Image from "@tiptap/extension-image";
+import TextAlign from "@tiptap/extension-text-align";
+import { TextStyle } from "@tiptap/extension-text-style";
+import Color from "@tiptap/extension-color";
 import FormTextEditorLinkPopup from "@/components/forms/FormTextEditorLinkPopup.vue";
-
-//The doc tell us to load styles like this:
-// import "@vueup/vue-quill/dist/vue-quill.snow.css";
-//but they dont show up in prod. So I stocked them in our project directly :
-import "@/assets/plugins/vue-quill/vue-quill.snow.min.css";
 import { useI18n } from "vue3-i18n";
 
- 
 const props = defineProps<{
   name: string;
   label?: string;
@@ -58,89 +111,83 @@ const props = defineProps<{
   rules?: Rule[];
 }>();
 
- 
 defineExpose({
-  //to call validation in parent.
-  validateInput : validateTextEditor
+  validateInput
 })
 
 const { t } = useI18n()
 
-const toolbarOptions = [
-  ["clean"], // remove formatting button
-
-  ["bold", "italic"], // toggled buttons
-
-  [{ list: "ordered" }, { list: "bullet" }],
-  [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
-
-  [{ header: [2, 3, 4, false] }],
-
-  [{ color: ["#be1e2c", "#000000"] }], // dropdown with defaults from theme
-  [{ align: [] }],
-
-  [ 'link', 'image' ],
-];
-
-const modules = [
-  {
-    name: 'blotFormatter', //so images can be resized in editor
-    module: BlotFormatter,
-    options: {}
-  },
-  {
-    name: 'magicUrl', //so urls are recognize when pasted.
-    module: MagicUrl,
-    options: {}
-  }
-]
-
- 
 const emit = defineEmits<{
-  // states that the event has to be called 'update:modelValue'
   (event: "update:modelValue", value: string): void;
   (event: "validated", name: string, validationStatus: Status): void;
 }>();
 
-const contentModel = ref(props.modelValue);
-watch(props, (newProps) => contentModel.value = newProps.modelValue);
 const status = ref<Status>({ valid: true });
 const isRequired = !(props.rules != null && props.rules.length == 0);
+const showLinkPopup = ref(false);
 
-const showQuillEditorLinkPopup = ref<boolean>(false);
-const quillEditor = ref<any>(null);
-watch(quillEditor, (editor) => {
-  //since Quill cant do it itself after 8 (!!!) years, I'm customizing the add link input.
-  const quill = editor?.getQuill();
-  if (!quill) return;
-  const toolbar = quill.getModule("toolbar");
+const editor = useEditor({
+  content: props.modelValue || '',
+  extensions: [
+    StarterKit,
+    Link.configure({
+      openOnClick: false,
+      HTMLAttributes: { target: '_blank' },
+    }),
+    Image.configure({
+      inline: true,
+      allowBase64: true,
+    }),
+    TextAlign.configure({
+      types: ['heading', 'paragraph'],
+    }),
+    TextStyle,
+    Color,
+  ],
+  onUpdate({ editor }) {
+    const html = editor.getHTML();
+    emit("update:modelValue", html);
+    validateInput();
+  },
+  onBlur() {
+    validateInput();
+  },
+});
 
-  if (toolbar) {
-    const showLinkPopup = () => {
-      showQuillEditorLinkPopup.value = true;
-    }
-
-    toolbar.addHandler("link", showLinkPopup)
+watch(() => props.modelValue, (newValue) => {
+  if (editor.value && newValue !== editor.value.getHTML()) {
+    editor.value.commands.setContent(newValue || '', { emitUpdate: false });
   }
 });
 
-function handleChange() {
-  const value = quillEditor.value?.getContents() as string | undefined;
-  validateTextEditor();
+onBeforeUnmount(() => {
+  editor.value?.destroy();
+});
 
-  contentModel.value = value
-  emit("update:modelValue", value ?? '');
+function handleHeadingChange(e: Event) {
+  const level = parseInt((e.target as HTMLSelectElement).value);
+  if (level === 0) {
+    editor.value!.chain().focus().setParagraph().run();
+  } else {
+    editor.value!.chain().focus().toggleHeading({ level: level as 2 | 3 | 4 }).run();
+  }
 }
 
-function handleBlur() {
-  validateTextEditor();
+function setColor(color: string) {
+  editor.value!.chain().focus().setColor(color).run();
 }
 
-function validateTextEditor() {
-  const value = quillEditor.value?.getContents() as string | undefined;
+function addImage() {
+  const url = window.prompt(t('textEditor.imageUrl'));
+  if (url) {
+    editor.value!.chain().focus().setImage({ src: url }).run();
+  }
+}
+
+function validateInput() {
+  const html = editor.value?.getHTML() ?? '';
   const validationRules = props.rules ? props.rules : [requiredTextEditor]
-  status.value = validate(value ?? '', validationRules)
-
+  status.value = validate(html, validationRules)
   emit("validated", props.name, status.value);
 }
 </script>
