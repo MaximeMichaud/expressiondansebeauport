@@ -29,7 +29,7 @@ RUN dotnet restore src/Web/Web.csproj
 
 COPY src/ src/
 
-COPY --from=vue-build /app/wwwroot/vue/ src/Web/wwwroot/vue/
+COPY --from=vue-build /app/wwwroot/ src/Web/wwwroot/
 
 RUN dotnet publish src/Web/Web.csproj -c Release -o /app/publish --no-restore
 
