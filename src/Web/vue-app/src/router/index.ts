@@ -3,6 +3,7 @@ import {Role} from "@/types/enums";
 import {createRouter, createWebHistory} from "vue-router";
 
 import Home from "@/views/public/Home.vue";
+import PublicPage from "@/views/public/PublicPage.vue";
 import Login from "@/views/Login.vue";
 import TwoFactor from "@/views/TwoFactor.vue";
 import ForgotPassword from "@/views/ForgotPassword.vue";
@@ -180,6 +181,15 @@ const router = createRouter({
           component: AdminImportExport,
         }
       ]
+    },
+    {
+      path: "/:slug",
+      name: "publicPage",
+      component: PublicPage,
+      meta: {
+        title: "routes.home.name",
+        public: true
+      }
     },
   ]
 });
