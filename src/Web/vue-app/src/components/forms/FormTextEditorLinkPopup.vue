@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <form class="popup popup--visible" novalidate @submit.prevent="handleSubmit">
     <div class="popup__bg" @click="closePopup"></div>
     <div class="popup__container">
@@ -40,41 +40,41 @@ import { notifyError } from "@/notify"
 import { Status } from "@/validation"
 import FormInput from "@/components/forms/FormInput.vue"
 import { Link } from "@/types";
-import { Quill } from "@vueup/vue-quill";
+import type { Editor } from "@tiptap/vue-3";
+import { DOMSerializer } from "@tiptap/pm/model";
 import FormTooltip from "@/components/forms/FormTooltip.vue";
 
- 
 const props = defineProps<{
   name: string;
-  quillEditor: any
+  editor: Editor
 }>()
 
- 
 const emit = defineEmits<{
   (event: "closePopup"): void
 }>()
 
 const { t } = useI18n()
 
-const selection = ref<any>(null)
-const selectionHTML = ref<any>(null)
+const selectionHTML = ref("")
 const selectionContainsImage = computed(() => selectionHTML.value?.includes("<img"))
-const selectedText = ref<any>(null)
+const selectedText = ref("")
 const link = ref<Link>({
   label: "",
   url: "",
 })
 
-//Functions ======================================
-onMounted( () => {
-  //keep quill editor in memory 
-  const quill = props.quillEditor.getQuill();
-  
-  if(quill) {
-    //if the popup is open, init label as selection if applicable.
-    selection.value = quill.getSelection(true);
-    selectionHTML.value = getSelectionHtml(quill.getContents(selection.value.index, selection.value.length));
-    selectedText.value = quill.getText(selection.value.index, selection.value.length);
+onMounted(() => {
+  const { from, to } = props.editor.state.selection;
+
+  if (from !== to) {
+    selectedText.value = props.editor.state.doc.textBetween(from, to, ' ');
+
+    const fragment = props.editor.state.doc.slice(from, to).content;
+    const tempDiv = document.createElement('div');
+    const serializer = DOMSerializer.fromSchema(props.editor.schema);
+    const dom = serializer.serializeFragment(fragment);
+    tempDiv.appendChild(dom);
+    selectionHTML.value = tempDiv.innerHTML;
 
     if (selectedText.value) {
       link.value.label = selectedText.value;
@@ -82,49 +82,42 @@ onMounted( () => {
   }
 });
 
-function getSelectionHtml(selectedContent:any) {
-  const tempContainer = document.createElement('div')
-  const tempQuill = new Quill(tempContainer);
-  
-  tempQuill.setContents(selectedContent);
-  return tempContainer.querySelector('.ql-editor')?.innerHTML;
-}
-
 function handleSubmit() {
   formInputs.value.forEach((x: any) => x?.validateInput())
-  
+
   if (Object.values(inputValidationStatuses).some(x => x === false)) {
     notifyError(t('global.formErrorNotification'))
     return
   }
 
-  addLinkToQuill();
+  addLinkToEditor();
 }
 
-function addLinkToQuill() {
-  const quill = props.quillEditor.getQuill();
+function addLinkToEditor() {
+  const url = !/^https?:\/\//i.test(link.value.url) ? "https://" + link.value.url.replace("http://", "") : link.value.url;
 
-  if(quill){
-    const url = !/^https?:\/\//i.test(link.value.url) ? "https://" + link.value.url.replace("http://", "") : link.value.url;
-    const content = selectionContainsImage.value ? selectionHTML.value : link.value.label;
-    
-    const linkTag = `<a href="${url}">${content}</a>`
-    
-    selection.value = quill.getSelection(true);
-    
-    //if selected, delete the old text
-    if (selectionContainsImage.value) quill.deleteText(selection.value.index, 1);
-    if (selectedText.value) quill.deleteText(selection.value.index, selectedText.value.length);
-    
-    //then, add the new tag
-    quill.clipboard.dangerouslyPasteHTML(selection.value.index, linkTag, 'user');
+  const { from, to } = props.editor.state.selection;
 
-    if (selectionContainsImage.value) quill.setSelection(selection.value.index, 1);
-    if (link.value.label) quill.setSelection(selection.value.index, link.value.label.length);
+  if (selectionContainsImage.value) {
+    props.editor
+      .chain()
+      .focus()
+      .deleteRange({ from, to })
+      .insertContentAt(from, selectionHTML.value.replace(/<img/, `<a href="${url}"><img`).replace(/>$/, `></a>`))
+      .run();
+  } else {
+    const content = link.value.label;
+    const linkHtml = `<a href="${url}">${content}</a>`;
 
-    //then, close popup
-    closePopup();
+    props.editor
+      .chain()
+      .focus()
+      .deleteRange({ from, to })
+      .insertContentAt(from, linkHtml)
+      .run();
   }
+
+  closePopup();
 }
 
 function closePopup() {
