@@ -24,31 +24,17 @@
         <FormInput
           v-model="product.nameFr"
           type="text"
-          name="name-fr"
+          name="name"
           :ref="addFormInputRef"
-          :label="t(props.nameFrLabel ?? 'products.form.name-fr')"
-          @validated="handleValidation" />
-        <FormInput
-          v-model="product.nameEn"
-          type="text"
-          name="name-en"
-          :ref="addFormInputRef"
-          :label="t(props.nameEnLabel ?? 'products.form.name-en')"
+          :label="t(props.nameLabel ?? 'products.form.name')"
           @validated="handleValidation" />
       </FormRow>
 
       <FormTextEditor
         v-model="product.descriptionFr"
         :ref="addFormInputRef"
-        name="description-fr"
-        :label="t(props.descriptionFrLabel ?? 'products.form.description-fr')"
-        @validated="handleValidation"
-      />
-      <FormTextEditor
-        v-model="product.descriptionEn"
-        :ref="addFormInputRef"
-        name="description-en"
-        :label="t(props.descriptionEnLabel ?? 'products.form.description-en')"
+        name="description"
+        :label="t(props.descriptionLabel ?? 'products.form.description')"
         @validated="handleValidation"
       />
 
@@ -91,10 +77,8 @@ const { t } = useI18n();
 const props = defineProps<{
     product: Product,
     title: string
-    nameFrLabel?: string
-    nameEnLabel?: string
-    descriptionFrLabel?: string
-    descriptionEnLabel?: string
+    nameLabel?: string
+    descriptionLabel?: string
 }>()
 
  
