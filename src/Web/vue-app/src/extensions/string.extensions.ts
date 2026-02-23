@@ -53,7 +53,6 @@ String.prototype.extractFileName = function (): string {
 
 String.prototype.toLocalDateTimeString = function toLocalDateTimeString(): string {
   const localDateTime = new Date(this as string)
-  const locale = `${i18n.getLocale()}-CA`
-  const time = localDateTime.toLocaleTimeString(locale, {hour: "2-digit", minute: "2-digit", hour12: false})
-  return `${localDateTime.toLocaleDateString(locale)} ${i18n.t('global.at')} ${time}`
+  const time = localDateTime.toLocaleTimeString("fr-CA", {hour: "2-digit", minute: "2-digit", hour12: false})
+  return `${localDateTime.toLocaleDateString("fr-CA")} ${i18n.t('global.at')} ${time}`
 };
