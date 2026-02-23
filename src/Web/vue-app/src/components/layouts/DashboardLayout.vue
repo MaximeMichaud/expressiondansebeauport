@@ -10,7 +10,6 @@
       <div>
         <div class="dashboard__content-header" v-if="!isMobile">
           <UserAvatar/>
-          <LangSwitcher/>
         </div>
 
         <RouterView v-slot="{Component}">
@@ -37,7 +36,6 @@ import Notifications from "@/components/layouts/items/Notifications.vue";
 import Loader from "@/components/layouts/items/Loader.vue";
 import {useWindowSize} from "vue-window-size";
 import UserAvatar from "@/components/account/UserAvatar.vue";
-import LangSwitcher from "@/components/layouts/items/LangSwitcher.vue";
 import {Administrator, Member} from "@/types";
 import {Role} from "@/types/enums";
 import {useAdministratorStore} from "@/stores/administratorStore";

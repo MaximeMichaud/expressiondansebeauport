@@ -29,7 +29,6 @@
           </a>
         </div>
 
-        <LangSwitcher class="public-footer__lang-switcher" />
       </div>
     </div>
 
@@ -41,7 +40,6 @@
 
 <script lang="ts" setup>
 import { useI18n } from "vue3-i18n";
-import LangSwitcher from "@/components/layouts/items/LangSwitcher.vue";
 import LogoEdb from "@/assets/icons/logo__edb.svg";
 import IconFacebook from "vue-material-design-icons/Facebook.vue";
 import IconInstagram from "vue-material-design-icons/Instagram.vue";
