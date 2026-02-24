@@ -95,7 +95,28 @@
   },
   "pages": {
     "account": {
-      "loginInfos": "Informations de connexion"
+      "personalInfo": "Informations personnelles",
+      "personalInfoSuccess": "Informations mises à jour avec succès.",
+      "personalInfoError": "Une erreur est survenue lors de la mise à jour des informations.",
+      "loginInfos": "Informations de connexion",
+      "changePassword": "Changer le mot de passe",
+      "currentPassword": "Mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "newPasswordConfirmation": "Confirmer le nouveau mot de passe",
+      "validation": {
+        "success": "Mot de passe modifié avec succès.",
+        "errorOccured": "Une erreur est survenue lors du changement du mot de passe.",
+        "invalidCurrentPassword": "Le mot de passe actuel est requis.",
+        "invalidNewPassword": "Le nouveau mot de passe est requis.",
+        "invalidNewPasswordConfirmation": "La confirmation du nouveau mot de passe est requise.",
+        "passwordAndConfirmationMustMatch": "Le nouveau mot de passe et sa confirmation doivent être identiques.",
+        "passwordMismatch": "Le mot de passe actuel est incorrect.",
+        "passwordTooShort": "Doit contenir au moins 8 caractères.",
+        "passwordRequiresNonAlphanumeric": "Doit contenir un caractère spécial.",
+        "passwordRequiresDigit": "Doit contenir un chiffre.",
+        "passwordRequiresUpper": "Doit contenir une majuscule.",
+        "passwordRequiresLower": "Doit contenir une minuscule."
+      }
     },
     "login": {
       "username": "Nom d'utilisateur",
@@ -223,6 +244,7 @@
           "failedMessage": "Une erreur s'est produite lors de la suppression."
         }
       },
+      "type": "Type",
       "altText": "Texte alternatif",
       "dimensions": "Dimensions"
     },
@@ -230,7 +252,7 @@
       "slug": "Slug",
       "status": "Statut",
       "content": "Contenu",
-      "metaDescription": "Meta description",
+      "metaDescription": "Méta description",
       "publishPanel": "Publication",
       "sortOrder": "Ordre de tri",
       "allStatuses": "Tous les statuts",
@@ -358,7 +380,8 @@
   },
   "user": {
     "roles": {
-      "admin": "Administrateur"
+      "admin": "Administrateur",
+      "member": "Membre"
     }
   },
   "global": {
@@ -375,6 +398,7 @@
     "lastName": "Nom",
     "fullName": "Nom complet",
     "email": "Courriel",
+    "phone": "Téléphone",
     "phoneNumber": "Numéro de téléphone",
     "phoneExtension": "Poste",
     "apartment": "Numéro de bureau/suite",
@@ -445,7 +469,7 @@
   "textEditorLinkPopup": {
     "addLink": "Ajouter un lien",
     "label": "Libellé",
-    "url": "Url",
+    "url": "URL",
     "image": "Le lien sera ajouté sur l'image sélectionnée.",
     "tooltip": "Pour éditer le lien sur une image, cliquer sur la bordure bleue autour de celle-ci."
   },

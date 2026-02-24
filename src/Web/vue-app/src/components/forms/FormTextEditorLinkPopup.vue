@@ -25,7 +25,7 @@
                      @validated="handleValidation"/>
           <div class="form__submit">
             <button class="btn btn--fullscreen">{{ t('global.add') }}</button>
-            <button class="btn btn--fullscreen btn--red" type="button" @click="closePopup">{{ t('global.cancel') }}</button>
+            <button class="btn btn--fullscreen" type="button" @click="closePopup">{{ t('global.cancel') }}</button>
           </div>
         </div>
       </div>
@@ -86,7 +86,6 @@ function handleSubmit() {
   formInputs.value.forEach((x: any) => x?.validateInput())
 
   if (Object.values(inputValidationStatuses).some(x => x === false)) {
-    notifyError(t('global.formErrorNotification'))
     return
   }
 

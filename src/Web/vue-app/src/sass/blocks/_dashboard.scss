@@ -9,14 +9,14 @@
     flex: 1;
     padding: 24px 0 48px;
     @include pagePadding;
-    background-color: $color-green-lighter;
+    background-color: $color-grey-lighter;
   }
 
   &__content-header {
     display: flex;
     justify-content: flex-end;
     gap: 32px;
-    margin-bottom: 60px;
+    margin-bottom: 32px;
   }
 }
 
@@ -29,6 +29,7 @@
 
     &__content {
       padding-left: 40px;
+      padding-right: 40px;
     }
   }
 }

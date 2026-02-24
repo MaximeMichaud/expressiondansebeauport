@@ -1,23 +1,18 @@
 <template>
-  <router-link v-if="path" :to="path" class="btn btn--icon-translate-hover">
+  <router-link v-if="path" :to="path" class="btn">
     {{ name }}
-    <IconArrow class="icon" />
   </router-link>
   <a
     v-else-if="href"
     :href="href"
     target="_blank"
-    class="btn btn--icon-translate-hover"
+    class="btn"
   >
     {{ name }}
-    <IconArrow class="icon" />
   </a>
 </template>
 
 <script lang="ts" setup>
-import IconArrow from "@/assets/icons/icon__arrow.svg";
-
- 
 defineProps<{
   name: string;
   path?: any;

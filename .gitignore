@@ -694,3 +694,4 @@ src/Web/wwwroot/uploads/
 # TaskMaster
 .taskmaster/
 
+.DS_Store

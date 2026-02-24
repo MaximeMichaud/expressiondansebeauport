@@ -130,7 +130,7 @@
     transition: color 0.3s ease;
 
     &:hover {
-      color: $color-grey;
+      color: rgba($color-white, 0.75);
     }
   }
 
@@ -141,8 +141,8 @@
     font-size: rem(14);
     color: $color-white;
     background-color: $color-green;
-    padding: 10px 24px;
-    border-radius: $common-border-radius;
+    padding: 10px 28px;
+    border-radius: 100px;
     text-decoration: none;
     text-align: center;
     transition: background-color 0.3s ease;
