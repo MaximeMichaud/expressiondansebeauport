@@ -61,10 +61,10 @@ public class GarneauTemplateDbContextInitializer
 
     private async Task SeedRoles()
     {
-        if (!_roleManager.RoleExistsAsync(Roles.ADMINISTRATOR).Result)
+        if (!await _roleManager.RoleExistsAsync(Roles.ADMINISTRATOR))
             await _roleManager.CreateAsync(new Role { Name = Roles.ADMINISTRATOR, NormalizedName = Roles.ADMINISTRATOR.Normalize() });
 
-        if (!_roleManager.RoleExistsAsync(Roles.MEMBER).Result)
+        if (!await _roleManager.RoleExistsAsync(Roles.MEMBER))
             await _roleManager.CreateAsync(new Role { Name = Roles.MEMBER, NormalizedName = Roles.MEMBER.Normalize() });
     }
 
