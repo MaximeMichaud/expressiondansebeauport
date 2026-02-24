@@ -83,16 +83,6 @@
     }
   }
 
-  &__lang-switcher {
-    .lang-switcher {
-      color: $color-grey;
-
-      .lang-switcher__option {
-        @include colorHover($color-white);
-      }
-    }
-  }
-
   &__copyright {
     border-top: 1px solid $color-grey-medium;
     @include pagePadding;

@@ -1,8 +1,6 @@
 ﻿using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using Application.Helpers;
-using Domain.Common;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace Application.Extensions;
@@ -31,13 +29,6 @@ public static class StringExtensions
     public static int IntTryParseOrZero(this string? value)
     {
         return int.TryParse(value, out var number) ? number : 0;
-    }
-
-    public static string GetNameForCurrentTwoLetterLang(this TranslatableString? value)
-    {
-        return CultureHelper.GetCurrentTwoLetterLang() == "fr"
-            ? value!.Fr
-            : value!.En;
     }
 
     public static decimal ExtractPriceFromText(string? text)
