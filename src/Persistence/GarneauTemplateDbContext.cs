@@ -74,11 +74,14 @@ public class GarneauTemplateDbContext : IdentityDbContext<User, Role, Guid,
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.AddInterceptors(
-            _auditableAndSoftDeletableEntitySaveChangesInterceptor,
-            _auditableEntitySaveChangesInterceptor,
-            _userSaveChangesInterceptor,
-            _entitySaveChangesInterceptor);
+        if (_auditableAndSoftDeletableEntitySaveChangesInterceptor != null)
+        {
+            optionsBuilder.AddInterceptors(
+                _auditableAndSoftDeletableEntitySaveChangesInterceptor,
+                _auditableEntitySaveChangesInterceptor,
+                _userSaveChangesInterceptor,
+                _entitySaveChangesInterceptor);
+        }
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken? cancellationToken = null)
