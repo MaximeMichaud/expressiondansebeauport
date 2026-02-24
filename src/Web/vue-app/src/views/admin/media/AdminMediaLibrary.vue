@@ -2,14 +2,13 @@
   <div class="content-grid content-grid--subpage">
     <div class="content-grid__header">
       <h1 class="back-link">{{ t('routes.admin.children.media.name') }}</h1>
-    </div>
-    <div class="content-grid__actions">
-      <label class="btn btn--primary">
+      <label class="btn">
         {{ t('global.addFile') }}
         <input type="file" accept="image/*,application/pdf" multiple hidden @change="onFilesSelected" />
       </label>
     </div>
     <Loader v-if="isLoading" />
+    <p v-else-if="!mediaFiles.length" class="media-empty">{{ t('global.table.noData') }}</p>
     <div v-else class="media-grid">
       <div
         v-for="media in mediaFiles"
@@ -32,13 +31,13 @@
       </div>
       <div class="media-detail__info">
         <p><strong>{{ t('global.name') }}:</strong> {{ selectedMedia.originalFileName }}</p>
-        <p><strong>Type:</strong> {{ selectedMedia.contentType }}</p>
+        <p><strong>{{ t('pages.media.type') }} :</strong> {{ selectedMedia.contentType }}</p>
         <p v-if="selectedMedia.width"><strong>{{ t('pages.media.dimensions') }}:</strong> {{ selectedMedia.width }} x {{ selectedMedia.height }}px</p>
         <div class="media-detail__alt">
           <label>{{ t('pages.media.altText') }}</label>
-          <input type="text" v-model="editAltText" @blur="saveAltText" />
+          <input type="text" v-model="editAltText" @blur="saveAltText" placeholder="Ex: Photo de groupe lors du spectacle de juin" />
         </div>
-        <button class="btn btn--danger" @click="onDelete">{{ t('global.delete') }}</button>
+        <button class="btn" @click="onDelete">{{ t('global.delete') }}</button>
       </div>
     </div>
 
@@ -54,7 +53,7 @@
 import {useI18n} from "vue3-i18n"
 import {onMounted, ref} from "vue"
 import {useMediaService} from "@/inversify.config"
-import {notifyError, notifySuccess} from "@/notify"
+import {notifySuccess} from "@/notify"
 import {MediaFile} from "@/types/entities"
 import {PaginatedResponse} from "@/types/responses"
 import Loader from "@/components/layouts/items/Loader.vue"
@@ -109,8 +108,6 @@ async function onFilesSelected(event: Event) {
     const response = await mediaService.upload(file)
     if (response?.id) {
       notifySuccess(t('pages.media.upload.validation.successMessage'))
-    } else {
-      notifyError(t('pages.media.upload.validation.failedMessage'))
     }
   }
   input.value = ""
@@ -125,8 +122,6 @@ async function saveAltText() {
   if (response && response.succeeded) {
     selectedMedia.value.altText = editAltText.value
     notifySuccess(t('pages.media.update.validation.successMessage'))
-  } else {
-    notifyError(t('pages.media.update.validation.failedMessage'))
   }
 }
 
@@ -141,13 +136,17 @@ async function onDelete() {
     mediaFiles.value = mediaFiles.value.filter(m => m.id !== selectedMedia.value?.id)
     selectedMedia.value = null
     notifySuccess(t('pages.media.delete.validation.successMessage'))
-  } else {
-    notifyError(t('pages.media.delete.validation.failedMessage'))
   }
 }
 </script>
 
 <style scoped>
+.media-empty {
+  color: #5c5c5c;
+  font-size: 0.875rem;
+  padding: 16px 0;
+}
+
 .media-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -251,5 +250,22 @@ async function onDelete() {
 .media-pagination button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+@media (max-width: 767px) {
+  .media-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  }
+
+  .media-detail {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .media-detail__preview img {
+    max-width: 100%;
+    max-height: 180px;
+  }
 }
 </style>

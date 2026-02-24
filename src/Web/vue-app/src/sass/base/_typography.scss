@@ -5,17 +5,18 @@
 h1,
 .h1-like {
   font-weight: 700;
-  font-size: rem(20);
-  line-height: rem(20);
+  font-size: rem(28);
+  line-height: rem(34);
   text-transform: none;
 }
 
 h2,
 .h2-like {
   font-weight: 700;
-  font-size: rem(20);
-  line-height: rem(20);
+  font-size: rem(22);
+  line-height: rem(28);
   text-transform: none;
+  margin-bottom: 1rem;
 }
 
 h3,
@@ -24,6 +25,7 @@ h3,
   font-size: rem(18);
   line-height: rem(18);
   text-transform: none;
+  margin-bottom: 0.75rem;
 }
 
 
@@ -34,6 +36,7 @@ h4,
   line-height: rem(14);
   color: $color-grey-medium;
   text-transform: none;
+  margin-bottom: 0.5rem;
 
   @include breakpoint(md-up) {
     font-size: rem(16);
@@ -48,6 +51,7 @@ h5,
   line-height: rem(15);
   color: $color-grey-dark;
   text-transform: none;
+  margin-bottom: 0.375rem;
 }
 
 // text standard styles

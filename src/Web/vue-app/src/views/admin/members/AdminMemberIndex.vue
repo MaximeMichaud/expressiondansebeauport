@@ -2,15 +2,13 @@
   <div class="content-grid content-grid--subpage content-grid--subpage-table">
     <div class="content-grid__header">
       <h1 class="back-link">{{ t(`routes.admin.children.members.name`) }}</h1>
-      <div class="content-grid__filters">
+      <div class="content-grid__header-actions">
         <SearchInput v-model="searchValue"/>
+        <BtnLink
+            :name="t('routes.admin.children.members.add.name')"
+            :path="{ path: t('routes.admin.children.members.add.fullPath') }"
+        />
       </div>
-    </div>
-    <div class="content-grid__actions">
-      <BtnLink
-          :name="t('routes.admin.children.members.add.name')"
-          :path="{ path: t('routes.admin.children.members.add.fullPath') }"
-      />
     </div>
     <Loader v-if="preventMultipleSubmit" />
     <DataTable
@@ -29,7 +27,7 @@
 import {useI18n} from "vue3-i18n";
 import {computed, onMounted, ref, watch} from "vue";
 import {useMemberService} from "@/inversify.config";
-import {notifyError, notifySuccess} from "@/notify";
+import {notifySuccess} from "@/notify";
 import {Member} from "@/types/entities";
 import {PaginatedResponse} from "@/types/responses";
 import SearchInput from "@/components/layouts/items/SearchInput.vue";
@@ -56,6 +54,7 @@ const tableMembers = computed(() => {
       firstName: x.firstName,
       lastName: x.lastName,
       email: x.email,
+      phoneNumber: x.phoneNumber ?? '—',
       actions: {
         edit: {name: `admin.children.members.edit`, params: {id: x.id}},
         delete: true
@@ -100,14 +99,8 @@ async function onDelete(item: any) {
     pageMembers.value.splice(memberIndex, 1)
     notifySuccess(t('pages.members.delete.validation.successMessage'))
     preventMultipleSubmit.value = false;
-  } else {
-    const errorMessages = succeededOrNotResponse.getErrorMessages('pages.members.delete.validation');
-    if (errorMessages.length == 0)
-      notifyError(t('validation.errorOccured'))
-    else
-      notifyError(errorMessages[0])
-    preventMultipleSubmit.value = false;
   }
+  preventMultipleSubmit.value = false;
 }
 
 const memberHeader = computed(() => [
@@ -124,13 +117,32 @@ const memberHeader = computed(() => [
   {
     text: t("global.email"),
     value: "email",
-    width: 125,
+    width: 150,
+  },
+  {
+    text: t("global.phone"),
+    value: "phoneNumber",
+    width: 150,
   },
   {
     text: t("global.table.actions"),
     value: "actions",
-    width: 150
+    width: 120
   },
 ])
 
 </script>
+
+<style scoped>
+.content-grid__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (max-width: 767px) {
+  .content-grid__header-actions {
+    flex-wrap: wrap;
+  }
+}
+</style>

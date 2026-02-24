@@ -20,6 +20,8 @@ public class MemberRepository : IMemberRepository
     {
         var query = _context.Members
             .Include(x => x.User)
+            .ThenInclude(x => x.UserRoles)
+            .ThenInclude(x => x.Role)
             .AsNoTracking();
         var pageItems = query.OrderByDescending(x => x.Created).Skip((pageIndex-1) * pageSize).Take(pageSize);
         return new PaginatedList<Member>(pageItems.ToList(), query.Count());

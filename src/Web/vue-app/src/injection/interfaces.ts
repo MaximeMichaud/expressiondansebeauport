@@ -1,5 +1,6 @@
  
 import {
+  IChangePasswordRequest,
   IForgotPasswordRequest,
   ILoginRequest,
   IResetPasswordRequest,
@@ -30,6 +31,8 @@ export interface IAuthenticationService {
   forgotPassword(request: IForgotPasswordRequest): Promise<SucceededOrNotResponse>
 
   resetPassword(request: IResetPasswordRequest): Promise<SucceededOrNotResponse>
+
+  changePassword(request: IChangePasswordRequest): Promise<SucceededOrNotResponse>
 
   logout(): Promise<SucceededOrNotResponse>
 }

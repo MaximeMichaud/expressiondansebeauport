@@ -1,25 +1,28 @@
+@use "sass:color";
 @use "../tools" as *;
 .btn {
   display: flex;
   gap: 12px;
-  padding: 12px 8px;
-  font-size: rem(13);
-  line-height: rem(15);
+  padding: 10px 16px;
+  font-size: rem(15);
+  line-height: rem(18);
   font-weight: 700;
-  background-color: $color-green-light;
+  background-color: $color-green;
   border: 1px solid $color-green;
   border-radius: $common-border-radius;
   cursor: pointer;
   width: fit-content;
   text-transform: none;
-  color: $color-text;
+  color: $color-white;
   align-items: center;
+  @include btnHover($color-green-dark, $color-white, $color-green-dark);
 
   //States ----------
   &--red {
     border-color: $color-red;
-    background-color: rgba($color-red, 0.5);
-    @include btnHover($color-red, $color-text)
+    background-color: $color-red;
+    color: $color-white;
+    @include btnHover(color.adjust($color-red, $lightness: -8%), $color-white, color.adjust($color-red, $lightness: -8%))
   }
 
   &--square {

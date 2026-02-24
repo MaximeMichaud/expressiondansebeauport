@@ -1,11 +1,12 @@
 ﻿<template>
   <div class="content-grid content-grid--subpage">
     <div class="content-grid__header">
-      <h1>{{t(`routes.admin.children.members.add.name`)}}</h1>
+      <h1 class="back-link">
+        <BackLink />
+        {{t(`routes.admin.children.members.add.name`)}}
+      </h1>
     </div>
 
-    <BackLink />
-    
     <Card>
       <Loader v-if="preventMultipleSubmit" />
       <MemberForm @formSubmit="handleSubmit"/>
@@ -17,7 +18,7 @@
 import {useI18n} from "vue3-i18n";
 import {useRouter} from "vue-router";
 import {useMemberService} from "@/inversify.config";
-import {notifyError, notifySuccess} from "@/notify";
+import {notifySuccess} from "@/notify";
 import {Member} from "@/types";
 import MemberForm from "@/components/members/MemberForm.vue";
 import Card from "@/components/layouts/items/Card.vue";
@@ -46,12 +47,6 @@ async function handleSubmit(member: Member) {
     }, 1500);
     return;
   }
-
-  const errorMessages = succeededOrNotResponse.getErrorMessages('pages.members.create.validation');
-  if (errorMessages.length == 0)
-    notifyError(t('pages.members.create.validation.failedMessage'))
-  else
-    notifyError(errorMessages[0])
 
   preventMultipleSubmit.value = false;
 }

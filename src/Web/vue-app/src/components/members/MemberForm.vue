@@ -7,6 +7,7 @@
                  :rules="[required]"
                  name="firstName"
                  type="text"
+                 placeholder="Jean"
                  @validated="handleValidation"/>
       <FormInput :ref="addFormInputRef"
                  v-model="member.lastName"
@@ -14,6 +15,7 @@
                  :rules="[required]"
                  name="lastName"
                  type="text"
+                 placeholder="Tremblay"
                  @validated="handleValidation"/>
       <FormInput :ref="addFormInputRef"
                  v-model="member.email"
@@ -21,6 +23,7 @@
                  :rules="[required]"
                  name="email"
                  type="text"
+                 placeholder="jean.tremblay@exemple.com"
                  @validated="handleValidation"/>
     </FormRow>
     <FormRow :withThreeColumns="true">
@@ -38,6 +41,7 @@
                    :label="t('global.phoneExtension')"
                    name="phoneExtension"
                    type="number"
+                   placeholder="123"
                    @validated="handleValidation"/>
       </div>
       <FormInput :ref="addFormInputRef"
@@ -45,6 +49,7 @@
                  :label="t('global.apartment')"
                  name="apartment"
                  type="number"
+                 placeholder="4"
                  @validated="handleValidation"/>
       <FormInput :ref="addFormInputRef"
                  v-model="member.street"
@@ -52,6 +57,7 @@
                  :rules="[required]"
                  name="street"
                  type="text"
+                 placeholder="123, rue des Lilas"
                  @validated="handleValidation"/>
     </FormRow>
     <FormRow :withThreeColumns="true">
@@ -61,6 +67,7 @@
                  :rules="[required]"
                  name="city"
                  type="text"
+                 placeholder="Québec"
                  @validated="handleValidation"/>
       <FormInput :ref="addFormInputRef"
                  v-model="member.zipCode"
@@ -68,9 +75,10 @@
                  :rules="[required, mustMatchZipCodeFormat]"
                  name="zipCode"
                  type="zip"
+                 placeholder="G1A 1A1"
                  @validated="handleValidation"/>
     </FormRow>
-    <button class="form__submit btn btn--fullscreen">{{ t('global.save') }}</button>
+    <button class="form__submit btn">{{ t('global.save') }}</button>
   </form>
 </template>
 
@@ -117,7 +125,6 @@ async function handleValidation(name: string, validationStatus: Status) {
 async function handleSubmit() {
   formInputs.value.forEach((x: any) => x.validateInput())
   if (Object.values(inputValidationStatuses).some(x => x === false)) {
-    notifyError(t('validation.errorsInForm'))
     return
   }
   emit("formSubmit", member.value)

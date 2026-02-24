@@ -2,16 +2,16 @@
   <div class="content-grid content-grid--subpage content-grid--subpage-table">
     <div class="content-grid__header">
       <h1 class="back-link">{{ t('routes.admin.children.pages.name') }}</h1>
-      <div class="content-grid__filters">
-        <select v-model="statusFilter" @change="loadPages(1, pageSize)">
-          <option value="">{{ t('pages.pages.allStatuses') }}</option>
-          <option value="Published">{{ t('pages.pages.published') }}</option>
-          <option value="Draft">{{ t('pages.pages.draft') }}</option>
-        </select>
+      <div class="hidden md:block">
+        <BtnLink
+          :name="t('routes.admin.children.pages.add.name')"
+          :path="{ path: t('routes.admin.children.pages.add.fullPath') }"
+        />
       </div>
     </div>
-    <div class="content-grid__actions">
+    <div class="md:hidden">
       <BtnLink
+        class="mt-10"
         :name="t('routes.admin.children.pages.add.name')"
         :path="{ path: t('routes.admin.children.pages.add.fullPath') }"
       />
@@ -33,7 +33,7 @@
 import {useI18n} from "vue3-i18n"
 import {computed, onMounted, ref} from "vue"
 import {usePageService} from "@/inversify.config"
-import {notifyError, notifySuccess} from "@/notify"
+import {notifySuccess} from "@/notify"
 import {Page} from "@/types/entities"
 import {PaginatedResponse} from "@/types/responses"
 import DataTable from "@/components/layouts/items/DataTable.vue"
@@ -48,7 +48,6 @@ const preventMultipleSubmit = ref(false)
 const pagesAreLoading = ref(false)
 const pageItems = ref<Page[]>([])
 const paginatedResponse = ref<PaginatedResponse<Page>>({totalItems: 0})
-const statusFilter = ref("")
 const pageSize = Tables.DefaultRowsPerPage
 
 const statusLabels: Record<string, string> = {
@@ -63,6 +62,7 @@ const tablePages = computed(() => {
       title: x.title,
       slug: `/${x.slug}`,
       status: statusLabels[x.status ?? ''] ?? x.status,
+      statusRaw: x.status,
       actions: {
         edit: {name: 'admin.children.pages.edit', params: {id: x.id}},
         delete: true
@@ -77,7 +77,7 @@ onMounted(async () => {
 
 async function loadPages(pageIndex: number, size: number) {
   pagesAreLoading.value = true
-  const response = await pageService.getAll(pageIndex, size, statusFilter.value || undefined)
+  const response = await pageService.getAll(pageIndex, size)
   if (response) {
     paginatedResponse.value = response
     if (response.items)
@@ -101,16 +101,14 @@ async function onDelete(item: any) {
     const index = pageItems.value.findIndex(x => x.id === item.id)
     if (index !== -1) pageItems.value.splice(index, 1)
     notifySuccess(t('pages.pages.delete.validation.successMessage'))
-  } else {
-    notifyError(t('pages.pages.delete.validation.failedMessage'))
   }
   preventMultipleSubmit.value = false
 }
 
 const pageHeaders = computed(() => [
-  {text: t("global.title"), value: 'title', width: 200},
-  {text: t("pages.pages.slug"), value: "slug", width: 200},
-  {text: t("pages.pages.status"), value: "status", width: 100},
-  {text: t("global.table.actions"), value: "actions", width: 150}
+  {text: t("global.title"), value: 'title', width: 150},
+  {text: t("pages.pages.slug"), value: "slug", width: 150},
+  {text: t("pages.pages.status"), value: "status", width: 120},
+  {text: t("global.table.actions"), value: "actions", width: 120}
 ])
 </script>

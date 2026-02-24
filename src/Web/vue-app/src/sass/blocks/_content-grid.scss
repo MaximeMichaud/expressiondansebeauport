@@ -4,7 +4,7 @@
   &__transition {
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 24px;
   }
 
   &__header,
@@ -13,7 +13,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 24px;
+    gap: 12px 24px;
     grid-column: span 2;
   }
 
@@ -34,17 +34,22 @@
 }
 
 //Breakpoints ==================================
+@include breakpoint(xs-down) {
+  .content-grid {
+    &__header,
+    &__subheader {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+  }
+}
+
 @include breakpoint(sm-up) {
   .content-grid {
     &,
     &__transition {
-      gap: 40px;
-    }
-
-    &__header {
-      &:not(:has(.content-grid__text)){
-        margin-bottom: 12px;
-      }
+      gap: 28px;
     }
 
     &__subheader {
