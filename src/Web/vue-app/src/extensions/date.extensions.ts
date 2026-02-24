@@ -1,5 +1,3 @@
-import i18n from "@/i18n";
-
 export {};
 
 declare global {
@@ -36,14 +34,10 @@ Date.prototype.hoursBetweenToday = function () {
   return Math.ceil(timeDifference / (1000 * 3600));
 };
 
-
-// set locale for dates to be formatted correctly, but time"s already in local time so say it's in UTC so its not converted
 Date.prototype.formatToDateString = function toDateString(): string {
-  return this.toLocaleDateString(`${i18n.getLocale()}-CA`, {timeZone: "UTC"})
+  return this.toLocaleDateString("fr-CA", {timeZone: "UTC"})
 };
 
-// set locale for dates to be formatted correctly, but time"s already in local time so say it's in UTC so its not converted
 Date.prototype.formatToTimeString = function toTimeString(): string {
-  const locale = `${i18n.getLocale()}-CA`
-  return this.toLocaleTimeString(locale, {hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "UTC"})
+  return this.toLocaleTimeString("fr-CA", {hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "UTC"})
 };
