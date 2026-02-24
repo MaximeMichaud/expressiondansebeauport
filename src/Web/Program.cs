@@ -72,14 +72,9 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 await app.Services.InitializeAndSeedDatabase();
 
-var supportedCultures = new[] { "en-CA", "fr-CA" };
+var supportedCultures = new[] { "fr-CA" };
 app.UseRequestLocalization(options =>
 {
-    // the order of QueryStringRequestCultureProvider and CookieRequestCultureProvider is switched,
-    // so the RequestLocalizationMiddleware looks for the cultures from the cookies first, then query string.
-    var questStringCultureProvider = options.RequestCultureProviders[0];
-    options.RequestCultureProviders.RemoveAt(0);
-    options.RequestCultureProviders.Insert(1, questStringCultureProvider);
     options.SetDefaultCulture(supportedCultures[0])
         .AddSupportedCultures(supportedCultures)
         .AddSupportedUICultures(supportedCultures);

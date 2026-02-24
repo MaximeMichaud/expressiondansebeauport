@@ -1,9 +1,7 @@
 ﻿using Application.Services.Members.Dtos;
 using AutoMapper;
-using Domain.Common;
 using Domain.Entities;
 using Domain.Entities.Identity;
-using Web.Dtos;
 using Web.Features.Admins.Members.CreateMember;
 using Web.Features.Admins.Members.UpdateMember;
 
@@ -13,8 +11,6 @@ public class RequestMappingProfile : Profile
 {
     public RequestMappingProfile()
     {
-        CreateMap<TranslatableStringDto, TranslatableString>().ReverseMap();
-
         CreateMap<CreateMemberRequest, MemberRegistrationDto>();
 
         CreateMap<UpdateMemberRequest, User>()

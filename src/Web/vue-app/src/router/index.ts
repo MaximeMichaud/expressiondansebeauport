@@ -22,7 +22,6 @@ import AdminCustomizer from "@/views/admin/customizer/AdminCustomizer.vue";
 import AdminSiteHealth from "@/views/admin/health/AdminSiteHealth.vue";
 import AdminImportExport from "@/views/admin/importexport/AdminImportExport.vue";
 
-import {getLocalizedRoutes} from "@/locales/helpers";
 import {useUserStore} from "@/stores/userStore";
 
 const router = createRouter({
@@ -43,7 +42,6 @@ const router = createRouter({
     },
     {
       path: i18n.t("routes.login.path"),
-      alias: getLocalizedRoutes("routes.login.path"),
       name: "login",
       component: Login,
       meta: {
@@ -52,7 +50,6 @@ const router = createRouter({
     },
     {
       path: i18n.t("routes.twoFactor.path"),
-      alias: getLocalizedRoutes("routes.twoFactor.path"),
       name: "twoFactor",
       component: TwoFactor,
       meta: {
@@ -61,7 +58,6 @@ const router = createRouter({
     },
     {
       path: i18n.t("routes.forgotPassword.path"),
-      alias: getLocalizedRoutes("routes.forgotPassword.path"),
       name: "forgotPassword",
       component: ForgotPassword,
       meta: {
@@ -70,7 +66,6 @@ const router = createRouter({
     },
     {
       path: i18n.t("routes.resetPassword.path"),
-      alias: getLocalizedRoutes("routes.resetPassword.path"),
       name: "resetPassword",
       component: ResetPassword,
       props: (route) => ({userId: route.query.userId, token: route.query.token}),
@@ -80,7 +75,6 @@ const router = createRouter({
     },
     {
       path: i18n.t("routes.account.path"),
-      alias: getLocalizedRoutes("routes.account.path"),
       name: "account",
       component: Account,
       meta: {
@@ -89,7 +83,6 @@ const router = createRouter({
     },
     {
       path: i18n.t("routes.admin.path"),
-      alias: getLocalizedRoutes("routes.admin.path"),
       name: "admin",
       component: Admin,
       meta: {
@@ -100,7 +93,6 @@ const router = createRouter({
       children: [
         {
           path: i18n.t("routes.admin.children.members.path"),
-          alias: getLocalizedRoutes("routes.admin.children.members.path"),
           name: "admin.children.members",
           component: Admin,
           children: [
@@ -111,13 +103,11 @@ const router = createRouter({
             },
             {
               path: i18n.t("routes.admin.children.members.add.path"),
-              alias: getLocalizedRoutes("routes.admin.children.members.add.path"),
               name: "admin.children.members.add",
               component: AdminAddMemberForm,
             },
             {
               path: i18n.t("routes.admin.children.members.edit.path"),
-              alias: getLocalizedRoutes("routes.admin.children.members.edit.path"),
               name: "admin.children.members.edit",
               component: AdminEditMemberForm,
               props: true
@@ -126,13 +116,11 @@ const router = createRouter({
         },
         {
           path: i18n.t("routes.admin.children.media.path"),
-          alias: getLocalizedRoutes("routes.admin.children.media.path"),
           name: "admin.children.media",
           component: AdminMediaLibrary,
         },
         {
           path: i18n.t("routes.admin.children.pages.path"),
-          alias: getLocalizedRoutes("routes.admin.children.pages.path"),
           name: "admin.children.pages",
           component: Admin,
           children: [
@@ -143,13 +131,11 @@ const router = createRouter({
             },
             {
               path: i18n.t("routes.admin.children.pages.add.path"),
-              alias: getLocalizedRoutes("routes.admin.children.pages.add.path"),
               name: "admin.children.pages.add",
               component: AdminPageEditor,
             },
             {
               path: i18n.t("routes.admin.children.pages.edit.path"),
-              alias: getLocalizedRoutes("routes.admin.children.pages.edit.path"),
               name: "admin.children.pages.edit",
               component: AdminPageEditor,
               props: true
@@ -158,25 +144,21 @@ const router = createRouter({
         },
         {
           path: i18n.t("routes.admin.children.menus.path"),
-          alias: getLocalizedRoutes("routes.admin.children.menus.path"),
           name: "admin.children.menus",
           component: AdminMenuIndex,
         },
         {
           path: i18n.t("routes.admin.children.customizer.path"),
-          alias: getLocalizedRoutes("routes.admin.children.customizer.path"),
           name: "admin.children.customizer",
           component: AdminCustomizer,
         },
         {
           path: i18n.t("routes.admin.children.siteHealth.path"),
-          alias: getLocalizedRoutes("routes.admin.children.siteHealth.path"),
           name: "admin.children.siteHealth",
           component: AdminSiteHealth,
         },
         {
           path: i18n.t("routes.admin.children.importExport.path"),
-          alias: getLocalizedRoutes("routes.admin.children.importExport.path"),
           name: "admin.children.importExport",
           component: AdminImportExport,
         }
