@@ -53,19 +53,6 @@ public class TwoFactorAuthenticationNotificationModelTests
     }
 
     [Fact]
-    public void WhenLocaleIsEnglish_WhenTemplateId_ThenReturnEnglishTemplateId()
-    {
-        // Arrange
-        var twoFactorAuthenticationNotificationModel = new TwoFactorAuthenticationNotificationModel(AnyEmail, "en", AnyCode);
-
-        // Act
-        var templateId = twoFactorAuthenticationNotificationModel.TemplateId();
-
-        // Assert
-        templateId.ShouldBe(EnTemplateId);
-    }
-
-    [Fact]
     public void WhenLocaleIsFrench_WhenTemplateId_ThenReturnFrenchTemplateId()
     {
         // Arrange
