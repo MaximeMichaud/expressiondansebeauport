@@ -53,19 +53,6 @@ public class ForgotPasswordNotificationModelTests
     }
 
     [Fact]
-    public void WhenLocaleIsEnglish_WhenTemplateId_ThenReturnEnglishTemplateId()
-    {
-        // Arrange
-        var forgotPasswordNotificationModel = new ForgotPasswordNotificationModel(AnyEmail, "en", AnyLink);
-
-        // Act
-        var templateId = forgotPasswordNotificationModel.TemplateId();
-
-        // Assert
-        templateId.ShouldBe(EnTemplateId);
-    }
-
-    [Fact]
     public void WhenLocaleIsFrench_WhenTemplateId_ThenReturnFrenchTemplateId()
     {
         // Arrange

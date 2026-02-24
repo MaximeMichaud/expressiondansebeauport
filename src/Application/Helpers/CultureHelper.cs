@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using Application.Helpers.Exceptions;
 
 namespace Application.Helpers;
@@ -6,7 +6,7 @@ namespace Application.Helpers;
 public static class CultureHelper
 {
     public static readonly string DefaultTwoLetterLang = "fr";
-    private static readonly string[] AllowedLanguages = { "en", "fr" };
+    private static readonly string[] AllowedLanguages = { "fr" };
 
     public static CultureInfo GetDefaultCulture()
     {
@@ -56,9 +56,8 @@ public static class CultureHelper
         var formattedTwoLetterCulture = FormatTwoLetterCulture(twoLetterCulture);
         return formattedTwoLetterCulture switch
         {
-            "en" => "en-CA",
             "fr" => "fr-CA",
-            _ => "en-CA"
+            _ => "fr-CA"
         };
     }
 }
