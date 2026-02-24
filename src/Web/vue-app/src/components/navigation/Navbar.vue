@@ -36,7 +36,6 @@
 import {ref, watch} from "vue";
 import {Menu, X} from "lucide-vue-next";
 import {useRouter} from "vue-router";
-import {useI18n} from "vue3-i18n";
 import {useUserStore} from "@/stores/userStore";
 import {Role} from "@/types/enums";
 import AdminNavbarItems from "@/components/navigation/AdminNavbarItems.vue";
@@ -50,7 +49,6 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
-const {t} = useI18n()
 const userStore = useUserStore()
 
 const isExpanded = ref<boolean>(false);

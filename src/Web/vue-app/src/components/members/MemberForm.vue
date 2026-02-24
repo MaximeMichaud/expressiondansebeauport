@@ -84,7 +84,6 @@
 
 <script lang="ts" setup>
 import {useI18n} from "vue3-i18n"
-import {notifyError} from "@/notify"
 import {Status} from "@/validation"
 import {Member} from "@/types/entities"
 import {ref, type ComponentPublicInstance} from "vue"

@@ -36,7 +36,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, type ComponentPublicInstance } from "vue"
 import { useI18n } from "vue3-i18n"
-import { notifyError } from "@/notify"
 import { Status } from "@/validation"
 import FormInput from "@/components/forms/FormInput.vue"
 import { Link } from "@/types";
