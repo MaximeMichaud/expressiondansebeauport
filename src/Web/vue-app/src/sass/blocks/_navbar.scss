@@ -1,89 +1,156 @@
 @use "../tools" as *;
-.navbar {
-  background-color: $color-green-medium;
-  padding-top: 0;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
 
-  &__title,
-  &__drawer-btn {
-    width: calc(100% + #{$page-padding-small} * 2);
-    margin: 0 - $page-padding-small;
-    padding: 10px;
+// ─── Mobile-first base ────────────────────────────────────────────────────────
+
+.navbar {
+  background-color: $color-white;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  // Top bar (logo + hamburger on mobile)
+  &__topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-bottom: 1px solid $color-border;
+  }
+
+  // Hamburger toggle button
+  &__toggle {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
+    color: $color-grey-dark;
+    background: transparent;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  // Section title
+  &__section-title {
     font-family: $font-montserrat;
+    font-size: rem(11);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $color-grey-medium;
+    padding: 8px 12px 0;
+    text-align: center;
   }
 
-  &__title {
-    background-color: $color-white;
-    font-size: rem(13);
-    line-height: rem(16);
-    border-top: 1px solid $color-green;
+  // Dropdown content (mobile)
+  &__content {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 12px;
+    width: fit-content;
+    min-width: 180px;
+    background-color: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(10px);
+    border: 1px solid $color-border;
+    border-radius: $common-border-radius;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    z-index: 100;
   }
 
-  &__drawer-btn {
-    font-size: rem(16);
-    line-height: rem(16);
-    color: $color-white;
-    @include backgroundColorHover($color-green);
-
-    .icon {
-      flex-shrink: 0;
-      margin-left: 24px;
-      width: 10px;
-    }
-  }
-
+  // Nav links
   &__nav {
-    padding: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 12px;
   }
 
   &__navlink {
     display: flex;
+    align-items: center;
+    gap: 10px;
     font-weight: 700;
     font-family: $font-montserrat;
-    font-size: rem(16);
-    line-height: rem(16);
+    font-size: rem(15);
+    line-height: rem(18);
     width: 100%;
-    padding: 12px 20px;
+    padding: 10px 16px;
     border-radius: $common-border-radius;
-    @include colorHover($color-white);
+    color: $color-grey-dark;
+    @include backgroundColorHover($color-grey-light);
+
+    &:focus-visible {
+      outline: 2px solid $color-green;
+      outline-offset: -2px;
+    }
 
     &.router-link-active {
       color: $color-white;
-      background-color: $color-green-medium;
+      background-color: $color-green;
       pointer-events: none;
     }
   }
 
-  &__footer {
-    border-top: 1px solid $color-green-lighter;
-    padding: 40px 48px;
+  // Logout inside drawer (mobile only)
+  &__mobile-logout {
+    padding: 8px 12px 12px;
+    margin-top: 0;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 32px;
+    justify-content: center;
+  }
+
+  // Logout footer (desktop only — hidden on mobile)
+  &__footer {
+    display: none;
   }
 }
 
-//Breakpoints ==================================
+// ─── Desktop sidebar ──────────────────────────────────────────────────────────
+
 @include breakpoint(md-up) {
   .navbar {
+    padding: 24px 16px 24px;
+    justify-content: space-between;
     position: sticky;
-    padding-top: 120px;
-    top: calc($header-height-scroll + 24px);
+    top: 0;
+    height: 100vh;
+
+    &__toggle {
+      display: none;
+    }
 
     &__content {
-      overflow: auto;
-      max-height: calc(100vh - ($header-height-scroll + 24px));
+      position: static;
+      width: 100%;
+      min-width: unset;
+      box-shadow: none;
+      border: none;
+      border-radius: 0;
+      background-color: transparent;
+      backdrop-filter: none;
+      flex: 1;
+      overflow-y: auto;
     }
 
     &__nav {
       padding: 0;
+    }
+
+
+    &__content &__section-title {
+      display: block;
+    }
+
+    &__section-title {
+      padding: 0 0 20px;
+    }
+
+    &__mobile-logout {
+      display: none;
+    }
+
+    &__footer {
+      display: flex;
+      flex-direction: column;
+      padding-top: 16px;
     }
   }
 }

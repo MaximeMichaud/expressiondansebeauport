@@ -195,7 +195,8 @@ form {
     transition: color 0.2s cb(snappy);
     color: $color-grey-medium;
     order: -1;
-    font-size: rem(14);
+    font-size: rem(13);
+    font-weight: 600;
     line-height: rem(24);
   }
 
@@ -205,9 +206,9 @@ form {
     width: 100%;
     border: 1px solid $color-border;
     border-radius: $common-border-radius;
-    padding: 8px;
-    transition: border-color 0.2s cb(snappy), background-color 0.2s cb(snappy);
-    background-color: $color-grey-lighter;
+    padding: 10px 12px;
+    transition: border-color 0.2s cb(snappy), background-color 0.2s cb(snappy), box-shadow 0.2s cb(snappy);
+    background-color: $color-white;
 
     &:not(:read-only):not(:disabled) {
       @media (hover: hover) {
@@ -215,7 +216,7 @@ form {
         &:hover {
           outline: none;
           border-color: $color-green;
-          background-color: $color-white;
+          box-shadow: 0 0 0 3px rgba($color-green, 0.12);
 
           + label {
             color: $color-green;
@@ -412,6 +413,20 @@ form {
 }
 
 //Breakpoints ==================================
+@include breakpoint(xs-down) {
+  form,
+  .form {
+    &__2fr-1fr-fields {
+      grid-template-columns: 1fr;
+    }
+
+    &__submit {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
 @include breakpoint(sm-up) {
   form,
   .form {

@@ -88,37 +88,10 @@ const router = createRouter({
       meta: {
         requiredRole: Role.Admin,
         noLinkInBreadcrumbs: true,
+        title: "routes.admin.name",
       },
-      redirect: {name: 'admin.children.members.index'},
+      redirect: {name: 'admin.children.pages.index'},
       children: [
-        {
-          path: i18n.t("routes.admin.children.members.path"),
-          name: "admin.children.members",
-          component: Admin,
-          children: [
-            {
-              path: "",
-              name: "admin.children.members.index",
-              component: AdminMemberIndex,
-            },
-            {
-              path: i18n.t("routes.admin.children.members.add.path"),
-              name: "admin.children.members.add",
-              component: AdminAddMemberForm,
-            },
-            {
-              path: i18n.t("routes.admin.children.members.edit.path"),
-              name: "admin.children.members.edit",
-              component: AdminEditMemberForm,
-              props: true
-            },
-          ],
-        },
-        {
-          path: i18n.t("routes.admin.children.media.path"),
-          name: "admin.children.media",
-          component: AdminMediaLibrary,
-        },
         {
           path: i18n.t("routes.admin.children.pages.path"),
           name: "admin.children.pages",
@@ -138,7 +111,7 @@ const router = createRouter({
               path: i18n.t("routes.admin.children.pages.edit.path"),
               name: "admin.children.pages.edit",
               component: AdminPageEditor,
-              props: true
+              props: true,
             },
           ],
         },
@@ -146,6 +119,34 @@ const router = createRouter({
           path: i18n.t("routes.admin.children.menus.path"),
           name: "admin.children.menus",
           component: AdminMenuIndex,
+        },
+        {
+          path: i18n.t("routes.admin.children.members.path"),
+          name: "admin.children.members",
+          component: Admin,
+          children: [
+            {
+              path: "",
+              name: "admin.children.members.index",
+              component: AdminMemberIndex,
+            },
+            {
+              path: i18n.t("routes.admin.children.members.add.path"),
+              name: "admin.children.members.add",
+              component: AdminAddMemberForm,
+            },
+            {
+              path: i18n.t("routes.admin.children.members.edit.path"),
+              name: "admin.children.members.edit",
+              component: AdminEditMemberForm,
+              props: true,
+            },
+          ],
+        },
+        {
+          path: i18n.t("routes.admin.children.media.path"),
+          name: "admin.children.media",
+          component: AdminMediaLibrary,
         },
         {
           path: i18n.t("routes.admin.children.customizer.path"),
@@ -191,6 +192,12 @@ router.beforeEach(async (to, from) => {
       name: "account",
     };
   }
+});
+
+router.afterEach((to) => {
+  const titleKey = [...to.matched].reverse().find(r => r.meta.title)?.meta.title as string | undefined;
+  const title = titleKey ? i18n.t(titleKey) : null;
+  document.title = title ? `${title} | EDB` : 'EDB';
 });
 
 export const Router = router;

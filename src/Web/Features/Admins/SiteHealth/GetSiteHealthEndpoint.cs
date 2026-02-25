@@ -31,17 +31,17 @@ public class GetSiteHealthEndpoint : EndpointWithoutRequest<SiteHealthDto>
         try
         {
             await _context.Database.CanConnectAsync(ct);
-            checks.Add(new HealthCheckDto { Name = "Database", Status = "Good", Message = "Connected" });
+            checks.Add(new HealthCheckDto { Name = "Base de données", Status = "Good", Message = "Connectée" });
         }
         catch (Exception ex)
         {
-            checks.Add(new HealthCheckDto { Name = "Database", Status = "Critical", Message = "Cannot connect", Details = ex.Message });
+            checks.Add(new HealthCheckDto { Name = "Base de données", Status = "Critical", Message = "Connexion impossible", Details = ex.Message });
         }
 
         // .NET Runtime
         checks.Add(new HealthCheckDto
         {
-            Name = ".NET Runtime",
+            Name = "Environnement .NET",
             Status = "Good",
             Message = $"{Environment.Version}",
             Details = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription
@@ -53,8 +53,8 @@ public class GetSiteHealthEndpoint : EndpointWithoutRequest<SiteHealthDto>
         {
             Name = "Application",
             Status = "Good",
-            Message = assembly.GetName().Version?.ToString() ?? "Unknown",
-            Details = $"OS: {Environment.OSVersion}"
+            Message = assembly.GetName().Version?.ToString() ?? "Inconnue",
+            Details = $"SE : {Environment.OSVersion}"
         });
 
         // Memory
@@ -62,10 +62,10 @@ public class GetSiteHealthEndpoint : EndpointWithoutRequest<SiteHealthDto>
         var memoryMb = process.WorkingSet64 / 1024 / 1024;
         checks.Add(new HealthCheckDto
         {
-            Name = "Memory",
+            Name = "Mémoire",
             Status = memoryMb > 1024 ? "Warning" : "Good",
-            Message = $"{memoryMb} MB",
-            Details = $"GC Total: {GC.GetTotalMemory(false) / 1024 / 1024} MB"
+            Message = $"{memoryMb} Mo",
+            Details = $"Tas GC : {GC.GetTotalMemory(false) / 1024 / 1024} Mo"
         });
 
         // Entity counts
@@ -74,9 +74,9 @@ public class GetSiteHealthEndpoint : EndpointWithoutRequest<SiteHealthDto>
         var menuCount = _context.NavigationMenus.Count();
         checks.Add(new HealthCheckDto
         {
-            Name = "Content",
+            Name = "Contenu",
             Status = "Good",
-            Message = $"{pageCount} pages, {mediaCount} media, {menuCount} menus"
+            Message = $"{pageCount} page{(pageCount > 1 ? "s" : "")}, {mediaCount} média{(mediaCount > 1 ? "s" : "")}, {menuCount} menu{(menuCount > 1 ? "s" : "")}"
         });
 
         var overallStatus = checks.Any(c => c.Status == "Critical") ? "Critical"

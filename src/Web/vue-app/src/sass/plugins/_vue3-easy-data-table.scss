@@ -1,41 +1,60 @@
 @use "../tools" as *;
 .vue3-easy-data-table {
-  //we stan this plugin with an easy overwriting process <3
-  --easy-table-border: 1px solid #{$color-green};
-  --easy-table-row-border: 1px solid #{$color-green-lighter};
+  //Borders
+  --easy-table-border: 1px solid #{$color-grey-light};
+  --easy-table-row-border: 1px solid #{$color-grey-light};
 
-  //header
-  --easy-table-header-font-size: #{rem(14)};
+  //Header
+  --easy-table-header-font-size: #{rem(11)};
   --easy-table-header-font-color: #{$color-grey-medium};
-  --easy-table-header-item-padding: 24px 16px 8px;
+  --easy-table-header-item-padding: 14px 16px;
 
-  //body
+  //Body
   --easy-table-body-row-font-size: #{rem(14)};
   --easy-table-body-row-font-color: #{$color-text};
   --easy-table-body-row-hover-font-color: #{$color-text};
-  --easy-table-body-row-hover-background-color: #{$color-green-light};
-  --easy-table-body-row-background-color: #{$color-green-lighter};
+  --easy-table-body-row-hover-background-color: #{$color-grey-light};
+  --easy-table-body-row-background-color: #{$color-grey-lighter};
   --easy-table-body-even-row-background-color: #{$color-white};
-  --easy-table-body-item-padding: 16px;
+  --easy-table-body-item-padding: 14px 16px;
 
-  //scrollbar
-  --easy-table-scrollbar-track-color: #{$color-green-lighter};
-  --easy-table-scrollbar-thumb-color: #{$color-green};
+  //Scrollbar
+  --easy-table-scrollbar-track-color: #{$color-grey-lighter};
+  --easy-table-scrollbar-thumb-color: #{$color-grey};
 
-  //footer
-  --easy-table-footer-font-size: #{rem(14)};
+  //Footer
+  --easy-table-footer-font-size: #{rem(13)};
   --easy-table-rows-per-page-selector-option-padding: 8px;
-  --easy-table-footer-font-color: #{$color-black};
-  --easy-table-footer-height: 54px;
+  --easy-table-footer-font-color: #{$color-grey-medium};
+  --easy-table-footer-height: 52px;
 
   //Custom styles ========================================================
   border-radius: $common-border-radius;
   overflow: hidden;
+  width: 100%;
 
   &__main {
-    th,
-    td {
+    width: 100%;
+
+    table {
+      min-width: 100%;
+    }
+
+    thead tr {
+      background-color: $color-grey-lighter;
+    }
+
+    th {
       font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      vertical-align: middle;
+      transition: background-color 0.2s cb(snappy);
+    }
+
+    td {
+      font-weight: 400;
+      vertical-align: middle;
       transition: background-color 0.2s cb(snappy);
     }
   }
@@ -59,10 +78,11 @@
     margin-left: 4px;
     background-image: url(@/assets/icons/icon__chevron--select.png);
     background-size: cover;
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     flex-shrink: 0;
     transform: rotate3d(0, 0, 1, 180deg);
+    opacity: 0.5;
 
     &.desc {
       transform: none;
@@ -73,7 +93,7 @@
   &__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 8px;
 
     .vue3-easy-data-table__action::after {
       content: none;//remove default link hover
@@ -84,54 +104,46 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 4px;
+    padding: 6px;
     border-radius: $common-border-radius;
     background-color: $color-green;
-    @include backgroundColorHover($color-green-medium);
-
-    &.red-bg {
-      background-color: rgba($color-red, 0.8);
-      @include backgroundColorHover($color-red)
-    }
+    @include backgroundColorHover($color-green-dark);
   }
 
   //Footer ------------------
   .pagination__items-index {
-    position: absolute;
-    font-size: rem(12);
+    display: none;
   }
 
   .previous-page__click-button {
     margin-left: auto!important;
-
-    @media (hover: hover) {
-      &:hover {
-        transform: translate3d(-4px, 0, 0);
-      }
-    }
   }
 
   .next-page__click-button {
     margin-right: auto!important;
-
-    @media (hover: hover) {
-      &:hover {
-        transform: translate3d(4px, 0, 0);
-      }
-    }
   }
 
   .next-page__click-button,
   .previous-page__click-button {
-    padding: 2.5px;
-    border: 2px solid $color-green;
-    transition: transform 0.2s cb(snappy);
+    padding: 6px;
+    border: none;
+    border-radius: $common-border-radius;
+    background-color: transparent;
+    transition: background-color 0.2s cb(snappy);
+
+    @media (hover: hover) {
+      &:hover:not(.first-page):not(.last-page) {
+        background-color: $color-grey-light;
+      }
+    }
 
     &.first-page,
     &.last-page {
       pointer-events: none;
-      filter: grayscale(1);
-      opacity: 0.5;
+
+      .arrow {
+        filter: brightness(0) opacity(0.25)!important;
+      }
     }
 
     .arrow {
@@ -144,6 +156,7 @@
       height: 16px!important;
       transform: none!important;
       display: flex!important;
+      filter: brightness(0)!important;
     }
 
     .arrow-right {
@@ -152,35 +165,35 @@
   }
 
   .buttons-pagination {
-    gap: 4px;
+    gap: 2px;
   }
 
   .item {
     &.omission {
-      //= ...
       border: none;
       pointer-events: none;
     }
 
     &.button {
       border: none;
-      border-radius: 0;
-      @include btnHover($color-green-medium, $color-white);
-      font-weight: 700;
+      border-radius: $common-border-radius;
+      background-color: transparent;
+      font-weight: 500;
+      transition: background-color 0.2s cb(snappy);
+
+      @media (hover: hover) {
+        &:hover:not(.active) {
+          background-color: $color-grey-light;
+          color: $color-text;
+        }
+      }
 
       &.active {
-        text-decoration: underline;
+        background-color: $color-green;
+        color: $color-white;
         pointer-events: none;
       }
     }
   }
 
-  //Special hovers ----------------------
-  @media(hover:hover){
-    tr:hover {
-      .tag {
-        background-color: $color-green-lighter;
-      }
-    }
-  }
 }

@@ -9,11 +9,11 @@
         <h2>{{ t('pages.customizer.identity') }}</h2>
         <div class="form-group">
           <label>{{ t('pages.customizer.siteTitle') }}</label>
-          <input type="text" v-model="settings.siteTitle" class="form-input" />
+          <input type="text" v-model="settings.siteTitle" class="form-input" placeholder="Expression Danse Beauport" />
         </div>
         <div class="form-group">
           <label>{{ t('pages.customizer.tagline') }}</label>
-          <input type="text" v-model="settings.tagline" class="form-input" />
+          <input type="text" v-model="settings.tagline" class="form-input" placeholder="L'art du mouvement, le cœur du quartier" />
         </div>
       </div>
 
@@ -24,14 +24,14 @@
             <label>{{ t('pages.customizer.primaryColor') }}</label>
             <div class="color-picker">
               <input type="color" v-model="settings.primaryColor" />
-              <input type="text" v-model="settings.primaryColor" class="form-input" maxlength="7" />
+              <input type="text" v-model="settings.primaryColor" class="form-input" maxlength="7" placeholder="#be1e2d" />
             </div>
           </div>
           <div class="form-group">
             <label>{{ t('pages.customizer.secondaryColor') }}</label>
             <div class="color-picker">
               <input type="color" v-model="settings.secondaryColor" />
-              <input type="text" v-model="settings.secondaryColor" class="form-input" maxlength="7" />
+              <input type="text" v-model="settings.secondaryColor" class="form-input" maxlength="7" placeholder="#1e3a5f" />
             </div>
           </div>
         </div>
@@ -59,9 +59,9 @@
           <label>{{ t('pages.customizer.logo') }}</label>
           <div v-if="settings.logoUrl" class="customizer__current-media">
             <img :src="settings.logoUrl" alt="Logo" class="customizer__preview-img" />
-            <button class="btn btn--small btn--danger" @click="settings.logoMediaFileId = undefined; settings.logoUrl = undefined">{{ t('global.removeFile') }}</button>
+            <button class="btn btn--small" @click="settings.logoMediaFileId = undefined; settings.logoUrl = undefined">{{ t('global.removeFile') }}</button>
           </div>
-          <label v-else class="btn btn--secondary">
+          <label v-else class="btn">
             {{ t('global.addFile') }}
             <input type="file" accept="image/*" hidden @change="onLogoSelected" />
           </label>
@@ -70,9 +70,9 @@
           <label>{{ t('pages.customizer.favicon') }}</label>
           <div v-if="settings.faviconUrl" class="customizer__current-media">
             <img :src="settings.faviconUrl" alt="Favicon" class="customizer__preview-img customizer__preview-img--small" />
-            <button class="btn btn--small btn--danger" @click="settings.faviconMediaFileId = undefined; settings.faviconUrl = undefined">{{ t('global.removeFile') }}</button>
+            <button class="btn btn--small" @click="settings.faviconMediaFileId = undefined; settings.faviconUrl = undefined">{{ t('global.removeFile') }}</button>
           </div>
-          <label v-else class="btn btn--secondary">
+          <label v-else class="btn">
             {{ t('global.addFile') }}
             <input type="file" accept="image/*" hidden @change="onFaviconSelected" />
           </label>
@@ -80,7 +80,7 @@
       </div>
 
       <div class="customizer__actions">
-        <button class="btn btn--primary" :disabled="isSaving" @click="onSave">{{ t('global.save') }}</button>
+        <button class="btn" :disabled="isSaving" @click="onSave">{{ t('global.save') }}</button>
       </div>
     </div>
   </div>
@@ -90,7 +90,7 @@
 import {useI18n} from "vue3-i18n"
 import {onMounted, ref} from "vue"
 import {useSiteSettingsService, useMediaService} from "@/inversify.config"
-import {notifyError, notifySuccess} from "@/notify"
+import {notifySuccess} from "@/notify"
 import {SiteSettings} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 
@@ -122,8 +122,6 @@ async function onLogoSelected(event: Event) {
     settings.value.logoMediaFileId = uploadResponse.id
     settings.value.logoUrl = uploadResponse.blobUrl
     notifySuccess(t('pages.customizer.logoUpdated'))
-  } else {
-    notifyError(t('validation.errorOccured'))
   }
   input.value = ""
 }
@@ -137,8 +135,6 @@ async function onFaviconSelected(event: Event) {
     settings.value.faviconMediaFileId = uploadResponse.id
     settings.value.faviconUrl = uploadResponse.blobUrl
     notifySuccess(t('pages.customizer.faviconUpdated'))
-  } else {
-    notifyError(t('validation.errorOccured'))
   }
   input.value = ""
 }
@@ -148,8 +144,6 @@ async function onSave() {
   const response = await settingsService.update(settings.value)
   if (response && response.succeeded) {
     notifySuccess(t('pages.customizer.update.validation.successMessage'))
-  } else {
-    notifyError(t('pages.customizer.update.validation.failedMessage'))
   }
   isSaving.value = false
 }
@@ -157,14 +151,15 @@ async function onSave() {
 
 <style scoped>
 .customizer {
-  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
 }
 
 .customizer__panel {
   padding: 1.5rem;
   border: 1px solid var(--color-gray-200, #e5e7eb);
   border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
 }
 
 .customizer__panel h2 {
@@ -210,7 +205,7 @@ async function onSave() {
 }
 
 .customizer__actions {
-  margin-top: 2rem;
+  grid-column: span 2;
 }
 
 .form-group {
@@ -236,20 +231,18 @@ async function onSave() {
   font-size: 0.75rem;
 }
 
-.btn--danger {
-  background: #be1e2c;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
+@media (max-width: 767px) {
+  .customizer {
+    grid-template-columns: 1fr;
+  }
+
+  .customizer__actions {
+    grid-column: span 1;
+  }
+
+  .customizer__colors {
+    grid-template-columns: 1fr;
+  }
 }
 
-.btn--secondary {
-  background: var(--color-gray-200, #e5e7eb);
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-}
 </style>
