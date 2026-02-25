@@ -15,14 +15,14 @@
     line-height: rem(16);
     padding: 12px 20px;
     border-radius: $common-border-radius;
-    @include colorHover($color-white);
-    @include iconFillHover($color-white);
+    color: $color-grey-dark;
+    @include backgroundColorHover($color-grey-light);
 
     .icon {
       flex-shrink: 0;
       padding: 4px;
       border-radius: 100%;
-      background-color: $color-green-medium;
+      background-color: $color-grey-light;
       width: 18px;
       height: 18px;
     }
@@ -40,25 +40,29 @@
     width: 100%;
     padding: 8px;
     border-radius: $common-border-radius;
-    color: $color-white;
-    @include colorHover($color-black);
+    color: $color-grey-dark;
+    @include backgroundColorHover($color-grey-light);
 
     &.router-link-active {
-      color: $color-black;
-      background-color: $color-green-lighter;
+      background-color: $color-green;
+      color: $color-white;
       pointer-events: none;
     }
   }
 
   &--expand {
     margin: 8px 0;
-    background-color: $color-green-medium;
+    background-color: $color-green-lighter;
 
     .subnav__title {
-      color: $color-white;
+      color: $color-green;
 
       .icon {
         background-color: $color-green;
+
+        * {
+          fill: $color-white;
+        }
       }
     }
   }

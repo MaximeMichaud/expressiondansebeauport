@@ -12,7 +12,6 @@
         :name="name"
         :placeholder="placeholder"
         :type="type"
-        @blur="handleBlur"
         @input="handleInput"
     />
 
@@ -48,8 +47,13 @@ const props = defineProps<{
  
 defineExpose({
   //to call validation in parent.
-  validateInput
+  validateInput,
+  setError
 })
+
+function setError(message: string) {
+  status.value = { valid: false, message }
+}
 
 const inputValue = ref<string | number | undefined>(props.modelValue === '' ? undefined : props.modelValue);
 watch(props, () => inputValue.value = props.modelValue === '' ? undefined : props.modelValue)
@@ -65,13 +69,8 @@ const status = ref<Status>({valid: true});
 const isRequired = !(props.rules != undefined && props.rules.length == 0);
 
 function handleInput() {
-  validateInput();
   inputValue.value = inputValue.value === '' ? undefined : inputValue.value
   emit("update:modelValue", inputValue.value);
-}
-
-function handleBlur() {
-  validateInput();
 }
 
 function validateInput() {
