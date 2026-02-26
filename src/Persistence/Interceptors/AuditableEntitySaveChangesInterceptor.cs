@@ -37,7 +37,7 @@ public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
     {
         if (context == null) return;
 
-        var actionMadeBy = _httpContextAccessor.HttpContext.GetUserEmail() ?? "application";
+        var actionMadeBy = _httpContextAccessor.HttpContext?.GetUserEmail() ?? "application";
         foreach (var entry in context.ChangeTracker.Entries<AuditableEntity>())
         {
             if (entry.State == EntityState.Added)

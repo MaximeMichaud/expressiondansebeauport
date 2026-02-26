@@ -255,6 +255,7 @@
       "metaDescription": "Méta description",
       "publishPanel": "Publication",
       "sortOrder": "Ordre de tri",
+      "sortOrderTooltip": "Détermine l'ordre d'affichage dans le menu (0 = premier)",
       "allStatuses": "Tous les statuts",
       "published": "Publié",
       "draft": "Brouillon",
@@ -456,6 +457,7 @@
       "phone": "Téléphone",
       "email": "Courriel",
       "followUs": "Suivez-nous",
+      "partners": "Partenaires",
       "copyright": "Expression Danse de Beauport inc. Tous droits réservés.",
       "description": "École de danse offrant des cours pour tous les âges et tous les niveaux à Beauport, Québec."
     },

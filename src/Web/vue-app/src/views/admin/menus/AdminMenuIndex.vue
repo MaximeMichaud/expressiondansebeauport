@@ -144,7 +144,6 @@
 import {useI18n} from "vue3-i18n"
 import {onMounted, ref} from "vue"
 import {useMenuService} from "@/inversify.config"
-import {notifySuccess} from "@/notify"
 import {NavigationMenu, NavigationMenuItem} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import {Pencil, Trash2} from "lucide-vue-next"
@@ -184,7 +183,6 @@ async function onMenuSelected() {
 async function createMenu() {
   const response = await menuService.create(newMenu.value)
   if (response && response.succeeded) {
-    notifySuccess(t('pages.menus.create.validation.successMessage'))
     showCreateForm.value = false
     newMenu.value = new NavigationMenu()
     await loadMenus()
@@ -198,7 +196,6 @@ async function deleteMenu() {
 
   const response = await menuService.delete(currentMenu.value.id)
   if (response && response.succeeded) {
-    notifySuccess(t('pages.menus.delete.validation.successMessage'))
     currentMenu.value = null
     selectedMenuId.value = ""
     await loadMenus()
@@ -210,7 +207,6 @@ async function addItem() {
   newItem.value.menuId = currentMenu.value.id
   const response = await menuService.addMenuItem(currentMenu.value.id, newItem.value)
   if (response && response.succeeded) {
-    notifySuccess(t('pages.menus.item.create.successMessage'))
     newItem.value = new NavigationMenuItem()
     await onMenuSelected()
   }
@@ -224,7 +220,6 @@ async function saveEditItem() {
   if (!currentMenu.value?.id || !editingItem.value?.id) return
   const response = await menuService.updateMenuItem(currentMenu.value.id, editingItem.value)
   if (response && response.succeeded) {
-    notifySuccess(t('pages.menus.item.update.successMessage'))
     editingItem.value = null
     await onMenuSelected()
   }
@@ -237,7 +232,6 @@ async function removeItem(item: NavigationMenuItem) {
 
   const response = await menuService.deleteMenuItem(currentMenu.value.id, item.id)
   if (response && response.succeeded) {
-    notifySuccess(t('pages.menus.item.delete.successMessage'))
     await onMenuSelected()
   }
 }

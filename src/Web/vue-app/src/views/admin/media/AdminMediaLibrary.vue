@@ -53,7 +53,6 @@
 import {useI18n} from "vue3-i18n"
 import {onMounted, ref} from "vue"
 import {useMediaService} from "@/inversify.config"
-import {notifySuccess} from "@/notify"
 import {MediaFile} from "@/types/entities"
 import {PaginatedResponse} from "@/types/responses"
 import Loader from "@/components/layouts/items/Loader.vue"
@@ -105,10 +104,7 @@ async function onFilesSelected(event: Event) {
 
   isLoading.value = true
   for (const file of Array.from(input.files)) {
-    const response = await mediaService.upload(file)
-    if (response?.id) {
-      notifySuccess(t('pages.media.upload.validation.successMessage'))
-    }
+    await mediaService.upload(file)
   }
   input.value = ""
   await loadMedia(1, pageSize)
@@ -121,7 +117,6 @@ async function saveAltText() {
   const response = await mediaService.update(selectedMedia.value.id, editAltText.value)
   if (response && response.succeeded) {
     selectedMedia.value.altText = editAltText.value
-    notifySuccess(t('pages.media.update.validation.successMessage'))
   }
 }
 
@@ -135,7 +130,6 @@ async function onDelete() {
   if (response && response.succeeded) {
     mediaFiles.value = mediaFiles.value.filter(m => m.id !== selectedMedia.value?.id)
     selectedMedia.value = null
-    notifySuccess(t('pages.media.delete.validation.successMessage'))
   }
 }
 </script>

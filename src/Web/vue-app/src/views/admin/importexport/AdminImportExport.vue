@@ -30,7 +30,6 @@
 import {useI18n} from "vue3-i18n"
 import {ref} from "vue"
 import {useImportExportService} from "@/inversify.config"
-import {notifySuccess} from "@/notify"
 import Loader from "@/components/layouts/items/Loader.vue"
 
 const {t} = useI18n()
@@ -51,7 +50,6 @@ async function onExport() {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
-    notifySuccess(t('pages.importExport.exportValidation.successMessage'))
   } catch {
     // export failed silently
   }
@@ -70,9 +68,6 @@ async function onImport(event: Event) {
 
   isImporting.value = true
   const response = await importExportService.importData(input.files[0])
-  if (response && response.succeeded) {
-    notifySuccess(t('pages.importExport.importValidation.successMessage'))
-  }
   input.value = ""
   isImporting.value = false
 }

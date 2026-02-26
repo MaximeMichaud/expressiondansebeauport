@@ -54,7 +54,6 @@ import {useI18n} from "vue3-i18n"
 import {onMounted, ref} from "vue"
 import {useRoute, useRouter} from "vue-router"
 import {usePageService} from "@/inversify.config"
-import {notifySuccess} from "@/notify"
 import {Page} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import BackLink from "@/components/layouts/items/BackLink.vue"
@@ -86,18 +85,17 @@ async function onSubmit() {
   if (preventMultipleSubmit.value) return
   preventMultipleSubmit.value = true
 
-  const response = isEditing.value
-    ? await pageService.update(page.value)
-    : await pageService.create(page.value)
+  try {
+    const response = isEditing.value
+      ? await pageService.update(page.value)
+      : await pageService.create(page.value)
 
-  if (response && response.succeeded) {
-    const msgKey = isEditing.value
-      ? 'pages.pages.update.validation.successMessage'
-      : 'pages.pages.create.validation.successMessage'
-    notifySuccess(t(msgKey))
-    setTimeout(() => router.back(), 1500)
+    if (response && response.succeeded) {
+      router.back()
+    }
+  } finally {
+    preventMultipleSubmit.value = false
   }
-  preventMultipleSubmit.value = false
 }
 </script>
 
