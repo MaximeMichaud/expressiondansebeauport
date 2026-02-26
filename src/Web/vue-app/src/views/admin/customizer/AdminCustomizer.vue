@@ -138,7 +138,7 @@ async function onFaviconSelected(event: Event) {
 
 async function onSave() {
   isSaving.value = true
-  const response = await settingsService.update(settings.value)
+  await settingsService.update(settings.value)
   isSaving.value = false
 }
 </script>

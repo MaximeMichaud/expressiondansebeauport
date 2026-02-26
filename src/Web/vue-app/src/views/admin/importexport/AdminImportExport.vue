@@ -67,7 +67,7 @@ async function onImport(event: Event) {
   }
 
   isImporting.value = true
-  const response = await importExportService.importData(input.files[0])
+  await importExportService.importData(input.files[0])
   input.value = ""
   isImporting.value = false
 }
