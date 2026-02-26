@@ -152,15 +152,78 @@ public class GarneauTemplateDbContextInitializer
                 "</ul>"),
 
             CreatePage("Camp d'été", "camp-d-ete", 3,
-                "<h2>Camp d'été de danse</h2>" +
-                "<p>Chaque été, Expression Danse de Beauport propose un camp de jour axé sur la danse. " +
-                "Une semaine remplie de plaisir, d'apprentissage et de spectacle!</p>" +
-                "<h3>Ce qui est inclus</h3>" +
-                "<ul>" +
-                "<li>Cours de danse variés chaque jour</li>" +
-                "<li>Activités thématiques et jeux</li>" +
-                "<li>Spectacle de fin de semaine pour les parents</li>" +
-                "</ul>"),
+                "<div class='camp-hero'>" +
+                    "<div>" +
+                        "<h2>Camp d'été 2026</h2>" +
+                        "<p>Un été rempli de danse, d’énergie et de plaisir pour les 5 à 12 ans !</p>" +
+                        "<a href='/inscription' class='btn-camp'>S'inscrire maintenant</a>" +
+                    "</div>" +
+                "</div>" +
+
+                "<section>" +
+                    "<p>Votre enfant adore la danse et ne peut s’arrêter pendant les vacances? " +
+                    "Offrez-lui un camp spécialisé, à l’écoute de sa passion, pour continuer à danser tout l’été!</p>" +
+                "</section>" +
+
+                "<section class='camp-highlight'>" +
+                    "<h2>Dates & Horaire</h2>" +
+                    "<ul>" +
+                        "<li><strong>29 juin au 21 août 2026</strong></li>" +
+                        "<li>*Pas de camp le 1 juillet</li>" +
+                        "<li>9h à 16h</li>" +
+                        "<li>Service de garde inclus : 7h30 à 9h / 16h à 17h</li>" +
+                    "</ul>" +
+                "</section>" +
+
+                "<section class='camp-highlight'>" +
+                    "<h2>Tarification</h2>" +
+                    "<ul>" +
+                        "<li>207$ / semaine</li>" +
+                        "<li>10$ de rabais à partir de la 4e semaine achetée</li>" +
+                    "</ul>" +
+                "</section>" +
+
+                "<section>" +
+                    "<h2>Le camp d’été EDB, c’est quoi?</h2>" +
+                    "<div class='camp-cards'>" +
+
+                        "<div class='camp-card'>" +
+                            "<h3>Danse tous les jours</h3>" +
+                            "<p>Encadré par des professionnels de la danse.</p>" +
+                        "</div>" +
+
+                        "<div class='camp-card'>" +
+                            "<h3>Activités extérieures</h3>" +
+                            "<p>Baignade et jeux lors des belles journées.</p>" +
+                        "</div>" +
+
+                        "<div class='camp-card'>" +
+                            "<h3>Spectacle chaque vendredi</h3>" +
+                            "<p>Présentation ou vidéo personnalisée.</p>" +
+                        "</div>" +
+
+                        "<div class='camp-card'>" +
+                            "<h3>Sécurité & encadrement</h3>" +
+                            "<p>Présence constante d’adultes responsables.</p>" +
+                        "</div>" +
+
+                    "</div>" +
+                "</section>" +
+
+                "<section class='camp-highlight'>" +
+                    "<h2>Inscriptions</h2>" +
+                    "<ul>" +
+                        "<li>Pré-inscriptions : 1 au 28 février 2026 (camp 2025 seulement)</li>" +
+                        "<li>Inscriptions générales : dès le 1 mars 2026</li>" +
+                    "</ul>" +
+                "</section>" +
+
+                "<section>" +
+                    "<h2>Questions ?</h2>" +
+                    "<p>Écrivez-nous à : <strong>info@expressiondansebeauport.com</strong></p>" +
+                    "<p><small>*Tous les danseurs doivent être propres et aller seuls aux toilettes.</small></p>" +
+                "</section>"
+            ),
 
             CreatePage("Troupes compétitives", "troupes-competitives", 4,
                 "<h2>Troupes compétitives</h2>" +
