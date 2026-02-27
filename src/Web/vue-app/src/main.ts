@@ -14,7 +14,7 @@ import VueTippy from 'vue-tippy'
 
 const head = createHead();
 
-createApp(App)
+const app = createApp(App)
   .use(head)
   .use(i18n)
   .use(VueWindowSizePlugin)
@@ -30,5 +30,6 @@ createApp(App)
         theme: "custom-garneau-template-app",
         interactive: true
     },
-  })
-  .mount("#app");
+  });
+
+Router.isReady().then(() => app.mount("#app"));

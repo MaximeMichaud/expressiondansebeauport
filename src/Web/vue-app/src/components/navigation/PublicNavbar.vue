@@ -1,5 +1,5 @@
 <template>
-  <nav class="public-navbar" :class="{ 'is-scrolled': isScrolled, 'is-menu-open': isMenuOpen, 'is-solid': !isHome }">
+  <nav class="public-navbar" :class="{ 'is-menu-open': isMenuOpen }">
     <div class="public-navbar__inner">
       <RouterLink :to="{ name: 'home' }" class="public-navbar__logo">
         <LogoEdb class="public-navbar__logo-icon" />
@@ -46,18 +46,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useI18n } from "vue3-i18n";
-import { useRoute } from "vue-router";
 import axios from "axios";
 import LogoEdb from "@/assets/icons/logo__edb.svg";
 import { NavigationMenuItem } from "@/types/entities";
 
 const { t } = useI18n();
-const route = useRoute();
 const isMenuOpen = ref(false);
-const isScrolled = ref(false);
-const isHome = computed(() => route.name === 'home');
 const menuItems = ref<NavigationMenuItem[]>([]);
 
 const fallbackLinks = [
@@ -67,10 +63,6 @@ const fallbackLinks = [
   { key: "troupes" },
   { key: "contact" },
 ];
-
-function onScroll() {
-  isScrolled.value = window.scrollY > 5;
-}
 
 async function loadMenu() {
   try {
@@ -82,8 +74,6 @@ async function loadMenu() {
 }
 
 onMounted(() => {
-  window.addEventListener("scroll", onScroll);
   loadMenu();
 });
-onUnmounted(() => window.removeEventListener("scroll", onScroll));
 </script>

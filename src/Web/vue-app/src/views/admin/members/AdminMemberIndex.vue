@@ -27,7 +27,6 @@
 import {useI18n} from "vue3-i18n";
 import {computed, onMounted, ref, watch} from "vue";
 import {useMemberService} from "@/inversify.config";
-import {notifySuccess} from "@/notify";
 import {Member} from "@/types/entities";
 import {PaginatedResponse} from "@/types/responses";
 import SearchInput from "@/components/layouts/items/SearchInput.vue";
@@ -97,7 +96,6 @@ async function onDelete(item: any) {
   if (succeededOrNotResponse && succeededOrNotResponse.succeeded) {
     const memberIndex = pageMembers.value.indexOf(pageMembers.value.filter(x => x.id == item.id)[0])
     pageMembers.value.splice(memberIndex, 1)
-    notifySuccess(t('pages.members.delete.validation.successMessage'))
     preventMultipleSubmit.value = false;
   }
   preventMultipleSubmit.value = false;
