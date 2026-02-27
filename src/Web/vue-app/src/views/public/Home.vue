@@ -5,7 +5,7 @@
       <h1 class="home-hero__title">Expression Danse<br>Beauport</h1>
       <p class="home-hero__subtitle">Quand le talent et la passion riment avec le plaisir&nbsp;!</p>
       <a
-        href="https://www.qidigo.com/u/Expression-Danse-de-Beauport"
+        href="https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session"
         target="_blank"
         rel="noopener noreferrer"
         class="home-hero__cta">
