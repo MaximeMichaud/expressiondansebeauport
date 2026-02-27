@@ -33,27 +33,29 @@ export class PageService extends ApiService implements IPageService {
   public async create(page: Page): Promise<SucceededOrNotResponse> {
     const response = await this
       ._httpClient
-      .post<any, AxiosResponse<Page>>(
+      .post<any, AxiosResponse<any>>(
         `${import.meta.env.VITE_API_BASE_URL}/admin/pages`,
         page,
         this.headersWithJsonContentType())
-      .catch(function (error: AxiosError): AxiosResponse<Page> {
-        return error.response as AxiosResponse<Page>
+      .catch(function (error: AxiosError): AxiosResponse<any> {
+        return error.response as AxiosResponse<any>
       })
-    return new SucceededOrNotResponse(response.status >= 200 && response.status < 300)
+    const succeeded = response.status >= 200 && response.status < 300
+    return new SucceededOrNotResponse(succeeded, succeeded ? [] : response.data?.errors ?? [])
   }
 
   public async update(page: Page): Promise<SucceededOrNotResponse> {
     const response = await this
       ._httpClient
-      .put<any, AxiosResponse<Page>>(
+      .put<any, AxiosResponse<any>>(
         `${import.meta.env.VITE_API_BASE_URL}/admin/pages/${page.id}`,
         page,
         this.headersWithJsonContentType())
-      .catch(function (error: AxiosError): AxiosResponse<Page> {
-        return error.response as AxiosResponse<Page>
+      .catch(function (error: AxiosError): AxiosResponse<any> {
+        return error.response as AxiosResponse<any>
       })
-    return new SucceededOrNotResponse(response.status >= 200 && response.status < 300)
+    const succeeded = response.status >= 200 && response.status < 300
+    return new SucceededOrNotResponse(succeeded, succeeded ? [] : response.data?.errors ?? [])
   }
 
   public async delete(id: string): Promise<SucceededOrNotResponse> {

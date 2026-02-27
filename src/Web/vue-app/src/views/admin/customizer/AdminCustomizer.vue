@@ -90,7 +90,6 @@
 import {useI18n} from "vue3-i18n"
 import {onMounted, ref} from "vue"
 import {useSiteSettingsService, useMediaService} from "@/inversify.config"
-import {notifySuccess} from "@/notify"
 import {SiteSettings} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 
@@ -121,7 +120,6 @@ async function onLogoSelected(event: Event) {
   if (uploadResponse?.id) {
     settings.value.logoMediaFileId = uploadResponse.id
     settings.value.logoUrl = uploadResponse.blobUrl
-    notifySuccess(t('pages.customizer.logoUpdated'))
   }
   input.value = ""
 }
@@ -134,17 +132,13 @@ async function onFaviconSelected(event: Event) {
   if (uploadResponse?.id) {
     settings.value.faviconMediaFileId = uploadResponse.id
     settings.value.faviconUrl = uploadResponse.blobUrl
-    notifySuccess(t('pages.customizer.faviconUpdated'))
   }
   input.value = ""
 }
 
 async function onSave() {
   isSaving.value = true
-  const response = await settingsService.update(settings.value)
-  if (response && response.succeeded) {
-    notifySuccess(t('pages.customizer.update.validation.successMessage'))
-  }
+  await settingsService.update(settings.value)
   isSaving.value = false
 }
 </script>

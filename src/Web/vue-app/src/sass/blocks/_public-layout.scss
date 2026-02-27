@@ -1,4 +1,5 @@
 @use "../tools" as *;
+
 .public-layout {
   display: flex;
   flex-direction: column;
@@ -13,42 +14,89 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 60vh;
-  background-color: $color-green-medium;
+  min-height: 100vh;
   @include pagePadding;
-  padding-top: 80px;
+  padding-top: 120px;
   padding-bottom: 80px;
   text-align: center;
+  background: url('@/assets/images/hero.jpg') center center / cover no-repeat;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  &__content {
+    max-width: 760px;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__eyebrow {
+    font-family: $font-karla;
+    font-size: rem(12);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 20px;
+  }
 
   &__title {
     font-family: $font-montserrat;
     font-weight: 700;
-    font-size: rem(32);
-    line-height: 1.2;
+    font-size: rem(38);
+    line-height: 1.15;
     color: $color-white;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
 
   &__subtitle {
     font-family: $font-karla;
     font-size: rem(18);
-    line-height: 1.5;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 44px;
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    font-family: $font-montserrat;
+    font-weight: 700;
+    font-size: rem(15);
     color: $color-white;
-    opacity: 0.9;
+    background-color: $color-green;
+    padding: 15px 38px;
+    border-radius: 100px;
+    text-decoration: none;
+    box-shadow: 0 4px 24px rgba($color-green, 0.3);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+
+    &:hover {
+      background-color: $color-green-dark;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 36px rgba($color-green, 0.4);
+    }
   }
 }
 
 //Breakpoints ==================================
 @include breakpoint(sm-up) {
   .home-hero {
-    min-height: 70vh;
+    &__eyebrow {
+      font-size: rem(13);
+    }
 
     &__title {
-      font-size: rem(48);
+      font-size: rem(62);
     }
 
     &__subtitle {
-      font-size: rem(22);
+      font-size: rem(20);
     }
   }
 }

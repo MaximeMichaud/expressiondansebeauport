@@ -33,7 +33,6 @@
 import {useI18n} from "vue3-i18n"
 import {computed, onMounted, ref} from "vue"
 import {usePageService} from "@/inversify.config"
-import {notifySuccess} from "@/notify"
 import {Page} from "@/types/entities"
 import {PaginatedResponse} from "@/types/responses"
 import DataTable from "@/components/layouts/items/DataTable.vue"
@@ -100,7 +99,6 @@ async function onDelete(item: any) {
   if (response && response.succeeded) {
     const index = pageItems.value.findIndex(x => x.id === item.id)
     if (index !== -1) pageItems.value.splice(index, 1)
-    notifySuccess(t('pages.pages.delete.validation.successMessage'))
   }
   preventMultipleSubmit.value = false
 }

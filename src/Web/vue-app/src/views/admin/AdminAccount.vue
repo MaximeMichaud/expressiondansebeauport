@@ -50,7 +50,6 @@ import { required } from "@/validation/rules";
 import { Status } from "@/validation";
 import { IChangePasswordRequest } from "@/types/requests";
 import { useAuthenticationService } from "@/inversify.config";
-import { notifySuccess } from "@/notify";
 import Card from "@/components/layouts/items/Card.vue";
 import FormInput from "@/components/forms/FormInput.vue";
 import FormRow from "@/components/forms/FormRow.vue";
@@ -88,7 +87,6 @@ async function submitChangePassword() {
 
   const response = await authenticationService.changePassword(changePasswordRequest.value);
   if (response.succeeded) {
-    notifySuccess(t('pages.account.validation.success'));
     changePasswordRequest.value = { currentPassword: '', newPassword: '', newPasswordConfirmation: '' };
     isLoading.value = false;
     return;
