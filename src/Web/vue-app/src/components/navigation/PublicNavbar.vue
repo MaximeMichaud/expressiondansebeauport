@@ -34,7 +34,7 @@
         </ul>
 
         <a
-          href="https://www.qidigo.com/u/Expression-Danse-de-Beauport"
+          href="https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session"
           target="_blank"
           rel="noopener noreferrer"
           class="public-navbar__register-btn">
