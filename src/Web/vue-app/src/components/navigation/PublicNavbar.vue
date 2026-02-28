@@ -37,8 +37,7 @@
           href="https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session"
           target="_blank"
           rel="noopener noreferrer"
-          class="public-navbar__register-btn"
-          :title="t('public.nav.register')">
+          class="public-navbar__register-btn">
           {{ t('public.nav.register') }}
         </a>
       </div>
