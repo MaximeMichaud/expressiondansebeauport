@@ -1,0 +1,184 @@
+name: PR Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  group: pr-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  CONTAINER_APP_NAME: edb-pr-${{ github.event.pull_request.number }}
+  RESOURCE_GROUP: edb-preview
+  CAE_NAME: edb-preview-env
+  DB_NAME: edb_pr_${{ github.event.pull_request.number }}
+
+jobs:
+  deploy-preview:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Log in to ACR
+        run: |
+          az acr login --name edbpreview
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE="${{ secrets.ACR_LOGIN_SERVER }}/expressiondansebeauport:pr-${{ github.event.pull_request.number }}-${{ github.sha }}"
+          docker build -t "$IMAGE" .
+          docker push "$IMAGE"
+
+      - name: Create PR database
+        run: |
+          az sql db create \
+            --server edb-preview-sql \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --name ${{ env.DB_NAME }} \
+            --edition Basic \
+            --capacity 5 \
+            --max-size 2GB \
+            2>/dev/null || echo "Database already exists"
+
+      - name: Deploy to Azure Container Apps
+        run: |
+          IMAGE="${{ secrets.ACR_LOGIN_SERVER }}/expressiondansebeauport:pr-${{ github.event.pull_request.number }}-${{ github.sha }}"
+
+          PREVIEW_FQDN="${{ env.CONTAINER_APP_NAME }}.$(az containerapp env show \
+            --name ${{ env.CAE_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query properties.defaultDomain -o tsv)"
+
+          CONNECTION_STRING="Server=${{ secrets.AZURE_SQL_SERVER }};Database=${{ env.DB_NAME }};User Id=${{ secrets.AZURE_SQL_ADMIN_USER }};Password=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }};TrustServerCertificate=false;Encrypt=true;"
+
+          EXISTS=$(az containerapp show \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query name -o tsv 2>/dev/null || echo "")
+
+          if [ -z "$EXISTS" ]; then
+            az containerapp create \
+              --name ${{ env.CONTAINER_APP_NAME }} \
+              --resource-group ${{ env.RESOURCE_GROUP }} \
+              --environment ${{ env.CAE_NAME }} \
+              --image "$IMAGE" \
+              --registry-server ${{ secrets.ACR_LOGIN_SERVER }} \
+              --registry-username ${{ secrets.ACR_USERNAME }} \
+              --registry-password ${{ secrets.ACR_PASSWORD }} \
+              --target-port 8080 \
+              --ingress external \
+              --min-replicas 0 \
+              --max-replicas 1 \
+              --cpu 0.25 \
+              --memory 0.5Gi \
+              --scale-rule-name http-rule \
+              --scale-rule-type http \
+              --scale-rule-http-concurrency 10 \
+              --env-vars \
+                "ASPNETCORE_ENVIRONMENT=Development" \
+                "ConnectionStrings__DefaultConnection=${CONNECTION_STRING}" \
+                "JwtToken__SecretKey=${{ secrets.JWT_SECRET_KEY }}" \
+                "JwtToken__Issuer=https://${PREVIEW_FQDN}" \
+                "JwtToken__Audience=https://${PREVIEW_FQDN}" \
+                "JwtToken__TokenExpiry=720" \
+                "Application__BaseUrl=https://${PREVIEW_FQDN}" \
+                "Application__RedirectUrl=https://${PREVIEW_FQDN}" \
+                "Cookies__Domain=${PREVIEW_FQDN}" \
+                "Cookies__Secure=true" \
+                "SendGrid__ApiKey=SG.preview-placeholder"
+          else
+            az containerapp update \
+              --name ${{ env.CONTAINER_APP_NAME }} \
+              --resource-group ${{ env.RESOURCE_GROUP }} \
+              --image "$IMAGE" \
+              --set-env-vars \
+                "ASPNETCORE_ENVIRONMENT=Development" \
+                "ConnectionStrings__DefaultConnection=${CONNECTION_STRING}" \
+                "JwtToken__SecretKey=${{ secrets.JWT_SECRET_KEY }}" \
+                "JwtToken__Issuer=https://${PREVIEW_FQDN}" \
+                "JwtToken__Audience=https://${PREVIEW_FQDN}" \
+                "JwtToken__TokenExpiry=720" \
+                "Application__BaseUrl=https://${PREVIEW_FQDN}" \
+                "Application__RedirectUrl=https://${PREVIEW_FQDN}" \
+                "Cookies__Domain=${PREVIEW_FQDN}" \
+                "Cookies__Secure=true" \
+                "SendGrid__ApiKey=SG.preview-placeholder"
+          fi
+
+      - name: Get preview URL
+        id: preview-url
+        run: |
+          FQDN=$(az containerapp show \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query properties.configuration.ingress.fqdn -o tsv)
+          echo "url=https://${FQDN}" >> "$GITHUB_OUTPUT"
+
+      - name: Comment PR with preview URL
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: pr-preview
+          message: |
+            ## Preview Environment
+
+            | | |
+            |---|---|
+            | **URL** | ${{ steps.preview-url.outputs.url }} |
+            | **Status** | Deployed |
+            | **Commit** | `${{ github.sha }}` |
+
+            > First request may take ~30s (cold start). Credentials: `admin@gmail.com` / `Qwerty123!`
+
+  destroy-preview:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Delete Container App
+        run: |
+          az containerapp delete \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --yes 2>/dev/null || echo "Container app not found"
+
+      - name: Delete PR database
+        run: |
+          az sql db delete \
+            --server edb-preview-sql \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --name ${{ env.DB_NAME }} \
+            --yes 2>/dev/null || echo "Database not found"
+
+      - name: Update PR comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: pr-preview
+          message: |
+            ## Preview Environment
+
+            | | |
+            |---|---|
+            | **Status** | Destroyed |
+
+            > Preview cleaned up on PR close.

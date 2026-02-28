@@ -1,0 +1,48 @@
+name: Cleanup Stale Previews
+
+on:
+  schedule:
+    - cron: '0 6 * * 0' # Every Sunday at 6 AM UTC
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  RESOURCE_GROUP: edb-preview
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Find and remove stale previews
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          APPS=$(az containerapp list \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query "[?starts_with(name, 'edb-pr-')].name" -o tsv)
+
+          for APP in $APPS; do
+            PR_NUM=$(echo "$APP" | sed 's/edb-pr-//')
+
+            STATE=$(gh pr view "$PR_NUM" \
+              --repo "${{ github.repository }}" \
+              --json state --jq '.state' 2>/dev/null || echo "UNKNOWN")
+
+            if [ "$STATE" != "OPEN" ]; then
+              echo "Cleaning up $APP (PR #$PR_NUM is $STATE)"
+              az containerapp delete --name "$APP" --resource-group ${{ env.RESOURCE_GROUP }} --yes
+              az sql db delete --server edb-preview-sql --resource-group ${{ env.RESOURCE_GROUP }} --name "edb_pr_${PR_NUM}" --yes 2>/dev/null || true
+            else
+              echo "Keeping $APP (PR #$PR_NUM is OPEN)"
+            fi
+          done
