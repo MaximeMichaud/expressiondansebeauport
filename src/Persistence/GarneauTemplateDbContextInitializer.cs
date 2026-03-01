@@ -156,7 +156,7 @@ public class GarneauTemplateDbContextInitializer
                     "<div>" +
                         "<h2>Camp d'été 2026</h2>" +
                         "<p>Un été rempli de danse, d’énergie et de plaisir pour les 5 à 12 ans !</p>" +
-                        "<a href='/inscription' class='btn-camp'>S'inscrire maintenant</a>" +
+                        "<a href='https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session' target='_blank' class='btn-camp'>S'inscrire maintenant</a>" +
                     "</div>" +
                 "</div>" +
 

@@ -167,7 +167,7 @@ watch(() => route.params.slug, (newSlug) => {
 }
 
 .public-page--camp-d-ete .camp-card:hover {
-  transform: translateY(-8px);
+  transform: scale(1.05);
   box-shadow: 0 20px 40px rgba(0,0,0,0.15);
 }
 
@@ -219,4 +219,11 @@ watch(() => route.params.slug, (newSlug) => {
   color: #be1e2c;
 }
 
+.public-page--camp-d-ete section {
+  padding-bottom: 1rem;
+}
+
+.public-page--camp-d-ete .camp-cards {
+  margin-top: 3rem;
+}
 </style>
