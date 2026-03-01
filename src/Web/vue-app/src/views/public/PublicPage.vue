@@ -48,6 +48,7 @@ async function loadPage(slug: string) {
   try {
     const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/public/pages/${slug}`)
     page.value = response.data
+    document.title = `${page.value!.title} | EDB`
   } catch {
     page.value = null
   }
@@ -62,7 +63,7 @@ watch(() => route.params.slug, (newSlug) => {
 <style>
 .public-page {
   min-height: 60vh;
-  padding: 6rem 1rem 3rem;
+  padding: 140px 1rem 3rem;
 }
 
 .public-page--loading {

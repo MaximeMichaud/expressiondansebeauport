@@ -2,8 +2,8 @@
 .card {
   background-color: $color-white;
   border-radius: $common-border-radius;
-  border: 1px solid $color-green;
-  padding: 12px;
+  box-shadow: $small-shadow;
+  padding: 20px;
   height: auto;
 
   &__expand-trigger {
@@ -42,15 +42,15 @@
     //if its a table
     .vue3-easy-data-table {
       border: none;
-      margin-left: -12px;
-      margin-right: -12px;
+      margin-left: -20px;
+      margin-right: -20px;
 
       &:first-child {
-        margin-top: -12px;
+        margin-top: -20px;
       }
 
       &:last-child {
-        margin-bottom: -12px;
+        margin-bottom: -20px;
       }
     }
   }
@@ -73,7 +73,7 @@
 //Breakpoints ==================================
 @include breakpoint(sm-up) {
   .card {
-    padding: 24px 16px;
+    padding: 24px 28px;
 
     &__expand-trigger {
       padding-bottom: 24px;
@@ -92,8 +92,8 @@
     &__content {
       //if its a table
       .vue3-easy-data-table {
-        margin-left: -16px;
-        margin-right: -16px;
+        margin-left: -28px;
+        margin-right: -28px;
 
         &:first-child {
           margin-top: -24px;

@@ -1,19 +1,21 @@
 <template>
-  <Card :title="t('routes.login.name')"
-        class="form"
+  <Logo class="login__logo" />
+  <Card class="form"
         :is-authentication="true"
         @keyup.enter="sendLoginRequest">
     <Loader v-if="preventMultipleSubmit" />
     <FormInput :ref="addFormInputRef"
                v-model="loginRequest.username"
                :label="t('global.username')"
+               placeholder="exemple@courriel.com"
                :rules="[required]"
                name="username"
                type="email"
                @validated="handleValidation"/>
-    <FormInput :ref="addFormInputRef"
+    <FormInput ref="passwordRef"
                v-model="loginRequest.password"
                :label="t('global.password')"
+               placeholder="Votre mot de passe"
                :rules="[required]"
                name="password"
                type="password"
@@ -23,24 +25,25 @@
                   :text="t('pages.login.forgotPassword')"/>
       </template>
     </FormInput>
-    <button class="btn btn--full btn--purple btn--big" @click="sendLoginRequest" :disabled="preventMultipleSubmit">
+    <button class="btn btn--fullscreen" @click="sendLoginRequest" :disabled="preventMultipleSubmit">
       {{ t('pages.login.submit') }}
     </button>
   </Card>
 </template>
 <script lang="ts" setup>
-import { ref, type ComponentPublicInstance } from "vue"
+import { ref, onMounted, type ComponentPublicInstance } from "vue"
 import { useI18n } from "vue3-i18n"
 import { required } from "@/validation/rules"
 import { useRouter } from "vue-router";
 import { useAuthenticationService, useUserService } from "@/inversify.config";
 import { useUserStore } from "@/stores/userStore";
-import { notifyError } from "@/notify";
+import { Role } from "@/types/enums";
 
 import { Status } from "@/validation";
 import { ILoginRequest } from "@/types/requests/loginRequest";
 
 import Card from "@/components/layouts/items/Card.vue";
+import Logo from "@/assets/icons/logo__edb.svg";
 import FormInput from "@/components/forms/FormInput.vue";
 import TextLink from "@/components/layouts/items/TextLink.vue";
 import { useApiStore } from "@/stores/apiStore";
@@ -57,8 +60,13 @@ const loginRequest = ref<ILoginRequest>({ username: '', password: '' })
 
 const formInputs = ref<ComponentPublicInstance[]>([])
 const inputValidationStatuses: any = {}
+const passwordRef = ref<any>(null)
 
 const preventMultipleSubmit = ref<boolean>(false);
+
+onMounted(() => {
+  if (passwordRef.value) formInputs.value.push(passwordRef.value as ComponentPublicInstance)
+})
 
 function addFormInputRef(el: Element | ComponentPublicInstance | null) {
   if (!formInputs.value.includes(el as ComponentPublicInstance))
@@ -76,7 +84,6 @@ async function sendLoginRequest() {
 
   formInputs.value.forEach((x: any) => x.validateInput())
   if (Object.values(inputValidationStatuses).some(x => x === false)) {
-    notifyError(t('validation.errorsInForm'))
     preventMultipleSubmit.value = false;
     return
   }
@@ -87,7 +94,10 @@ async function sendLoginRequest() {
     userStore.setUser(user)
     userStore.setUsername(loginRequest.value.username)
     apiStore.setNeedToLogout(false)
-    await router.push(t("routes.account.path"))
+    const destination = userStore.hasRole(Role.Admin)
+      ? t("routes.admin.children.pages.fullPath")
+      : t("routes.account.path")
+    await router.push(destination)
     preventMultipleSubmit.value = false;
     return;
   }
@@ -100,12 +110,19 @@ async function sendLoginRequest() {
     return;
   }
 
-  const errorMessages = succeededOrNotResponse.getErrorMessages('pages.login.validation');
-  if (errorMessages.length == 0)
-    notifyError(t('pages.login.validation.errorOccured'))
-  else
-    notifyError(errorMessages[0])
+  const errorMessages = succeededOrNotResponse.getErrorMessages('pages.login.validation')
+  const message = errorMessages.length > 0 ? errorMessages[0] : t('pages.login.validation.errorOccured')
+  passwordRef.value?.setError(message)
 
   preventMultipleSubmit.value = false;
 }
 </script>
+
+<style scoped>
+.login__logo {
+  display: block;
+  margin: 0 auto 2rem;
+  width: 180px;
+  height: auto;
+}
+</style>

@@ -9,7 +9,7 @@
           <slot name="on-title-right"></slot>
         </div>
         <BtnLink v-if="linkText && linkPath" :name="linkText" :path="linkPath" />
-        <button v-else-if="downloadLabel" class="btn btn--blue" @click="handleDownload()">
+        <button v-else-if="downloadLabel" class="btn" @click="handleDownload()">
           <IconDownload class="icon icon--black"/>
           {{ downloadLabel }}
         </button>

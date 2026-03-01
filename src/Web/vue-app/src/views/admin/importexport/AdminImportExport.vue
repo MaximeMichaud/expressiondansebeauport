@@ -8,7 +8,7 @@
       <div class="import-export__panel">
         <h2>{{ t('pages.importExport.exportTitle') }}</h2>
         <p>{{ t('pages.importExport.exportDescription') }}</p>
-        <button class="btn btn--primary" :disabled="isExporting" @click="onExport">
+        <button class="btn" :disabled="isExporting" @click="onExport">
           {{ t('global.download') }}
         </button>
       </div>
@@ -16,7 +16,7 @@
       <div class="import-export__panel">
         <h2>{{ t('pages.importExport.importTitle') }}</h2>
         <p>{{ t('pages.importExport.importDescription') }}</p>
-        <label class="btn btn--secondary">
+        <label class="btn">
           {{ t('global.addFile') }}
           <input type="file" accept=".json" hidden @change="onImport" />
         </label>
@@ -30,7 +30,6 @@
 import {useI18n} from "vue3-i18n"
 import {ref} from "vue"
 import {useImportExportService} from "@/inversify.config"
-import {notifyError, notifySuccess} from "@/notify"
 import Loader from "@/components/layouts/items/Loader.vue"
 
 const {t} = useI18n()
@@ -51,9 +50,8 @@ async function onExport() {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
-    notifySuccess(t('pages.importExport.exportValidation.successMessage'))
   } catch {
-    notifyError(t('pages.importExport.exportValidation.failedMessage'))
+    // export failed silently
   }
   isExporting.value = false
 }
@@ -69,12 +67,7 @@ async function onImport(event: Event) {
   }
 
   isImporting.value = true
-  const response = await importExportService.importData(input.files[0])
-  if (response && response.succeeded) {
-    notifySuccess(t('pages.importExport.importValidation.successMessage'))
-  } else {
-    notifyError(t('pages.importExport.importValidation.failedMessage'))
-  }
+  await importExportService.importData(input.files[0])
   input.value = ""
   isImporting.value = false
 }
@@ -104,12 +97,10 @@ async function onImport(event: Event) {
   font-size: 0.875rem;
 }
 
-.btn--secondary {
-  background: var(--color-gray-200, #e5e7eb);
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  display: inline-block;
+@media (max-width: 767px) {
+  .import-export {
+    grid-template-columns: 1fr;
+  }
 }
+
 </style>

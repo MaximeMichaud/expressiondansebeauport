@@ -13,8 +13,8 @@
   }
 
   &__col {
-    &--brand {
-      max-width: 300px;
+    &--partners {
+      align-self: center;
     }
   }
 
@@ -56,16 +56,22 @@
     margin: 0;
   }
 
-  a {
+  a,
+  p a {
     color: $color-grey;
     text-decoration: none;
+    font-weight: inherit;
     @include colorHover($color-white);
+
+    &::after {
+      display: none;
+    }
   }
 
   &__social-links {
     display: flex;
     gap: 16px;
-    margin-bottom: 24px;
+    margin-top: 8px;
 
     a {
       display: flex;
@@ -83,13 +89,25 @@
     }
   }
 
-  &__lang-switcher {
-    .lang-switcher {
-      color: $color-grey;
+  &__partners-logos {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
 
-      .lang-switcher__option {
-        @include colorHover($color-white);
-      }
+  &__partner-logo {
+    display: block;
+    flex: 1;
+    height: 48px;
+    object-fit: contain;
+    object-position: center;
+    filter: brightness(0) invert(1);
+    opacity: 0.75;
+
+    &:nth-child(-n+2) {
+      height: 70px;
     }
   }
 
@@ -111,11 +129,15 @@
   .public-footer {
     &__inner {
       flex-direction: row;
-      gap: 48px;
+      gap: 32px;
     }
 
     &__col {
       flex: 1;
+
+      &--partners {
+        flex: 2;
+      }
     }
   }
 }

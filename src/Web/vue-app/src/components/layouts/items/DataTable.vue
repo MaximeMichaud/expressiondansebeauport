@@ -17,36 +17,33 @@
       theme-color="#be1e2c"
   >
     <template #item-status="item">
-      <div class="tag">
-        <p>{{ item.status }}</p>
-      </div>
+      <span class="tag" :class="item.statusRaw === 'Published' ? 'tag--published' : item.statusRaw === 'Draft' ? 'tag--draft' : ''">
+        {{ item.status }}
+      </span>
     </template>
     <template #item-actions="item">
       <p v-if="item && item.actions" class="vue3-easy-data-table__actions">
         <router-link
             v-if="item.actions.view"
-            v-tippy="t(`global.actions.view`)"
             :to="item.actions.view"
             class="vue3-easy-data-table__action"
         >
-          <IconView class="icon icon--black"/>
+          <Eye :size="16" color="white" />
         </router-link>
         <router-link
             v-if="item.actions.edit"
-            v-tippy="t(`global.actions.update`)"
             :to="item.actions.edit"
             class="vue3-easy-data-table__action"
         >
-          <IconEdit class="icon icon--black"/>
+          <Pencil :size="16" color="white" />
         </router-link>
         <button
             v-if="item.actions.delete && item.id"
-            v-tippy="t(`global.actions.delete`)"
-            class="vue3-easy-data-table__action red-bg"
+            class="vue3-easy-data-table__action"
             type="button"
             @click="handleDelete(item)"
         >
-          <IconDelete class="icon icon--black"/>
+          <Trash2 :size="16" color="white" />
         </button>
       </p>
     </template>
@@ -57,13 +54,10 @@
 <script lang="ts" setup>
 import type {FilterOption, Header, Item} from "vue3-easy-data-table"
 import {useI18n} from "vue3-i18n"
-import IconEdit from "@/assets/icons/icon__edit.svg"
-import IconDelete from "@/assets/icons/icon__delete.svg"
-import IconView from "@/assets/icons/icon__view.svg"
+import { Eye, Pencil, Trash2 } from "lucide-vue-next"
 
 const {t} = useI18n()
 
- 
 defineProps<{
   headers: Header[],
   items: Item[],
@@ -73,7 +67,6 @@ defineProps<{
   isSoloItem?: boolean
 }>()
 
- 
 const emit = defineEmits<{
   (event: "delete", item: any): void
 }>()

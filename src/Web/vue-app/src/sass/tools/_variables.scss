@@ -17,7 +17,7 @@ $page-padding-medium: rem(32);
 $page-padding-large: rem(80);
 
 // border-radius
-$common-border-radius: 4px;
+$common-border-radius: 6px;
 
 //height
 $header-height-mobile: 128px;
@@ -25,5 +25,5 @@ $header-height-desktop: 140px;
 $header-height-scroll: 78px;
 
 //shadows
-$bold-shadow: 2px 3px 16px 3px rgba($color-black, 0.15);
-$small-shadow: 2px 2px 4px rgba($color-black, 0.25);
+$bold-shadow: 0 4px 24px rgba($color-black, 0.10), 0 2px 8px rgba($color-black, 0.06);
+$small-shadow: 0 1px 3px rgba($color-black, 0.08), 0 1px 2px rgba($color-black, 0.06);

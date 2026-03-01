@@ -20,5 +20,10 @@
   .back-link {
     order: -1;
     margin-bottom: -24px;
+
+    .back-link {
+      order: 0;
+      margin-bottom: 0;
+    }
   }
 }

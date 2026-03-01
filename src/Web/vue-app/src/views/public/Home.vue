@@ -1,8 +1,16 @@
 <template>
   <section class="home-hero">
     <div class="home-hero__content">
-      <h1 class="home-hero__title">Expression Danse de Beauport</h1>
-      <p class="home-hero__subtitle">La danse pour tous, à tout âge</p>
+      <p class="home-hero__eyebrow">École de danse — Beauport, Québec</p>
+      <h1 class="home-hero__title">Expression Danse<br>Beauport</h1>
+      <p class="home-hero__subtitle">Quand le talent et la passion riment avec le plaisir&nbsp;!</p>
+      <a
+        href="https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="home-hero__cta">
+        S'inscrire maintenant
+      </a>
     </div>
   </section>
 </template>

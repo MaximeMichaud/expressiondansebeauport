@@ -6,7 +6,7 @@ import {AxiosError, AxiosResponse} from "axios";
 import {ILoginRequest} from "@/types/requests/loginRequest";
 import {ITwoFactorRequest} from "@/types/requests/twoFactorRequest";
 import {IForgotPasswordRequest} from "@/types/requests/forgotPasswordRequest";
-import {IResetPasswordRequest} from "@/types/requests";
+import {IChangePasswordRequest, IResetPasswordRequest} from "@/types/requests";
 
 @injectable()
 export class AuthenticationService extends ApiService implements IAuthenticationService {
@@ -57,6 +57,20 @@ export class AuthenticationService extends ApiService implements IAuthentication
     ._httpClient
     .post<IResetPasswordRequest, AxiosResponse<SucceededOrNotResponse>>(
         `${import.meta.env.VITE_API_BASE_URL}/authentication/reset-password`,
+        request,
+        this.headersWithJsonContentType())
+    .catch(function (error: AxiosError): AxiosResponse<SucceededOrNotResponse> {
+      return error.response as AxiosResponse<SucceededOrNotResponse>
+    })
+    const succeededOrNotResponse = response.data as SucceededOrNotResponse
+    return new SucceededOrNotResponse(succeededOrNotResponse.succeeded, succeededOrNotResponse.errors)
+  }
+
+  public async changePassword(request: IChangePasswordRequest): Promise<SucceededOrNotResponse> {
+    const response = await this
+    ._httpClient
+    .post<IChangePasswordRequest, AxiosResponse<SucceededOrNotResponse>>(
+        `${import.meta.env.VITE_API_BASE_URL}/users/me/change-password`,
         request,
         this.headersWithJsonContentType())
     .catch(function (error: AxiosError): AxiosResponse<SucceededOrNotResponse> {

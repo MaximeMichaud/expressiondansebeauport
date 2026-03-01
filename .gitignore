@@ -704,3 +704,4 @@ xmlrpc.php
 # TaskMaster
 .taskmaster/
 
+.DS_Store

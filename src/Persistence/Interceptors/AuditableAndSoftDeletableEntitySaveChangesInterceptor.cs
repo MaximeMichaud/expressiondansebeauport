@@ -37,7 +37,7 @@ public class AuditableAndSoftDeletableEntitySaveChangesInterceptor : SaveChanges
     {
         if (context == null) return;
 
-        var actionMadeBy = _httpContextAccessor.HttpContext.GetUserEmail() ?? "application";
+        var actionMadeBy = _httpContextAccessor.HttpContext?.GetUserEmail() ?? "application";
         foreach (var entry in context.ChangeTracker.Entries<AuditableAndSoftDeletableEntity>())
         {
             if (entry.Entity.Deleted.HasValue && string.IsNullOrWhiteSpace(entry.Entity.DeletedBy))

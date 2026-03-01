@@ -17,14 +17,13 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        // Disable filename hashing for predictable filenames
-        entryFileNames: 'js/[name].js',
-        chunkFileNames: 'js/[name].js',
+        entryFileNames: 'js/[name]-[hash].js',
+        chunkFileNames: 'js/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
           if (assetInfo.name?.endsWith('.css')) {
-            return 'css/[name][extname]'
+            return 'css/[name]-[hash][extname]'
           }
-          return 'assets/[name][extname]'
+          return 'assets/[name]-[hash][extname]'
         }
       }
     }
@@ -38,12 +37,12 @@ export default defineConfig({
     port: 8080,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5280',
         changeOrigin: true,
         secure: false
       },
       '/uploads': {
-        target: 'https://localhost:7101',
+        target: 'http://localhost:5280',
         changeOrigin: true,
         secure: false
       }

@@ -11,19 +11,19 @@
       <div class="page-editor__main">
         <div class="form-group">
           <label>{{ t('global.title') }}</label>
-          <input type="text" v-model="page.title" class="form-input" />
+          <input type="text" v-model="page.title" class="form-input" placeholder="À propos de nous" />
         </div>
         <div class="form-group">
           <label>{{ t('pages.pages.slug') }}</label>
-          <input type="text" v-model="page.slug" class="form-input" />
+          <input type="text" v-model="page.slug" class="form-input" placeholder="a-propos-de-nous" />
         </div>
         <div class="form-group">
           <label>{{ t('pages.pages.content') }}</label>
-          <textarea v-model="page.content" rows="20" class="form-input form-textarea"></textarea>
+          <textarea v-model="page.content" rows="10" class="form-input form-textarea" placeholder="Rédigez le contenu de votre page ici..."></textarea>
         </div>
         <div class="form-group">
           <label>{{ t('pages.pages.metaDescription') }}</label>
-          <textarea v-model="page.metaDescription" rows="3" class="form-input form-textarea"></textarea>
+          <textarea v-model="page.metaDescription" rows="3" class="form-input form-textarea" placeholder="Brève description pour les moteurs de recherche (160 caractères max)"></textarea>
         </div>
       </div>
       <div class="page-editor__sidebar">
@@ -40,7 +40,7 @@
             <label>{{ t('pages.pages.sortOrder') }}</label>
             <input type="number" v-model.number="page.sortOrder" class="form-input" />
           </div>
-          <button class="btn btn--primary" :disabled="preventMultipleSubmit" @click="onSubmit">
+          <button class="btn" :disabled="preventMultipleSubmit" @click="onSubmit">
             {{ t('global.save') }}
           </button>
         </div>
@@ -54,7 +54,6 @@ import {useI18n} from "vue3-i18n"
 import {onMounted, ref} from "vue"
 import {useRoute, useRouter} from "vue-router"
 import {usePageService} from "@/inversify.config"
-import {notifyError, notifySuccess} from "@/notify"
 import {Page} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import BackLink from "@/components/layouts/items/BackLink.vue"
@@ -86,23 +85,17 @@ async function onSubmit() {
   if (preventMultipleSubmit.value) return
   preventMultipleSubmit.value = true
 
-  const response = isEditing.value
-    ? await pageService.update(page.value)
-    : await pageService.create(page.value)
+  try {
+    const response = isEditing.value
+      ? await pageService.update(page.value)
+      : await pageService.create(page.value)
 
-  if (response && response.succeeded) {
-    const msgKey = isEditing.value
-      ? 'pages.pages.update.validation.successMessage'
-      : 'pages.pages.create.validation.successMessage'
-    notifySuccess(t(msgKey))
-    setTimeout(() => router.back(), 1500)
-  } else {
-    const msgKey = isEditing.value
-      ? 'pages.pages.update.validation.failedMessage'
-      : 'pages.pages.create.validation.failedMessage'
-    notifyError(t(msgKey))
+    if (response && response.succeeded) {
+      router.back()
+    }
+  } finally {
+    preventMultipleSubmit.value = false
   }
-  preventMultipleSubmit.value = false
 }
 </script>
 
@@ -112,6 +105,12 @@ async function onSubmit() {
   grid-template-columns: 1fr 300px;
   gap: 2rem;
   margin-top: 1rem;
+}
+
+@media (max-width: 767px) {
+  .page-editor {
+    grid-template-columns: 1fr;
+  }
 }
 
 .page-editor__main {

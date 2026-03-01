@@ -1,45 +1,19 @@
 @use "../tools" as *;
+
 .public-navbar {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 1300px;
   z-index: $zindex-subheader;
-  background-color: transparent;
-  transition: background-color 0.3s ease;
-
-  &.is-scrolled {
-    background-color: $color-white;
-    box-shadow: $small-shadow;
-  }
+  border-radius: 16px;
+  background: rgba($color-green, 0.85);
+  box-shadow: 0 8px 32px rgba($color-green, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1);
 
   &.is-menu-open {
-    background-color: $color-white;
-  }
-
-  &.is-solid {
-    background-color: $color-white;
-    box-shadow: $small-shadow;
-  }
-
-  &.is-scrolled,
-  &.is-menu-open,
-  &.is-solid {
-    .public-navbar__link {
-      color: $color-grey-dark;
-
-      &:hover {
-        color: $color-green;
-      }
-    }
-
-    .public-navbar__hamburger-line {
-      background-color: $color-grey-dark;
-    }
-
-    .public-navbar__logo-icon * {
-      fill: $color-green !important;
-    }
+    background: rgba($color-green, 0.85);
   }
 
   &__inner {
@@ -47,9 +21,7 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    @include pagePadding;
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding: 10px 20px;
   }
 
   &__logo {
@@ -59,12 +31,11 @@
 
   &__logo-icon {
     display: block;
-    height: 48px;
-    width: 48px;
+    height: 42px;
+    width: 42px;
 
     * {
       fill: $color-white !important;
-      transition: fill 0.3s ease;
     }
   }
 
@@ -76,6 +47,9 @@
     width: 32px;
     height: 32px;
     cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
   }
 
   &__hamburger-line {
@@ -103,8 +77,10 @@
     display: none;
     width: 100%;
     flex-direction: column;
-    padding: 16px 0;
-    gap: 16px;
+    padding: 10px 0 6px;
+    gap: 2px;
+    border-top: 1px solid rgba($color-white, 0.2);
+    margin-top: 6px;
 
     &.is-open {
       display: flex;
@@ -117,44 +93,52 @@
     list-style: none;
     margin: 0;
     padding: 0;
+    gap: 2px;
   }
 
   &__link {
     display: block;
-    padding: 10px 0;
+    padding: 9px 12px;
     font-family: $font-montserrat;
     font-weight: 600;
-    font-size: rem(15);
-    color: $color-white;
+    font-size: rem(14);
+    color: rgba($color-white, 0.85);
     text-decoration: none;
-    transition: color 0.3s ease;
+    border-radius: 8px;
+    transition: color 0.2s ease, background-color 0.2s ease;
 
     &:hover {
-      color: $color-grey;
+      color: $color-white;
+      background-color: rgba($color-white, 0.12);
     }
   }
 
   &__register-btn {
-    display: inline-block;
+    display: block;
+    padding: 9px 16px;
     font-family: $font-montserrat;
     font-weight: 700;
     font-size: rem(14);
-    color: $color-white;
-    background-color: $color-green;
-    padding: 10px 24px;
-    border-radius: $common-border-radius;
+    color: $color-green;
+    background-color: $color-white;
     text-decoration: none;
-    text-align: center;
-    transition: background-color 0.3s ease;
-    @include backgroundColorHover($color-green-dark);
+    border-radius: 8px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      background-color: rgba($color-white, 0.88);
+    }
   }
 }
 
 //Breakpoints ==================================
 @include breakpoint(sm-up) {
   .public-navbar {
+    top: 24px;
+
     &__inner {
       flex-wrap: nowrap;
+      padding: 10px 28px;
     }
 
     &__hamburger {
@@ -169,20 +153,20 @@
       width: auto;
       flex: 1;
       padding: 0;
-      margin-left: 32px;
+      margin: 0 0 0 24px;
       gap: 8px;
+      border-top: none;
     }
 
     &__links {
       flex-direction: row;
       align-items: center;
-      gap: 4px;
+      gap: 2px;
     }
 
     &__link {
-      padding: 6px 12px;
+      padding: 7px 12px;
       white-space: nowrap;
-      font-size: rem(14);
     }
   }
 }

@@ -6,7 +6,17 @@
   font-size: rem(14);
   line-height: rem(20);
   font-weight: 700;
-  border-radius: 8px;
+  border-radius: 100px;
   background-color: $color-green-light;
-  transition: background-color 0.2s cb(snappy);
+  color: $color-green-dark;
+}
+
+.tag--published {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.tag--draft {
+  background-color: #fef3c7;
+  color: #92400e;
 }
