@@ -38,11 +38,17 @@ jobs:
         run: |
           az acr login --name edbpreview
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and push Docker image
-        run: |
-          IMAGE="${{ secrets.ACR_LOGIN_SERVER }}/expressiondansebeauport:pr-${{ github.event.pull_request.number }}-${{ github.sha }}"
-          docker build -t "$IMAGE" .
-          docker push "$IMAGE"
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.ACR_LOGIN_SERVER }}/expressiondansebeauport:pr-${{ github.event.pull_request.number }}-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Create PR database
         run: |

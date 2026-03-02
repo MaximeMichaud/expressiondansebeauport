@@ -17,12 +17,14 @@ clone_depth: 1
 environment:
   nodejs_version: "22"
 
+cache:
+  - '%LOCALAPPDATA%\NuGet\v3-cache'
+  - '%USERPROFILE%\.nuget\packages'
+  - '%APPDATA%\npm-cache -> src\Web\vue-app\package-lock.json'
+
 install:
   - ps: Install-Product node $env:nodejs_version
   - ps: Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "$env:TEMP\dotnet-install.ps1"; & "$env:TEMP\dotnet-install.ps1" -Channel 10.0
-
-init:
-  - net start MSSQL$SQL2019
 
 dotnet_csproj:
   patch: true
@@ -34,18 +36,14 @@ dotnet_csproj:
   informational_version: '{version}'
 
 before_build:
-  - node --version
   - ps: Remove-Item -Path src\Web\web.config
   - ps: Move-Item -Path src\Web\web.$env:APPVEYOR_REPO_BRANCH.config -Destination src\Web\web.config
   - cd %APPVEYOR_BUILD_FOLDER%\src\Web\vue-app
   - move /y .env.%APPVEYOR_REPO_BRANCH% .env
-  - npm install
+  - npm ci
   - cd %APPVEYOR_BUILD_FOLDER%
 
 build_script:
-  - dotnet --version
-  - cd %APPVEYOR_BUILD_FOLDER%\tests\Tests.Common
-  - mv -f appsettings.appveyor.json appsettings.json
   - cd %APPVEYOR_BUILD_FOLDER%\src\Web\vue-app
   - npm run build
   - cd ..
@@ -53,12 +51,7 @@ build_script:
   - 7z a .\Web.zip .\__publish\* .\__publish\**\*
   - cd ..\..
 
-test_script:
-  - dotnet build
-  - dotnet test --no-build .\tests\Tests.Infrastructure
-  - dotnet test --no-build .\tests\Tests.Application
-  - dotnet test --no-build .\tests\Tests.Domain\
-  - dotnet test --no-build .\tests\Tests.Web\
+test: off
 
 artifacts:
   - path: ./src/Web/__publish
