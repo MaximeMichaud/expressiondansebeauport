@@ -69,9 +69,21 @@
         <button type="button" @click="addImage">
           <i class="tiptap-icon">&#x1F5BC;</i>
         </button>
+
+        <span class="tiptap-toolbar__separator"></span>
+
+        <button type="button" @click="toggleHtmlMode" :class="{ 'is-active': htmlMode }">
+          <i class="tiptap-icon">&lt;/&gt;</i>
+        </button>
       </div>
 
-      <EditorContent :editor="editor" />
+      <textarea
+        v-if="htmlMode"
+        class="tiptap-html-editor"
+        :value="htmlSource"
+        @input="onHtmlInput"
+      ></textarea>
+      <EditorContent v-else :editor="editor" />
     </div>
 
     <label :for="name">
@@ -125,6 +137,8 @@ const emit = defineEmits<{
 const status = ref<Status>({ valid: true });
 const isRequired = !(props.rules != null && props.rules.length == 0);
 const showLinkPopup = ref(false);
+const htmlMode = ref(false);
+const htmlSource = ref('');
 
 const editor = useEditor({
   content: props.modelValue || '',
@@ -182,6 +196,20 @@ function addImage() {
   if (url) {
     editor.value!.chain().focus().setImage({ src: url }).run();
   }
+}
+
+function toggleHtmlMode() {
+  if (htmlMode.value) {
+    editor.value!.commands.setContent(htmlSource.value, { emitUpdate: true });
+  } else {
+    htmlSource.value = editor.value!.getHTML();
+  }
+  htmlMode.value = !htmlMode.value;
+}
+
+function onHtmlInput(e: Event) {
+  htmlSource.value = (e.target as HTMLTextAreaElement).value;
+  emit("update:modelValue", htmlSource.value);
 }
 
 function validateInput() {
