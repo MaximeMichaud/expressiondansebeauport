@@ -61,9 +61,9 @@ a {
 
 p {
   a:not(.btn) {
-    color: $color-green;
+    color: $color-primary;
     text-decoration: underline;
-    @include underlineHover($color-green);
+    @include underlineHover($color-primary);
     font-weight: 800;
   }
 }
