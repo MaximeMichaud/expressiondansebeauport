@@ -14,6 +14,7 @@ public class UpdatePageRequest
     public string Title { get; set; } = null!;
     public string? Slug { get; set; }
     public string? Content { get; set; }
+    public string? CustomCss { get; set; }
     public string Status { get; set; } = "Draft";
     public Guid? FeaturedImageId { get; set; }
     public string? MetaDescription { get; set; }
@@ -76,6 +77,7 @@ public class UpdatePageEndpoint : Endpoint<UpdatePageRequest, PageDto>
             page.SetSlug(slug);
         }
         page.SetContent(req.Content);
+        page.SetCustomCss(req.CustomCss);
         page.SetFeaturedImageId(req.FeaturedImageId);
         page.SetMetaDescription(req.MetaDescription);
         page.SetSortOrder(req.SortOrder);

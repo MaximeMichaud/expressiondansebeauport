@@ -119,12 +119,27 @@
   }
 }
 
+.tiptap-html-editor {
+  width: 100%;
+  min-height: 150px;
+  padding: 12px 15px;
+  border: none;
+  background-color: $color-grey-lighter;
+  font-family: monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+  tab-size: 2;
+}
+
 .form__field.error {
   .tiptap-wrapper {
     border-color: $color-red;
   }
 
-  .tiptap {
+  .tiptap,
+  .tiptap-html-editor {
     background-color: rgba($color-red, 0.1);
   }
 
