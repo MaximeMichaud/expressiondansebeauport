@@ -151,12 +151,11 @@ public class GarneauTemplateDbContextInitializer
                 "<li>Danse créative (3-5 ans)</li>" +
                 "</ul>"),
 
-            CreatePage("Camp d'été", "camp-d-ete", 3,
-                "<div class='camp-hero'>" +
+            CreatePage("Camp d’été", "camp-d-ete", 3,
+                "<div class=’camp-hero’>" +
                     "<div>" +
-                        "<h2>Camp d'été 2026</h2>" +
                         "<p>Un été rempli de danse, d’énergie et de plaisir pour les 5 à 12 ans !</p>" +
-                        "<a href='https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session' target='_blank' class='btn-camp'>S'inscrire maintenant</a>" +
+                        "<a href=’https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session’ target=’_blank’ class=’btn-camp’>S’inscrire maintenant</a>" +
                     "</div>" +
                 "</div>" +
 
@@ -224,20 +223,23 @@ public class GarneauTemplateDbContextInitializer
                     "<p><small>*Tous les danseurs doivent être propres et aller seuls aux toilettes.</small></p>" +
                 "</section>",
                 ".public-page__container { max-width: 1100px; } " +
-                ".public-page__title { text-align: center; font-size: 3rem; margin-bottom: 3rem; } " +
-                ".public-page__content { display: flex; flex-direction: column; gap: 4rem; } " +
-                ".camp-hero { height: 400px; background: linear-gradient(135deg, #be1e2c, #ff6b6b); border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; text-align: center; padding: 2rem; } " +
-                ".camp-hero h2 { font-size: 2.5rem; margin-bottom: 1rem; } " +
-                ".camp-cards { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-top: 3rem; } " +
-                ".camp-card { background: white; padding: 2rem; width: 300px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.08); transition: all 0.3s ease; text-align: center; } " +
-                ".camp-card:hover { transform: scale(1.05); box-shadow: 0 20px 40px rgba(0,0,0,0.15); } " +
-                ".btn-camp { display: inline-block; background: #be1e2c; color: white; padding: 14px 28px; border-radius: 10px; font-weight: bold; text-decoration: none; margin-top: 1.5rem; transition: 0.3s; } " +
+                ".public-page__title { text-align: center; font-size: 2.8rem; margin-bottom: 2.5rem; } " +
+                ".public-page__content { display: flex; flex-direction: column; gap: 3rem; } " +
+                ".public-page__content h2 { font-size: 1.6rem; margin-bottom: 1rem; color: #be1e2c; } " +
+                ".camp-hero { background: #f4f6f8; border-radius: 16px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 3rem 2rem; } " +
+                ".camp-hero p { font-size: 1.2rem; color: #444; margin-bottom: 0.5rem; } " +
+                ".btn-camp { display: inline-block; background: #be1e2c; color: white; padding: 14px 28px; border-radius: 10px; font-weight: bold; text-decoration: none; margin-top: 1rem; transition: 0.3s; } " +
                 ".btn-camp:hover { background: #9e1824; } " +
-                ".camp-highlight { background: #f4f6f8; padding: 2.5rem; border-radius: 16px; } " +
+                ".camp-cards { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; } " +
+                ".camp-card { background: #f4f6f8; padding: 2rem 1.5rem; flex: 1 1 220px; max-width: 260px; border-radius: 12px; text-align: center; transition: transform 0.2s ease; } " +
+                ".camp-card:hover { transform: translateY(-4px); } " +
+                ".camp-card h3 { color: #be1e2c; margin-bottom: 0.5rem; font-size: 1.1rem; } " +
+                ".camp-card p { color: #555; font-size: 0.95rem; } " +
+                ".camp-highlight { background: #f4f6f8; padding: 2rem; border-radius: 12px; } " +
                 ".camp-highlight ul { list-style: none; padding: 0; } " +
-                ".camp-highlight li { margin: 0.8rem 0; font-size: 1.1rem; } " +
+                ".camp-highlight li { margin: 0.6rem 0; font-size: 1.05rem; } " +
                 "strong { color: #be1e2c; } " +
-                "section { padding-bottom: 1rem; }"
+                "section { padding-bottom: 0.5rem; }"
             ),
 
             CreatePage("Troupes compétitives", "troupes-competitives", 4,
