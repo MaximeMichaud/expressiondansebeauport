@@ -97,7 +97,7 @@ export interface IMenuService {
 
   deleteMenuItem(menuId: string, itemId: string): Promise<SucceededOrNotResponse>
 
-  reorderMenuItems(menuId: string, itemIds: string[]): Promise<SucceededOrNotResponse>
+  reorderMenuItems(menuId: string, items: { id: string; sortOrder: number }[]): Promise<SucceededOrNotResponse>
 }
 
 export interface ISiteSettingsService {
