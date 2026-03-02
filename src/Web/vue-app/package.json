@@ -44,7 +44,8 @@
     "vue-tippy": "^6.6.0",
     "vue-window-size": "^2.0.0",
     "vue3-easy-data-table": "^1.5.47",
-    "vue3-i18n": "^1.1.5"
+    "vue3-i18n": "^1.1.5",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
