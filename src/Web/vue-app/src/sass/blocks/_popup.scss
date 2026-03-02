@@ -24,7 +24,7 @@
 
   &__header {
     padding: 32px 40px;
-    border-bottom: 1px solid $color-green-light;
+    border-bottom: 1px solid $color-primary-light;
     text-align: center;
   }
 
@@ -41,7 +41,7 @@
   }
 
   &__cta {
-    background-color: $color-green;
+    background-color: $color-primary;
   }
 
   &__cta-title {

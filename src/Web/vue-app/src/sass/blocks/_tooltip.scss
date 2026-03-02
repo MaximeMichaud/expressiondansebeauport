@@ -2,9 +2,9 @@
 .tooltip {
   padding: 12px 8px;
   border-radius: $common-border-radius;
-  border: 1px solid $color-green-dark;
-  color: $color-green-dark;
-  background-color: $color-green-light;
+  border: 1px solid $color-primary-dark;
+  color: $color-primary-dark;
+  background-color: $color-primary-light;
   font-size: rem(14);
   line-height: rem(16);
   display: flex;
@@ -24,9 +24,9 @@
   }
 
   &--success {
-    color: $color-green-dark;
-    border-color: $color-green-dark;
-    background-color: $color-green-light;
+    color: $color-primary-dark;
+    border-color: $color-primary-dark;
+    background-color: $color-primary-light;
   }
 
   &--error {

@@ -9,11 +9,11 @@
   max-width: 1300px;
   z-index: $zindex-subheader;
   border-radius: 16px;
-  background: rgba($color-green, 0.85);
-  box-shadow: 0 8px 32px rgba($color-green, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: $color-primary;
+  box-shadow: 0 8px 32px rgba($color-primary, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1);
 
   &.is-menu-open {
-    background: rgba($color-green, 0.85);
+    background: $color-primary;
   }
 
   &__inner {
@@ -119,7 +119,7 @@
     font-family: $font-montserrat;
     font-weight: 700;
     font-size: rem(14);
-    color: $color-green;
+    color: $color-primary;
     background-color: $color-white;
     text-decoration: none;
     border-radius: 8px;
