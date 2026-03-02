@@ -78,13 +78,13 @@
     @include backgroundColorHover($color-grey-light);
 
     &:focus-visible {
-      outline: 2px solid $color-green;
+      outline: 2px solid $color-primary;
       outline-offset: -2px;
     }
 
     &.router-link-active {
       color: $color-white;
-      background-color: $color-green;
+      background-color: $color-primary;
       pointer-events: none;
     }
   }

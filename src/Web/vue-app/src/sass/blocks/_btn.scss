@@ -7,15 +7,15 @@
   font-size: rem(15);
   line-height: rem(18);
   font-weight: 700;
-  background-color: $color-green;
-  border: 1px solid $color-green;
+  background-color: $color-primary;
+  border: 1px solid $color-primary;
   border-radius: $common-border-radius;
   cursor: pointer;
   width: fit-content;
   text-transform: none;
   color: $color-white;
   align-items: center;
-  @include btnHover($color-green-dark, $color-white, $color-green-dark);
+  @include btnHover($color-primary-dark, $color-white, $color-primary-dark);
 
   //States ----------
   &--red {

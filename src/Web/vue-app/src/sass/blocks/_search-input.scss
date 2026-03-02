@@ -21,11 +21,11 @@
 
   &:focus-within,
   &:hover {
-    border-color: $color-green;
+    border-color: $color-primary;
 
     .icon {
       * {
-        fill: $color-green;
+        fill: $color-primary;
       }
     }
   }
