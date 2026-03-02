@@ -8,40 +8,6 @@
 
     <div v-else class="menu-builder">
 
-      <!-- Selector card -->
-      <div class="form card menu-builder__selector-card">
-        <div class="menu-builder__selector-row">
-          <select v-model="selectedMenuId" @change="onMenuSelected">
-            <option value="">{{ t('pages.menus.selectMenu') }}</option>
-            <option v-for="menu in menus" :key="menu.id" :value="menu.id">
-              {{ menu.name }} ({{ menu.location }})
-            </option>
-          </select>
-          <button class="btn" @click="showCreateForm = !showCreateForm">{{ t('global.add') }}</button>
-        </div>
-
-        <div v-if="showCreateForm" class="menu-builder__create">
-          <div class="menu-builder__divider" />
-          <div class="menu-builder__create-fields">
-            <div class="form__field">
-              <label>{{ t('global.name') }}</label>
-              <input type="text" v-model="newMenu.name" placeholder="Navigation principale" />
-            </div>
-            <div class="form__field">
-              <label>{{ t('pages.menus.location') }}</label>
-              <select v-model="newMenu.location">
-                <option value="Primary">{{ t('pages.menus.locationPrimary') }}</option>
-                <option value="Footer">{{ t('pages.menus.locationFooter') }}</option>
-              </select>
-            </div>
-          </div>
-          <div class="menu-builder__create-actions">
-            <button class="btn" @click="createMenu">{{ t('global.save') }}</button>
-            <button class="menu-builder__cancel" @click="showCreateForm = false">{{ t('global.cancel') }}</button>
-          </div>
-        </div>
-      </div>
-
       <!-- Two-column content -->
       <div v-if="currentMenu" class="menu-builder__content">
 
@@ -49,55 +15,48 @@
         <div class="card menu-builder__items-card">
           <h2>{{ currentMenu.name }}</h2>
 
-          <div v-if="currentMenu.menuItems && currentMenu.menuItems.length" class="menu-items-list">
-            <div v-for="item in currentMenu.menuItems" :key="item.id" class="menu-item">
-              <div class="menu-item__info">
-                <span class="menu-item__label">{{ item.label }}</span>
-                <span v-if="item.url || item.pageSlug" class="menu-item__url">{{ item.url || item.pageSlug }}</span>
-              </div>
-              <div class="menu-item__actions">
-                <button class="menu-item__btn" @click="editItem(item)">
-                  <Pencil :size="14" />
+          <draggable
+            v-if="currentMenu.menuItems && currentMenu.menuItems.length"
+            v-model="draggableItems"
+            item-key="id"
+            handle=".menu-item__drag"
+            class="menu-items-list"
+            @end="onDragEnd">
+            <template #item="{ element: item }">
+              <div class="menu-item">
+                <button class="menu-item__drag" aria-label="Réordonner">
+                  <GripVertical :size="14" />
                 </button>
-                <button class="menu-item__btn" @click="removeItem(item)">
-                  <Trash2 :size="14" />
-                </button>
-              </div>
-              <div v-if="item.children && item.children.length" class="menu-item__children">
-                <div v-for="child in item.children" :key="child.id" class="menu-item menu-item--child">
-                  <div class="menu-item__info">
-                    <span class="menu-item__label">{{ child.label }}</span>
-                    <span v-if="child.url || child.pageSlug" class="menu-item__url">{{ child.url || child.pageSlug }}</span>
-                  </div>
-                  <div class="menu-item__actions">
-                    <button class="menu-item__btn" @click="editItem(child)">
-                      <Pencil :size="14" />
-                    </button>
-                    <button class="menu-item__btn" @click="removeItem(child)">
-                      <Trash2 :size="14" />
-                    </button>
-                  </div>
+                <div class="menu-item__info">
+                  <span class="menu-item__label">{{ item.label }}</span>
+                  <span v-if="item.url || item.pageSlug" class="menu-item__url">{{ item.url || item.pageSlug }}</span>
+                </div>
+                <div class="menu-item__actions">
+                  <button class="menu-item__btn" @click="editItem(item)">
+                    <Pencil :size="14" />
+                  </button>
+                  <button class="menu-item__btn" @click="removeItem(item)">
+                    <Trash2 :size="14" />
+                  </button>
                 </div>
               </div>
-            </div>
-          </div>
+            </template>
+          </draggable>
           <p v-else class="menu-builder__empty">{{ t('global.table.noData') }}</p>
-
-          <div class="menu-builder__items-footer">
-            <button class="btn" @click="deleteMenu">{{ t('pages.menus.deleteMenu') }}</button>
-          </div>
         </div>
 
         <!-- Right: add item form -->
         <div class="form card menu-builder__add-card">
           <h3>{{ t('pages.menus.addItem') }}</h3>
-          <div class="form__field">
+          <div :class="['form__field', { error: newItemErrors.label }]">
             <label>{{ t('pages.menus.label') }}</label>
             <input type="text" v-model="newItem.label" placeholder="Accueil" />
+            <span v-if="newItemErrors.label" class="form__error-message">{{ newItemErrors.label }}</span>
           </div>
-          <div class="form__field">
+          <div :class="['form__field', { error: newItemErrors.url }]">
             <label>{{ t('pages.menus.url') }}</label>
             <input type="text" v-model="newItem.url" placeholder="https://exemple.com ou /ma-page" />
+            <span v-if="newItemErrors.url" class="form__error-message">{{ newItemErrors.url }}</span>
           </div>
           <div class="form__field">
             <label>{{ t('pages.menus.target') }}</label>
@@ -108,21 +67,24 @@
           </div>
           <button class="btn" @click="addItem">{{ t('global.add') }}</button>
         </div>
-
       </div>
+
+      <p v-else class="menu-builder__empty">Menu principal introuvable.</p>
     </div>
 
     <!-- Edit modal -->
-    <div v-if="editingItem" class="menu-modal-overlay" @click.self="editingItem = null">
+    <div v-if="editingItem" class="menu-modal-overlay" @click.self="closeEditModal">
       <div class="form menu-modal">
         <h3>{{ t('pages.menus.editItem') }}</h3>
-        <div class="form__field">
+        <div :class="['form__field', { error: editItemErrors.label }]">
           <label>{{ t('pages.menus.label') }}</label>
           <input type="text" v-model="editingItem.label" placeholder="Accueil" />
+          <span v-if="editItemErrors.label" class="form__error-message">{{ editItemErrors.label }}</span>
         </div>
-        <div class="form__field">
+        <div :class="['form__field', { error: editItemErrors.url }]">
           <label>{{ t('pages.menus.url') }}</label>
           <input type="text" v-model="editingItem.url" placeholder="https://exemple.com ou /ma-page" />
+          <span v-if="editItemErrors.url" class="form__error-message">{{ editItemErrors.url }}</span>
         </div>
         <div class="form__field">
           <label>{{ t('pages.menus.target') }}</label>
@@ -133,7 +95,7 @@
         </div>
         <div class="menu-modal__actions">
           <button class="btn" @click="saveEditItem">{{ t('global.save') }}</button>
-          <button class="menu-builder__cancel" @click="editingItem = null">{{ t('global.cancel') }}</button>
+          <button class="menu-builder__cancel" @click="closeEditModal">{{ t('global.cancel') }}</button>
         </div>
       </div>
     </div>
@@ -142,73 +104,74 @@
 
 <script lang="ts" setup>
 import {useI18n} from "vue3-i18n"
-import {onMounted, ref} from "vue"
+import {computed, onMounted, ref} from "vue"
 import {useMenuService} from "@/inversify.config"
 import {NavigationMenu, NavigationMenuItem} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
-import {Pencil, Trash2} from "lucide-vue-next"
+import {GripVertical, Pencil, Trash2} from "lucide-vue-next"
+import draggable from 'vuedraggable'
 
 const {t} = useI18n()
 const menuService = useMenuService()
 
 const isLoading = ref(false)
-const menus = ref<NavigationMenu[]>([])
-const selectedMenuId = ref("")
 const currentMenu = ref<NavigationMenu | null>(null)
-const showCreateForm = ref(false)
-const newMenu = ref<NavigationMenu>(new NavigationMenu())
 const newItem = ref<NavigationMenuItem>(new NavigationMenuItem())
 const editingItem = ref<NavigationMenuItem | null>(null)
+const newItemErrors = ref<{label?: string; url?: string}>({})
+const editItemErrors = ref<{label?: string; url?: string}>({})
 
-onMounted(async () => {
-  await loadMenus()
+const draggableItems = computed({
+  get() {
+    return currentMenu.value?.menuItems ?? []
+  },
+  set(newItems: NavigationMenuItem[]) {
+    if (currentMenu.value) {
+      currentMenu.value.menuItems = newItems
+    }
+  }
 })
 
-async function loadMenus() {
-  isLoading.value = true
-  menus.value = await menuService.getAll()
-  isLoading.value = false
-}
-
-async function onMenuSelected() {
-  if (!selectedMenuId.value) {
-    currentMenu.value = null
-    return
-  }
-  isLoading.value = true
-  currentMenu.value = await menuService.get(selectedMenuId.value)
-  isLoading.value = false
-}
-
-async function createMenu() {
-  const response = await menuService.create(newMenu.value)
-  if (response && response.succeeded) {
-    showCreateForm.value = false
-    newMenu.value = new NavigationMenu()
-    await loadMenus()
-  }
-}
-
-async function deleteMenu() {
+async function onDragEnd() {
   if (!currentMenu.value?.id) return
-  const confirmDelete = confirm(t('pages.menus.delete.confirmation'))
-  if (!confirmDelete) return
+  const items = (currentMenu.value.menuItems ?? [])
+    .map((item, index) => ({ id: item.id!, sortOrder: index }))
+    .filter(item => item.id)
+  await menuService.reorderMenuItems(currentMenu.value.id, items)
+}
 
-  const response = await menuService.delete(currentMenu.value.id)
-  if (response && response.succeeded) {
-    currentMenu.value = null
-    selectedMenuId.value = ""
-    await loadMenus()
+onMounted(async () => {
+  await loadPrimaryMenu()
+})
+
+async function loadPrimaryMenu() {
+  isLoading.value = true
+  const menus = await menuService.getAll()
+  const primary = menus.find(m => m.location === 'Primary')
+  if (primary?.id) {
+    currentMenu.value = await menuService.get(primary.id)
   }
+  isLoading.value = false
+}
+
+function validateItem(item: NavigationMenuItem): {label?: string; url?: string} {
+  const errors: {label?: string; url?: string} = {}
+  if (!item.label?.trim()) errors.label = "Ce champ est requis"
+  if (!item.url?.trim()) errors.url = "Ce champ est requis"
+  return errors
 }
 
 async function addItem() {
   if (!currentMenu.value?.id) return
+  newItemErrors.value = validateItem(newItem.value)
+  if (Object.keys(newItemErrors.value).length > 0) return
+
   newItem.value.menuId = currentMenu.value.id
   const response = await menuService.addMenuItem(currentMenu.value.id, newItem.value)
   if (response && response.succeeded) {
     newItem.value = new NavigationMenuItem()
-    await onMenuSelected()
+    newItemErrors.value = {}
+    await loadPrimaryMenu()
   }
 }
 
@@ -218,11 +181,20 @@ function editItem(item: NavigationMenuItem) {
 
 async function saveEditItem() {
   if (!currentMenu.value?.id || !editingItem.value?.id) return
+  editItemErrors.value = validateItem(editingItem.value)
+  if (Object.keys(editItemErrors.value).length > 0) return
+
   const response = await menuService.updateMenuItem(currentMenu.value.id, editingItem.value)
   if (response && response.succeeded) {
     editingItem.value = null
-    await onMenuSelected()
+    editItemErrors.value = {}
+    await loadPrimaryMenu()
   }
+}
+
+function closeEditModal() {
+  editingItem.value = null
+  editItemErrors.value = {}
 }
 
 async function removeItem(item: NavigationMenuItem) {
@@ -232,7 +204,7 @@ async function removeItem(item: NavigationMenuItem) {
 
   const response = await menuService.deleteMenuItem(currentMenu.value.id, item.id)
   if (response && response.succeeded) {
-    await onMenuSelected()
+    await loadPrimaryMenu()
   }
 }
 </script>
@@ -249,54 +221,6 @@ async function removeItem(item: NavigationMenuItem) {
   .menu-builder {
     margin-top: 16px;
   }
-}
-
-/* Selector card */
-.menu-builder__selector-card {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  width: fit-content;
-}
-
-.menu-builder__selector-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.menu-builder__selector-row select {
-  min-width: 220px;
-  width: auto;
-}
-
-.menu-builder__divider {
-  height: 1px;
-  background: #efefef;
-  margin: 16px 0;
-}
-
-.menu-builder__create-fields {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.menu-builder__create-fields .form__field {
-  margin-bottom: 0 !important;
-}
-
-@media (max-width: 540px) {
-  .menu-builder__create-fields {
-    grid-template-columns: 1fr;
-  }
-}
-
-.menu-builder__create-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 16px;
 }
 
 .menu-builder__cancel {
@@ -418,12 +342,6 @@ async function removeItem(item: NavigationMenuItem) {
   padding: 16px 0;
 }
 
-.menu-builder__items-footer {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid #efefef;
-}
-
 /* Add item card */
 .menu-builder__add-card h3 {
   margin-bottom: 20px;
@@ -465,19 +383,34 @@ async function removeItem(item: NavigationMenuItem) {
     max-width: 100%;
   }
 
-  .menu-builder__selector-card {
-    width: 100%;
-  }
-
-  .menu-builder__selector-row select {
-    min-width: 0;
-    flex: 1;
-  }
-
   .menu-modal {
     padding: 20px;
     margin: 1rem;
     max-width: calc(100% - 2rem);
   }
+}
+
+.menu-item__drag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  color: #5c5c5c;
+  cursor: grab;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: 4px;
+}
+
+.menu-item__drag:active {
+  cursor: grabbing;
+}
+
+.menu-item__drag:hover {
+  color: #232323;
+  background: #efefef;
 }
 </style>
