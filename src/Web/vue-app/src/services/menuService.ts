@@ -101,12 +101,12 @@ export class MenuService extends ApiService implements IMenuService {
     return new SucceededOrNotResponse(response.status >= 200 && response.status < 300)
   }
 
-  public async reorderMenuItems(menuId: string, itemIds: string[]): Promise<SucceededOrNotResponse> {
+  public async reorderMenuItems(menuId: string, items: { id: string; sortOrder: number }[]): Promise<SucceededOrNotResponse> {
     const response = await this
       ._httpClient
       .post<any, AxiosResponse<any>>(
         `${import.meta.env.VITE_API_BASE_URL}/admin/menus/${menuId}/items/reorder`,
-        {itemIds},
+        {items},
         this.headersWithJsonContentType())
       .catch(function (error: AxiosError): AxiosResponse<any> {
         return error.response as AxiosResponse<any>
