@@ -100,7 +100,7 @@
 
   a {
     display: inline-block;
-    background: $color-green;
+    background: $color-primary;
     color: white !important;
     padding: 8px;
 
@@ -114,7 +114,7 @@
     height: auto;
 
     &.ProseMirror-selectednode {
-      outline: 2px solid $color-green;
+      outline: 2px solid $color-primary;
     }
   }
 }
