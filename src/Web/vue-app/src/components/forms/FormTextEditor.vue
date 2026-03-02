@@ -219,6 +219,7 @@ function toggleHtmlMode() {
 
 function onHtmlInput(e: Event) {
   htmlSource.value = (e.target as HTMLTextAreaElement).value;
+  emit("update:modelValue", htmlSource.value);
 }
 
 function validateInput() {
