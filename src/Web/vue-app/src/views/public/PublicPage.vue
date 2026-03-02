@@ -82,6 +82,15 @@ watch(() => route.params.slug, (newSlug) => {
   padding-top: 8rem;
 }
 
+.public-page--not-found h1 {
+  margin-bottom: 1.5rem;
+}
+
+.public-page--not-found .btn {
+  margin-top: 2.5rem;
+  display: inline-block;
+}
+
 .public-page__container {
   max-width: 800px;
   margin: 0 auto;
