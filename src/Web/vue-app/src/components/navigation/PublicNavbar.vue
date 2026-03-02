@@ -17,7 +17,17 @@
       <div class="public-navbar__menu" :class="{ 'is-open': isMenuOpen }">
         <ul class="public-navbar__links">
           <li v-for="item in menuItems" :key="item.id">
+            <a
+              v-if="item.url?.startsWith('http')"
+              :href="item.url"
+              :target="item.target === 'Blank' ? '_blank' : '_self'"
+              :rel="item.target === 'Blank' ? 'noopener noreferrer' : undefined"
+              class="public-navbar__link"
+              @click="isMenuOpen = false">
+              {{ item.label }}
+            </a>
             <RouterLink
+              v-else
               :to="item.url || `/${item.pageSlug}`"
               class="public-navbar__link"
               @click="isMenuOpen = false">
