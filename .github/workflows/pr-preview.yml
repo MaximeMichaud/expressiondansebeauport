@@ -5,6 +5,7 @@ on:
     types: [opened, synchronize, reopened, closed]
 
 permissions:
+  actions: write
   contents: read
   pull-requests: write
   id-token: write
