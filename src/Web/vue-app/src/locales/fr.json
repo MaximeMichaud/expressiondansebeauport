@@ -30,6 +30,9 @@
       "fullPath": "/mon-compte",
       "name": "Mon compte"
     },
+    "notFound": {
+      "name": "Page introuvable"
+    },
     "admin": {
       "path": "/admin",
       "fullPath": "/admin",
