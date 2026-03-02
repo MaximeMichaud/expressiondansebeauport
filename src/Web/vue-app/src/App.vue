@@ -18,7 +18,7 @@ const router = useRouter();
 const userStore = useUserStore();
 const userService = useUserService();
 
-const publicRoutes = ['home', 'publicPage']
+const publicRoutes = ['home', 'publicPage', 'notFound']
 const isPublicPath = computed(() => {
   return publicRoutes.includes(router.currentRoute.value.name as string)
     || router.currentRoute.value.meta?.public === true
