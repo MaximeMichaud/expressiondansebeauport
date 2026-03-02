@@ -69,17 +69,17 @@
     font-weight: 700;
     font-size: rem(15);
     color: $color-white;
-    background-color: $color-green;
+    background-color: $color-primary;
     padding: 15px 38px;
     border-radius: 100px;
     text-decoration: none;
-    box-shadow: 0 4px 24px rgba($color-green, 0.3);
+    box-shadow: 0 4px 24px rgba($color-primary, 0.3);
     transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
 
     &:hover {
-      background-color: $color-green-dark;
+      background-color: $color-primary-dark;
       transform: translateY(-2px);
-      box-shadow: 0 8px 36px rgba($color-green, 0.4);
+      box-shadow: 0 8px 36px rgba($color-primary, 0.4);
     }
   }
 }
