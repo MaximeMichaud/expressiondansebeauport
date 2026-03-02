@@ -166,11 +166,20 @@ const router = createRouter({
       ]
     },
     {
-      path: "/:slug",
+      path: "/page/:slug",
       name: "publicPage",
       component: PublicPage,
       meta: {
         title: "routes.home.name",
+        public: true
+      }
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "notFound",
+      component: PublicPage,
+      meta: {
+        title: "routes.notFound.name",
         public: true
       }
     },
@@ -181,15 +190,16 @@ const router = createRouter({
 router.beforeEach(async (to, from) => {
   const userStore = useUserStore()
 
-  if (!to.meta.requiredRole)
+  const requiredRole = to.matched.find(r => r.meta.requiredRole)?.meta.requiredRole;
+  if (!requiredRole)
     return;
 
-  const isRoleArray = Array.isArray(to.meta.requiredRole)
-  const doesNotHaveGivenRole = !isRoleArray && !userStore.hasRole(to.meta.requiredRole as Role);
-  const hasNoRoleAmongRoleList = isRoleArray && !userStore.hasOneOfTheseRoles(to.meta.requiredRole as Role[]);
+  const isRoleArray = Array.isArray(requiredRole)
+  const doesNotHaveGivenRole = !isRoleArray && !userStore.hasRole(requiredRole as Role);
+  const hasNoRoleAmongRoleList = isRoleArray && !userStore.hasOneOfTheseRoles(requiredRole as Role[]);
   if (doesNotHaveGivenRole || hasNoRoleAmongRoleList) {
     return {
-      name: "account",
+      name: "login",
     };
   }
 });
