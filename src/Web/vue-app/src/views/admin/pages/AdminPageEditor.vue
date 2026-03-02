@@ -17,13 +17,19 @@
           <label>{{ t('pages.pages.slug') }}</label>
           <input type="text" v-model="page.slug" class="form-input" placeholder="a-propos-de-nous" />
         </div>
-        <div class="form-group">
-          <label>{{ t('pages.pages.content') }}</label>
-          <textarea v-model="page.content" rows="10" class="form-input form-textarea" placeholder="Rédigez le contenu de votre page ici..."></textarea>
-        </div>
+        <FormTextEditor
+          v-model="page.content"
+          name="content"
+          :label="t('pages.pages.content')"
+          :rules="[]"
+        />
         <div class="form-group">
           <label>{{ t('pages.pages.metaDescription') }}</label>
           <textarea v-model="page.metaDescription" rows="3" class="form-input form-textarea" placeholder="Brève description pour les moteurs de recherche (160 caractères max)"></textarea>
+        </div>
+        <div class="form-group">
+          <label>CSS personnalisé</label>
+          <textarea v-model="page.customCss" rows="8" class="form-input form-textarea form-textarea--code" placeholder=".public-page__title { color: red; }"></textarea>
         </div>
       </div>
       <div class="page-editor__sidebar">
@@ -57,6 +63,7 @@ import {usePageService} from "@/inversify.config"
 import {Page} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import BackLink from "@/components/layouts/items/BackLink.vue"
+import FormTextEditor from "@/components/forms/FormTextEditor.vue"
 
 const {t} = useI18n()
 const route = useRoute()
@@ -157,5 +164,11 @@ async function onSubmit() {
 .form-textarea {
   resize: vertical;
   font-family: inherit;
+}
+
+.form-textarea--code {
+  font-family: monospace;
+  font-size: 13px;
+  tab-size: 2;
 }
 </style>

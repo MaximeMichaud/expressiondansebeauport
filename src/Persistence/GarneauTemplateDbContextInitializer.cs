@@ -151,12 +151,11 @@ public class GarneauTemplateDbContextInitializer
                 "<li>Danse créative (3-5 ans)</li>" +
                 "</ul>"),
 
-            CreatePage("Camp d'été", "camp-d-ete", 3,
-                "<div class='camp-hero'>" +
+            CreatePage("Camp d’été", "camp-d-ete", 3,
+                "<div class=’camp-hero’>" +
                     "<div>" +
-                        "<h2>Camp d'été 2026</h2>" +
                         "<p>Un été rempli de danse, d’énergie et de plaisir pour les 5 à 12 ans !</p>" +
-                        "<a href='https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session' target='_blank' class='btn-camp'>S'inscrire maintenant</a>" +
+                        "<a href=’https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session’ target=’_blank’ class=’btn-camp’>S’inscrire maintenant</a>" +
                     "</div>" +
                 "</div>" +
 
@@ -222,7 +221,25 @@ public class GarneauTemplateDbContextInitializer
                     "<h2>Questions ?</h2>" +
                     "<p>Écrivez-nous à : <strong>info@expressiondansebeauport.com</strong></p>" +
                     "<p><small>*Tous les danseurs doivent être propres et aller seuls aux toilettes.</small></p>" +
-                "</section>"
+                "</section>",
+                ".public-page__container { max-width: 1100px; } " +
+                ".public-page__title { text-align: center; font-size: 2.8rem; margin-bottom: 2.5rem; } " +
+                ".public-page__content { display: flex; flex-direction: column; gap: 3rem; } " +
+                ".public-page__content h2 { font-size: 1.6rem; margin-bottom: 1rem; color: #be1e2c; } " +
+                ".camp-hero { background: #f4f6f8; border-radius: 16px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 3rem 2rem; } " +
+                ".camp-hero p { font-size: 1.2rem; color: #444; margin-bottom: 0.5rem; } " +
+                ".btn-camp { display: inline-block; background: #be1e2c; color: white; padding: 14px 28px; border-radius: 10px; font-weight: bold; text-decoration: none; margin-top: 1rem; transition: 0.3s; } " +
+                ".btn-camp:hover { background: #9e1824; } " +
+                ".camp-cards { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; } " +
+                ".camp-card { background: #f4f6f8; padding: 2rem 1.5rem; flex: 1 1 220px; max-width: 260px; border-radius: 12px; text-align: center; transition: transform 0.2s ease; } " +
+                ".camp-card:hover { transform: translateY(-4px); } " +
+                ".camp-card h3 { color: #be1e2c; margin-bottom: 0.5rem; font-size: 1.1rem; } " +
+                ".camp-card p { color: #555; font-size: 0.95rem; } " +
+                ".camp-highlight { background: #f4f6f8; padding: 2rem; border-radius: 12px; } " +
+                ".camp-highlight ul { list-style: none; padding: 0; } " +
+                ".camp-highlight li { margin: 0.6rem 0; font-size: 1.05rem; } " +
+                "strong { color: #be1e2c; } " +
+                "section { padding-bottom: 0.5rem; }"
             ),
 
             CreatePage("Troupes compétitives", "troupes-competitives", 4,
@@ -245,10 +262,11 @@ public class GarneauTemplateDbContextInitializer
         await _context.SaveChangesAsync();
     }
 
-    private static Page CreatePage(string title, string slug, int sortOrder, string content)
+    private static Page CreatePage(string title, string slug, int sortOrder, string content, string? customCss = null)
     {
         var page = new Page(title, slug);
         page.SetContent(content);
+        page.SetCustomCss(customCss);
         page.SetSortOrder(sortOrder);
         page.Publish();
         return page;
