@@ -3,6 +3,7 @@ export class Page {
   title?: string
   slug?: string
   content?: string
+  customCss?: string
   status?: string
   featuredImageId?: string
   featuredImageUrl?: string

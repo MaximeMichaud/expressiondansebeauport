@@ -80,8 +80,13 @@
       <textarea
         v-if="htmlMode"
         class="tiptap-html-editor"
+        :id="name"
+        :name="name"
         :value="htmlSource"
         @input="onHtmlInput"
+        @blur="validateInput"
+        :aria-invalid="!status.valid"
+        :aria-describedby="!status.valid ? `error__${name}` : undefined"
       ></textarea>
       <EditorContent v-else :editor="editor" />
     </div>
@@ -169,6 +174,10 @@ const editor = useEditor({
 });
 
 watch(() => props.modelValue, (newValue) => {
+  if (htmlMode.value) {
+    htmlSource.value = newValue || '';
+    return;
+  }
   if (editor.value && newValue !== editor.value.getHTML()) {
     editor.value.commands.setContent(newValue || '', { emitUpdate: false });
   }
@@ -200,7 +209,8 @@ function addImage() {
 
 function toggleHtmlMode() {
   if (htmlMode.value) {
-    editor.value!.commands.setContent(htmlSource.value, { emitUpdate: true });
+    emit("update:modelValue", htmlSource.value);
+    editor.value!.commands.setContent(htmlSource.value, { emitUpdate: false });
   } else {
     htmlSource.value = editor.value!.getHTML();
   }
@@ -209,11 +219,10 @@ function toggleHtmlMode() {
 
 function onHtmlInput(e: Event) {
   htmlSource.value = (e.target as HTMLTextAreaElement).value;
-  emit("update:modelValue", htmlSource.value);
 }
 
 function validateInput() {
-  const html = editor.value?.getHTML() ?? '';
+  const html = htmlMode.value ? htmlSource.value : (editor.value?.getHTML() ?? '');
   const validationRules = props.rules ? props.rules : [requiredTextEditor]
   status.value = validate(html, validationRules)
   emit("validated", props.name, status.value);

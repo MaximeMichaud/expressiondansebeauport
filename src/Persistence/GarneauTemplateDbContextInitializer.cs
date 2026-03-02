@@ -222,7 +222,22 @@ public class GarneauTemplateDbContextInitializer
                     "<h2>Questions ?</h2>" +
                     "<p>Écrivez-nous à : <strong>info@expressiondansebeauport.com</strong></p>" +
                     "<p><small>*Tous les danseurs doivent être propres et aller seuls aux toilettes.</small></p>" +
-                "</section>"
+                "</section>",
+                ".public-page__container { max-width: 1100px; } " +
+                ".public-page__title { text-align: center; font-size: 3rem; margin-bottom: 3rem; } " +
+                ".public-page__content { display: flex; flex-direction: column; gap: 4rem; } " +
+                ".camp-hero { height: 400px; background: linear-gradient(135deg, #be1e2c, #ff6b6b); border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; text-align: center; padding: 2rem; } " +
+                ".camp-hero h2 { font-size: 2.5rem; margin-bottom: 1rem; } " +
+                ".camp-cards { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-top: 3rem; } " +
+                ".camp-card { background: white; padding: 2rem; width: 300px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.08); transition: all 0.3s ease; text-align: center; } " +
+                ".camp-card:hover { transform: scale(1.05); box-shadow: 0 20px 40px rgba(0,0,0,0.15); } " +
+                ".btn-camp { display: inline-block; background: #be1e2c; color: white; padding: 14px 28px; border-radius: 10px; font-weight: bold; text-decoration: none; margin-top: 1.5rem; transition: 0.3s; } " +
+                ".btn-camp:hover { background: #9e1824; } " +
+                ".camp-highlight { background: #f4f6f8; padding: 2.5rem; border-radius: 16px; } " +
+                ".camp-highlight ul { list-style: none; padding: 0; } " +
+                ".camp-highlight li { margin: 0.8rem 0; font-size: 1.1rem; } " +
+                "strong { color: #be1e2c; } " +
+                "section { padding-bottom: 1rem; }"
             ),
 
             CreatePage("Troupes compétitives", "troupes-competitives", 4,
@@ -245,10 +260,11 @@ public class GarneauTemplateDbContextInitializer
         await _context.SaveChangesAsync();
     }
 
-    private static Page CreatePage(string title, string slug, int sortOrder, string content)
+    private static Page CreatePage(string title, string slug, int sortOrder, string content, string? customCss = null)
     {
         var page = new Page(title, slug);
         page.SetContent(content);
+        page.SetCustomCss(customCss);
         page.SetSortOrder(sortOrder);
         page.Publish();
         return page;

@@ -27,6 +27,10 @@
           <label>{{ t('pages.pages.metaDescription') }}</label>
           <textarea v-model="page.metaDescription" rows="3" class="form-input form-textarea" placeholder="Brève description pour les moteurs de recherche (160 caractères max)"></textarea>
         </div>
+        <div class="form-group">
+          <label>CSS personnalisé</label>
+          <textarea v-model="page.customCss" rows="8" class="form-input form-textarea form-textarea--code" placeholder=".public-page__title { color: red; }"></textarea>
+        </div>
       </div>
       <div class="page-editor__sidebar">
         <div class="page-editor__panel">
@@ -160,5 +164,11 @@ async function onSubmit() {
 .form-textarea {
   resize: vertical;
   font-family: inherit;
+}
+
+.form-textarea--code {
+  font-family: monospace;
+  font-size: 13px;
+  tab-size: 2;
 }
 </style>
