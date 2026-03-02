@@ -4,6 +4,7 @@ import {createRouter, createWebHistory} from "vue-router";
 
 import Home from "@/views/public/Home.vue";
 import PublicPage from "@/views/public/PublicPage.vue";
+import NotFound from "@/views/public/NotFound.vue";
 import Login from "@/views/Login.vue";
 import TwoFactor from "@/views/TwoFactor.vue";
 import ForgotPassword from "@/views/ForgotPassword.vue";
@@ -166,7 +167,7 @@ const router = createRouter({
       ]
     },
     {
-      path: "/page/:slug",
+      path: "/:slug",
       name: "publicPage",
       component: PublicPage,
       meta: {
@@ -177,11 +178,8 @@ const router = createRouter({
     {
       path: "/:pathMatch(.*)*",
       name: "notFound",
-      component: PublicPage,
-      meta: {
-        title: "routes.notFound.name",
-        public: true
-      }
+      component: NotFound,
+      meta: { public: true }
     },
   ]
 });
