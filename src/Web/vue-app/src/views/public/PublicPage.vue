@@ -44,7 +44,12 @@ async function loadPage(slug: string) {
 }
 
 watch(() => route.params.slug, (newSlug) => {
-  if (newSlug) loadPage(newSlug as string)
+  if (newSlug) {
+    loadPage(newSlug as string)
+  } else {
+    isLoading.value = false
+    page.value = null
+  }
 }, {immediate: true})
 </script>
 
