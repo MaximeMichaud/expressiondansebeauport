@@ -1,9 +1,7 @@
 ﻿using Application.Interfaces.Services.Admins;
-using Application.Interfaces.Services.Members;
 using Application.Interfaces.Services.Notifications;
 using Application.Interfaces.Services.Users;
 using Application.Services.Admins;
-using Application.Services.Members;
 using Application.Services.Notifications;
 using Application.Services.Users;
 using Application.Settings;
@@ -26,12 +24,10 @@ public static class ConfigureServices
 
         services.AddScoped<IAuthenticatedAdminService, AuthenticatedAdminService>();
         services.AddScoped<IUserCreationService, UserCreationService>();
-        services.AddScoped<IMemberRegistrationService, MemberRegistrationService>();
         services.AddScoped<INotificationService, EmailNotificationService>();
 
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IAuthenticatedUserService, AuthenticatedUserService>();
-        services.AddScoped<IAuthenticatedMemberService, AuthenticatedMemberService>();
 
         services.AddAutoMapper(cfg => cfg.AddMaps(typeof(ConfigureServices).Assembly));
 

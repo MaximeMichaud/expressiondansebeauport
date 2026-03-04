@@ -6,7 +6,6 @@ namespace Tests.Common.Fixtures;
 public class TestFixture
 {
     public UserBuilder UserBuilder;
-    public MemberBuilder MemberBuilder;
     public AdministratorBuilder AdministratorBuilder;
 
     protected Guid AnyRoleId;
@@ -17,7 +16,6 @@ public class TestFixture
     {
         _random = new Random();
         UserBuilder = new UserBuilder();
-        MemberBuilder = new MemberBuilder();
         AdministratorBuilder = new AdministratorBuilder();
     }
 
@@ -39,7 +37,6 @@ public class TestFixture
     public void ResetBuilders()
     {
         UserBuilder = new UserBuilder();
-        MemberBuilder = new MemberBuilder();
         AdministratorBuilder = new AdministratorBuilder();
     }
 }

@@ -2,8 +2,8 @@
 .progress-ring {
   font-weight: 700;
   font-size: rem(13);
-  color: $color-primary;
-  border: 3px solid $color-primary-lighter;
+  color: var(--primary);
+  border: 3px solid color-mix(in srgb, var(--primary) 8%, white);
   border-radius: 100%;
   display: flex;
   align-items: center;
@@ -16,7 +16,7 @@
       transition: stroke-dashoffset 0.35s;
       transform: rotate(-90deg);
       transform-origin: 50% 50%;
-      stroke: $color-primary;
+      stroke: var(--primary);
       fill: transparent;
     }
   }

@@ -14,7 +14,7 @@
       alternating
       buttons-pagination
       header-item-class-name="vue3-easy-data-table__header-item"
-      theme-color="#be1e2c"
+      :theme-color="primaryColor"
   >
     <template #item-status="item">
       <span class="tag" :class="item.statusRaw === 'Published' ? 'tag--published' : item.statusRaw === 'Draft' ? 'tag--draft' : ''">
@@ -55,8 +55,13 @@
 import type {FilterOption, Header, Item} from "vue3-easy-data-table"
 import {useI18n} from "vue3-i18n"
 import { Eye, Pencil, Trash2 } from "lucide-vue-next"
+import { computed } from "vue"
 
 const {t} = useI18n()
+
+const primaryColor = computed(() =>
+  getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#be1e2c'
+)
 
 defineProps<{
   headers: Header[],

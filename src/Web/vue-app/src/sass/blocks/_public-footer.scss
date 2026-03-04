@@ -81,7 +81,7 @@
       height: 40px;
       border-radius: 50%;
       background-color: $color-grey-medium;
-      @include backgroundColorHover($color-primary);
+      @include backgroundColorHover(var(--primary));
     }
 
     .material-design-icon {

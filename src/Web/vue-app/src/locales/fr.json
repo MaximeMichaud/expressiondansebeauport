@@ -38,21 +38,6 @@
       "fullPath": "/admin",
       "name": "Administration",
       "children": {
-        "members": {
-          "path": "membres",
-          "fullPath": "/admin/membres",
-          "name": "Membres",
-          "add": {
-            "path": "ajouter",
-            "fullPath": "/admin/membres/ajouter",
-            "name": "Ajouter un membre"
-          },
-          "edit": {
-            "path": ":id/modifier",
-            "fullPath": "/admin/membres/:id/modifier",
-            "name": "Modifier un membre"
-          }
-        },
         "media": {
           "path": "medias",
           "fullPath": "/admin/medias",
@@ -103,6 +88,14 @@
       "personalInfoError": "Une erreur est survenue lors de la mise à jour des informations.",
       "loginInfos": "Informations de connexion",
       "changePassword": "Changer le mot de passe",
+      "passwordRequirementsTitle": "Le nouveau mot de passe doit :",
+      "passwordRequirements": {
+        "minLength": "Contenir au moins 10 caractères",
+        "upper": "Contenir une majuscule",
+        "lower": "Contenir une minuscule",
+        "digit": "Contenir un chiffre",
+        "nonAlphanumeric": "Contenir un caractère spécial"
+      },
       "currentPassword": "Mot de passe actuel",
       "newPassword": "Nouveau mot de passe",
       "newPasswordConfirmation": "Confirmer le nouveau mot de passe",
@@ -114,7 +107,7 @@
         "invalidNewPasswordConfirmation": "La confirmation du nouveau mot de passe est requise.",
         "passwordAndConfirmationMustMatch": "Le nouveau mot de passe et sa confirmation doivent être identiques.",
         "passwordMismatch": "Le mot de passe actuel est incorrect.",
-        "passwordTooShort": "Doit contenir au moins 8 caractères.",
+        "passwordTooShort": "Doit contenir au moins 10 caractères.",
         "passwordRequiresNonAlphanumeric": "Doit contenir un caractère spécial.",
         "passwordRequiresDigit": "Doit contenir un chiffre.",
         "passwordRequiresUpper": "Doit contenir une majuscule.",
@@ -159,7 +152,7 @@
         "invalidToken": "Le token de réinitalisation du mot de passe est invalide.",
         "invalidPassword": "Le mot de passe est invalide.",
         "invalidPasswordConfirmation": "La confirmation du mot de passe est invalide.",
-        "passwordTooShort": "Doit contenir au moins 8 caractères.",
+        "passwordTooShort": "Doit contenir au moins 10 caractères.",
         "passwordRequiresNonAlphanumeric": "Doit contenir un caractère spécial.",
         "passwordRequiresDigit": "Doit contenir un chiffre.",
         "passwordRequiresUpper": "Doit contenir une majuscule.",
@@ -167,64 +160,6 @@
         "passwordMismatch": "Le mot de passe entré ne correspond pas à votre mot de passe actuel.",
         "passwordAndConfirmationMustMatch": "Le mot de passe et sa confirmation doivent être identiques.",
         "errorOccured": "Une erreur est survenue lors de la réinitialisation du mot de passe."
-      }
-    },
-    "members": {
-      "create": {
-        "validation": {
-          "successMessage": "Le membre a été créé avec succès.",
-          "failedMessage": "Une erreur s'est produite lors de la création du membre.",
-          "invalidFirstName": "Le prénom est invalide.",
-          "invalidLastName": "Le nom est invalide.",
-          "invalidEmail": "Le courriel est invalide.",
-          "invalidEmailFormat": "Le format du courriel est invalide.",
-          "invalidPhoneNumber": "Le numéro de téléphone est invalide.",
-          "invalidPhoneNumberFormat": "Le format du numéro de téléphone est invalide.",
-          "invalidStreet": "L'adresse est invalide.",
-          "invalidCity": "La ville est invalide.",
-          "invalidZipCode": "Le code postal est invalide.",
-          "invalidZipCodeFormat": "Le format du code postal est invalide.",
-          "invalidType": "Le type doit être homme, femme ou équipe.",
-          "invalidServiceRadius": "Le rayon de service devrait être supérieur à zéro.",
-          "invalidEnterpriseNumberFormat": "Le format du numéro d'entreprise est invalide.",
-          "invalidProvincialTaxNumberFormat": "Le format du numéro de TVQ est invalide.",
-          "invalidFederalTaxNumberFormat": "Le format du numéro de TPS est invalide.",
-          "memberNotFoundException": "Aucun membre avec le code de référence spécifié existe.",
-          "userWithEmailAlreadyExistsException": "Un utilisateur avec ce courriel existe déjà."
-        }
-      },
-      "update": {
-        "validation": {
-          "successMessage": "Le membre a été modifié avec succès.",
-          "failedMessage": "Une erreur s'est produite lors de la modification du membre.",
-          "invalidFirstName": "Le prénom est invalide.",
-          "invalidLastName": "Le nom est invalide.",
-          "invalidEmail": "Le courriel est invalide.",
-          "invalidEmailFormat": "Le format du courriel est invalide.",
-          "invalidPhoneNumber": "Le numéro de téléphone est invalide.",
-          "invalidPhoneNumberFormat": "Le format du numéro de téléphone est invalide.",
-          "invalidStreet": "L'adresse est invalide.",
-          "invalidCity": "La ville est invalide.",
-          "invalidZipCode": "Le code postal est invalide.",
-          "invalidZipCodeFormat": "Le format du code postal est invalide.",
-          "invalidType": "Le type doit être homme, femme ou équipe.",
-          "invalidServiceRadius": "Le rayon de service devrait être supérieur à zéro.",
-          "invalidEnterpriseNumberFormat": "Le format du numéro d'entreprise est invalide.",
-          "invalidProvincialTaxNumberFormat": "Le format du numéro de TVQ est invalide.",
-          "invalidFederalTaxNumberFormat": "Le format du numéro de TPS est invalide.",
-          "userWithEmailAlreadyExistsException": "Un utilisateur avec ce courriel existe déjà.",
-          "memberNotFoundException": "Le membre n'a pas pu être trouvé.",
-          "teamLeaderNotFoundException": "Aucun membre actif avec le code de référence fourni a été trouvé.",
-          "forbidBeingOwnTeamLeaderException": "Un membre ne peut pas être son propre leader d'équipe. Laissez le champ vide."
-        }
-      },
-      "delete": {
-        "confirmation": "Êtes-vous sûr de vouloir supprimer ce membre?",
-        "validation": {
-          "successMessage": "Le membre a été supprimé avec succès.",
-          "failedMessage": "Une erreur s'est produite lors de la suppression du membre.",
-          "memberNotFoundException": "Le membre n'a pas pu être trouvé."
-        }
       }
     },
     "media": {
@@ -295,6 +230,7 @@
       "target": "Cible",
       "locationPrimary": "Principal",
       "locationFooter": "Pied de page",
+      "targetPlaceholder": "Sélectionner une cible",
       "targetSelf": "Même fenêtre",
       "targetBlank": "Nouvelle fenêtre",
       "create": {

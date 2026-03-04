@@ -1,5 +1,4 @@
 export * from "./administrator"
-export * from "./member"
 export * from "./person"
 export * from "./link"
 export * from "./product"

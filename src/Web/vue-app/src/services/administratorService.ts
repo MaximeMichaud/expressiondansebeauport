@@ -1,10 +1,11 @@
-import {AxiosResponse} from "axios"
+import {AxiosError, AxiosResponse} from "axios"
 import {injectable} from "inversify"
 
 import "@/extensions/date.extensions"
 import {ApiService} from "@/services/apiService"
 import {IAdministratorService} from "@/injection/interfaces"
 import {Administrator} from "@/types/entities";
+import {SucceededOrNotResponse} from "@/types/responses";
 
 @injectable()
 export class AdministratorService extends ApiService implements IAdministratorService {
@@ -17,5 +18,19 @@ export class AdministratorService extends ApiService implements IAdministratorSe
     } catch (error) {
       return Promise.reject(error)
     }
+  }
+
+  public async updateMe(admin: Administrator): Promise<SucceededOrNotResponse> {
+    const response = await this
+      ._httpClient
+      .put<Administrator, AxiosResponse<SucceededOrNotResponse>>(
+        `${import.meta.env.VITE_API_BASE_URL}/admins/me`,
+        admin,
+        this.headersWithJsonContentType())
+      .catch(function (error: AxiosError): AxiosResponse<SucceededOrNotResponse> {
+        return error.response as AxiosResponse<SucceededOrNotResponse>
+      })
+    const succeededOrNotResponse = response.data as SucceededOrNotResponse
+    return new SucceededOrNotResponse(succeededOrNotResponse.succeeded, succeededOrNotResponse.errors)
   }
 }

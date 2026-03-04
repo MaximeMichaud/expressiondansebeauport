@@ -106,8 +106,8 @@
     justify-content: center;
     padding: 6px;
     border-radius: $common-border-radius;
-    background-color: $color-primary;
-    @include backgroundColorHover($color-primary-dark);
+    background-color: var(--primary);
+    @include backgroundColorHover(color-mix(in srgb, var(--primary) 80%, black));
   }
 
   //Footer ------------------
@@ -189,7 +189,7 @@
       }
 
       &.active {
-        background-color: $color-primary;
+        background-color: var(--primary);
         color: $color-white;
         pointer-events: none;
       }

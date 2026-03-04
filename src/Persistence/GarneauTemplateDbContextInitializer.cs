@@ -9,7 +9,6 @@ namespace Persistence;
 
 public class GarneauTemplateDbContextInitializer
 {
-    private const string MemberEmail = "member@gmail.com";
     private const string AdminEmail = "admin@gmail.com";
     private const string Password = "Qwerty123!";
 
@@ -48,7 +47,6 @@ public class GarneauTemplateDbContextInitializer
         {
             await SeedRoles();
             await SeedAdmins();
-            await SeedMembers();
             await SeedPages();
             await SeedMenus();
         }
@@ -63,9 +61,6 @@ public class GarneauTemplateDbContextInitializer
     {
         if (!await _roleManager.RoleExistsAsync(Roles.ADMINISTRATOR))
             await _roleManager.CreateAsync(new Role { Name = Roles.ADMINISTRATOR, NormalizedName = Roles.ADMINISTRATOR.Normalize() });
-
-        if (!await _roleManager.RoleExistsAsync(Roles.MEMBER))
-            await _roleManager.CreateAsync(new Role { Name = Roles.MEMBER, NormalizedName = Roles.MEMBER.Normalize() });
     }
 
     private async Task SeedAdmins()
@@ -87,39 +82,6 @@ public class GarneauTemplateDbContextInitializer
         admin.SetUser(user);
         _context.Administrators.Add(admin);
         await _context.SaveChangesAsync();
-    }
-
-    private async Task SeedMembers()
-    {
-        var user = await _userManager.FindByEmailAsync(MemberEmail);
-        if (user != null)
-            return;
-
-        user = BuildUser(MemberEmail);
-        var result = await _userManager.CreateAsync(user, Password);
-
-        if (result.Succeeded)
-            await _userManager.AddToRoleAsync(user, Roles.MEMBER);
-        else
-            throw new Exception($"Could not seed/create {Roles.MEMBER} user.");
-
-        var existingMember = _context.Members.IgnoreQueryFilters().FirstOrDefault(x => x.User.Id == user.Id);
-        if (existingMember is { Active: true })
-            return;
-
-        if (existingMember == null)
-        {
-            var member = new Member("John", "Doe", 1, "123, my street", "Quebec", "A1A 1A1");
-            member.SetUser(user);
-            _context.Members.Add(member);
-            await _context.SaveChangesAsync();
-        }
-        else if (!existingMember.Active)
-        {
-            existingMember.Activate();
-            _context.Members.Update(existingMember);
-            await _context.SaveChangesAsync();
-        }
     }
 
     private async Task SeedPages()

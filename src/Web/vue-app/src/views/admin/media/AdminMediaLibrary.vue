@@ -162,7 +162,7 @@ async function onDelete() {
 }
 
 .media-grid__item--selected {
-  border-color: #be1e2c;
+  border-color: var(--primary);
 }
 
 .media-grid__item img {

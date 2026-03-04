@@ -25,4 +25,11 @@ public class AdministratorRepository : IAdministratorRepository
             .ThenInclude(x => x.Role)
             .FirstOrDefault(x => x.User.Id == userId);
     }
+
+    public async Task Update(Administrator admin)
+    {
+        if (_context.Entry(admin).State == EntityState.Detached)
+            _context.Administrators.Update(admin);
+        await _context.SaveChangesAsync();
+    }
 }
