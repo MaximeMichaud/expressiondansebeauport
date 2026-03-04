@@ -19,12 +19,8 @@ builder.Services
     .AddPersistenceServices(builder.Configuration)
     .AddInfrastructureServices(builder.Configuration);
 
-// Use local file storage in development (Azure Blob not configured)
-if (builder.Environment.IsDevelopment())
-{
-    var webRootPath = builder.Environment.WebRootPath ?? Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
-    builder.Services.AddScoped<IFileStorageApiConsumer>(_ => new LocalFileStorageConsumer(webRootPath));
-}
+var webRootPath = builder.Environment.WebRootPath ?? Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
+builder.Services.AddScoped<IFileStorageApiConsumer>(_ => new LocalFileStorageConsumer(webRootPath));
 
 builder.Services.AddSignalR();
 builder.Configuration.AddJsonFile("appsettings.local.json", true);
