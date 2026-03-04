@@ -1,7 +1,5 @@
-﻿using Application.Services.Members.Dtos;
-using Application.Services.Users.Dtos;
+﻿using Application.Services.Users.Dtos;
 using AutoMapper;
-using Domain.Constants.User;
 using Domain.Entities.Identity;
 
 namespace Application.Mapping.Profiles;
@@ -13,9 +11,6 @@ public class UserMappingProfile : Profile
     {
         CreateMap<User, User>()
             .ForMember(user => user.UserRoles, opt => opt.Ignore());
-
-        CreateMap<MemberRegistrationDto, UserCreationDto>()
-            .ForMember(x => x.RoleName, opt => opt.MapFrom(x => Roles.MEMBER));
 
         CreateMap<UserCreationDto, User>()
             .ForMember(user => user.Id, opt => opt.Ignore())

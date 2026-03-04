@@ -42,8 +42,8 @@
 
         <span class="tiptap-toolbar__separator"></span>
 
-        <button type="button" @click="setColor('#be1e2c')" :class="{ 'is-active': editor!.isActive('textStyle', { color: '#be1e2c' }) }">
-          <span class="tiptap-color-swatch" style="background:#be1e2c"></span>
+        <button type="button" @click="setColor(primaryColor)" :class="{ 'is-active': editor!.isActive('textStyle', { color: primaryColor }) }">
+          <span class="tiptap-color-swatch" :style="{ background: primaryColor }"></span>
         </button>
         <button type="button" @click="setColor('#000000')" :class="{ 'is-active': editor!.isActive('textStyle', { color: '#000000' }) }">
           <span class="tiptap-color-swatch" style="background:#000000"></span>
@@ -109,7 +109,7 @@
 <script setup lang="ts">
 import { requiredTextEditor, Rule } from '@/validation/rules'
 import { Status, validate } from '@/validation'
-import { ref, watch, onBeforeUnmount } from "vue";
+import { ref, watch, onBeforeUnmount, computed } from "vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -133,6 +133,10 @@ defineExpose({
 })
 
 const { t } = useI18n()
+
+const primaryColor = computed(() =>
+  getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#be1e2c'
+)
 
 const emit = defineEmits<{
   (event: "update:modelValue", value: string): void;

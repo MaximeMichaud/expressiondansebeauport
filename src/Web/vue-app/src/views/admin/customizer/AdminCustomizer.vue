@@ -15,71 +15,17 @@
           <label>{{ t('pages.customizer.tagline') }}</label>
           <input type="text" v-model="settings.tagline" class="form-input" placeholder="L'art du mouvement, le cœur du quartier" />
         </div>
-      </div>
-
-      <div class="customizer__panel">
-        <h2>{{ t('pages.customizer.colors') }}</h2>
-        <div class="customizer__colors">
-          <div class="form-group">
-            <label>{{ t('pages.customizer.primaryColor') }}</label>
-            <div class="color-picker">
-              <input type="color" v-model="settings.primaryColor" />
-              <input type="text" v-model="settings.primaryColor" class="form-input" maxlength="7" placeholder="#be1e2d" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label>{{ t('pages.customizer.secondaryColor') }}</label>
-            <div class="color-picker">
-              <input type="color" v-model="settings.secondaryColor" />
-              <input type="text" v-model="settings.secondaryColor" class="form-input" maxlength="7" placeholder="#1e3a5f" />
-            </div>
+        <div class="form-group">
+          <label>{{ t('pages.customizer.primaryColor') }}</label>
+          <div class="color-picker">
+            <input type="color" v-model="settings.primaryColor" />
+            <input type="text" v-model="settings.primaryColor" class="form-input" maxlength="7" placeholder="#be1e2d" />
           </div>
         </div>
       </div>
 
-      <div class="customizer__panel">
-        <h2>{{ t('pages.customizer.typography') }}</h2>
-        <div class="form-group">
-          <label>{{ t('pages.customizer.headingFont') }}</label>
-          <select v-model="settings.headingFont" class="form-input">
-            <option v-for="font in availableFonts" :key="font" :value="font">{{ font }}</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>{{ t('pages.customizer.bodyFont') }}</label>
-          <select v-model="settings.bodyFont" class="form-input">
-            <option v-for="font in availableFonts" :key="font" :value="font">{{ font }}</option>
-          </select>
-        </div>
-      </div>
 
-      <div class="customizer__panel">
-        <h2>{{ t('pages.customizer.branding') }}</h2>
-        <div class="form-group">
-          <label>{{ t('pages.customizer.logo') }}</label>
-          <div v-if="settings.logoUrl" class="customizer__current-media">
-            <img :src="settings.logoUrl" alt="Logo" class="customizer__preview-img" />
-            <button class="btn btn--small" @click="settings.logoMediaFileId = undefined; settings.logoUrl = undefined">{{ t('global.removeFile') }}</button>
-          </div>
-          <label v-else class="btn">
-            {{ t('global.addFile') }}
-            <input type="file" accept="image/*" hidden @change="onLogoSelected" />
-          </label>
-        </div>
-        <div class="form-group">
-          <label>{{ t('pages.customizer.favicon') }}</label>
-          <div v-if="settings.faviconUrl" class="customizer__current-media">
-            <img :src="settings.faviconUrl" alt="Favicon" class="customizer__preview-img customizer__preview-img--small" />
-            <button class="btn btn--small" @click="settings.faviconMediaFileId = undefined; settings.faviconUrl = undefined">{{ t('global.removeFile') }}</button>
-          </div>
-          <label v-else class="btn">
-            {{ t('global.addFile') }}
-            <input type="file" accept="image/*" hidden @change="onFaviconSelected" />
-          </label>
-        </div>
-      </div>
-
-      <div class="customizer__actions">
+<div class="customizer__actions">
         <button class="btn" :disabled="isSaving" @click="onSave">{{ t('global.save') }}</button>
       </div>
     </div>
@@ -89,22 +35,19 @@
 <script lang="ts" setup>
 import {useI18n} from "vue3-i18n"
 import {onMounted, ref} from "vue"
-import {useSiteSettingsService, useMediaService} from "@/inversify.config"
+import {useSiteSettingsService} from "@/inversify.config"
 import {SiteSettings} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
+import {applyThemeSettings} from "@/theme"
+import {notifySuccess} from "@/notify"
 
 const {t} = useI18n()
 const settingsService = useSiteSettingsService()
-const mediaService = useMediaService()
 
 const isLoading = ref(false)
 const isSaving = ref(false)
 const settings = ref<SiteSettings>(new SiteSettings())
 
-const availableFonts = [
-  'Montserrat', 'Karla', 'Roboto', 'Open Sans', 'Lato', 'Poppins',
-  'Inter', 'Nunito', 'Raleway', 'Playfair Display', 'Merriweather'
-]
 
 onMounted(async () => {
   isLoading.value = true
@@ -112,33 +55,11 @@ onMounted(async () => {
   isLoading.value = false
 })
 
-async function onLogoSelected(event: Event) {
-  const input = event.target as HTMLInputElement
-  if (!input.files?.[0]) return
-
-  const uploadResponse = await mediaService.upload(input.files[0])
-  if (uploadResponse?.id) {
-    settings.value.logoMediaFileId = uploadResponse.id
-    settings.value.logoUrl = uploadResponse.blobUrl
-  }
-  input.value = ""
-}
-
-async function onFaviconSelected(event: Event) {
-  const input = event.target as HTMLInputElement
-  if (!input.files?.[0]) return
-
-  const uploadResponse = await mediaService.upload(input.files[0])
-  if (uploadResponse?.id) {
-    settings.value.faviconMediaFileId = uploadResponse.id
-    settings.value.faviconUrl = uploadResponse.blobUrl
-  }
-  input.value = ""
-}
-
 async function onSave() {
   isSaving.value = true
   await settingsService.update(settings.value)
+  applyThemeSettings(settings.value)
+  notifySuccess(t('pages.customizer.update.validation.successMessage'))
   isSaving.value = false
 }
 </script>
@@ -161,11 +82,6 @@ async function onSave() {
   font-size: 1.125rem;
 }
 
-.customizer__colors {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
 
 .color-picker {
   display: flex;
@@ -181,22 +97,6 @@ async function onSave() {
   cursor: pointer;
 }
 
-.customizer__current-media {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.customizer__preview-img {
-  max-width: 200px;
-  max-height: 80px;
-  object-fit: contain;
-}
-
-.customizer__preview-img--small {
-  max-width: 48px;
-  max-height: 48px;
-}
 
 .customizer__actions {
   grid-column: span 2;
@@ -220,10 +120,6 @@ async function onSave() {
   border-radius: 0.25rem;
 }
 
-.btn--small {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-}
 
 @media (max-width: 767px) {
   .customizer {
@@ -232,10 +128,6 @@ async function onSave() {
 
   .customizer__actions {
     grid-column: span 1;
-  }
-
-  .customizer__colors {
-    grid-template-columns: 1fr;
   }
 }
 

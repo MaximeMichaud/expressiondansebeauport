@@ -28,26 +28,20 @@
 </template>
 <script setup lang="ts">
 import {onMounted, ref, computed} from "vue";
-import {useMemberStore} from "@/stores/memberStore";
-import {useAdministratorService, useMemberService} from "@/inversify.config";
+import {useAdministratorService} from "@/inversify.config";
 import Navbar from "@/components/navigation/Navbar.vue";
 import LogoutPopup from "@/components/layouts/items/LogoutPopup.vue";
 import Notifications from "@/components/layouts/items/Notifications.vue";
 import Loader from "@/components/layouts/items/Loader.vue";
 import {useWindowSize} from "vue-window-size";
 import UserAvatar from "@/components/account/UserAvatar.vue";
-import {Administrator, Member} from "@/types";
-import {Role} from "@/types/enums";
+import {Administrator} from "@/types";
 import {useAdministratorStore} from "@/stores/administratorStore";
 import {usePersonStore} from "@/stores/personStore";
-import {useUserStore} from "@/stores/userStore";
 
-const userStore = useUserStore()
 const personStore = usePersonStore()
-const memberStore = useMemberStore()
 const administratorStore = useAdministratorStore()
 
-const memberService = useMemberService();
 const administratorService = useAdministratorService();
 
 const userIsLoading = ref(true)
@@ -57,15 +51,9 @@ const isMobile = computed(() => width.value < 1200);
 
 onMounted(async () => {
   userIsLoading.value = true
-  if (userStore.hasRole(Role.Member)) {
-    const member = await memberService.getAuthenticated() as Member;
-    personStore.setPerson(member)
-    memberStore.setMember(member)
-  } else {
-    const administrator = await administratorService.getAuthenticated() as Administrator;
-    personStore.setPerson(administrator)
-    administratorStore.setAdministrator(administrator)
-  }
+  const administrator = await administratorService.getAuthenticated() as Administrator;
+  personStore.setPerson(administrator)
+  administratorStore.setAdministrator(administrator)
   userIsLoading.value = false
 });
 </script>

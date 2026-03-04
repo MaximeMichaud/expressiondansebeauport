@@ -1,7 +1,7 @@
 @use "../tools" as *;
 .tippy-box[data-theme~='custom-garneau-template-app'] {
   background-color: $color-primary-lighter;
-  border: 1px solid $color-primary;
+  border: 1px solid var(--primary);
   padding: 8px 12px;
   font-size: rem(13);
   line-height: rem(16);

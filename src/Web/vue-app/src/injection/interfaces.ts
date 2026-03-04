@@ -7,9 +7,7 @@ import {
   ITwoFactorRequest
 } from "@/types/requests"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
-import {Administrator, MediaFile, Member, NavigationMenu, NavigationMenuItem, Page, SiteHealth, SiteSettings, User} from "@/types/entities"
-import {Guid} from "@/types";
-
+import {Administrator, MediaFile, NavigationMenu, NavigationMenuItem, Page, SiteHealth, SiteSettings, User} from "@/types/entities"
 export interface IApiService {
   headersWithJsonContentType(): any
 
@@ -20,6 +18,7 @@ export interface IApiService {
 
 export interface IAdministratorService {
   getAuthenticated(): Promise<Administrator | undefined>
+  updateMe(admin: Administrator): Promise<SucceededOrNotResponse>
 }
 
 
@@ -35,21 +34,6 @@ export interface IAuthenticationService {
   changePassword(request: IChangePasswordRequest): Promise<SucceededOrNotResponse>
 
   logout(): Promise<SucceededOrNotResponse>
-}
-
-export interface IMemberService {
-
-  getAuthenticated(): Promise<Member | undefined>
-
-  search(pageIndex: number, pageSize: number, searchValue: string): Promise<PaginatedResponse<Member>>
-
-  getMember(id: string): Promise<Member>
-
-  createMember(member: Member): Promise<SucceededOrNotResponse>
-
-  updateMember(member: Member): Promise<SucceededOrNotResponse>
-
-  deleteMember(id: Guid): Promise<SucceededOrNotResponse>
 }
 
 export interface IUserService {

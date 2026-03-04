@@ -36,4 +36,26 @@ public class AuthenticatedAdminService : IAuthenticatedAdminService
 
         return member;
     }
+
+    public async Task UpdateAdmin(string firstName, string lastName, string email)
+    {
+        var user = _authenticatedUserService.GetAuthenticatedUser();
+        if (user == null)
+            throw new UserNotFoundException("Could not find user associated with authenticated admin.");
+
+        var admin = _administratorRepository.FindByUserId(user.Id, asNoTracking: false);
+        if (admin == null)
+            throw new AdministratorNotFoundException($"Could not find admin associated with user with id {user.Id}");
+
+        admin.SetFirstName(firstName);
+        admin.SetLastName(lastName);
+
+        admin.User.Email = email.ToLower();
+        admin.User.UserName = email.ToLower();
+        admin.User.NormalizedEmail = email.ToUpper();
+        admin.User.NormalizedUserName = email.ToUpper();
+
+        admin.SanitizeForSaving();
+        await _administratorRepository.Update(admin);
+    }
 }

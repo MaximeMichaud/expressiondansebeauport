@@ -12,5 +12,4 @@ import IconFaceMan from 'vue-material-design-icons/FaceMan.vue';
 import {usePersonStore} from "@/stores/personStore";
 
 const personStore = usePersonStore();
-
 </script>

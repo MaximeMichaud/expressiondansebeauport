@@ -10,7 +10,6 @@ using Infrastructure.Mailing;
 using Infrastructure.Repositories.Admins;
 using Infrastructure.Repositories.Authentication;
 using Infrastructure.Repositories.Media;
-using Infrastructure.Repositories.Members;
 using Infrastructure.Repositories.Menus;
 using Infrastructure.Repositories.Pages;
 using Infrastructure.Repositories.Users;
@@ -64,7 +63,6 @@ public static class ConfigureServices
         services.AddSingleton<IHttpContextUserService, HttpContextUserService>();
 
         services.AddScoped<IAdministratorRepository, AdministratorRepository>();
-        services.AddScoped<IMemberRepository, MemberRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
