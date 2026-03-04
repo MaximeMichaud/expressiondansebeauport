@@ -4,14 +4,14 @@
   align-items: center;
   gap: 12px;
   @include text--body-big;
-  color: $color-primary;
+  color: var(--primary);
 
   &__img-container {
     overflow: hidden;
     width: 36px;
     height: 36px;
     border-radius: 100%;
-    background-color: $color-primary-light;
+    background-color: color-mix(in srgb, var(--primary) 20%, white);
     display: flex;
     align-items: center;
     justify-content: center;

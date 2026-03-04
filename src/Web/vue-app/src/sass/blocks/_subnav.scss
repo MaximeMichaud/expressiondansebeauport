@@ -44,7 +44,7 @@
     @include backgroundColorHover($color-grey-light);
 
     &.router-link-active {
-      background-color: $color-primary;
+      background-color: var(--primary);
       color: $color-white;
       pointer-events: none;
     }
@@ -52,13 +52,13 @@
 
   &--expand {
     margin: 8px 0;
-    background-color: $color-primary-lighter;
+    background-color: color-mix(in srgb, var(--primary) 8%, white);
 
     .subnav__title {
-      color: $color-primary;
+      color: var(--primary);
 
       .icon {
-        background-color: $color-primary;
+        background-color: var(--primary);
 
         * {
           fill: $color-white;

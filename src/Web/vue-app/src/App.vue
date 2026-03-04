@@ -11,12 +11,14 @@ import {useUserStore} from "@/stores/userStore";
 import PublicLayout from "@/components/layouts/PublicLayout.vue";
 import AuthenticationLayout from "@/components/layouts/AuthenticationLayout.vue";
 import DashboardLayout from "@/components/layouts/DashboardLayout.vue";
-import {useUserService} from "@/inversify.config";
+import {useUserService, useSiteSettingsService} from "@/inversify.config";
 import i18n from "@/i18n";
+import {applyThemeSettings} from "@/theme";
 
 const router = useRouter();
 const userStore = useUserStore();
 const userService = useUserService();
+const siteSettingsService = useSiteSettingsService();
 
 const publicRoutes = ['home', 'publicPage', 'notFound']
 const isPublicPath = computed(() => {
@@ -30,6 +32,11 @@ const isAuthenticationPath = computed(() => {
 });
 
 onMounted(async () => {
+  const siteSettings = await siteSettingsService.getPublic().catch(() => null)
+  if (siteSettings) {
+    applyThemeSettings(siteSettings)
+  }
+
   if (isPublicPath.value)
     return
 

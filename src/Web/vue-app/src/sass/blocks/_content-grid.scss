@@ -19,7 +19,7 @@
 
   &__text {
     @include text--body-small;
-    color: $color-primary-dark;
+    color: color-mix(in srgb, var(--primary) 60%, black);
   }
 
   &__actions {

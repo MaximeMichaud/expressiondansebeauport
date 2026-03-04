@@ -13,7 +13,7 @@
     align-items: center;
 
     a {
-      @include colorHover($color-primary);
+      @include colorHover(var(--primary));
     }
 
     &::after {

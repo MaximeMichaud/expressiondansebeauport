@@ -1,4 +1,8 @@
 @use "../tools" as *;
+:root {
+  --primary: #be1e2c;
+}
+
 html {
   font-size: 16px;
   scroll-behavior: smooth;

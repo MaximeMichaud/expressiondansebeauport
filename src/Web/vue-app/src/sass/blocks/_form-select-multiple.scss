@@ -23,7 +23,7 @@
 
   &__selection-option {
     padding: 4px 8px 4px 4px;
-    background-color: $color-primary;
+    background-color: var(--primary);
     color: $color-white;
     font-size: rem(14);
     line-height: rem(14);
@@ -41,7 +41,7 @@
 
     @media (hover: hover) {
       &:hover {
-        background-color: $color-primary-medium;
+        background-color: var(--primary);
       }
     }
   }
@@ -59,13 +59,13 @@
     cursor: default;
 
     &.selected {
-      background-color: $color-primary;
+      background-color: var(--primary);
       color: $color-white;
     }
 
     @media (hover: hover) {
       &:hover {
-        background-color: $color-primary-medium;
+        background-color: var(--primary);
         color: $color-white;
       }
     }
@@ -77,12 +77,12 @@
     &:hover {
       .form-select-multiple__selection {
         outline: none;
-        border-color: $color-primary;
+        border-color: var(--primary);
         background-color: $color-white;
       }
 
       label {
-        color: $color-primary;
+        color: var(--primary);
       }
     }
   }

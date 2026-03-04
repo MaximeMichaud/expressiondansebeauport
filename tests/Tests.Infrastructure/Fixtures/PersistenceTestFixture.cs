@@ -1,6 +1,5 @@
 using Application.Interfaces.Services;
 using Domain.Constants.User;
-using Domain.Entities;
 using Domain.Entities.Identity;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
@@ -141,11 +140,4 @@ public class PersistenceTestFixture : TestFixture, IDisposable
         return user;
     }
 
-    public async Task<Member> GivenMember(string? email = null)
-    {
-        var member = MemberBuilder.WithEmail(email ?? GenerateEmail()).Build();
-        DbContext.Members.Add(member);
-        await DbContext.SaveChangesAsync();
-        return member;
-    }
 }

@@ -12,9 +12,6 @@ import ResetPassword from "@/views/ResetPassword.vue";
 import Account from "@/views/shared/Account.vue";
 
 import Admin from "../views/admin/Admin.vue";
-import AdminMemberIndex from "@/views/admin/members/AdminMemberIndex.vue";
-import AdminAddMemberForm from "@/views/admin/members/AdminAddMemberForm.vue";
-import AdminEditMemberForm from "@/views/admin/members/AdminEditMemberForm.vue";
 import AdminMediaLibrary from "@/views/admin/media/AdminMediaLibrary.vue";
 import AdminPageIndex from "@/views/admin/pages/AdminPageIndex.vue";
 import AdminPageEditor from "@/views/admin/pages/AdminPageEditor.vue";
@@ -120,29 +117,6 @@ const router = createRouter({
           path: i18n.t("routes.admin.children.menus.path"),
           name: "admin.children.menus",
           component: AdminMenuIndex,
-        },
-        {
-          path: i18n.t("routes.admin.children.members.path"),
-          name: "admin.children.members",
-          component: Admin,
-          children: [
-            {
-              path: "",
-              name: "admin.children.members.index",
-              component: AdminMemberIndex,
-            },
-            {
-              path: i18n.t("routes.admin.children.members.add.path"),
-              name: "admin.children.members.add",
-              component: AdminAddMemberForm,
-            },
-            {
-              path: i18n.t("routes.admin.children.members.edit.path"),
-              name: "admin.children.members.edit",
-              component: AdminEditMemberForm,
-              props: true,
-            },
-          ],
         },
         {
           path: i18n.t("routes.admin.children.media.path"),

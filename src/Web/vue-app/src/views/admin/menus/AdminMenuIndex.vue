@@ -61,6 +61,7 @@
           <div class="form__field">
             <label>{{ t('pages.menus.target') }}</label>
             <select v-model="newItem.target">
+              <option :value="undefined" disabled>{{ t('pages.menus.targetPlaceholder') }}</option>
               <option value="Self">{{ t('pages.menus.targetSelf') }}</option>
               <option value="Blank">{{ t('pages.menus.targetBlank') }}</option>
             </select>
@@ -89,6 +90,7 @@
         <div class="form__field">
           <label>{{ t('pages.menus.target') }}</label>
           <select v-model="editingItem.target">
+            <option :value="undefined" disabled>{{ t('pages.menus.targetPlaceholder') }}</option>
             <option value="Self">{{ t('pages.menus.targetSelf') }}</option>
             <option value="Blank">{{ t('pages.menus.targetBlank') }}</option>
           </select>
@@ -315,7 +317,7 @@ async function removeItem(item: NavigationMenuItem) {
   height: 28px;
   border: none;
   border-radius: 6px;
-  background: #be1e2c;
+  background: var(--primary);
   color: #fff;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -323,7 +325,7 @@ async function removeItem(item: NavigationMenuItem) {
 
 @media (hover: hover) {
   .menu-item__btn:hover {
-    background: #8b1621;
+    background: color-mix(in srgb, var(--primary) 80%, black);
   }
 }
 

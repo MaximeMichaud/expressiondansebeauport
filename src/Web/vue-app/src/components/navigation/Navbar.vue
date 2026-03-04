@@ -16,7 +16,6 @@
         class="navbar__content"
     >
       <AdminNavbarItems v-if="userStore.hasRole(Role.Admin)"/>
-      <MemberNavbarItems v-if="userStore.hasRole(Role.Member)"/>
 
       <!-- Logout inside drawer on mobile -->
       <div class="navbar__mobile-logout">
@@ -39,7 +38,6 @@ import {useRouter} from "vue-router";
 import {useUserStore} from "@/stores/userStore";
 import {Role} from "@/types/enums";
 import AdminNavbarItems from "@/components/navigation/AdminNavbarItems.vue";
-import MemberNavbarItems from "@/components/navigation/MemberNavbarItems.vue";
 import LogoutButton from "@/components/navigation/LogoutButton.vue";
 import UserAvatar from "@/components/account/UserAvatar.vue";
 
