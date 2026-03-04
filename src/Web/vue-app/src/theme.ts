@@ -5,8 +5,6 @@ export function applyThemeSettings(settings: SiteSettings): void {
 
   if (settings.primaryColor) {
     root.style.setProperty('--primary', settings.primaryColor)
-    root.style.setProperty('--color-brand', settings.primaryColor)
-    root.style.setProperty('--ring', settings.primaryColor)
   }
 
   if (settings.secondaryColor) {

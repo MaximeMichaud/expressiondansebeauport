@@ -3,7 +3,7 @@
   font-weight: 700;
   font-size: rem(13);
   color: var(--primary);
-  border: 3px solid $color-primary-lighter;
+  border: 3px solid color-mix(in srgb, var(--primary) 8%, white);
   border-radius: 100%;
   display: flex;
   align-items: center;

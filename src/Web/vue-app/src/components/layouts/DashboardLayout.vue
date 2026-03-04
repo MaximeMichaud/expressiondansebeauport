@@ -28,6 +28,8 @@
 </template>
 <script setup lang="ts">
 import {onMounted, ref, computed} from "vue";
+import {useRouter} from "vue-router";
+import {useI18n} from "vue3-i18n";
 import {useAdministratorService} from "@/inversify.config";
 import Navbar from "@/components/navigation/Navbar.vue";
 import LogoutPopup from "@/components/layouts/items/LogoutPopup.vue";
@@ -39,6 +41,8 @@ import {Administrator} from "@/types";
 import {useAdministratorStore} from "@/stores/administratorStore";
 import {usePersonStore} from "@/stores/personStore";
 
+const {t} = useI18n()
+const router = useRouter()
 const personStore = usePersonStore()
 const administratorStore = useAdministratorStore()
 
@@ -51,9 +55,14 @@ const isMobile = computed(() => width.value < 1200);
 
 onMounted(async () => {
   userIsLoading.value = true
-  const administrator = await administratorService.getAuthenticated() as Administrator;
-  personStore.setPerson(administrator)
-  administratorStore.setAdministrator(administrator)
-  userIsLoading.value = false
+  try {
+    const administrator = await administratorService.getAuthenticated() as Administrator;
+    personStore.setPerson(administrator)
+    administratorStore.setAdministrator(administrator)
+  } catch {
+    await router.push(t("routes.login.path"))
+  } finally {
+    userIsLoading.value = false
+  }
 });
 </script>

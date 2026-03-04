@@ -1,6 +1,6 @@
 @use "../tools" as *;
 .tippy-box[data-theme~='custom-garneau-template-app'] {
-  background-color: $color-primary-lighter;
+  background-color: color-mix(in srgb, var(--primary) 8%, white);
   border: 1px solid var(--primary);
   padding: 8px 12px;
   font-size: rem(13);
@@ -14,6 +14,6 @@
   }
 
   .tippy-arrow {
-    color: $color-primary-lighter;
+    color: color-mix(in srgb, var(--primary) 8%, white);
   }
 }

@@ -46,11 +46,11 @@
     <div class="text-xs text-muted-foreground">
       <p class="font-medium mb-1.5">{{ t('pages.account.passwordRequirementsTitle') }}</p>
       <ul class="space-y-1">
-        <li v-for="key in ['passwordTooShort','passwordRequiresUpper','passwordRequiresLower','passwordRequiresDigit','passwordRequiresNonAlphanumeric']"
+        <li v-for="key in ['minLength','upper','lower','digit','nonAlphanumeric']"
             :key="key"
             class="flex items-center gap-2">
           <span class="size-1 rounded-full bg-muted-foreground/50 shrink-0"></span>
-          {{ t(`pages.account.validation.${key}`).replace('Doit ', '').replace(/\.$/, '') }}
+          {{ t(`pages.account.passwordRequirements.${key}`) }}
         </li>
       </ul>
     </div>
@@ -92,7 +92,14 @@ const changePasswordRequest = ref<IChangePasswordRequest>({
 });
 
 onMounted(async () => {
-  admin.value = await administratorService.getAuthenticated();
+  isLoadingProfile.value = true
+  try {
+    admin.value = await administratorService.getAuthenticated();
+  } catch {
+    notifyError(t('validation.errorOccured'));
+  } finally {
+    isLoadingProfile.value = false
+  }
 });
 
 function addPasswordInputRef(el: Element | ComponentPublicInstance | null) {

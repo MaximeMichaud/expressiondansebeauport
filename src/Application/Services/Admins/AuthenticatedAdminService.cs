@@ -12,13 +12,16 @@ public class AuthenticatedAdminService : IAuthenticatedAdminService
 {
     private readonly IAdministratorRepository _administratorRepository;
     private readonly IAuthenticatedUserService _authenticatedUserService;
+    private readonly IUserRepository _userRepository;
 
     public AuthenticatedAdminService(
         IAdministratorRepository administratorRepository,
-        IAuthenticatedUserService authenticatedUserService)
+        IAuthenticatedUserService authenticatedUserService,
+        IUserRepository userRepository)
     {
         _administratorRepository = administratorRepository;
         _authenticatedUserService = authenticatedUserService;
+        _userRepository = userRepository;
     }
 
     public Administrator GetAuthenticatedAdmin()
@@ -47,13 +50,17 @@ public class AuthenticatedAdminService : IAuthenticatedAdminService
         if (admin == null)
             throw new AdministratorNotFoundException($"Could not find admin associated with user with id {user.Id}");
 
+        var existingUser = _userRepository.FindByEmail(email);
+        if (existingUser != null && existingUser.Id != user.Id && existingUser.IsActive())
+            throw new UserWithEmailAlreadyExistsException("A user with this email already exists.");
+
         admin.SetFirstName(firstName);
         admin.SetLastName(lastName);
 
-        admin.User.Email = email.ToLower();
-        admin.User.UserName = email.ToLower();
-        admin.User.NormalizedEmail = email.ToUpper();
-        admin.User.NormalizedUserName = email.ToUpper();
+        admin.User.Email = email.ToLowerInvariant();
+        admin.User.UserName = email.ToLowerInvariant();
+        admin.User.NormalizedEmail = email.ToUpperInvariant();
+        admin.User.NormalizedUserName = email.ToUpperInvariant();
 
         admin.SanitizeForSaving();
         await _administratorRepository.Update(admin);

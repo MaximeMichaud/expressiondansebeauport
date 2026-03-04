@@ -23,6 +23,7 @@ public class AuthenticatedAdminServiceTests
 
     private readonly Mock<IAdministratorRepository> _administratorRepository;
     private readonly Mock<IAuthenticatedUserService> _authenticatedUserService;
+    private readonly Mock<IUserRepository> _userRepository;
 
     private readonly AuthenticatedAdminService _authenticatedAdminService;
 
@@ -34,9 +35,10 @@ public class AuthenticatedAdminServiceTests
         _administratorBuilder = new AdministratorBuilder();
         _administratorRepository = new Mock<IAdministratorRepository>();
         _authenticatedUserService = new Mock<IAuthenticatedUserService>();
+        _userRepository = new Mock<IUserRepository>();
 
         _authenticatedAdminService = new AuthenticatedAdminService(_administratorRepository.Object,
-            _authenticatedUserService.Object);
+            _authenticatedUserService.Object, _userRepository.Object);
     }
 
     [Fact]

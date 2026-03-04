@@ -7,8 +7,8 @@
   line-height: rem(20);
   font-weight: 700;
   border-radius: 100px;
-  background-color: $color-primary-light;
-  color: $color-primary-dark;
+  background-color: color-mix(in srgb, var(--primary) 20%, white);
+  color: color-mix(in srgb, var(--primary) 60%, black);
 }
 
 .tag--published {

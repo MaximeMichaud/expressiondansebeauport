@@ -89,6 +89,13 @@
       "loginInfos": "Informations de connexion",
       "changePassword": "Changer le mot de passe",
       "passwordRequirementsTitle": "Le nouveau mot de passe doit :",
+      "passwordRequirements": {
+        "minLength": "Contenir au moins 10 caractères",
+        "upper": "Contenir une majuscule",
+        "lower": "Contenir une minuscule",
+        "digit": "Contenir un chiffre",
+        "nonAlphanumeric": "Contenir un caractère spécial"
+      },
       "currentPassword": "Mot de passe actuel",
       "newPassword": "Nouveau mot de passe",
       "newPasswordConfirmation": "Confirmer le nouveau mot de passe",

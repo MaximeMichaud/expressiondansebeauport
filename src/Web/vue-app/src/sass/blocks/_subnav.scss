@@ -52,7 +52,7 @@
 
   &--expand {
     margin: 8px 0;
-    background-color: $color-primary-lighter;
+    background-color: color-mix(in srgb, var(--primary) 8%, white);
 
     .subnav__title {
       color: var(--primary);

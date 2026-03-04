@@ -39,7 +39,7 @@ import {useSiteSettingsService} from "@/inversify.config"
 import {SiteSettings} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import {applyThemeSettings} from "@/theme"
-import {notifySuccess} from "@/notify"
+import {notifyError, notifySuccess} from "@/notify"
 
 const {t} = useI18n()
 const settingsService = useSiteSettingsService()
@@ -57,9 +57,13 @@ onMounted(async () => {
 
 async function onSave() {
   isSaving.value = true
-  await settingsService.update(settings.value)
-  applyThemeSettings(settings.value)
-  notifySuccess(t('pages.customizer.update.validation.successMessage'))
+  const response = await settingsService.update(settings.value)
+  if (response.succeeded) {
+    applyThemeSettings(settings.value)
+    notifySuccess(t('pages.customizer.update.validation.successMessage'))
+  } else {
+    notifyError(t('pages.customizer.update.validation.failedMessage'))
+  }
   isSaving.value = false
 }
 </script>
