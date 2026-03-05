@@ -75,6 +75,9 @@
         <button type="button" @click="toggleHtmlMode" :class="{ 'is-active': htmlMode }">
           <i class="tiptap-icon">&lt;/&gt;</i>
         </button>
+        <button v-if="hasCssSupport" type="button" @click="toggleCssMode" :class="{ 'is-active': cssMode }">
+          <i class="tiptap-icon">{ }</i>
+        </button>
       </div>
 
       <textarea
@@ -87,6 +90,13 @@
         @blur="validateInput"
         :aria-invalid="!status.valid"
         :aria-describedby="!status.valid ? `error__${name}` : undefined"
+      ></textarea>
+      <textarea
+        v-else-if="cssMode"
+        class="tiptap-html-editor"
+        :value="cssSource"
+        @input="onCssInput"
+        placeholder=".public-page__title { color: red; }"
       ></textarea>
       <EditorContent v-else :editor="editor" />
     </div>
@@ -124,9 +134,12 @@ const props = defineProps<{
   name: string;
   label?: string;
   modelValue?: string;
+  cssModelValue?: string;
   tooltip?: string;
   rules?: Rule[];
 }>();
+
+const hasCssSupport = computed(() => props.cssModelValue !== undefined);
 
 defineExpose({
   validateInput
@@ -140,6 +153,7 @@ const primaryColor = computed(() =>
 
 const emit = defineEmits<{
   (event: "update:modelValue", value: string): void;
+  (event: "update:cssModelValue", value: string): void;
   (event: "validated", name: string, validationStatus: Status): void;
 }>();
 
@@ -147,7 +161,9 @@ const status = ref<Status>({ valid: true });
 const isRequired = !(props.rules != null && props.rules.length == 0);
 const showLinkPopup = ref(false);
 const htmlMode = ref(false);
+const cssMode = ref(false);
 const htmlSource = ref('');
+const cssSource = ref(props.cssModelValue || '');
 
 const editor = useEditor({
   content: props.modelValue || '',
@@ -187,6 +203,12 @@ watch(() => props.modelValue, (newValue) => {
   }
 });
 
+watch(() => props.cssModelValue, (newValue) => {
+  if (cssMode.value) {
+    cssSource.value = newValue || '';
+  }
+});
+
 onBeforeUnmount(() => {
   editor.value?.destroy();
 });
@@ -215,10 +237,31 @@ function toggleHtmlMode() {
   if (htmlMode.value) {
     emit("update:modelValue", htmlSource.value);
     editor.value!.commands.setContent(htmlSource.value, { emitUpdate: false });
+    htmlMode.value = false;
   } else {
+    cssMode.value = false;
     htmlSource.value = editor.value!.getHTML();
+    htmlMode.value = true;
   }
-  htmlMode.value = !htmlMode.value;
+}
+
+function toggleCssMode() {
+  if (cssMode.value) {
+    cssMode.value = false;
+  } else {
+    if (htmlMode.value) {
+      emit("update:modelValue", htmlSource.value);
+      editor.value!.commands.setContent(htmlSource.value, { emitUpdate: false });
+      htmlMode.value = false;
+    }
+    cssSource.value = props.cssModelValue || '';
+    cssMode.value = true;
+  }
+}
+
+function onCssInput(e: Event) {
+  cssSource.value = (e.target as HTMLTextAreaElement).value;
+  emit("update:cssModelValue", cssSource.value);
 }
 
 function onHtmlInput(e: Event) {
