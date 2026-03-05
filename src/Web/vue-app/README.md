@@ -1,4 +1,4 @@
-# Garneau Template - App Vue
+# Expression Danse Beauport - App Vue
 
 ## Installation
 

@@ -27,7 +27,7 @@ const app = createApp(App)
         offset: [0, 12],
         zIndex: 30000,
         placement: "bottom",
-        theme: "custom-garneau-template-app",
+        theme: "custom-edb-app",
         interactive: true
     },
   });
