@@ -99,7 +99,7 @@ app.UseExceptionHandler(c => c.Run(async context =>
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseCors(corsPolicyBuilder => corsPolicyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseCors("corsDomains");
 app.UseAuthentication();
 app.UseAuthorization();
 
