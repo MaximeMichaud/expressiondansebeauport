@@ -1,5 +1,5 @@
 @use "../tools" as *;
-.tippy-box[data-theme~='custom-garneau-template-app'] {
+.tippy-box[data-theme~='custom-edb-app'] {
   background-color: color-mix(in srgb, var(--primary) 8%, white);
   border: 1px solid var(--primary);
   padding: 8px 12px;
