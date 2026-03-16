@@ -1,11 +1,7 @@
 ﻿using System.Text;
-using Application.Interfaces.FileStorage;
 using Application.Interfaces.Services;
 using Domain.Entities.Identity;
 using Domain.Repositories;
-using Infrastructure.ExternalApis.Azure;
-using Infrastructure.ExternalApis.Azure.Consumers;
-using Infrastructure.ExternalApis.Azure.Http;
 using Infrastructure.Mailing;
 using Infrastructure.Repositories.Admins;
 using Infrastructure.Repositories.Authentication;
@@ -70,10 +66,6 @@ public static class ConfigureServices
         services.AddScoped<ISiteSettingsRepository, Infrastructure.Repositories.SiteSettings.SiteSettingsRepository>();
         services.AddScoped<INavigationMenuRepository, NavigationMenuRepository>();
         services.AddScoped<IPageRepository, PageRepository>();
-
-        services.AddScoped<IFileStorageApiConsumer, AzureBlobApiConsumer>();
-        services.AddScoped<IAzureApiHttpClient, AzureApiHttpClient>();
-        services.AddScoped<IAzureBlobWrapper, AzureBlobWrapper>();
     }
 
     private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)
