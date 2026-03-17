@@ -13,6 +13,7 @@ import {
   IPageService,
   ISiteHealthService,
   ISiteSettingsService,
+  ISocialService,
   IUserService
 } from "@/injection/interfaces";
 import {
@@ -27,6 +28,7 @@ import {
   UserService
 } from "@/services";
 import {AdministratorService} from "@/services/administratorService";
+import {SocialService} from "@/services/socialService";
 
 const dependencyInjection = new Container();
 dependencyInjection.bind<AxiosInstance>(TYPES.AxiosInstance).toConstantValue(axios.create())
@@ -40,6 +42,7 @@ dependencyInjection.bind<IMenuService>(TYPES.IMenuService).to(MenuService).inSin
 dependencyInjection.bind<ISiteSettingsService>(TYPES.ISiteSettingsService).to(SiteSettingsService).inSingletonScope()
 dependencyInjection.bind<ISiteHealthService>(TYPES.ISiteHealthService).to(SiteHealthService).inSingletonScope()
 dependencyInjection.bind<IImportExportService>(TYPES.IImportExportService).to(ImportExportService).inSingletonScope()
+dependencyInjection.bind<ISocialService>(TYPES.ISocialService).to(SocialService).inSingletonScope()
 
 function useAdministratorService() {
   return dependencyInjection.get<IAdministratorService>(TYPES.IAdministratorService);
@@ -77,6 +80,10 @@ function useImportExportService() {
   return dependencyInjection.get<IImportExportService>(TYPES.IImportExportService);
 }
 
+function useSocialService() {
+  return dependencyInjection.get<ISocialService>(TYPES.ISocialService);
+}
+
 export {
   dependencyInjection,
   useAdministratorService,
@@ -87,5 +94,6 @@ export {
   useMenuService,
   useSiteSettingsService,
   useSiteHealthService,
-  useImportExportService
+  useImportExportService,
+  useSocialService
 };

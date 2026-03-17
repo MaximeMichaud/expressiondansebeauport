@@ -7,7 +7,7 @@ import {
   ITwoFactorRequest
 } from "@/types/requests"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
-import {Administrator, MediaFile, NavigationMenu, NavigationMenuItem, Page, SiteHealth, SiteSettings, User} from "@/types/entities"
+import {Administrator, MediaFile, NavigationMenu, NavigationMenuItem, Page, SiteHealth, SiteSettings, User, Group, GroupMember, Post, Comment, Conversation, Message} from "@/types/entities"
 export interface IApiService {
   headersWithJsonContentType(): any
 
@@ -100,4 +100,33 @@ export interface IImportExportService {
   exportData(): Promise<Blob>
 
   importData(file: File): Promise<SucceededOrNotResponse>
+}
+
+export interface ISocialService {
+  register(firstName: string, lastName: string, email: string, password: string): Promise<SucceededOrNotResponse>
+  confirmEmail(email: string, code: string): Promise<SucceededOrNotResponse>
+  resendCode(email: string): Promise<SucceededOrNotResponse>
+  getMyGroups(): Promise<Group[]>
+  getActiveGroups(): Promise<Group[]>
+  getGroupDetails(id: string): Promise<any>
+  getGroupMembers(groupId: string, page?: number): Promise<GroupMember[]>
+  joinGroup(inviteCode: string): Promise<SucceededOrNotResponse>
+  getGroupFeed(groupId: string, page?: number): Promise<Post[]>
+  getPost(id: string): Promise<Post>
+  createPost(groupId: string, content: string, type?: string): Promise<SucceededOrNotResponse>
+  deletePost(id: string): Promise<SucceededOrNotResponse>
+  toggleLike(postId: string): Promise<SucceededOrNotResponse>
+  recordView(postId: string): Promise<void>
+  pinPost(postId: string, groupId: string): Promise<SucceededOrNotResponse>
+  getComments(postId: string, page?: number): Promise<Comment[]>
+  addComment(postId: string, content: string): Promise<SucceededOrNotResponse>
+  deleteComment(id: string): Promise<SucceededOrNotResponse>
+  votePoll(postId: string, pollOptionId: string): Promise<SucceededOrNotResponse>
+  getAnnouncements(page?: number): Promise<Post[]>
+  getConversations(page?: number): Promise<Conversation[]>
+  getMessages(conversationId: string, page?: number): Promise<Message[]>
+  sendMessage(conversationId: string, content: string): Promise<SucceededOrNotResponse>
+  startConversation(otherMemberId: string): Promise<any>
+  markAsRead(conversationId: string): Promise<void>
+  getUnreadCount(): Promise<number>
 }
