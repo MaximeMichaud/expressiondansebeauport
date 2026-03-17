@@ -1,108 +1,110 @@
 @use "../tools" as *;
-// typography
+// typography — scoped to .main-site
 
-// Titles
-h1,
-.h1-like {
-  font-weight: 700;
-  font-size: rem(28);
-  line-height: rem(34);
-  text-transform: none;
-}
-
-h2,
-.h2-like {
-  font-weight: 700;
-  font-size: rem(22);
-  line-height: rem(28);
-  text-transform: none;
-  margin-bottom: 1rem;
-}
-
-h3,
-.h3-like {
-  font-weight: 700;
-  font-size: rem(18);
-  line-height: rem(18);
-  text-transform: none;
-  margin-bottom: 0.75rem;
-}
-
-
-h4,
-.h4-like {
-  font-weight: 700;
-  font-size: rem(14);
-  line-height: rem(14);
-  color: $color-grey-medium;
-  text-transform: none;
-  margin-bottom: 0.5rem;
-
-  @include breakpoint(md-up) {
-    font-size: rem(16);
-    line-height: rem(16);
+.main-site {
+  // Titles
+  h1,
+  .h1-like {
+    font-weight: 700;
+    font-size: rem(28);
+    line-height: rem(34);
+    text-transform: none;
   }
-}
 
-h5,
-.h5-like {
-  font-weight: 700;
-  font-size: rem(13);
-  line-height: rem(15);
-  color: $color-grey-dark;
-  text-transform: none;
-  margin-bottom: 0.375rem;
-}
-
-// text standard styles
-a {
-  text-decoration: none;
-}
-
-p {
-  a:not(.btn) {
-    color: var(--primary);
-    text-decoration: underline;
-    @include underlineHover(var(--primary));
-    font-weight: 800;
+  h2,
+  .h2-like {
+    font-weight: 700;
+    font-size: rem(22);
+    line-height: rem(28);
+    text-transform: none;
+    margin-bottom: 1rem;
   }
-}
 
-strong {
-  font-weight: 800;
-
-  em {
-    font-weight: inherit;
+  h3,
+  .h3-like {
+    font-weight: 700;
+    font-size: rem(18);
+    line-height: rem(18);
+    text-transform: none;
+    margin-bottom: 0.75rem;
   }
-}
 
-em {
-  font-style: italic;
-  font-weight: inherit;
+
+  h4,
+  .h4-like {
+    font-weight: 700;
+    font-size: rem(14);
+    line-height: rem(14);
+    color: $color-grey-medium;
+    text-transform: none;
+    margin-bottom: 0.5rem;
+
+    @include breakpoint(md-up) {
+      font-size: rem(16);
+      line-height: rem(16);
+    }
+  }
+
+  h5,
+  .h5-like {
+    font-weight: 700;
+    font-size: rem(13);
+    line-height: rem(15);
+    color: $color-grey-dark;
+    text-transform: none;
+    margin-bottom: 0.375rem;
+  }
+
+  // text standard styles
+  a {
+    text-decoration: none;
+  }
+
+  p {
+    a:not(.btn) {
+      color: var(--primary);
+      text-decoration: underline;
+      @include underlineHover(var(--primary));
+      font-weight: 800;
+    }
+  }
 
   strong {
-    font-style: inherit;
+    font-weight: 800;
+
+    em {
+      font-weight: inherit;
+    }
   }
-}
 
-sup,
-sub {
-  text-transform: none;
-}
+  em {
+    font-style: italic;
+    font-weight: inherit;
 
-small {
-  font-size: smaller;
-
-  * {
-    font-size: inherit;
+    strong {
+      font-style: inherit;
+    }
   }
-}
 
-details {
-  padding-left: 0.5rem;
+  sup,
+  sub {
+    text-transform: none;
+  }
 
-  summary {
-    margin-bottom: 0.5rem;
-    font-weight: bold;
+  small {
+    font-size: smaller;
+
+    * {
+      font-size: inherit;
+    }
+  }
+
+  details {
+    padding-left: 0.5rem;
+
+    summary {
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
   }
 }

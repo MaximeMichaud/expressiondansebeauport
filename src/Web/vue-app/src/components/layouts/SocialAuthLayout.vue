@@ -1,19 +1,19 @@
 <template>
-  <div class="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4">
-    <div class="mb-8 flex flex-col items-center">
-      <div class="flex h-16 w-16 items-center justify-center rounded-full bg-[#1a1a1a]">
-        <span class="text-sm font-black text-[#be1e2c]">EDB</span>
+  <div class="soc-auth">
+    <div class="soc-auth__card">
+      <div class="soc-auth__header">
+        <span class="soc-auth__logo-circle">
+          <LogoEdb class="soc-auth__logo-svg" />
+        </span>
+        <span class="soc-auth__title">EDB <span class="soc-auth__title-accent">Social</span></span>
       </div>
-      <h1 class="mt-3 text-xl font-bold text-gray-900">Expression Danse</h1>
-    </div>
-    <div class="w-full max-w-md rounded-xl bg-white p-6 shadow-sm">
       <RouterView v-slot="{ Component }">
         <template v-if="Component">
           <Suspense>
             <component :is="Component" />
             <template #fallback>
-              <div class="flex items-center justify-center py-10">
-                <div class="h-8 w-8 animate-spin rounded-full border-2 border-[#be1e2c] border-t-transparent"></div>
+              <div class="soc-auth__loader">
+                <div class="soc-auth__loader-ring" />
               </div>
             </template>
           </Suspense>
@@ -22,3 +22,88 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import LogoEdb from '@/assets/icons/logo__edb.svg'
+</script>
+
+<style lang="scss">
+$soc-red: #be1e2c;
+$soc-warm-gray: #f5f3f0;
+$soc-border: #e7e0da;
+$soc-font-display: 'Montserrat', sans-serif;
+
+.soc-auth {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $soc-warm-gray;
+  padding: 24px 16px;
+
+  &__card {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);
+    padding: 32px 28px;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  &__logo-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: $soc-red;
+    box-shadow: 0 2px 8px rgba($soc-red, 0.25);
+  }
+
+  &__logo-svg {
+    width: 24px;
+    height: 24px;
+    * { fill: white !important; }
+  }
+
+  &__title {
+    font-family: $soc-font-display;
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: -0.02em;
+    color: #1c1917;
+  }
+
+  &__title-accent {
+    font-weight: 500;
+    color: #78716c;
+  }
+
+  &__loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 0;
+  }
+
+  &__loader-ring {
+    width: 28px;
+    height: 28px;
+    border: 2.5px solid $soc-border;
+    border-top-color: $soc-red;
+    border-radius: 50%;
+    animation: soc-auth-spin 0.7s linear infinite;
+  }
+}
+
+@keyframes soc-auth-spin { to { transform: rotate(360deg); } }
+</style>

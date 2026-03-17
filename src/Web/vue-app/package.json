@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@kyvg/vue3-notification": "^3.4.0",
+    "@microsoft/signalr": "^10.0.0",
     "@tailwindcss/vite": "^4.1.18",
     "@tiptap/extension-color": "^3.19.0",
     "@tiptap/extension-image": "^3.19.0",
