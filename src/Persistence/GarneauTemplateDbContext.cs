@@ -44,6 +44,23 @@ public class GarneauTemplateDbContext : IdentityDbContext<User, Role, Guid,
     public DbSet<NavigationMenuItem> NavigationMenuItems { get; set; } = null!;
     public DbSet<Page> Pages { get; set; } = null!;
 
+    // Social platform entities
+    public DbSet<Member> Members { get; set; } = null!;
+    public DbSet<Group> Groups { get; set; } = null!;
+    public DbSet<GroupMember> GroupMembers { get; set; } = null!;
+    public DbSet<Post> Posts { get; set; } = null!;
+    public DbSet<PostMedia> PostMedia { get; set; } = null!;
+    public DbSet<PostReaction> PostReactions { get; set; } = null!;
+    public DbSet<PostView> PostViews { get; set; } = null!;
+    public DbSet<Comment> Comments { get; set; } = null!;
+    public DbSet<Poll> Polls { get; set; } = null!;
+    public DbSet<PollOption> PollOptions { get; set; } = null!;
+    public DbSet<PollVote> PollVotes { get; set; } = null!;
+    public DbSet<Conversation> Conversations { get; set; } = null!;
+    public DbSet<ConversationParticipant> ConversationParticipants { get; set; } = null!;
+    public DbSet<Message> Messages { get; set; } = null!;
+    public DbSet<EmailConfirmationCode> EmailConfirmationCodes { get; set; } = null!;
+
     public GarneauTemplateDbContext()
     {
     }

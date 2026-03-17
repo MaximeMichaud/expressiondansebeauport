@@ -31,7 +31,7 @@ public static class CookieHelper
             Secure = secure,
             HttpOnly = httpOnly,
             IsEssential = true,
-            SameSite = SameSiteMode.Strict
+            SameSite = SameSiteMode.Lax
         };
 
         response.Cookies.Append(cookieName, cookieValue, cookieOptions);
