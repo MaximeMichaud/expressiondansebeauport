@@ -39,25 +39,132 @@
               {{ userInitials }}
             </div>
             <div class="flex-1">
-              <textarea
-                v-model="newPostContent"
-                rows="2"
-                class="w-full resize-none rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#be1e2c]"
-                placeholder="Partager quelque chose..."
-              ></textarea>
-              <div class="mt-2 flex items-center justify-between">
-                <div class="flex gap-4 text-xs text-gray-500">
-                  <span>Photo</span>
-                  <span>Sondage</span>
+              <!-- Default text mode -->
+              <template v-if="!showPollComposer && !showPhotoComposer">
+                <textarea
+                  v-model="newPostContent"
+                  rows="2"
+                  class="w-full resize-none rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#be1e2c]"
+                  placeholder="Partager quelque chose..."
+                ></textarea>
+                <div class="mt-2 flex items-center justify-between">
+                  <div class="flex gap-4 text-xs text-gray-500">
+                    <button @click="showPhotoComposer = true" class="hover:text-[#be1e2c] transition">Photo</button>
+                    <button @click="showPollComposer = true" class="hover:text-[#be1e2c] transition">Sondage</button>
+                  </div>
+                  <button
+                    @click="submitPost"
+                    :disabled="!newPostContent.trim() || submittingPost"
+                    class="rounded-lg bg-[#be1e2c] px-3 py-1 text-xs font-semibold text-white disabled:opacity-50"
+                  >
+                    Publier
+                  </button>
                 </div>
-                <button
-                  @click="submitPost"
-                  :disabled="!newPostContent.trim() || submittingPost"
-                  class="rounded-lg bg-[#be1e2c] px-3 py-1 text-xs font-semibold text-white disabled:opacity-50"
-                >
-                  Publier
-                </button>
-              </div>
+              </template>
+
+              <!-- Poll composer mode -->
+              <template v-if="showPollComposer">
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-semibold text-gray-700">Nouveau sondage</span>
+                    <button @click="cancelPoll" class="text-xs text-gray-500 hover:text-gray-700">Annuler</button>
+                  </div>
+                  <input
+                    v-model="pollQuestion"
+                    type="text"
+                    class="w-full rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#be1e2c]"
+                    placeholder="Posez votre question..."
+                  />
+                  <div class="space-y-2">
+                    <div v-for="(_, index) in pollOptions" :key="index" class="flex items-center gap-2">
+                      <input
+                        v-model="pollOptions[index]"
+                        type="text"
+                        class="flex-1 rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#be1e2c]"
+                        :placeholder="`Option ${index + 1}`"
+                      />
+                      <button
+                        v-if="pollOptions.length > 2"
+                        @click="pollOptions.splice(index, 1)"
+                        class="text-gray-400 hover:text-red-500 text-sm"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  </div>
+                  <button
+                    v-if="pollOptions.length < 6"
+                    @click="pollOptions.push('')"
+                    class="text-xs text-[#be1e2c] hover:underline"
+                  >
+                    + Ajouter une option
+                  </button>
+                  <label class="flex items-center gap-2 text-xs text-gray-600">
+                    <input v-model="pollAllowMultiple" type="checkbox" class="rounded border-gray-300 text-[#be1e2c] focus:ring-[#be1e2c]" />
+                    Autoriser les réponses multiples
+                  </label>
+                  <button
+                    @click="submitPoll"
+                    :disabled="!pollQuestion.trim() || pollOptions.filter(o => o.trim()).length < 2 || submittingPost"
+                    class="w-full rounded-lg bg-[#be1e2c] px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+                  >
+                    Publier le sondage
+                  </button>
+                </div>
+              </template>
+
+              <!-- Photo composer mode -->
+              <template v-if="showPhotoComposer">
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-semibold text-gray-700">Publier avec photo</span>
+                    <button @click="cancelPhoto" class="text-xs text-gray-500 hover:text-gray-700">Annuler</button>
+                  </div>
+                  <textarea
+                    v-model="newPostContent"
+                    rows="2"
+                    class="w-full resize-none rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#be1e2c]"
+                    placeholder="Ajouter une description..."
+                  ></textarea>
+                  <input
+                    ref="photoInput"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    class="hidden"
+                    @change="onPhotoSelected"
+                  />
+                  <button
+                    @click="($refs.photoInput as HTMLInputElement)?.click()"
+                    class="flex items-center gap-2 rounded-lg border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500 hover:border-[#be1e2c] hover:text-[#be1e2c] transition w-full justify-center"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Choisir des photos
+                  </button>
+                  <!-- Image previews -->
+                  <div v-if="photoPreviews.length" class="grid grid-cols-3 gap-2">
+                    <div v-for="(preview, index) in photoPreviews" :key="index" class="relative">
+                      <img :src="preview" class="h-24 w-full rounded-lg object-cover" />
+                      <button
+                        @click="removePhoto(index)"
+                        class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  </div>
+                  <!-- TODO: Actual upload to POST /api/social/upload not yet implemented on backend -->
+                  <button
+                    @click="submitPhotoPost"
+                    :disabled="!newPostContent.trim() && !photoFiles.length || submittingPost"
+                    class="w-full rounded-lg bg-[#be1e2c] px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+                  >
+                    Publier
+                  </button>
+                </div>
+              </template>
             </div>
           </div>
         </div>
@@ -126,10 +233,17 @@
             <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">
               {{ getInitials(gm.fullName) }}
             </div>
-            <div>
+            <div class="flex-1">
               <p class="text-sm font-medium text-gray-900">{{ gm.fullName }}</p>
               <p v-if="gm.role === 'Professor'" class="text-xs text-[#be1e2c]">Professeur</p>
             </div>
+            <button
+              @click="startConversationWith(gm)"
+              :disabled="startingConversation === gm.id"
+              class="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium text-gray-600 transition hover:border-[#be1e2c] hover:text-[#be1e2c] disabled:opacity-50"
+            >
+              {{ startingConversation === gm.id ? '...' : 'Message' }}
+            </button>
           </div>
         </div>
       </div>
@@ -150,12 +264,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useUserStore } from '@/stores/userStore'
 import type { Post, GroupMember } from '@/types/entities'
 
 const route = useRoute()
+const router = useRouter()
 const socialService = useSocialService()
 const userStore = useUserStore()
 
@@ -169,6 +284,21 @@ const loadingPosts = ref(true)
 const loadingMembers = ref(false)
 const newPostContent = ref('')
 const submittingPost = ref(false)
+
+// Poll composer state
+const showPollComposer = ref(false)
+const pollQuestion = ref('')
+const pollOptions = ref<string[]>(['', ''])
+const pollAllowMultiple = ref(false)
+
+// Photo composer state
+const showPhotoComposer = ref(false)
+const photoFiles = ref<File[]>([])
+const photoPreviews = ref<string[]>([])
+const photoInput = ref<HTMLInputElement | null>(null)
+
+// Message from member list
+const startingConversation = ref<string | null>(null)
 
 const tabs = [
   { id: 'feed', label: 'Fil' },
@@ -239,6 +369,88 @@ async function toggleLike(post: Post) {
     post.hasLiked = !post.hasLiked
     post.likeCount += post.hasLiked ? 1 : -1
   } catch (e) { /* */ }
+}
+
+// Poll methods
+function cancelPoll() {
+  showPollComposer.value = false
+  pollQuestion.value = ''
+  pollOptions.value = ['', '']
+  pollAllowMultiple.value = false
+}
+
+async function submitPoll() {
+  const validOptions = pollOptions.value.filter(o => o.trim())
+  if (!pollQuestion.value.trim() || validOptions.length < 2) return
+  submittingPost.value = true
+  try {
+    // Send poll data as JSON in content since backend PostService.CreatePost
+    // doesn't handle poll creation yet. The question is the post content with type 'Poll'.
+    const pollData = JSON.stringify({
+      question: pollQuestion.value,
+      options: validOptions,
+      allowMultiple: pollAllowMultiple.value,
+    })
+    await socialService.createPost(groupId.value, pollData, 'Poll')
+    cancelPoll()
+    await loadPosts()
+  } catch (e) { /* */ }
+  submittingPost.value = false
+}
+
+// Photo methods
+function cancelPhoto() {
+  showPhotoComposer.value = false
+  newPostContent.value = ''
+  photoFiles.value = []
+  photoPreviews.value = []
+}
+
+function onPhotoSelected(event: Event) {
+  const input = event.target as HTMLInputElement
+  if (!input.files) return
+  for (const file of Array.from(input.files)) {
+    photoFiles.value.push(file)
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      photoPreviews.value.push(e.target?.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+  // Reset input so the same file can be selected again
+  input.value = ''
+}
+
+function removePhoto(index: number) {
+  photoFiles.value.splice(index, 1)
+  photoPreviews.value.splice(index, 1)
+}
+
+async function submitPhotoPost() {
+  if (!newPostContent.value.trim() && !photoFiles.value.length) return
+  submittingPost.value = true
+  try {
+    // TODO: Upload photos to POST /api/social/upload when backend endpoint is ready.
+    // For now, create a text post with the description.
+    await socialService.createPost(groupId.value, newPostContent.value || '(Photo)')
+    cancelPhoto()
+    await loadPosts()
+  } catch (e) { /* */ }
+  submittingPost.value = false
+}
+
+// Start conversation from member list (Task 5)
+async function startConversationWith(member: GroupMember) {
+  startingConversation.value = member.id
+  try {
+    const conversation = await socialService.startConversation(member.memberId)
+    if (conversation?.id) {
+      router.push({ name: 'socialConversation', params: { conversationId: conversation.id } })
+    } else {
+      router.push({ name: 'socialMessages' })
+    }
+  } catch (e) { /* */ }
+  startingConversation.value = null
 }
 
 onMounted(async () => {

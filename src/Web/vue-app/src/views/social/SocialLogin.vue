@@ -4,6 +4,13 @@
 
     <div v-if="errorMessage" class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
       {{ errorMessage }}
+      <router-link
+        v-if="showConfirmationLink"
+        :to="{ path: '/confirmation', query: { email: email } }"
+        class="mt-2 block text-xs font-medium text-[#be1e2c] hover:underline"
+      >
+        Vous n'avez pas recu votre code de confirmation?
+      </router-link>
     </div>
 
     <form @submit.prevent="handleLogin" class="space-y-4">
@@ -61,10 +68,12 @@ const email = ref('')
 const password = ref('')
 const loading = ref(false)
 const errorMessage = ref('')
+const showConfirmationLink = ref(false)
 
 async function handleLogin() {
   loading.value = true
   errorMessage.value = ''
+  showConfirmationLink.value = false
 
   try {
     const result = await authService.login({ username: email.value, password: password.value })
@@ -73,7 +82,13 @@ async function handleLogin() {
       userStore.setUser(user)
       await router.push('/')
     } else {
+      const emailNotConfirmed = result.errors?.some((e: any) => e.errorType === 'EmailNotConfirmed')
+      if (emailNotConfirmed) {
+        await router.push({ path: '/confirmation', query: { email: email.value } })
+        return
+      }
       errorMessage.value = 'Courriel ou mot de passe invalide.'
+      showConfirmationLink.value = true
     }
   } catch (e) {
     errorMessage.value = 'Une erreur est survenue. Veuillez réessayer.'
