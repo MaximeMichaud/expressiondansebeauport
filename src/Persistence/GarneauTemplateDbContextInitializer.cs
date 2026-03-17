@@ -61,6 +61,12 @@ public class GarneauTemplateDbContextInitializer
     {
         if (!await _roleManager.RoleExistsAsync(Roles.ADMINISTRATOR))
             await _roleManager.CreateAsync(new Role { Name = Roles.ADMINISTRATOR, NormalizedName = Roles.ADMINISTRATOR.Normalize() });
+
+        if (!await _roleManager.RoleExistsAsync(Roles.PROFESSOR))
+            await _roleManager.CreateAsync(new Role { Name = Roles.PROFESSOR, NormalizedName = Roles.PROFESSOR.Normalize() });
+
+        if (!await _roleManager.RoleExistsAsync(Roles.MEMBER))
+            await _roleManager.CreateAsync(new Role { Name = Roles.MEMBER, NormalizedName = Roles.MEMBER.Normalize() });
     }
 
     private async Task SeedAdmins()
@@ -81,6 +87,11 @@ public class GarneauTemplateDbContextInitializer
         var admin = new Administrator("Super", "Admin");
         admin.SetUser(user);
         _context.Administrators.Add(admin);
+
+        var adminMember = new Member("Super", "Admin");
+        adminMember.SetUser(user);
+        _context.Members.Add(adminMember);
+
         await _context.SaveChangesAsync();
     }
 

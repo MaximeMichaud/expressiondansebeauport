@@ -1,5 +1,10 @@
 <template>
-  <PublicLayout v-if="isPublicPath"/>
+  <!-- Social subdomain layouts -->
+  <SocialAuthLayout v-if="isSocial && isSocialAuthPath"/>
+  <SocialLayout v-else-if="isSocial"/>
+
+  <!-- Main site layouts -->
+  <PublicLayout v-else-if="isPublicPath"/>
   <AuthenticationLayout v-else-if="!userStore.user.email || isAuthenticationPath"/>
   <DashboardLayout v-else/>
 </template>
@@ -11,7 +16,10 @@ import {useUserStore} from "@/stores/userStore";
 import PublicLayout from "@/components/layouts/PublicLayout.vue";
 import AuthenticationLayout from "@/components/layouts/AuthenticationLayout.vue";
 import DashboardLayout from "@/components/layouts/DashboardLayout.vue";
+import SocialLayout from "@/components/layouts/SocialLayout.vue";
+import SocialAuthLayout from "@/components/layouts/SocialAuthLayout.vue";
 import {useUserService, useSiteSettingsService} from "@/inversify.config";
+import {isSocial} from "@/router";
 import i18n from "@/i18n";
 import {applyThemeSettings} from "@/theme";
 
@@ -31,21 +39,34 @@ const isAuthenticationPath = computed(() => {
   return authenticationRoutes.includes(router.currentRoute.value.name as string)
 });
 
+const isSocialAuthPath = computed(() => {
+  return router.currentRoute.value.meta?.socialAuth === true
+});
+
 onMounted(async () => {
-  const siteSettings = await siteSettingsService.getPublic().catch(() => null)
-  if (siteSettings) {
-    applyThemeSettings(siteSettings)
+  if (!isSocial) {
+    const siteSettings = await siteSettingsService.getPublic().catch(() => null)
+    if (siteSettings) {
+      applyThemeSettings(siteSettings)
+    }
   }
 
   if (isPublicPath.value)
+    return
+
+  if (isSocial && isSocialAuthPath.value)
     return
 
   if (!userStore.user.email) {
     const user = await userService.getCurrentUser().catch(() => null)
     if (user) {
       userStore.setUser(user)
-    } else if (!isAuthenticationPath.value) {
-      await router.push(i18n.t("routes.login.path"))
+    } else if (!isAuthenticationPath.value && !isSocialAuthPath.value) {
+      if (isSocial) {
+        await router.push('/connexion')
+      } else {
+        await router.push(i18n.t("routes.login.path"))
+      }
     }
   }
 });
@@ -55,4 +76,3 @@ onMounted(async () => {
 <style lang="scss">
 @use "./sass/index.scss";
 </style>
-

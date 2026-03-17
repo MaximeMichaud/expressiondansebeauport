@@ -2,6 +2,7 @@
 using Application.Interfaces.Services.Notifications;
 using Application.Interfaces.Services.Users;
 using Application.Services.Admins;
+using Application.Services.Members;
 using Application.Services.Notifications;
 using Application.Services.Users;
 using Application.Settings;
@@ -28,6 +29,9 @@ public static class ConfigureServices
 
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IAuthenticatedUserService, AuthenticatedUserService>();
+
+        services.AddScoped<IMemberRegistrationService, MemberRegistrationService>();
+        services.AddScoped<IEmailConfirmationService, MemberConfirmationService>();
 
         services.AddAutoMapper(cfg => cfg.AddMaps(typeof(ConfigureServices).Assembly));
 
