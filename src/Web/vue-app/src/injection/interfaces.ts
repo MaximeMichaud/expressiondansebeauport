@@ -129,4 +129,6 @@ export interface ISocialService {
   startConversation(otherMemberId: string): Promise<any>
   markAsRead(conversationId: string): Promise<void>
   getUnreadCount(): Promise<number>
+  searchMembers(query: string): Promise<any[]>
+  uploadFile(file: File): Promise<{ succeeded: boolean; url: string; fileName: string; contentType: string; size: number }>
 }

@@ -141,4 +141,18 @@ export class SocialService extends ApiService {
     const response = await this._httpClient.get<{ count: number }>(`${API}/social/messages/unread-count`)
     return response.data.count
   }
+
+  // === Members ===
+  async searchMembers(query: string): Promise<any[]> {
+    const response = await this._httpClient.get(`${API}/social/members/search?Query=${encodeURIComponent(query)}`)
+    return response.data as any[]
+  }
+
+  // === Upload ===
+  async uploadFile(file: File): Promise<{ succeeded: boolean; url: string; fileName: string; contentType: string; size: number }> {
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await this._httpClient.post(`${API}/social/upload`, formData, this.headersWithFormDataContentType())
+    return response.data
+  }
 }
