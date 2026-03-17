@@ -3,10 +3,12 @@
   <SocialAuthLayout v-if="isSocial && isSocialAuthPath"/>
   <SocialLayout v-else-if="isSocial"/>
 
-  <!-- Main site layouts -->
-  <PublicLayout v-else-if="isPublicPath"/>
-  <AuthenticationLayout v-else-if="!userStore.user.email || isAuthenticationPath"/>
-  <DashboardLayout v-else/>
+  <!-- Main site layouts (wrapped for scoped SCSS reset) -->
+  <div v-else class="main-site">
+    <PublicLayout v-if="isPublicPath"/>
+    <AuthenticationLayout v-else-if="!userStore.user.email || isAuthenticationPath"/>
+    <DashboardLayout v-else/>
+  </div>
 </template>
 
 <script lang="ts" setup>

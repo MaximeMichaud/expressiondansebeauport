@@ -77,6 +77,21 @@
           "path": "import-export",
           "fullPath": "/admin/import-export",
           "name": "Import / Export"
+        },
+        "groups": {
+          "path": "groupes",
+          "fullPath": "/admin/groupes",
+          "name": "Groupes"
+        },
+        "members": {
+          "path": "membres",
+          "fullPath": "/admin/membres",
+          "name": "Membres"
+        },
+        "sessions": {
+          "path": "sessions",
+          "fullPath": "/admin/sessions",
+          "name": "Sessions"
         }
       }
     }

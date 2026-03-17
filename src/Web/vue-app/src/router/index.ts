@@ -213,7 +213,22 @@ const mainRoutes = [
         path: i18n.t("routes.admin.children.importExport.path"),
         name: "admin.children.importExport",
         component: AdminImportExport,
-      }
+      },
+      {
+        path: 'groupes',
+        name: 'admin.children.groups',
+        component: () => import('@/views/admin/groups/AdminGroupIndex.vue'),
+      },
+      {
+        path: 'membres',
+        name: 'admin.children.members',
+        component: () => import('@/views/admin/members/AdminMemberIndex.vue'),
+      },
+      {
+        path: 'sessions',
+        name: 'admin.children.sessions',
+        component: () => import('@/views/admin/sessions/AdminSessionIndex.vue'),
+      },
     ]
   },
   {
@@ -266,12 +281,12 @@ router.beforeEach(async (to, from) => {
 router.afterEach((to) => {
   const titleKey = [...to.matched].reverse().find(r => r.meta.title)?.meta.title as string | undefined;
   if (!titleKey) {
-    document.title = 'EDB';
+    document.title = isSocial ? 'EDB Social' : 'EDB';
     return;
   }
   // Social routes use plain strings, main routes use i18n keys
   const title = isSocial ? titleKey : i18n.t(titleKey);
-  document.title = title ? `${title} | EDB` : 'EDB';
+  document.title = title ? `${title} | EDB Social` : 'EDB Social';
 });
 
 export const Router = router;
