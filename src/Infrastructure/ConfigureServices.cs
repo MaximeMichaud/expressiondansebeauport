@@ -10,6 +10,9 @@ using Infrastructure.Mailing;
 using Infrastructure.Repositories.Admins;
 using Infrastructure.Repositories.Authentication;
 using Infrastructure.Repositories.Media;
+using Infrastructure.Repositories.Groups;
+using Infrastructure.Repositories.Messaging;
+using Infrastructure.Repositories.Posts;
 using Infrastructure.Repositories.Members;
 using Infrastructure.Repositories.Menus;
 using Infrastructure.Repositories.Pages;
@@ -73,6 +76,13 @@ public static class ConfigureServices
         services.AddScoped<IPageRepository, PageRepository>();
         services.AddScoped<IMemberRepository, MemberRepository>();
         services.AddScoped<IEmailConfirmationCodeRepository, EmailConfirmationCodeRepository>();
+        services.AddScoped<IGroupRepository, GroupRepository>();
+        services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
+        services.AddScoped<IPostRepository, PostRepository>();
+        services.AddScoped<ICommentRepository, CommentRepository>();
+        services.AddScoped<IPollRepository, PollRepository>();
+        services.AddScoped<IConversationRepository, ConversationRepository>();
+        services.AddScoped<IMessageRepository, MessageRepository>();
 
         services.AddScoped<IFileStorageApiConsumer, AzureBlobApiConsumer>();
         services.AddScoped<IAzureApiHttpClient, AzureApiHttpClient>();

@@ -2,7 +2,10 @@
 using Application.Interfaces.Services.Notifications;
 using Application.Interfaces.Services.Users;
 using Application.Services.Admins;
+using Application.Services.Groups;
 using Application.Services.Members;
+using Application.Services.Messaging;
+using Application.Services.Posts;
 using Application.Services.Notifications;
 using Application.Services.Users;
 using Application.Settings;
@@ -32,6 +35,9 @@ public static class ConfigureServices
 
         services.AddScoped<IMemberRegistrationService, MemberRegistrationService>();
         services.AddScoped<IEmailConfirmationService, MemberConfirmationService>();
+        services.AddScoped<IGroupService, GroupService>();
+        services.AddScoped<IPostService, PostService>();
+        services.AddScoped<IConversationService, ConversationService>();
 
         services.AddAutoMapper(cfg => cfg.AddMaps(typeof(ConfigureServices).Assembly));
 
