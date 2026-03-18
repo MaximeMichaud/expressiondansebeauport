@@ -36,11 +36,43 @@ public class GetConversationsEndpoint : Endpoint<GetConversationsRequest>
         var member = _memberRepository.FindByUserId(user!.Id);
         if (member == null)
         {
-            await Send.NotFoundAsync(ct);
+            await Send.OkAsync(new List<object>(), ct);
             return;
         }
 
         var conversations = await _conversationService.GetConversations(member.Id, req.Page);
-        await Send.OkAsync(conversations, ct);
+
+        var results = conversations.Select(c =>
+        {
+            var otherMemberId = c.ParticipantAMemberId == member.Id
+                ? c.ParticipantBMemberId
+                : c.ParticipantAMemberId;
+            var other = c.ParticipantAMemberId == member.Id ? c.ParticipantB : c.ParticipantA;
+            var lastMsg = c.Messages?.OrderByDescending(m => m.Created).FirstOrDefault();
+            var participant = c.Participants?.FirstOrDefault(p => p.MemberId == member.Id);
+            var unread = lastMsg != null && participant?.LastReadAt != null
+                ? lastMsg.Created > participant.LastReadAt ? 1 : 0
+                : lastMsg != null && participant?.LastReadAt == null ? 1 : 0;
+
+            return new
+            {
+                c.Id,
+                OtherMember = new
+                {
+                    Id = otherMemberId,
+                    FullName = other?.FullName ?? "Inconnu",
+                    ProfileImageUrl = other?.ProfileImageUrl
+                },
+                LastMessage = lastMsg != null ? new
+                {
+                    Content = lastMsg.Content,
+                    SenderName = lastMsg.SenderMember?.FullName ?? "",
+                    Created = lastMsg.Created.ToString()
+                } : null,
+                UnreadCount = unread
+            };
+        });
+
+        await Send.OkAsync(results, ct);
     }
 }

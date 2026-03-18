@@ -41,6 +41,27 @@ public class GetAnnouncementsEndpoint : Endpoint<GetAnnouncementsRequest>
         }
 
         var announcements = await _postService.GetAnnouncements(req.Page);
-        await Send.OkAsync(announcements, ct);
+
+        var result = announcements.Select(p => new
+        {
+            p.Id,
+            AuthorName = p.AuthorMember?.FullName ?? "Inconnu",
+            p.Content,
+            Type = p.Type.ToString(),
+            p.ViewCount,
+            LikeCount = p.Reactions?.Count ?? 0,
+            CommentCount = p.Comments?.Count ?? 0,
+            HasLiked = p.Reactions?.Any(r => r.MemberId == member.Id) ?? false,
+            Media = p.Media?.Select(m => new
+            {
+                m.Id,
+                m.MediaUrl,
+                m.ThumbnailUrl,
+                m.ContentType
+            }) ?? Enumerable.Empty<object>(),
+            Created = p.Created.ToString()
+        });
+
+        await Send.OkAsync(result, ct);
     }
 }

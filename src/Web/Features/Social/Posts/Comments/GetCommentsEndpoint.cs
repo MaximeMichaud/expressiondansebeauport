@@ -41,6 +41,18 @@ public class GetCommentsEndpoint : Endpoint<GetCommentsRequest>
         }
 
         var comments = await _postService.GetComments(req.PostId, req.Page);
-        await Send.OkAsync(comments, ct);
+
+        var result = comments.Select(c => new
+        {
+            c.Id,
+            c.PostId,
+            AuthorMemberId = c.AuthorMemberId,
+            AuthorName = c.AuthorMember?.FullName ?? "Inconnu",
+            AuthorProfileImageUrl = c.AuthorMember?.ProfileImageUrl,
+            c.Content,
+            Created = c.Created.ToString()
+        });
+
+        await Send.OkAsync(result, ct);
     }
 }

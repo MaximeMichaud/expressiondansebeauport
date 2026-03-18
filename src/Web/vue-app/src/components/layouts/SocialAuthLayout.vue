@@ -20,11 +20,30 @@
         </template>
       </RouterView>
     </div>
+
+    <!-- Toasts -->
+    <Teleport to="body">
+      <TransitionGroup name="soc-toast" tag="div" class="soc-toast-container">
+        <div
+          v-for="toast in toasts"
+          :key="toast.id"
+          :class="['soc-toast', `soc-toast--${toast.type}`]"
+          @click="dismissToast(toast.id)"
+        >
+          <svg v-if="toast.type === 'success'" class="soc-toast__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          <svg v-else class="soc-toast__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          <span>{{ toast.message }}</span>
+        </div>
+      </TransitionGroup>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
 import LogoEdb from '@/assets/icons/logo__edb.svg'
+import { useSocialToast } from '@/composables/useSocialToast'
+
+const { toasts, dismiss: dismissToast } = useSocialToast()
 </script>
 
 <style lang="scss">

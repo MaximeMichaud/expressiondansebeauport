@@ -50,21 +50,15 @@ const socialRoutes = [
   },
   {
     path: '/',
-    name: 'socialHome',
-    component: () => import('@/views/social/SocialHome.vue'),
-    meta: { title: 'Menu Principal', requiredRole: [Role.Member, Role.Professor, Role.Admin] }
+    name: 'socialPortal',
+    component: () => import('@/views/social/SocialPortal.vue'),
+    meta: { title: 'Groupes', requiredRole: [Role.Member, Role.Professor, Role.Admin] }
   },
   {
     path: '/important',
     name: 'socialImportant',
     component: () => import('@/views/social/SocialImportant.vue'),
-    meta: { title: 'Important', requiredRole: [Role.Member, Role.Professor, Role.Admin] }
-  },
-  {
-    path: '/portail',
-    name: 'socialPortal',
-    component: () => import('@/views/social/SocialPortal.vue'),
-    meta: { title: 'Portail EDB', requiredRole: [Role.Member, Role.Professor, Role.Admin] }
+    meta: { title: 'Annonces', requiredRole: [Role.Member, Role.Professor, Role.Admin] }
   },
   {
     path: '/groupes/:id',
