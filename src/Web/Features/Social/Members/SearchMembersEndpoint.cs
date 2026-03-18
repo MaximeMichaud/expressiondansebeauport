@@ -31,7 +31,7 @@ public class SearchMembersEndpoint : Endpoint<SearchMembersRequest>
         var user = _authenticatedUserService.GetAuthenticatedUser();
         if (user == null) { await Send.UnauthorizedAsync(ct); return; }
 
-        var members = await _memberRepository.Search(req.Query, 0, 20);
+        var members = await _memberRepository.Search(req.Query, 0, 50);
         var currentMember = _memberRepository.FindByUserId(user.Id);
 
         var results = members
@@ -41,7 +41,8 @@ public class SearchMembersEndpoint : Endpoint<SearchMembersRequest>
                 m.Id,
                 m.FullName,
                 m.Email,
-                m.ProfileImageUrl
+                m.ProfileImageUrl,
+                Roles = m.User.UserRoles.Select(ur => ur.Role.Name).ToList()
             });
 
         await Send.OkAsync(results, ct);

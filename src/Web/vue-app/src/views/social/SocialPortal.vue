@@ -10,14 +10,14 @@
       <input
         v-model="inviteCode"
         type="text"
-        class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]"
+        class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
         placeholder="Entrer un code d'invitation..."
         @keyup.enter="joinGroup"
       />
       <button
         @click="joinGroup"
         :disabled="!inviteCode || joining"
-        class="rounded-lg bg-[#be1e2c] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#a01825] disabled:opacity-50"
+        class="rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#000000] disabled:opacity-50"
       >
         Rejoindre
       </button>
@@ -30,7 +30,7 @@
     <div class="mb-6">
       <h3 class="mb-3 text-xs font-bold uppercase tracking-wide text-gray-500">Mes groupes</h3>
       <div v-if="loadingGroups" class="flex justify-center py-8">
-        <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#be1e2c] border-t-transparent"></div>
+        <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
       </div>
       <div v-else-if="myGroups.length === 0" class="rounded-lg bg-gray-50 p-4 text-center text-sm text-gray-500">
         Vous n'avez pas encore rejoint de groupe. Entrez un code d'invitation pour commencer.
@@ -44,7 +44,7 @@
         >
           <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-lg bg-[#1a1a1a]">
             <img v-if="group.imageUrl" :src="group.imageUrl" :alt="group.name" class="h-full w-full rounded-lg object-cover" />
-            <span v-else class="text-xs font-bold text-[#be1e2c]">EDB</span>
+            <span v-else class="text-xs font-bold text-white">EDB</span>
           </div>
           <p class="mt-1 truncate text-xs font-medium text-gray-900">{{ group.name }}</p>
         </router-link>
@@ -66,7 +66,7 @@
           <div class="flex items-center gap-3 p-4">
             <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[#1a1a1a]">
               <img v-if="group.imageUrl" :src="group.imageUrl" :alt="group.name" class="h-full w-full rounded-full object-cover" />
-              <span v-else class="text-[10px] font-bold text-[#be1e2c]">EDB</span>
+              <span v-else class="text-[10px] font-bold text-white">EDB</span>
             </div>
             <div>
               <p class="font-semibold text-gray-900">{{ group.name }}</p>
@@ -74,7 +74,7 @@
             </div>
           </div>
           <div class="border-t border-gray-200 px-4 py-2.5 text-center">
-            <span class="text-sm font-medium text-[#be1e2c]">Code requis</span>
+            <span class="text-sm font-medium text-[#1a1a1a]">Code requis</span>
           </div>
         </div>
       </div>

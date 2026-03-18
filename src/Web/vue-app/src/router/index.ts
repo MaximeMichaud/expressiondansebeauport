@@ -74,6 +74,19 @@ const socialRoutes = [
     props: true
   },
   {
+    path: '/membres',
+    name: 'socialMembers',
+    component: () => import('@/views/social/SocialMembers.vue'),
+    meta: { title: 'Membres', requiredRole: [Role.Member, Role.Professor, Role.Admin] }
+  },
+  {
+    path: '/membres/:id',
+    name: 'socialMemberProfile',
+    component: () => import('@/views/social/SocialMemberProfile.vue'),
+    meta: { title: 'Profil', requiredRole: [Role.Member, Role.Professor, Role.Admin] },
+    props: true
+  },
+  {
     path: '/messages',
     name: 'socialMessages',
     component: () => import('@/views/social/SocialMessages.vue'),

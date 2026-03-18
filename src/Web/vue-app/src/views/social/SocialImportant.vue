@@ -1,7 +1,7 @@
 <template>
   <div class="p-4">
     <div v-if="loading" class="flex justify-center py-10">
-      <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#be1e2c] border-t-transparent"></div>
+      <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
     </div>
     <div v-else-if="announcements.length === 0" class="py-10 text-center text-sm text-gray-500">
       Aucune annonce pour le moment.

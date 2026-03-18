@@ -148,6 +148,11 @@ export class SocialService extends ApiService {
     return response.data as any[]
   }
 
+  async getMemberProfile(id: string): Promise<any> {
+    const response = await this._httpClient.get(`${API}/social/members/${id}`)
+    return response.data
+  }
+
   // === Upload ===
   async uploadFile(file: File): Promise<{ succeeded: boolean; url: string; fileName: string; contentType: string; size: number }> {
     const formData = new FormData()

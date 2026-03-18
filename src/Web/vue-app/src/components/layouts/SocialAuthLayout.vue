@@ -28,13 +28,19 @@ import LogoEdb from '@/assets/icons/logo__edb.svg'
 </script>
 
 <style lang="scss">
-$soc-red: #be1e2c;
+$soc-black: #1a1a1a;
 $soc-warm-gray: #f5f3f0;
 $soc-border: #e7e0da;
 $soc-font-display: 'Montserrat', sans-serif;
 
 .soc-auth {
+  --primary: #1a1a1a;
+  --ring: oklch(0.145 0 0);
   min-height: 100vh;
+
+  *, *::before, *::after {
+    outline-color: oklch(0.145 0 0 / 0.5);
+  }
   display: flex;
   align-items: center;
   justify-content: center;
@@ -65,8 +71,8 @@ $soc-font-display: 'Montserrat', sans-serif;
     width: 38px;
     height: 38px;
     border-radius: 10px;
-    background: $soc-red;
-    box-shadow: 0 2px 8px rgba($soc-red, 0.25);
+    background: $soc-black;
+    box-shadow: 0 2px 8px rgba($soc-black, 0.25);
   }
 
   &__logo-svg {
@@ -99,7 +105,7 @@ $soc-font-display: 'Montserrat', sans-serif;
     width: 28px;
     height: 28px;
     border: 2.5px solid $soc-border;
-    border-top-color: $soc-red;
+    border-top-color: $soc-black;
     border-radius: 50%;
     animation: soc-auth-spin 0.7s linear infinite;
   }

@@ -8,7 +8,7 @@
         </svg>
       </button>
       <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700">
-        <span class="text-[8px] font-bold text-[#be1e2c]">EDB</span>
+        <span class="text-[8px] font-bold text-white">EDB</span>
       </div>
       <h1 class="text-base font-semibold text-white">{{ group?.name || 'Groupe' }}</h1>
     </div>
@@ -21,7 +21,7 @@
         @click="activeTab = tab.id"
         :class="[
           'whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-semibold transition',
-          activeTab === tab.id ? 'bg-[#be1e2c] text-white' : 'bg-gray-100 text-gray-600'
+          activeTab === tab.id ? 'bg-[#1a1a1a] text-white' : 'bg-gray-100 text-gray-600'
         ]"
       >
         {{ tab.label }}
@@ -44,18 +44,18 @@
                 <textarea
                   v-model="newPostContent"
                   rows="2"
-                  class="w-full resize-none rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#be1e2c]"
+                  class="w-full resize-none rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#1a1a1a]"
                   placeholder="Partager quelque chose..."
                 ></textarea>
                 <div class="mt-2 flex items-center justify-between">
                   <div class="flex gap-4 text-xs text-gray-500">
-                    <button @click="showPhotoComposer = true" class="hover:text-[#be1e2c] transition">Photo</button>
-                    <button @click="showPollComposer = true" class="hover:text-[#be1e2c] transition">Sondage</button>
+                    <button @click="showPhotoComposer = true" class="hover:text-[#1a1a1a] transition">Photo</button>
+                    <button @click="showPollComposer = true" class="hover:text-[#1a1a1a] transition">Sondage</button>
                   </div>
                   <button
                     @click="submitPost"
                     :disabled="!newPostContent.trim() || submittingPost"
-                    class="rounded-lg bg-[#be1e2c] px-3 py-1 text-xs font-semibold text-white disabled:opacity-50"
+                    class="rounded-lg bg-[#1a1a1a] px-3 py-1 text-xs font-semibold text-white disabled:opacity-50"
                   >
                     Publier
                   </button>
@@ -72,7 +72,7 @@
                   <input
                     v-model="pollQuestion"
                     type="text"
-                    class="w-full rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#be1e2c]"
+                    class="w-full rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#1a1a1a]"
                     placeholder="Posez votre question..."
                   />
                   <div class="space-y-2">
@@ -80,7 +80,7 @@
                       <input
                         v-model="pollOptions[index]"
                         type="text"
-                        class="flex-1 rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#be1e2c]"
+                        class="flex-1 rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#1a1a1a]"
                         :placeholder="`Option ${index + 1}`"
                       />
                       <button
@@ -95,18 +95,18 @@
                   <button
                     v-if="pollOptions.length < 6"
                     @click="pollOptions.push('')"
-                    class="text-xs text-[#be1e2c] hover:underline"
+                    class="text-xs text-[#1a1a1a] hover:underline"
                   >
                     + Ajouter une option
                   </button>
                   <label class="flex items-center gap-2 text-xs text-gray-600">
-                    <input v-model="pollAllowMultiple" type="checkbox" class="rounded border-gray-300 text-[#be1e2c] focus:ring-[#be1e2c]" />
+                    <input v-model="pollAllowMultiple" type="checkbox" class="rounded border-gray-300 text-[#1a1a1a] focus:ring-[#1a1a1a]" />
                     Autoriser les réponses multiples
                   </label>
                   <button
                     @click="submitPoll"
                     :disabled="!pollQuestion.trim() || pollOptions.filter(o => o.trim()).length < 2 || submittingPost"
-                    class="w-full rounded-lg bg-[#be1e2c] px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+                    class="w-full rounded-lg bg-[#1a1a1a] px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
                   >
                     Publier le sondage
                   </button>
@@ -123,7 +123,7 @@
                   <textarea
                     v-model="newPostContent"
                     rows="2"
-                    class="w-full resize-none rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#be1e2c]"
+                    class="w-full resize-none rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#1a1a1a]"
                     placeholder="Ajouter une description..."
                   ></textarea>
                   <input
@@ -136,7 +136,7 @@
                   />
                   <button
                     @click="($refs.photoInput as HTMLInputElement)?.click()"
-                    class="flex items-center gap-2 rounded-lg border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500 hover:border-[#be1e2c] hover:text-[#be1e2c] transition w-full justify-center"
+                    class="flex items-center gap-2 rounded-lg border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500 hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition w-full justify-center"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -159,7 +159,7 @@
                   <button
                     @click="submitPhotoPost"
                     :disabled="!newPostContent.trim() && !photoFiles.length || submittingPost"
-                    class="w-full rounded-lg bg-[#be1e2c] px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+                    class="w-full rounded-lg bg-[#1a1a1a] px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
                   >
                     Publier
                   </button>
@@ -171,7 +171,7 @@
 
         <!-- Posts feed -->
         <div v-if="loadingPosts" class="flex justify-center py-10">
-          <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#be1e2c] border-t-transparent"></div>
+          <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
         </div>
         <div v-else-if="posts.length === 0" class="p-6 text-center text-sm text-gray-500">
           Aucun post pour le moment. Soyez le premier à publier!
@@ -180,7 +180,7 @@
           <div v-for="post in posts" :key="post.id" class="border-b-8 border-gray-100 px-4 py-4">
             <!-- Author info -->
             <div class="mb-3 flex items-center gap-2.5">
-              <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#1a1a1a] text-[8px] font-bold text-[#be1e2c]">
+              <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#1a1a1a] text-[8px] font-bold text-white">
                 {{ getInitials(post.authorName) }}
               </div>
               <div class="flex-1">
@@ -211,7 +211,7 @@
             <div class="flex border-t border-gray-100 pt-2">
               <button
                 @click="toggleLike(post)"
-                :class="['flex-1 py-1 text-center text-sm font-medium transition', post.hasLiked ? 'text-[#be1e2c]' : 'text-gray-500 hover:text-gray-700']"
+                :class="['flex-1 py-1 text-center text-sm font-medium transition', post.hasLiked ? 'text-[#1a1a1a]' : 'text-gray-500 hover:text-gray-700']"
               >
                 {{ post.hasLiked ? 'Aimé' : 'Aimer' }}
               </button>
@@ -226,7 +226,7 @@
       <!-- Members tab -->
       <div v-else-if="activeTab === 'members'" class="p-4">
         <div v-if="loadingMembers" class="flex justify-center py-10">
-          <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#be1e2c] border-t-transparent"></div>
+          <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
         </div>
         <div v-else class="space-y-3">
           <div v-for="gm in groupMembers" :key="gm.id" class="flex items-center gap-3">
@@ -235,12 +235,12 @@
             </div>
             <div class="flex-1">
               <p class="text-sm font-medium text-gray-900">{{ gm.fullName }}</p>
-              <p v-if="gm.role === 'Professor'" class="text-xs text-[#be1e2c]">Professeur</p>
+              <p v-if="gm.role === 'Professor'" class="text-xs text-[#1a1a1a]">Professeur</p>
             </div>
             <button
               @click="startConversationWith(gm)"
               :disabled="startingConversation === gm.id"
-              class="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium text-gray-600 transition hover:border-[#be1e2c] hover:text-[#be1e2c] disabled:opacity-50"
+              class="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium text-gray-600 transition hover:border-[#1a1a1a] hover:text-[#1a1a1a] disabled:opacity-50"
             >
               {{ startingConversation === gm.id ? '...' : 'Message' }}
             </button>
@@ -255,7 +255,7 @@
         <p class="text-sm text-gray-500">Saison : {{ group?.season }}</p>
         <div v-if="group?.inviteCode" class="mt-4 rounded-lg bg-gray-50 p-3">
           <p class="text-xs font-medium text-gray-500">Code d'invitation</p>
-          <p class="mt-1 text-lg font-bold text-[#be1e2c]">{{ group.inviteCode }}</p>
+          <p class="mt-1 text-lg font-bold text-[#1a1a1a]">{{ group.inviteCode }}</p>
         </div>
       </div>
     </div>
