@@ -121,18 +121,20 @@ const isActive = (name: string) => router.currentRoute.value.name === name
 const IconHome = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('path', { d: 'M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z' }), h('polyline', { points: '9 22 9 12 15 12 15 22' })]) }
 const IconBell = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('path', { d: 'M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9' }), h('path', { d: 'M13.73 21a2 2 0 01-3.46 0' })]) }
 const IconGrid = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('rect', { x: '3', y: '3', width: '7', height: '7', rx: '1' }), h('rect', { x: '14', y: '3', width: '7', height: '7', rx: '1' }), h('rect', { x: '3', y: '14', width: '7', height: '7', rx: '1' }), h('rect', { x: '14', y: '14', width: '7', height: '7', rx: '1' })]) }
+const IconUsers = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('path', { d: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2' }), h('circle', { cx: '9', cy: '7', r: '4' }), h('path', { d: 'M23 21v-2a4 4 0 00-3-3.87' }), h('path', { d: 'M16 3.13a4 4 0 010 7.75' })]) }
 
 const tabs = [
   { name: 'socialHome', label: 'Accueil', icon: IconHome },
   { name: 'socialImportant', label: 'Annonces', icon: IconBell },
   { name: 'socialPortal', label: 'Groupes', icon: IconGrid },
+  { name: 'socialMembers', label: 'Membres', icon: IconUsers },
 ]
 </script>
 
 <style lang="scss">
-$soc-red: #be1e2c;
-$soc-red-light: #f9e8ea;
-$soc-red-subtle: #fdf4f5;
+$soc-black: #1a1a1a;
+$soc-black-light: #f0f0f0;
+$soc-black-subtle: #f7f7f7;
 $soc-dark: #1c1917;
 $soc-warm-gray: #f5f3f0;
 $soc-border: #e7e0da;
@@ -142,7 +144,13 @@ $soc-font-display: 'Montserrat', sans-serif;
 $soc-font-body: 'Karla', sans-serif;
 
 .soc {
+  --primary: #1a1a1a;
+  --ring: oklch(0.145 0 0);
   min-height: 100vh;
+
+  *, *::before, *::after {
+    outline-color: oklch(0.145 0 0 / 0.5);
+  }
   display: flex;
   flex-direction: column;
   background: $soc-warm-gray;
@@ -183,9 +191,9 @@ $soc-font-body: 'Karla', sans-serif;
     width: 34px;
     height: 34px;
     border-radius: 10px;
-    background: $soc-red;
+    background: $soc-black;
     flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba($soc-red, 0.25);
+    box-shadow: 0 2px 8px rgba($soc-black, 0.25);
   }
 
   &__logo-svg {
@@ -224,7 +232,7 @@ $soc-font-body: 'Karla', sans-serif;
     color: $soc-text-muted;
     text-decoration: none;
     transition: color 0.15s, background 0.15s;
-    &:hover { color: $soc-red; background: $soc-red-subtle; }
+    &:hover { color: $soc-black; background: $soc-black-subtle; }
   }
 
   &__notif {
@@ -238,7 +246,7 @@ $soc-font-body: 'Karla', sans-serif;
     justify-content: center;
     padding: 0 4px;
     border-radius: 99px;
-    background: $soc-red;
+    background: $soc-black;
     color: white;
     font-family: $soc-font-display;
     font-size: 0.6rem;
@@ -299,7 +307,7 @@ $soc-font-body: 'Karla', sans-serif;
     border-radius: 10px;
     transition: color 0.15s, background 0.15s;
     &:hover { color: $soc-text; background: $soc-warm-gray; }
-    &.is-active { color: $soc-red; background: $soc-red-light; }
+    &.is-active { color: $soc-black; background: $soc-black-light; }
   }
 
   &__nav-icon {
@@ -331,7 +339,7 @@ $soc-font-body: 'Karla', sans-serif;
       letter-spacing: 0.01em;
       background: none !important;
       &:hover { color: $soc-text; border-bottom-color: $soc-border; background: none !important; }
-      &.is-active { color: $soc-red; border-bottom-color: $soc-red; background: none !important; }
+      &.is-active { color: $soc-black; border-bottom-color: $soc-black; background: none !important; }
     }
   }
 }
@@ -360,7 +368,7 @@ $soc-font-body: 'Karla', sans-serif;
     width: 28px;
     height: 28px;
     border: 2.5px solid $soc-border;
-    border-top-color: $soc-red;
+    border-top-color: $soc-black;
     border-radius: 50%;
     animation: soc-spin 0.7s linear infinite;
   }

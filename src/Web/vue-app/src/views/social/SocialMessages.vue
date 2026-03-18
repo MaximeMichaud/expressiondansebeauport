@@ -5,7 +5,7 @@
       <h2 class="text-lg font-bold text-gray-900">Messages</h2>
       <button
         @click="showNewConvo = !showNewConvo"
-        class="rounded-lg bg-[#be1e2c] px-3 py-1.5 text-xs font-semibold text-white"
+        class="rounded-lg bg-[#1a1a1a] px-3 py-1.5 text-xs font-semibold text-white"
       >
         {{ showNewConvo ? 'Fermer' : '+ Nouveau' }}
       </button>
@@ -19,13 +19,13 @@
       <input
         v-model="memberSearch"
         type="text"
-        class="mb-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]"
+        class="mb-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
         placeholder="Rechercher un membre..."
       />
 
       <!-- Loading state -->
       <div v-if="loadingMembers" class="flex justify-center py-4">
-        <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#be1e2c] border-t-transparent"></div>
+        <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
       </div>
 
       <!-- Members from groups -->
@@ -53,7 +53,7 @@
 
     <!-- Conversation list -->
     <div v-if="loading" class="flex flex-1 items-center justify-center">
-      <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#be1e2c] border-t-transparent"></div>
+      <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
     </div>
     <div v-else-if="!showNewConvo && conversations.length === 0" class="flex flex-1 items-center justify-center text-sm text-gray-500">
       Aucune conversation pour le moment.
@@ -82,7 +82,7 @@
             {{ conv.lastMessage?.content || 'Aucun message' }}
           </p>
         </div>
-        <div v-if="conv.unreadCount > 0" class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#be1e2c] text-[10px] font-bold text-white">
+        <div v-if="conv.unreadCount > 0" class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#1a1a1a] text-[10px] font-bold text-white">
           {{ conv.unreadCount }}
         </div>
       </router-link>

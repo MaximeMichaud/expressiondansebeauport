@@ -18,18 +18,18 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="mb-1 block text-sm font-medium text-gray-700">Prénom</label>
-            <input v-model="firstName" type="text" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]" />
+            <input v-model="firstName" type="text" placeholder="Jean" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]" />
           </div>
           <div>
             <label class="mb-1 block text-sm font-medium text-gray-700">Nom</label>
-            <input v-model="lastName" type="text" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]" />
+            <input v-model="lastName" type="text" placeholder="Tremblay" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]" />
           </div>
         </div>
         <div>
           <label class="mb-1 block text-sm font-medium text-gray-700">Courriel</label>
-          <input v-model="email" type="email" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]" />
+          <input v-model="email" type="email" placeholder="votre@courriel.com" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]" />
         </div>
-        <button type="submit" :disabled="savingProfile" class="rounded-lg bg-[#be1e2c] px-4 py-2 text-sm font-semibold text-white hover:bg-[#a01825] disabled:opacity-50">
+        <button type="submit" :disabled="savingProfile" class="rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white hover:bg-[#000000] disabled:opacity-50">
           {{ savingProfile ? 'Sauvegarde...' : 'Sauvegarder' }}
         </button>
       </form>
@@ -41,15 +41,15 @@
       <form @submit.prevent="changePassword" class="space-y-4">
         <div>
           <label class="mb-1 block text-sm font-medium text-gray-700">Mot de passe actuel</label>
-          <input v-model="currentPassword" type="password" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]" />
+          <input v-model="currentPassword" type="password" placeholder="••••••••••" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]" />
         </div>
         <div>
           <label class="mb-1 block text-sm font-medium text-gray-700">Nouveau mot de passe</label>
-          <input v-model="newPassword" type="password" minlength="10" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]" placeholder="Minimum 10 caractères" />
+          <input v-model="newPassword" type="password" minlength="10" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]" placeholder="Minimum 10 caractères" />
         </div>
         <div>
           <label class="mb-1 block text-sm font-medium text-gray-700">Confirmer</label>
-          <input v-model="confirmNewPassword" type="password" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]" />
+          <input v-model="confirmNewPassword" type="password" placeholder="Retaper le mot de passe" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]" />
         </div>
         <button type="submit" :disabled="savingPassword" class="rounded-lg bg-gray-800 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700 disabled:opacity-50">
           {{ savingPassword ? 'Modification...' : 'Modifier le mot de passe' }}

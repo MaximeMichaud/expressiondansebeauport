@@ -23,7 +23,7 @@
           type="text"
           inputmode="numeric"
           maxlength="1"
-          class="h-12 w-12 rounded-lg border border-gray-300 text-center text-lg font-bold focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]"
+          class="h-12 w-12 rounded-lg border border-gray-300 text-center text-lg font-bold focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
           @input="onDigitInput(i)"
           @keydown.backspace="onBackspace(i)"
         />
@@ -32,7 +32,7 @@
       <button
         type="submit"
         :disabled="loading || code.length !== 6"
-        class="w-full rounded-lg bg-[#be1e2c] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a01825] disabled:opacity-50"
+        class="w-full rounded-lg bg-[#1a1a1a] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#000000] disabled:opacity-50"
       >
         {{ loading ? 'Vérification...' : 'Confirmer' }}
       </button>
@@ -41,7 +41,7 @@
     <button
       @click="handleResend"
       :disabled="resendLoading || resendCooldown > 0"
-      class="mt-4 w-full text-center text-sm text-[#be1e2c] hover:underline disabled:text-gray-400"
+      class="mt-4 w-full text-center text-sm text-[#1a1a1a] hover:underline disabled:text-gray-400"
     >
       {{ resendCooldown > 0 ? `Renvoyer le code (${resendCooldown}s)` : 'Renvoyer le code' }}
     </button>

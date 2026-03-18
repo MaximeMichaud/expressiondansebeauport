@@ -7,7 +7,7 @@
       <router-link
         v-if="showConfirmationLink"
         :to="{ path: '/confirmation', query: { email: email } }"
-        class="mt-2 block text-xs font-medium text-[#be1e2c] hover:underline"
+        class="mt-2 block text-xs font-medium text-[#1a1a1a] hover:underline"
       >
         Vous n'avez pas recu votre code de confirmation?
       </router-link>
@@ -20,7 +20,7 @@
           v-model="email"
           type="email"
           required
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
           placeholder="votre@courriel.com"
         />
       </div>
@@ -31,7 +31,7 @@
           v-model="password"
           type="password"
           required
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
           placeholder="••••••••••"
         />
       </div>
@@ -39,7 +39,7 @@
       <button
         type="submit"
         :disabled="loading"
-        class="w-full rounded-lg bg-[#be1e2c] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a01825] disabled:opacity-50"
+        class="w-full rounded-lg bg-[#1a1a1a] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#000000] disabled:opacity-50"
       >
         {{ loading ? 'Connexion...' : 'Se connecter' }}
       </button>
@@ -47,7 +47,7 @@
 
     <p class="mt-6 text-center text-sm text-gray-500">
       Pas encore de compte?
-      <router-link to="/inscription" class="font-medium text-[#be1e2c] hover:underline">S'inscrire</router-link>
+      <router-link to="/inscription" class="font-medium text-[#1a1a1a] hover:underline">S'inscrire</router-link>
     </p>
   </div>
 </template>

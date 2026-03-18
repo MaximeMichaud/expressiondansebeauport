@@ -14,7 +14,8 @@
             v-model="firstName"
             type="text"
             required
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]"
+            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
+            placeholder="Jean"
           />
         </div>
         <div>
@@ -23,7 +24,8 @@
             v-model="lastName"
             type="text"
             required
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]"
+            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
+            placeholder="Tremblay"
           />
         </div>
       </div>
@@ -34,7 +36,7 @@
           v-model="email"
           type="email"
           required
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
           placeholder="votre@courriel.com"
         />
       </div>
@@ -45,10 +47,27 @@
           v-model="password"
           type="password"
           required
-          minlength="10"
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
           placeholder="Minimum 10 caractères"
         />
+        <!-- Password rules -->
+        <div v-if="password" class="mt-2 space-y-1">
+          <div v-for="rule in passwordRules" :key="rule.label" class="flex items-center gap-2">
+            <div
+              :class="[
+                'flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full transition-all duration-200',
+                rule.valid ? 'bg-[#1a1a1a]' : 'border border-gray-300'
+              ]"
+            >
+              <svg v-if="rule.valid" class="h-2.5 w-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span :class="['text-xs transition-colors duration-200', rule.valid ? 'text-gray-900' : 'text-gray-400']">
+              {{ rule.label }}
+            </span>
+          </div>
+        </div>
       </div>
 
       <div>
@@ -57,14 +76,18 @@
           v-model="confirmPassword"
           type="password"
           required
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#be1e2c] focus:outline-none focus:ring-1 focus:ring-[#be1e2c]"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
+          placeholder="Retaper le mot de passe"
         />
+        <p v-if="confirmPassword && password !== confirmPassword" class="mt-1 text-xs text-red-500">
+          Les mots de passe ne correspondent pas.
+        </p>
       </div>
 
       <button
         type="submit"
-        :disabled="loading"
-        class="w-full rounded-lg bg-[#be1e2c] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a01825] disabled:opacity-50"
+        :disabled="loading || !isPasswordValid || password !== confirmPassword"
+        class="w-full rounded-lg bg-[#1a1a1a] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#000000] disabled:opacity-50"
       >
         {{ loading ? 'Inscription...' : "S'inscrire" }}
       </button>
@@ -72,13 +95,13 @@
 
     <p class="mt-6 text-center text-sm text-gray-500">
       Vous avez déjà un compte?
-      <router-link to="/connexion" class="font-medium text-[#be1e2c] hover:underline">Se connecter</router-link>
+      <router-link to="/connexion" class="font-medium text-[#1a1a1a] hover:underline">Se connecter</router-link>
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 
@@ -93,7 +116,18 @@ const confirmPassword = ref('')
 const loading = ref(false)
 const errorMessage = ref('')
 
+const passwordRules = computed(() => [
+  { label: '10 caractères minimum', valid: password.value.length >= 10 },
+  { label: 'Une lettre majuscule', valid: /[A-Z]/.test(password.value) },
+  { label: 'Une lettre minuscule', valid: /[a-z]/.test(password.value) },
+  { label: 'Un chiffre', valid: /\d/.test(password.value) },
+  { label: 'Un caractère spécial (!@#$...)', valid: /[^a-zA-Z0-9]/.test(password.value) },
+])
+
+const isPasswordValid = computed(() => passwordRules.value.every(r => r.valid))
+
 async function handleRegister() {
+  if (!isPasswordValid.value) return
   if (password.value !== confirmPassword.value) {
     errorMessage.value = 'Les mots de passe ne correspondent pas.'
     return
