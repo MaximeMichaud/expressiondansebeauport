@@ -1,7 +1,7 @@
 import { injectable } from "inversify"
 import { ApiService } from "@/services/apiService"
 import { SucceededOrNotResponse } from "@/types/responses"
-import type { Group, GroupMember, Post, Comment, Conversation, Message } from "@/types/entities"
+import type { Group, GroupMember, Member, Post, Comment, Conversation, Message } from "@/types/entities"
 
 const API = import.meta.env.VITE_API_BASE_URL
 
@@ -29,6 +29,11 @@ export class SocialService extends ApiService {
     return response.data
   }
 
+  async createGroup(name: string, description: string, season: string, inviteCode: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.post<SucceededOrNotResponse>(`${API}/admin/groups`, { name, description, season, inviteCode: inviteCode || undefined }, this.headersWithJsonContentType())
+    return response.data
+  }
+
   async getActiveGroups(): Promise<Group[]> {
     const response = await this._httpClient.get<Group[]>(`${API}/social/groups/active`)
     return response.data
@@ -40,8 +45,8 @@ export class SocialService extends ApiService {
   }
 
   async getGroupMembers(groupId: string, page: number = 1): Promise<GroupMember[]> {
-    const response = await this._httpClient.get<GroupMember[]>(`${API}/social/groups/${groupId}/members?Page=${page}`)
-    return response.data
+    const response = await this._httpClient.get(`${API}/social/groups/${groupId}/members?Page=${page}`)
+    return (response.data as any).items || response.data
   }
 
   async joinGroup(inviteCode: string): Promise<SucceededOrNotResponse> {
@@ -143,6 +148,11 @@ export class SocialService extends ApiService {
   }
 
   // === Members ===
+  async getMyProfile(): Promise<Member> {
+    const response = await this._httpClient.get<Member>(`${API}/social/members/me`)
+    return response.data
+  }
+
   async searchMembers(query: string): Promise<any[]> {
     const response = await this._httpClient.get(`${API}/social/members/search?Query=${encodeURIComponent(query)}`)
     return response.data as any[]
@@ -150,6 +160,21 @@ export class SocialService extends ApiService {
 
   async getMemberProfile(id: string): Promise<any> {
     const response = await this._httpClient.get(`${API}/social/members/${id}`)
+    return response.data
+  }
+
+  async deleteMember(id: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.delete<SucceededOrNotResponse>(`${API}/admin/members/${id}`)
+    return response.data
+  }
+
+  async promoteMember(id: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.post<SucceededOrNotResponse>(`${API}/admin/members/${id}/promote`, {}, this.headersWithJsonContentType())
+    return response.data
+  }
+
+  async demoteMember(id: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.post<SucceededOrNotResponse>(`${API}/admin/members/${id}/demote`, {}, this.headersWithJsonContentType())
     return response.data
   }
 

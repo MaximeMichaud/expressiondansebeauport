@@ -1,13 +1,12 @@
 using Application.Interfaces.Services.Users;
 using Application.Services.Messaging;
-using Domain.Common;
 using Domain.Repositories;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Web.Features.Social.Messages.StartConversation;
 
-public class StartConversationEndpoint : Endpoint<StartConversationRequest, SucceededOrNotResponse>
+public class StartConversationEndpoint : Endpoint<StartConversationRequest>
 {
     private readonly IConversationService _conversationService;
     private readonly IAuthenticatedUserService _authenticatedUserService;
@@ -42,6 +41,21 @@ public class StartConversationEndpoint : Endpoint<StartConversationRequest, Succ
         }
 
         var conversation = await _conversationService.GetOrCreateConversation(member.Id, req.OtherMemberId);
-        await Send.OkAsync(new SucceededOrNotResponse(true), ct);
+
+        var otherMemberId = conversation!.ParticipantAMemberId == member.Id
+            ? conversation.ParticipantBMemberId
+            : conversation.ParticipantAMemberId;
+        var otherMember = _memberRepository.FindById(otherMemberId);
+
+        await Send.OkAsync(new
+        {
+            Id = conversation.Id,
+            OtherMember = new
+            {
+                Id = otherMemberId,
+                FullName = otherMember?.FullName ?? "Inconnu",
+                ProfileImageUrl = otherMember?.ProfileImageUrl
+            }
+        }, ct);
     }
 }

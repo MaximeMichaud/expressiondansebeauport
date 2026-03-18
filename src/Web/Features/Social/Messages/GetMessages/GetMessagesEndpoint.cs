@@ -36,11 +36,22 @@ public class GetMessagesEndpoint : Endpoint<GetMessagesRequest>
         var member = _memberRepository.FindByUserId(user!.Id);
         if (member == null)
         {
-            await Send.NotFoundAsync(ct);
+            await Send.OkAsync(new List<object>(), ct);
             return;
         }
 
         var messages = await _conversationService.GetMessages(req.ConversationId, req.Page);
-        await Send.OkAsync(messages, ct);
+
+        var results = messages.Select(m => new
+        {
+            m.Id,
+            m.ConversationId,
+            SenderMemberId = m.SenderMemberId,
+            SenderName = m.SenderMember?.FullName ?? "Inconnu",
+            m.Content,
+            Created = m.Created.ToString()
+        });
+
+        await Send.OkAsync(results, ct);
     }
 }

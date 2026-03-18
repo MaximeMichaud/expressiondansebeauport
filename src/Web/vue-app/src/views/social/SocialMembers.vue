@@ -41,7 +41,7 @@
         :style="{ animationDelay: `${i * 30}ms` }"
       >
         <!-- Avatar -->
-        <div class="members-dir__avatar" :style="{ background: getAvatarColor(member.fullName) }">
+        <div class="members-dir__avatar">
           <img v-if="member.profileImageUrl" :src="member.profileImageUrl" :alt="member.fullName" class="members-dir__avatar-img" />
           <span v-else class="members-dir__avatar-initials">{{ getInitials(member.fullName) }}</span>
         </div>
@@ -49,7 +49,9 @@
         <!-- Info -->
         <div class="members-dir__info">
           <span class="members-dir__name">{{ member.fullName }}</span>
-          <span v-if="isProfessor(member)" class="members-dir__badge">Professeur</span>
+          <span v-if="isAdminRole(member)" class="members-dir__badge members-dir__badge--admin">Admin</span>
+          <span v-else-if="isProfessor(member)" class="members-dir__badge members-dir__badge--professor">Professeur</span>
+          <span v-else class="members-dir__badge members-dir__badge--member">Membre</span>
         </div>
 
         <!-- Arrow -->
@@ -73,7 +75,8 @@ const searchQuery = ref('')
 let searchTimeout: ReturnType<typeof setTimeout> | null = null
 
 function getInitials(name: string) {
-  return name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?'
+  if (!name || !name.trim()) return '??'
+  return name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
 const avatarColors = [
@@ -89,6 +92,10 @@ function getAvatarColor(name: string) {
 
 function isProfessor(member: any) {
   return member.roles?.includes('professor')
+}
+
+function isAdminRole(member: any) {
+  return member.roles?.includes('admin')
 }
 
 async function loadMembers(query?: string) {
@@ -113,10 +120,6 @@ onMounted(() => loadMembers())
 </script>
 
 <style lang="scss">
-$dir-black: #1a1a1a;
-$dir-warm: #f5f3f0;
-$dir-border: #e7e0da;
-$dir-muted: #78716c;
 $dir-font-display: 'Montserrat', sans-serif;
 $dir-font-body: 'Karla', sans-serif;
 
@@ -127,9 +130,10 @@ $dir-font-body: 'Karla', sans-serif;
     position: sticky;
     top: 0;
     z-index: 10;
-    background: white;
+    background: var(--soc-content-bg, white);
     padding: 20px 20px 12px;
-    border-bottom: 1px solid $dir-border;
+    border-bottom: 1px solid var(--soc-border, #e7e0da);
+    transition: background 0.3s, border-color 0.3s;
   }
 
   &__search-inner {
@@ -141,7 +145,7 @@ $dir-font-body: 'Karla', sans-serif;
   &__search-icon {
     position: absolute;
     left: 14px;
-    color: $dir-muted;
+    color: var(--soc-text-muted, #78716c);
     pointer-events: none;
   }
 
@@ -150,17 +154,17 @@ $dir-font-body: 'Karla', sans-serif;
     padding: 12px 40px 12px 44px;
     font-family: $dir-font-body;
     font-size: 0.9rem;
-    color: $dir-black;
-    background: $dir-warm;
+    color: var(--soc-text, #292524);
+    background: var(--soc-input-bg, #f5f3f0);
     border: 1px solid transparent;
     border-radius: 12px;
     outline: none;
-    transition: border-color 0.15s, background 0.15s;
+    transition: border-color 0.15s, background 0.15s, color 0.3s;
 
-    &::placeholder { color: #a8a29e; }
+    &::placeholder { color: var(--soc-text-muted, #a8a29e); }
     &:focus {
-      background: white;
-      border-color: $dir-black;
+      background: var(--soc-content-bg, white);
+      border-color: var(--soc-bar-text-strong, #1a1a1a);
     }
   }
 
@@ -173,10 +177,10 @@ $dir-font-body: 'Karla', sans-serif;
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    color: $dir-muted;
+    color: var(--soc-text-muted, #78716c);
     cursor: pointer;
     transition: background 0.15s;
-    &:hover { background: $dir-warm; color: $dir-black; }
+    &:hover { background: var(--soc-bar-hover, #f5f3f0); color: var(--soc-bar-text-strong, #1a1a1a); }
   }
 
   &__count {
@@ -186,7 +190,7 @@ $dir-font-body: 'Karla', sans-serif;
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: $dir-muted;
+    color: var(--soc-text-muted, #78716c);
   }
 
   &__loading {
@@ -198,8 +202,8 @@ $dir-font-body: 'Karla', sans-serif;
   &__spinner {
     width: 24px;
     height: 24px;
-    border: 2.5px solid $dir-border;
-    border-top-color: $dir-black;
+    border: 2.5px solid var(--soc-border, #e7e0da);
+    border-top-color: var(--soc-bar-text-strong, #1a1a1a);
     border-radius: 50%;
     animation: dir-spin 0.7s linear infinite;
   }
@@ -208,7 +212,7 @@ $dir-font-body: 'Karla', sans-serif;
     padding: 60px 20px;
     text-align: center;
     font-size: 0.9rem;
-    color: $dir-muted;
+    color: var(--soc-text-muted, #78716c);
   }
 
   &__grid {
@@ -222,12 +226,12 @@ $dir-font-body: 'Karla', sans-serif;
     padding: 12px 14px;
     border-radius: 12px;
     text-decoration: none;
-    color: $dir-black;
-    transition: background 0.15s;
+    color: var(--soc-text, #292524);
+    transition: background 0.15s, color 0.3s;
     animation: dir-fade-in 0.3s ease both;
 
     &:hover {
-      background: $dir-warm;
+      background: var(--soc-bar-hover, #f5f3f0);
     }
   }
 
@@ -237,8 +241,10 @@ $dir-font-body: 'Karla', sans-serif;
     justify-content: center;
     width: 44px;
     height: 44px;
-    border-radius: 12px;
+    border-radius: 50%;
     flex-shrink: 0;
+    background: var(--soc-avatar-bg, #1a1a1a);
+    color: var(--soc-avatar-text, white);
     overflow: hidden;
   }
 
@@ -268,11 +274,12 @@ $dir-font-body: 'Karla', sans-serif;
     font-family: $dir-font-display;
     font-weight: 600;
     font-size: 0.88rem;
-    color: $dir-black;
+    color: var(--soc-bar-text-strong, #1a1a1a);
     letter-spacing: -0.01em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: color 0.3s;
   }
 
   &__badge {
@@ -284,18 +291,23 @@ $dir-font-body: 'Karla', sans-serif;
     font-weight: 700;
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    color: $dir-black;
-    background: $dir-warm;
+    color: var(--soc-text-muted, #78716c);
+    background: var(--soc-bar-hover, #f5f3f0);
     border-radius: 6px;
+    transition: background 0.3s, color 0.3s;
+
+    &--professor { color: #15803d; background: rgba(21, 128, 61, 0.1); }
+    &--admin { color: #1d4ed8; background: rgba(29, 78, 216, 0.1); }
+    &--member { color: #b45309; background: rgba(180, 83, 9, 0.1); }
   }
 
   &__arrow {
     flex-shrink: 0;
-    color: #d6d3d1;
+    color: var(--soc-border, #d6d3d1);
     transition: color 0.15s, transform 0.15s;
 
     .members-dir__card:hover & {
-      color: $dir-muted;
+      color: var(--soc-text-muted, #78716c);
       transform: translateX(2px);
     }
   }

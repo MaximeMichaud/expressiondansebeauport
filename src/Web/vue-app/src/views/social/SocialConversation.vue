@@ -64,12 +64,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
-import { useUserStore } from '@/stores/userStore'
+import { useMemberStore } from '@/stores/memberStore'
 import type { Message } from '@/types/entities'
 
 const route = useRoute()
 const socialService = useSocialService()
-const userStore = useUserStore()
+const memberStore = useMemberStore()
 
 const conversationId = computed(() => route.params.conversationId as string)
 const messages = ref<Message[]>([])
@@ -81,6 +81,29 @@ const currentMemberId = ref('')
 
 function formatTime(dateStr: string) {
   return new Date(dateStr).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' })
+}
+
+async function loadConversationInfo() {
+  // Get current member ID from store
+  const m = memberStore.member
+  if (m?.id) {
+    currentMemberId.value = m.id
+  } else {
+    try {
+      const profile = await socialService.getMyProfile()
+      currentMemberId.value = profile.id || profile.Id
+      memberStore.setMember(profile)
+    } catch { /* */ }
+  }
+
+  // Get conversations list to find this conversation's other member name
+  try {
+    const conversations = await socialService.getConversations()
+    const convo = conversations.find((c: any) => c.id === conversationId.value)
+    if (convo?.otherMember?.fullName) {
+      otherMemberName.value = convo.otherMember.fullName
+    }
+  } catch { /* */ }
 }
 
 async function loadMessages() {
@@ -103,5 +126,8 @@ async function sendMessage() {
   sending.value = false
 }
 
-onMounted(loadMessages)
+onMounted(async () => {
+  await loadConversationInfo()
+  await loadMessages()
+})
 </script>

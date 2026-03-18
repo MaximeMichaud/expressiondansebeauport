@@ -5,14 +5,6 @@
       Entrez le code à 6 chiffres envoyé à <strong>{{ emailAddress }}</strong>
     </p>
 
-    <div v-if="errorMessage" class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
-      {{ errorMessage }}
-    </div>
-
-    <div v-if="successMessage" class="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700">
-      {{ successMessage }}
-    </div>
-
     <form @submit.prevent="handleConfirm" class="space-y-4">
       <div class="flex justify-center gap-2">
         <input
@@ -53,6 +45,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSocialService, useAuthenticationService, useUserService } from '@/inversify.config'
 import { useUserStore } from '@/stores/userStore'
+import { useSocialToast } from '@/composables/useSocialToast'
 
 const route = useRoute()
 const router = useRouter()
@@ -60,6 +53,7 @@ const socialService = useSocialService()
 const authService = useAuthenticationService()
 const userService = useUserService()
 const userStore = useUserStore()
+const toast = useSocialToast()
 
 const emailAddress = computed(() => (route.query.email as string) || '')
 const digits = ref<string[]>(['', '', '', '', '', ''])
@@ -67,8 +61,6 @@ const digitRefs = ref<HTMLInputElement[]>([])
 const loading = ref(false)
 const resendLoading = ref(false)
 const resendCooldown = ref(0)
-const errorMessage = ref('')
-const successMessage = ref('')
 
 const code = computed(() => digits.value.join(''))
 
@@ -87,19 +79,17 @@ function onBackspace(index: number) {
 
 async function handleConfirm() {
   loading.value = true
-  errorMessage.value = ''
 
   try {
     const result = await socialService.confirmEmail(emailAddress.value, code.value)
     if (result.succeeded) {
-      // Auto-login after confirmation — but user needs to login manually since password isn't stored
-      successMessage.value = 'Compte confirmé! Redirection...'
+      toast.success('Compte confirmé! Redirection...')
       setTimeout(() => router.push('/connexion'), 1500)
     } else {
-      errorMessage.value = 'Code invalide ou expiré.'
+      toast.error('Code invalide ou expiré.')
     }
   } catch (e) {
-    errorMessage.value = 'Une erreur est survenue.'
+    toast.error('Une erreur est survenue.')
   } finally {
     loading.value = false
   }
@@ -107,18 +97,17 @@ async function handleConfirm() {
 
 async function handleResend() {
   resendLoading.value = true
-  errorMessage.value = ''
 
   try {
     await socialService.resendCode(emailAddress.value)
-    successMessage.value = 'Un nouveau code a été envoyé.'
+    toast.success('Un nouveau code a été envoyé.')
     resendCooldown.value = 60
     const interval = setInterval(() => {
       resendCooldown.value--
       if (resendCooldown.value <= 0) clearInterval(interval)
     }, 1000)
   } catch (e) {
-    errorMessage.value = 'Impossible de renvoyer le code.'
+    toast.error('Impossible de renvoyer le code.')
   } finally {
     resendLoading.value = false
   }

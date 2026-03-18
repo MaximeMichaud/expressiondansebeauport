@@ -2,9 +2,6 @@
   <div>
     <h2 class="mb-6 text-center text-2xl font-bold text-gray-900">Inscription</h2>
 
-    <div v-if="errorMessage" class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
-      {{ errorMessage }}
-    </div>
 
     <form @submit.prevent="handleRegister" class="space-y-4">
       <div class="grid grid-cols-2 gap-3">
@@ -15,7 +12,7 @@
             type="text"
             required
             class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
-            placeholder="Jean"
+            placeholder="Prénom"
           />
         </div>
         <div>
@@ -25,7 +22,7 @@
             type="text"
             required
             class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
-            placeholder="Tremblay"
+            placeholder="Nom de famille"
           />
         </div>
       </div>
@@ -104,9 +101,11 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
+import { useSocialToast } from '@/composables/useSocialToast'
 
 const router = useRouter()
 const socialService = useSocialService()
+const toast = useSocialToast()
 
 const firstName = ref('')
 const lastName = ref('')
@@ -114,7 +113,6 @@ const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 const loading = ref(false)
-const errorMessage = ref('')
 
 const passwordRules = computed(() => [
   { label: '10 caractères minimum', valid: password.value.length >= 10 },
@@ -129,22 +127,21 @@ const isPasswordValid = computed(() => passwordRules.value.every(r => r.valid))
 async function handleRegister() {
   if (!isPasswordValid.value) return
   if (password.value !== confirmPassword.value) {
-    errorMessage.value = 'Les mots de passe ne correspondent pas.'
+    toast.error('Les mots de passe ne correspondent pas.')
     return
   }
 
   loading.value = true
-  errorMessage.value = ''
 
   try {
     const result = await socialService.register(firstName.value, lastName.value, email.value, password.value)
     if (result.succeeded) {
       await router.push({ path: '/confirmation', query: { email: email.value } })
     } else {
-      errorMessage.value = result.errors?.[0]?.errorMessage || "Une erreur est survenue lors de l'inscription."
+      toast.error(result.errors?.[0]?.errorMessage || "Une erreur est survenue lors de l'inscription.")
     }
   } catch (e) {
-    errorMessage.value = "Une erreur est survenue. Veuillez réessayer."
+    toast.error("Une erreur est survenue. Veuillez réessayer.")
   } finally {
     loading.value = false
   }

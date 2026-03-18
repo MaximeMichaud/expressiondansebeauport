@@ -36,7 +36,7 @@ public class UnreadCountEndpoint : EndpointWithoutRequest
         var member = _memberRepository.FindByUserId(user!.Id);
         if (member == null)
         {
-            await Send.NotFoundAsync(ct);
+            await HttpContext.Response.WriteAsJsonAsync(new { Count = 0 }, ct);
             return;
         }
 

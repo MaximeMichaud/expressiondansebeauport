@@ -108,6 +108,7 @@ export interface ISocialService {
   resendCode(email: string): Promise<SucceededOrNotResponse>
   getMyGroups(): Promise<Group[]>
   getActiveGroups(): Promise<Group[]>
+  createGroup(name: string, description: string, season: string, inviteCode: string): Promise<SucceededOrNotResponse>
   getGroupDetails(id: string): Promise<any>
   getGroupMembers(groupId: string, page?: number): Promise<GroupMember[]>
   joinGroup(inviteCode: string): Promise<SucceededOrNotResponse>
@@ -131,5 +132,9 @@ export interface ISocialService {
   getUnreadCount(): Promise<number>
   searchMembers(query: string): Promise<any[]>
   getMemberProfile(id: string): Promise<any>
+  getMyProfile(): Promise<any>
+  deleteMember(id: string): Promise<SucceededOrNotResponse>
+  promoteMember(id: string): Promise<SucceededOrNotResponse>
+  demoteMember(id: string): Promise<SucceededOrNotResponse>
   uploadFile(file: File): Promise<{ succeeded: boolean; url: string; fileName: string; contentType: string; size: number }>
 }

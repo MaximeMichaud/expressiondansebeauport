@@ -2,12 +2,10 @@
   <div>
     <h2 class="mb-6 text-center text-2xl font-bold text-gray-900">Connexion</h2>
 
-    <div v-if="errorMessage" class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
-      {{ errorMessage }}
+    <div v-if="showConfirmationLink" class="mb-4 text-center">
       <router-link
-        v-if="showConfirmationLink"
         :to="{ path: '/confirmation', query: { email: email } }"
-        class="mt-2 block text-xs font-medium text-[#1a1a1a] hover:underline"
+        class="text-xs font-medium text-[#1a1a1a] hover:underline"
       >
         Vous n'avez pas recu votre code de confirmation?
       </router-link>
@@ -58,21 +56,21 @@ import { useRouter } from 'vue-router'
 import { useAuthenticationService } from '@/inversify.config'
 import { useUserStore } from '@/stores/userStore'
 import { useUserService } from '@/inversify.config'
+import { useSocialToast } from '@/composables/useSocialToast'
 
 const router = useRouter()
 const authService = useAuthenticationService()
 const userService = useUserService()
 const userStore = useUserStore()
+const toast = useSocialToast()
 
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
-const errorMessage = ref('')
 const showConfirmationLink = ref(false)
 
 async function handleLogin() {
   loading.value = true
-  errorMessage.value = ''
   showConfirmationLink.value = false
 
   try {
@@ -87,11 +85,11 @@ async function handleLogin() {
         await router.push({ path: '/confirmation', query: { email: email.value } })
         return
       }
-      errorMessage.value = 'Courriel ou mot de passe invalide.'
+      toast.error('Courriel ou mot de passe invalide.')
       showConfirmationLink.value = true
     }
   } catch (e) {
-    errorMessage.value = 'Une erreur est survenue. Veuillez réessayer.'
+    toast.error('Une erreur est survenue. Veuillez réessayer.')
   } finally {
     loading.value = false
   }

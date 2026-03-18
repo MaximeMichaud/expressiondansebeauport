@@ -73,7 +73,17 @@ public class GarneauTemplateDbContextInitializer
     {
         var user = await _userManager.FindByEmailAsync(AdminEmail);
         if (user != null)
+        {
+            // Ensure admin has a Member record (may be missing if DB was seeded before social platform)
+            if (!_context.Members.Any(m => m.UserId == user.Id))
+            {
+                var existingAdminMember = new Member("Super", "Admin");
+                existingAdminMember.SetUser(user);
+                _context.Members.Add(existingAdminMember);
+                await _context.SaveChangesAsync();
+            }
             return;
+        }
 
         user = BuildUser(AdminEmail);
         var result = await _userManager.CreateAsync(user, Password);
