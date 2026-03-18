@@ -76,7 +76,9 @@ public class ConversationRepository : IConversationRepository
         return await _context.Conversations
             .AsNoTracking()
             .Where(c => c.ParticipantAMemberId == memberId || c.ParticipantBMemberId == memberId)
-            .Include(c => c.Participants).ThenInclude(p => p.Member).ThenInclude(m => m.User)
+            .Include(c => c.ParticipantA)
+            .Include(c => c.ParticipantB)
+            .Include(c => c.Participants).ThenInclude(p => p.Member)
             .Include(c => c.Messages.OrderByDescending(m => m.Created).Take(1))
                 .ThenInclude(m => m.SenderMember)
             .OrderByDescending(c => c.Messages.Max(m => (Instant?)m.Created))

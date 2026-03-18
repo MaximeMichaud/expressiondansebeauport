@@ -52,6 +52,7 @@ public class GetFeedEndpoint : Endpoint<GetFeedRequest>
             AuthorMemberId = p.AuthorMemberId,
             AuthorName = p.AuthorMember?.FullName ?? "Inconnu",
             AuthorProfileImageUrl = p.AuthorMember?.ProfileImageUrl,
+            AuthorAvatarColor = p.AuthorMember?.AvatarColor ?? "#1a1a1a",
             p.Content,
             Type = p.Type.ToString(),
             p.IsPinned,

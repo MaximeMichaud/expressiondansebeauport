@@ -39,7 +39,7 @@ async function loadPage(slug: string) {
   try {
     const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/public/pages/${slug}`)
     page.value = response.data
-    document.title = `${page.value!.title} | EDB`
+    document.title = `${page.value!.title} - EDB`
   } catch {
     page.value = null
   }

@@ -49,6 +49,7 @@ public class GetCommentsEndpoint : Endpoint<GetCommentsRequest>
             AuthorMemberId = c.AuthorMemberId,
             AuthorName = c.AuthorMember?.FullName ?? "Inconnu",
             AuthorProfileImageUrl = c.AuthorMember?.ProfileImageUrl,
+            AuthorAvatarColor = c.AuthorMember?.AvatarColor ?? "#1a1a1a",
             c.Content,
             Created = c.Created.ToString()
         });

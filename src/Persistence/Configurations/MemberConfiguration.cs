@@ -12,6 +12,7 @@ public class MemberConfiguration : IEntityTypeConfiguration<Member>
         builder.Property(m => m.FirstName).HasMaxLength(100).IsRequired();
         builder.Property(m => m.LastName).HasMaxLength(100).IsRequired();
         builder.Property(m => m.ProfileImageUrl).HasMaxLength(500);
+        builder.Property(m => m.AvatarColor).HasMaxLength(20).HasDefaultValue("#1a1a1a");
 
         builder.HasOne(m => m.User)
             .WithMany()

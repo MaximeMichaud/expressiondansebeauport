@@ -293,7 +293,7 @@ router.afterEach((to) => {
   }
   // Social routes use plain strings, main routes use i18n keys
   const title = isSocial ? titleKey : i18n.t(titleKey);
-  document.title = title ? `${title} | EDB Social` : 'EDB Social';
+  document.title = title ? `${title} - EDB Social` : 'EDB Social';
 });
 
 export const Router = router;

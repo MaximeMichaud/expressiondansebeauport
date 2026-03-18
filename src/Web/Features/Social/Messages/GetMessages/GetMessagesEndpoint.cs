@@ -9,15 +9,18 @@ namespace Web.Features.Social.Messages.GetMessages;
 public class GetMessagesEndpoint : Endpoint<GetMessagesRequest>
 {
     private readonly IConversationService _conversationService;
+    private readonly IConversationRepository _conversationRepository;
     private readonly IAuthenticatedUserService _authenticatedUserService;
     private readonly IMemberRepository _memberRepository;
 
     public GetMessagesEndpoint(
         IConversationService conversationService,
+        IConversationRepository conversationRepository,
         IAuthenticatedUserService authenticatedUserService,
         IMemberRepository memberRepository)
     {
         _conversationService = conversationService;
+        _conversationRepository = conversationRepository;
         _authenticatedUserService = authenticatedUserService;
         _memberRepository = memberRepository;
     }
@@ -42,14 +45,21 @@ public class GetMessagesEndpoint : Endpoint<GetMessagesRequest>
 
         var messages = await _conversationService.GetMessages(req.ConversationId, req.Page);
 
+        // Get the other participant's LastReadAt to determine read receipts
+        var conversation = await _conversationRepository.FindById(req.ConversationId);
+        var otherParticipant = conversation?.Participants?.FirstOrDefault(p => p.MemberId != member.Id);
+        var otherLastReadAt = otherParticipant?.LastReadAt;
+
         var results = messages.Select(m => new
         {
             m.Id,
             m.ConversationId,
             SenderMemberId = m.SenderMemberId,
             SenderName = m.SenderMember?.FullName ?? "Inconnu",
-            m.Content,
-            Created = m.Created.ToString()
+            Content = m.Deleted.HasValue ? null : m.Content,
+            Created = m.Created.ToString(),
+            IsDeleted = m.Deleted.HasValue,
+            IsRead = m.SenderMemberId == member.Id && otherLastReadAt != null && m.Created <= otherLastReadAt
         });
 
         await Send.OkAsync(results, ct);

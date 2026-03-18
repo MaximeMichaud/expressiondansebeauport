@@ -5,6 +5,19 @@ import type { Group, GroupMember, Member, Post, Comment, Conversation, Message }
 
 const API = import.meta.env.VITE_API_BASE_URL
 
+// Normalize PascalCase keys from C# backend to camelCase
+function toCamel(obj: any): any {
+  if (Array.isArray(obj)) return obj.map(toCamel)
+  if (obj !== null && typeof obj === 'object') {
+    return Object.keys(obj).reduce((acc: any, key) => {
+      const camelKey = key.charAt(0).toLowerCase() + key.slice(1)
+      acc[camelKey] = toCamel(obj[key])
+      return acc
+    }, {})
+  }
+  return obj
+}
+
 @injectable()
 export class SocialService extends ApiService {
   // === Member Registration ===
@@ -25,8 +38,8 @@ export class SocialService extends ApiService {
 
   // === Groups ===
   async getMyGroups(): Promise<Group[]> {
-    const response = await this._httpClient.get<Group[]>(`${API}/social/groups/mine`)
-    return response.data
+    const response = await this._httpClient.get(`${API}/social/groups/mine`)
+    return toCamel(response.data)
   }
 
   async createGroup(name: string, description: string, season: string, inviteCode: string): Promise<SucceededOrNotResponse> {
@@ -35,18 +48,19 @@ export class SocialService extends ApiService {
   }
 
   async getActiveGroups(): Promise<Group[]> {
-    const response = await this._httpClient.get<Group[]>(`${API}/social/groups/active`)
-    return response.data
+    const response = await this._httpClient.get(`${API}/social/groups/active`)
+    return toCamel(response.data)
   }
 
   async getGroupDetails(id: string): Promise<any> {
     const response = await this._httpClient.get(`${API}/social/groups/${id}`)
-    return response.data
+    return toCamel(response.data)
   }
 
   async getGroupMembers(groupId: string, page: number = 1): Promise<GroupMember[]> {
     const response = await this._httpClient.get(`${API}/social/groups/${groupId}/members?Page=${page}`)
-    return (response.data as any).items || response.data
+    const data = toCamel(response.data)
+    return data.items || data
   }
 
   async joinGroup(inviteCode: string): Promise<SucceededOrNotResponse> {
@@ -56,13 +70,13 @@ export class SocialService extends ApiService {
 
   // === Posts ===
   async getGroupFeed(groupId: string, page: number = 1): Promise<Post[]> {
-    const response = await this._httpClient.get<Post[]>(`${API}/social/groups/${groupId}/posts?Page=${page}`)
-    return response.data
+    const response = await this._httpClient.get(`${API}/social/groups/${groupId}/posts?Page=${page}`)
+    return toCamel(response.data)
   }
 
   async getPost(id: string): Promise<Post> {
-    const response = await this._httpClient.get<Post>(`${API}/social/posts/${id}`)
-    return response.data
+    const response = await this._httpClient.get(`${API}/social/posts/${id}`)
+    return toCamel(response.data)
   }
 
   async createPost(groupId: string, content: string, type: string = 'Text'): Promise<SucceededOrNotResponse> {
@@ -91,8 +105,8 @@ export class SocialService extends ApiService {
 
   // === Comments ===
   async getComments(postId: string, page: number = 1): Promise<Comment[]> {
-    const response = await this._httpClient.get<Comment[]>(`${API}/social/posts/${postId}/comments?Page=${page}`)
-    return response.data
+    const response = await this._httpClient.get(`${API}/social/posts/${postId}/comments?Page=${page}`)
+    return toCamel(response.data)
   }
 
   async addComment(postId: string, content: string): Promise<SucceededOrNotResponse> {
@@ -113,19 +127,19 @@ export class SocialService extends ApiService {
 
   // === Announcements ===
   async getAnnouncements(page: number = 1): Promise<Post[]> {
-    const response = await this._httpClient.get<Post[]>(`${API}/social/announcements?Page=${page}`)
-    return response.data
+    const response = await this._httpClient.get(`${API}/social/announcements?Page=${page}`)
+    return toCamel(response.data)
   }
 
   // === Conversations ===
   async getConversations(page: number = 1): Promise<Conversation[]> {
-    const response = await this._httpClient.get<Conversation[]>(`${API}/social/conversations?Page=${page}`)
-    return response.data
+    const response = await this._httpClient.get(`${API}/social/conversations?Page=${page}`)
+    return toCamel(response.data)
   }
 
   async getMessages(conversationId: string, page: number = 1): Promise<Message[]> {
-    const response = await this._httpClient.get<Message[]>(`${API}/social/conversations/${conversationId}/messages?Page=${page}`)
-    return response.data
+    const response = await this._httpClient.get(`${API}/social/conversations/${conversationId}/messages?Page=${page}`)
+    return toCamel(response.data)
   }
 
   async sendMessage(conversationId: string, content: string): Promise<SucceededOrNotResponse> {
@@ -135,6 +149,11 @@ export class SocialService extends ApiService {
 
   async startConversation(otherMemberId: string): Promise<any> {
     const response = await this._httpClient.post(`${API}/social/conversations`, { otherMemberId }, this.headersWithJsonContentType())
+    return toCamel(response.data)
+  }
+
+  async deleteMessage(messageId: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.delete<SucceededOrNotResponse>(`${API}/social/messages/${messageId}`)
     return response.data
   }
 
@@ -143,24 +162,25 @@ export class SocialService extends ApiService {
   }
 
   async getUnreadCount(): Promise<number> {
-    const response = await this._httpClient.get<{ count: number }>(`${API}/social/messages/unread-count`)
-    return response.data.count
+    const response = await this._httpClient.get(`${API}/social/messages/unread-count`)
+    const data = toCamel(response.data)
+    return data.count || 0
   }
 
   // === Members ===
   async getMyProfile(): Promise<Member> {
-    const response = await this._httpClient.get<Member>(`${API}/social/members/me`)
-    return response.data
+    const response = await this._httpClient.get(`${API}/social/members/me`)
+    return toCamel(response.data)
   }
 
   async searchMembers(query: string): Promise<any[]> {
     const response = await this._httpClient.get(`${API}/social/members/search?Query=${encodeURIComponent(query)}`)
-    return response.data as any[]
+    return toCamel(response.data)
   }
 
   async getMemberProfile(id: string): Promise<any> {
     const response = await this._httpClient.get(`${API}/social/members/${id}`)
-    return response.data
+    return toCamel(response.data)
   }
 
   async deleteMember(id: string): Promise<SucceededOrNotResponse> {

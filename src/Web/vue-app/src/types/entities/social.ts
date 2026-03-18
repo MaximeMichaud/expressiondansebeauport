@@ -5,6 +5,7 @@ export interface Member {
   fullName: string
   email: string
   profileImageUrl?: string
+  avatarColor: string
   roles: string[]
 }
 
@@ -36,6 +37,7 @@ export interface Post {
   authorMemberId: string
   authorName: string
   authorProfileImageUrl?: string
+  authorAvatarColor?: string
   content: string
   type: string
   isPinned: boolean
@@ -63,6 +65,7 @@ export interface Comment {
   authorMemberId: string
   authorName: string
   authorProfileImageUrl?: string
+  authorAvatarColor?: string
   content: string
   created: string
 }
@@ -89,6 +92,7 @@ export interface Conversation {
     id: string
     fullName: string
     profileImageUrl?: string
+    avatarColor?: string
   }
   lastMessage?: {
     content: string
