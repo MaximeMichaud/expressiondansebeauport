@@ -18,10 +18,18 @@ public class MessageRepository : IMessageRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<Message?> FindById(Guid id)
+    {
+        return await _context.Messages
+            .Include(m => m.SenderMember)
+            .FirstOrDefaultAsync(m => m.Id == id);
+    }
+
     public async Task<List<Message>> GetByConversation(Guid conversationId, int skip, int take)
     {
         return await _context.Messages
             .AsNoTracking()
+            .IgnoreQueryFilters()
             .Where(m => m.ConversationId == conversationId)
             .Include(m => m.SenderMember).ThenInclude(s => s.User)
             .OrderByDescending(m => m.Created)
@@ -39,4 +47,6 @@ public class MessageRepository : IMessageRepository
         participant.SetLastReadAt(InstantHelper.GetLocalNow());
         await _context.SaveChangesAsync();
     }
+
+    public async Task SaveChanges() => await _context.SaveChangesAsync();
 }

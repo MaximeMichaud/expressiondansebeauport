@@ -16,7 +16,7 @@
 
       <!-- Identity -->
       <div class="mp__identity">
-        <div class="mp__avatar">
+        <div class="mp__avatar" :style="{ background: member.avatarColor || '#1a1a1a' }">
           <img v-if="member.profileImageUrl" :src="member.profileImageUrl" :alt="member.fullName" class="mp__avatar-img" />
           <span v-else class="mp__avatar-initials">{{ getInitials(member.fullName) }}</span>
         </div>

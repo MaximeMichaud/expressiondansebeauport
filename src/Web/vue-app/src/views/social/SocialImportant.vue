@@ -3,8 +3,9 @@
     <div v-if="loading" class="flex justify-center py-10">
       <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
     </div>
-    <div v-else-if="announcements.length === 0" class="py-10 text-center text-sm text-gray-500">
-      Aucune annonce pour le moment.
+    <div v-else-if="announcements.length === 0" class="flex flex-col items-center justify-center gap-3 py-20 text-gray-400">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="text-sm">Aucune annonce pour le moment.</span>
     </div>
     <div v-else class="divide-y divide-gray-200">
       <div v-for="post in announcements" :key="post.id" class="py-4">

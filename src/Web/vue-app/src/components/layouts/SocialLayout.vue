@@ -236,7 +236,7 @@ $soc-font-body: 'Karla', sans-serif;
   --soc-bar-active: #{$soc-warm-gray};
   --soc-logo-bg: #{$soc-black};
   --soc-logo-fill: white;
-  --soc-notif-bg: #{$soc-black};
+  --soc-notif-bg: #dc2626;
   --soc-notif-text: white;
   --soc-notif-ring: white;
   --soc-avatar-bg: #{$soc-black};
@@ -264,9 +264,9 @@ $soc-font-body: 'Karla', sans-serif;
     --soc-bar-active: rgba(255,255,255,0.12);
     --soc-logo-bg: rgba(255,255,255,0.12);
     --soc-logo-fill: white;
-    --soc-notif-bg: white;
-    --soc-notif-text: #{$soc-dark};
-    --soc-notif-ring: #{$soc-dark};
+    --soc-notif-bg: #dc2626;
+    --soc-notif-text: white;
+    --soc-notif-ring: #181716;
     --soc-avatar-bg: #3a3836;
     --soc-avatar-text: #e7e5e4;
     --soc-ham-color: rgba(255,255,255,0.6);
@@ -536,14 +536,17 @@ $soc-font-body: 'Karla', sans-serif;
 }
 
 .soc-main {
-  flex: 1;
+  flex: 1 1 0;
+  min-height: 0;
   width: 100%;
   max-width: 720px;
   margin: 16px auto 0;
   background: var(--soc-content-bg);
   border-radius: 12px;
-  overflow: hidden;
   transition: background 0.3s;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 @media (min-width: 48em) {
@@ -575,7 +578,7 @@ $soc-font-body: 'Karla', sans-serif;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    max-width: 720px;
+    max-width: 960px;
     margin: 16px auto 0;
     padding: 16px 24px;
     background: var(--soc-bar-bg);

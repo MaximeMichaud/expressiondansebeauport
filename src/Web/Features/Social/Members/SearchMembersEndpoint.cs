@@ -41,7 +41,7 @@ public class SearchMembersEndpoint : Endpoint<SearchMembersRequest>
                 m.Id,
                 m.FullName,
                 m.Email,
-                m.ProfileImageUrl,
+                m.ProfileImageUrl, m.AvatarColor,
                 Roles = m.User.UserRoles.Select(ur => ur.Role.Name).ToList()
             })
             .OrderBy(m => m.FullName)

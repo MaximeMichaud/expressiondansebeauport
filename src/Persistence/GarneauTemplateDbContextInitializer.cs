@@ -49,6 +49,7 @@ public class GarneauTemplateDbContextInitializer
             await SeedAdmins();
             await SeedPages();
             await SeedMenus();
+            await AssignAvatarColorsToExistingMembers();
         }
         catch (Exception ex)
         {
@@ -272,6 +273,21 @@ public class GarneauTemplateDbContextInitializer
             item.SetPageId(page.Id);
             item.SetUrl($"/{page.Slug}");
             _context.NavigationMenuItems.Add(item);
+        }
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task AssignAvatarColorsToExistingMembers()
+    {
+        var membersWithoutColor = _context.Members
+            .Where(m => m.AvatarColor == "#1a1a1a" || m.AvatarColor == null)
+            .ToList();
+
+        if (membersWithoutColor.Count == 0) return;
+
+        foreach (var member in membersWithoutColor)
+        {
+            member.AssignRandomAvatarColor();
         }
         await _context.SaveChangesAsync();
     }

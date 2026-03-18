@@ -26,9 +26,10 @@
     </div>
 
     <!-- Empty -->
-    <div v-else-if="members.length === 0" class="members-dir__empty">
-      <p v-if="searchQuery">Aucun membre trouvé pour « {{ searchQuery }} »</p>
-      <p v-else>Aucun membre pour le moment.</p>
+    <div v-else-if="members.length === 0" class="flex flex-col items-center justify-center gap-3 py-20 text-gray-400">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      <span v-if="searchQuery" class="text-sm">Aucun membre trouvé pour « {{ searchQuery }} »</span>
+      <span v-else class="text-sm">Aucun membre pour le moment.</span>
     </div>
 
     <!-- Grid -->
@@ -41,7 +42,7 @@
         :style="{ animationDelay: `${i * 30}ms` }"
       >
         <!-- Avatar -->
-        <div class="members-dir__avatar">
+        <div class="members-dir__avatar" :style="{ background: member.avatarColor || '#1a1a1a' }">
           <img v-if="member.profileImageUrl" :src="member.profileImageUrl" :alt="member.fullName" class="members-dir__avatar-img" />
           <span v-else class="members-dir__avatar-initials">{{ getInitials(member.fullName) }}</span>
         </div>

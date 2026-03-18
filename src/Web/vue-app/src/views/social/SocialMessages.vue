@@ -55,20 +55,18 @@
     <div v-if="loading" class="flex flex-1 items-center justify-center">
       <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
     </div>
-    <div v-else-if="!showNewConvo && conversations.length === 0" class="flex flex-1 items-center justify-center text-sm text-gray-500">
-      Aucune conversation pour le moment.
+    <div v-else-if="!showNewConvo && conversations.length === 0" class="flex flex-col items-center justify-center gap-3 py-20 text-gray-400">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span class="text-sm">Aucune conversation pour le moment.</span>
     </div>
     <div v-else-if="!showNewConvo" class="flex-1 divide-y divide-gray-100 overflow-y-auto">
       <router-link
         v-for="conv in conversations"
         :key="conv.id"
         :to="{ name: 'socialConversation', params: { conversationId: conv.id } }"
-        :class="[
-          'flex items-center gap-3 px-4 py-3 transition hover:bg-gray-50',
-          conv.unreadCount > 0 ? 'bg-red-50/50' : ''
-        ]"
+        class="flex items-center gap-3 px-4 py-3 transition hover:bg-gray-50"
       >
-        <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-sm font-bold text-white">
+        <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" :style="{ background: conv.otherMember.avatarColor || '#1a1a1a' }">
           {{ getInitials(conv.otherMember.fullName) }}
         </div>
         <div class="min-w-0 flex-1">
@@ -112,6 +110,13 @@ let searchTimeout: ReturnType<typeof setTimeout> | null = null
 function getInitials(name: string) {
   if (!name || !name.trim()) return '??'
   return name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase().slice(0, 2)
+}
+
+const avatarColors = ['#1a1a1a', '#3b3b3b', '#6b4c3b', '#4a5568', '#2d3748', '#553c2e', '#44403c', '#1e293b', '#374151', '#292524']
+function getAvatarColor(name: string) {
+  let hash = 0
+  for (let i = 0; i < (name?.length || 0); i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  return avatarColors[Math.abs(hash) % avatarColors.length]
 }
 
 function formatTime(dateStr?: string) {
@@ -159,7 +164,8 @@ watch(showNewConvo, (val) => {
 
 onMounted(async () => {
   try {
-    conversations.value = await socialService.getConversations()
+    const all = await socialService.getConversations()
+    conversations.value = all.filter((c: any) => c.lastMessage)
   } catch (e) { /* */ }
   loading.value = false
 })

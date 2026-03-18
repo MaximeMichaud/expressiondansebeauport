@@ -173,14 +173,15 @@
         <div v-if="loadingPosts" class="flex justify-center py-10">
           <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
         </div>
-        <div v-else-if="posts.length === 0" class="p-6 text-center text-sm text-gray-500">
-          Aucun post pour le moment. Soyez le premier à publier!
+        <div v-else-if="posts.length === 0" class="flex flex-col items-center justify-center gap-3 py-20 text-gray-400">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          <span class="text-sm">Aucun post pour le moment. Soyez le premier à publier!</span>
         </div>
         <div v-else>
           <div v-for="post in posts" :key="post.id" class="border-b-8 border-gray-100 px-4 py-4">
             <!-- Author info -->
             <div class="mb-3 flex items-center gap-2.5">
-              <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#1a1a1a] text-[8px] font-bold text-white">
+              <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-[8px] font-bold text-white" :style="{ background: post.authorAvatarColor || '#1a1a1a' }">
                 {{ getInitials(post.authorName) }}
               </div>
               <div class="flex-1">
@@ -230,7 +231,7 @@
               </div>
               <div v-else>
                 <div v-for="comment in postComments" :key="comment.id" class="mb-3 flex gap-2">
-                  <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-[9px] font-bold text-gray-600">
+                  <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-[9px] font-bold text-white" :style="{ background: comment.authorAvatarColor || '#1a1a1a' }">
                     {{ getInitials(comment.authorName) }}
                   </div>
                   <div class="flex-1">

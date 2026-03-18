@@ -33,7 +33,7 @@ public class GetAllMembersEndpoint : Endpoint<GetAllMembersRequest>
                 m.LastName,
                 m.FullName,
                 m.Email,
-                m.ProfileImageUrl,
+                m.ProfileImageUrl, m.AvatarColor,
                 m.UserId,
                 Roles = m.User.RoleNames
             }),
