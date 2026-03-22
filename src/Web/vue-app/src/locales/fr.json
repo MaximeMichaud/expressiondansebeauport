@@ -41,7 +41,7 @@
         "media": {
           "path": "medias",
           "fullPath": "/admin/medias",
-          "name": "Médiathèque"
+          "name": "Médias"
         },
         "pages": {
           "path": "pages",
@@ -184,7 +184,14 @@
       },
       "type": "Type",
       "altText": "Texte alternatif",
-      "dimensions": "Dimensions"
+      "dimensions": "Dimensions",
+      "fileType": "Type de fichier",
+      "filterAll": "Tout",
+      "filterImages": "Images",
+      "filterDocuments": "Documents",
+      "filterVideos": "Vidéos",
+      "filterOther": "Autres",
+      "downloadFile": "Télécharger le fichier"
     },
     "pages": {
       "slug": "Slug",

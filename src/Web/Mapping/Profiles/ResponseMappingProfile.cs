@@ -25,7 +25,8 @@ public class ResponseMappingProfile : Profile
             .ForMember(x => x.PhoneNumber, opt => opt.MapFrom(x => x.PhoneNumber))
             .ForMember(x => x.PhoneExtension, opt => opt.MapFrom(x => x.PhoneExtension));
 
-        CreateMap<MediaFile, MediaFileDto>();
+        CreateMap<MediaFile, MediaFileDto>()
+            .ForMember(x => x.FileType, opt => opt.MapFrom(x => x.FileType.ToString()));
 
         CreateMap<Page, PageDto>()
             .ForMember(x => x.Status, opt => opt.MapFrom(x => x.Status.ToString()))
