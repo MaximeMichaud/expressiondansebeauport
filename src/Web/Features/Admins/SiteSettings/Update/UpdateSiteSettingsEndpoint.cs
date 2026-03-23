@@ -17,6 +17,14 @@ public class UpdateSiteSettingsRequest
     public Guid? FaviconMediaFileId { get; set; }
     public string HeadingFont { get; set; } = null!;
     public string BodyFont { get; set; } = null!;
+    public string? FooterDescription { get; set; }
+    public string? FooterAddress { get; set; }
+    public string? FooterCity { get; set; }
+    public string? FooterPhone { get; set; }
+    public string? FooterEmail { get; set; }
+    public string? FacebookUrl { get; set; }
+    public string? InstagramUrl { get; set; }
+    public string? CopyrightText { get; set; }
 }
 
 public class UpdateSiteSettingsValidator : Validator<UpdateSiteSettingsRequest>
@@ -87,6 +95,14 @@ public class UpdateSiteSettingsEndpoint : Endpoint<UpdateSiteSettingsRequest, Si
         settings.SetFaviconMediaFileId(req.FaviconMediaFileId);
         settings.SetHeadingFont(req.HeadingFont);
         settings.SetBodyFont(req.BodyFont);
+        settings.SetFooterDescription(req.FooterDescription);
+        settings.SetFooterAddress(req.FooterAddress);
+        settings.SetFooterCity(req.FooterCity);
+        settings.SetFooterPhone(req.FooterPhone);
+        settings.SetFooterEmail(req.FooterEmail);
+        settings.SetFacebookUrl(req.FacebookUrl);
+        settings.SetInstagramUrl(req.InstagramUrl);
+        settings.SetCopyrightText(req.CopyrightText);
 
         await _settingsRepository.Update(settings);
         await Send.OkAsync(_mapper.Map<SiteSettingsDto>(settings), cancellation: ct);

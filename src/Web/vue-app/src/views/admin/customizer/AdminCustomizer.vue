@@ -13,7 +13,7 @@
         </div>
         <div class="form-group">
           <label>{{ t('pages.customizer.tagline') }}</label>
-          <input type="text" v-model="settings.tagline" class="form-input" placeholder="L'art du mouvement, le cœur du quartier" />
+          <input type="text" v-model="settings.tagline" class="form-input" placeholder="L'art du mouvement, le coeur du quartier" />
         </div>
         <div class="form-group">
           <label>{{ t('pages.customizer.primaryColor') }}</label>
@@ -24,8 +24,90 @@
         </div>
       </div>
 
+      <div class="customizer__panel">
+        <h2>{{ t('pages.customizer.footer') }}</h2>
+        <div class="form-group">
+          <label>{{ t('pages.customizer.footerDescription') }}</label>
+          <textarea v-model="settings.footerDescription" class="form-input" rows="3" placeholder="École de danse offrant des cours pour tous les âges..." />
+        </div>
+        <div class="form-group">
+          <label>{{ t('pages.customizer.footerAddress') }}</label>
+          <input type="text" v-model="settings.footerAddress" class="form-input" placeholder="15, rue de la Promenade-des-Soeurs" />
+        </div>
+        <div class="form-group">
+          <label>{{ t('pages.customizer.footerCity') }}</label>
+          <input type="text" v-model="settings.footerCity" class="form-input" placeholder="Beauport, QC G1C 0G3" />
+        </div>
+        <div class="form-group">
+          <label>{{ t('pages.customizer.footerPhone') }}</label>
+          <input type="text" v-model="settings.footerPhone" class="form-input" placeholder="418-660-1086" />
+        </div>
+        <div class="form-group">
+          <label>{{ t('pages.customizer.footerEmail') }}</label>
+          <input type="email" v-model="settings.footerEmail" class="form-input" placeholder="info@expressiondansebeauport.com" />
+        </div>
+        <div class="form-group">
+          <label>{{ t('pages.customizer.copyrightText') }}</label>
+          <input type="text" v-model="settings.copyrightText" class="form-input" placeholder="Expression Danse de Beauport inc. Tous droits réservés." />
+        </div>
+      </div>
 
-<div class="customizer__actions">
+      <!-- Social Links -->
+      <div class="customizer__panel">
+        <h2>{{ t('pages.customizer.socialLinks') }}</h2>
+        <div v-if="socialLinks.length" class="collection-list">
+          <div v-for="link in socialLinks" :key="link.id" class="collection-item">
+            <div class="collection-item__icon">
+              <component :is="getSocialIcon(link.platform)" :size="18" />
+            </div>
+            <div class="collection-item__info">
+              <span class="collection-item__label">{{ getSocialLabel(link.platform) }}</span>
+              <span class="collection-item__url">{{ link.url }}</span>
+            </div>
+            <button class="collection-item__delete" @click="removeSocialLink(link)">
+              <Trash2 :size="14" />
+            </button>
+          </div>
+        </div>
+        <p v-else class="collection-empty">{{ t('pages.customizer.noSocialLinks') }}</p>
+        <div class="collection-add">
+          <select v-model="newSocialPlatform" class="form-input">
+            <option value="" disabled>{{ t('pages.customizer.selectPlatform') }}</option>
+            <option v-for="p in availablePlatforms" :key="p.value" :value="p.value">{{ p.label }}</option>
+          </select>
+          <input type="url" v-model="newSocialUrl" class="form-input" placeholder="https://..." />
+          <button class="btn btn--small" :disabled="!newSocialPlatform || !newSocialUrl" @click="addSocialLink">{{ t('global.add') }}</button>
+        </div>
+      </div>
+
+      <!-- Footer Partners -->
+      <div class="customizer__panel">
+        <h2>{{ t('pages.customizer.partners') }}</h2>
+        <div v-if="footerPartners.length" class="collection-list">
+          <div v-for="partner in footerPartners" :key="partner.id" class="collection-item">
+            <img v-if="partner.mediaUrl" :src="partner.mediaUrl" :alt="partner.altText" class="collection-item__thumb" />
+            <div class="collection-item__info">
+              <span class="collection-item__label">{{ partner.altText }}</span>
+              <span v-if="partner.url" class="collection-item__url">{{ partner.url }}</span>
+            </div>
+            <button class="collection-item__delete" @click="removePartner(partner)">
+              <Trash2 :size="14" />
+            </button>
+          </div>
+        </div>
+        <p v-else class="collection-empty">{{ t('pages.customizer.noPartners') }}</p>
+        <div class="collection-add">
+          <select v-model="newPartnerMediaFileId" class="form-input">
+            <option value="" disabled>{{ t('pages.customizer.selectImage') }}</option>
+            <option v-for="media in availableImages" :key="media.id" :value="media.id">{{ media.originalFileName }}</option>
+          </select>
+          <input type="text" v-model="newPartnerAltText" class="form-input" :placeholder="t('pages.media.altText')" />
+          <input type="url" v-model="newPartnerUrl" class="form-input" placeholder="https:// (optionnel)" />
+          <button class="btn btn--small" :disabled="!newPartnerMediaFileId || !newPartnerAltText" @click="addPartner">{{ t('global.add') }}</button>
+        </div>
+      </div>
+
+      <div class="customizer__actions">
         <button class="btn" :disabled="isSaving" @click="onSave">{{ t('global.save') }}</button>
       </div>
     </div>
@@ -34,24 +116,81 @@
 
 <script lang="ts" setup>
 import {useI18n} from "vue3-i18n"
-import {onMounted, ref} from "vue"
-import {useSiteSettingsService} from "@/inversify.config"
-import {SiteSettings} from "@/types/entities"
+import {computed, onMounted, ref} from "vue"
+import {useMediaService, useSiteSettingsService} from "@/inversify.config"
+import {FooterPartner, MediaFile, SiteSettings, SocialLink} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import {applyThemeSettings} from "@/theme"
 import {notifyError, notifySuccess} from "@/notify"
+import {Trash2} from "lucide-vue-next"
+import IconFacebook from "vue-material-design-icons/Facebook.vue"
+import IconInstagram from "vue-material-design-icons/Instagram.vue"
+import IconYoutube from "vue-material-design-icons/Youtube.vue"
+import IconTwitter from "vue-material-design-icons/Twitter.vue"
+import IconLinkedin from "vue-material-design-icons/Linkedin.vue"
+import IconWeb from "vue-material-design-icons/Web.vue"
 
 const {t} = useI18n()
 const settingsService = useSiteSettingsService()
+const mediaService = useMediaService()
 
 const isLoading = ref(false)
 const isSaving = ref(false)
 const settings = ref<SiteSettings>(new SiteSettings())
+const socialLinks = ref<SocialLink[]>([])
+const footerPartners = ref<FooterPartner[]>([])
+const allMedia = ref<MediaFile[]>([])
 
+const newSocialPlatform = ref("")
+const newSocialUrl = ref("")
+const newPartnerMediaFileId = ref("")
+const newPartnerAltText = ref("")
+const newPartnerUrl = ref("")
+
+const platforms = [
+  { value: "facebook", label: "Facebook" },
+  { value: "instagram", label: "Instagram" },
+  { value: "youtube", label: "YouTube" },
+  { value: "tiktok", label: "TikTok" },
+  { value: "twitter", label: "X / Twitter" },
+  { value: "linkedin", label: "LinkedIn" },
+  { value: "pinterest", label: "Pinterest" },
+]
+
+const availablePlatforms = computed(() => {
+  const used = new Set(socialLinks.value.map(l => l.platform))
+  return platforms.filter(p => !used.has(p.value))
+})
+
+const availableImages = computed(() =>
+  allMedia.value.filter(m => m.contentType?.startsWith("image/"))
+)
+
+function getSocialIcon(platform?: string) {
+  switch (platform) {
+    case "facebook": return IconFacebook
+    case "instagram": return IconInstagram
+    case "youtube": return IconYoutube
+    case "twitter": return IconTwitter
+    case "linkedin": return IconLinkedin
+    default: return IconWeb
+  }
+}
+
+function getSocialLabel(platform?: string) {
+  return platforms.find(p => p.value === platform)?.label || platform || ""
+}
 
 onMounted(async () => {
   isLoading.value = true
-  settings.value = await settingsService.get()
+  const [settingsData, mediaResponse] = await Promise.all([
+    settingsService.get(),
+    mediaService.getAll(1, 100)
+  ])
+  settings.value = settingsData
+  socialLinks.value = settingsData.socialLinks || []
+  footerPartners.value = settingsData.footerPartners || []
+  if (mediaResponse?.items) allMedia.value = mediaResponse.items
   isLoading.value = false
 })
 
@@ -65,6 +204,50 @@ async function onSave() {
     notifyError(t('pages.customizer.update.validation.failedMessage'))
   }
   isSaving.value = false
+}
+
+async function addSocialLink() {
+  if (!newSocialPlatform.value || !newSocialUrl.value) return
+  const link = await settingsService.addSocialLink({
+    platform: newSocialPlatform.value,
+    url: newSocialUrl.value,
+  })
+  if (link) {
+    socialLinks.value.push(link)
+    newSocialPlatform.value = ""
+    newSocialUrl.value = ""
+  }
+}
+
+async function removeSocialLink(link: SocialLink) {
+  if (!link.id) return
+  const response = await settingsService.deleteSocialLink(link.id)
+  if (response.succeeded) {
+    socialLinks.value = socialLinks.value.filter(l => l.id !== link.id)
+  }
+}
+
+async function addPartner() {
+  if (!newPartnerMediaFileId.value || !newPartnerAltText.value) return
+  const partner = await settingsService.addFooterPartner({
+    mediaFileId: newPartnerMediaFileId.value,
+    altText: newPartnerAltText.value,
+    url: newPartnerUrl.value || undefined,
+  })
+  if (partner) {
+    footerPartners.value.push(partner)
+    newPartnerMediaFileId.value = ""
+    newPartnerAltText.value = ""
+    newPartnerUrl.value = ""
+  }
+}
+
+async function removePartner(partner: FooterPartner) {
+  if (!partner.id) return
+  const response = await settingsService.deleteFooterPartner(partner.id)
+  if (response.succeeded) {
+    footerPartners.value = footerPartners.value.filter(p => p.id !== partner.id)
+  }
 }
 </script>
 
@@ -86,7 +269,6 @@ async function onSave() {
   font-size: 1.125rem;
 }
 
-
 .color-picker {
   display: flex;
   align-items: center;
@@ -100,7 +282,6 @@ async function onSave() {
   border-radius: 0.25rem;
   cursor: pointer;
 }
-
 
 .customizer__actions {
   grid-column: span 2;
@@ -124,6 +305,88 @@ async function onSave() {
   border-radius: 0.25rem;
 }
 
+.collection-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.collection-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.375rem;
+  background: #f8f8f8;
+}
+
+.collection-item__icon {
+  display: flex;
+  align-items: center;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.collection-item__thumb {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 0.25rem;
+  flex-shrink: 0;
+}
+
+.collection-item__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.collection-item__label {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.collection-item__url {
+  color: #5c5c5c;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.collection-item__delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 0.375rem;
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.collection-empty {
+  color: #5c5c5c;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.collection-add {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.btn--small {
+  font-size: 0.8125rem;
+  padding: 0.375rem 0.75rem;
+}
 
 @media (max-width: 767px) {
   .customizer {
@@ -134,5 +397,4 @@ async function onSave() {
     grid-column: span 1;
   }
 }
-
 </style>
