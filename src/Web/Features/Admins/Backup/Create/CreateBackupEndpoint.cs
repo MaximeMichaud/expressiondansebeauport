@@ -30,7 +30,7 @@ public class CreateBackupEndpoint : EndpointWithoutRequest
             record.Id,
             record.FileName,
             record.SizeInBytes,
-            record.CreatedAt,
+            CreatedAt = record.CreatedAt.ToString(),
             record.Type,
             record.Status
         }, cancellation: ct);
