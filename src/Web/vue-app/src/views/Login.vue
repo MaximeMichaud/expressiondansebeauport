@@ -15,7 +15,7 @@
     <FormInput ref="passwordRef"
                v-model="loginRequest.password"
                :label="t('global.password')"
-               placeholder="Votre mot de passe"
+               :placeholder="t('pages.login.passwordPlaceholder')"
                :rules="[required]"
                name="password"
                type="password"
