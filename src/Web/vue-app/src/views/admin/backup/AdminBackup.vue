@@ -80,16 +80,22 @@ onMounted(async () => {
 
 async function loadBackups() {
   isLoading.value = true
-  backups.value = await backupService.getAll()
-  isLoading.value = false
+  try {
+    backups.value = await backupService.getAll()
+  } finally {
+    isLoading.value = false
+  }
 }
 
 async function onCreateBackup() {
   isCreating.value = true
-  const result = await backupService.create()
-  isCreating.value = false
-  if (result) {
-    await loadBackups()
+  try {
+    const result = await backupService.create()
+    if (result) {
+      await loadBackups()
+    }
+  } finally {
+    isCreating.value = false
   }
 }
 

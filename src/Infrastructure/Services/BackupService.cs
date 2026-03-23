@@ -71,7 +71,7 @@ public class BackupService : IBackupService
         }
         catch (Exception ex)
         {
-            record.MarkFailed(ex.Message);
+            record.MarkFailed(ex.Message.Length > 2000 ? ex.Message[..2000] : ex.Message);
             _context.BackupRecords.Update(record);
             await _context.SaveChangesAsync(ct);
 
@@ -84,6 +84,7 @@ public class BackupService : IBackupService
 
     public async Task RestoreAsync(string fileName, CancellationToken ct)
     {
+        ValidateFileName(fileName);
         var archivePath = Path.Combine(_backupPath, fileName);
         if (!File.Exists(archivePath))
             throw new FileNotFoundException($"Backup introuvable : {fileName}");
@@ -161,8 +162,17 @@ public class BackupService : IBackupService
 
     public string? GetFilePath(string fileName)
     {
+        ValidateFileName(fileName);
         var path = Path.Combine(_backupPath, fileName);
         return File.Exists(path) ? path : null;
+    }
+
+    private static void ValidateFileName(string fileName)
+    {
+        if (string.IsNullOrWhiteSpace(fileName)
+            || fileName != Path.GetFileName(fileName)
+            || !fileName.EndsWith(".tar.zst", StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("Nom de fichier invalide.", nameof(fileName));
     }
 
     private async Task BackupDatabaseAsync(string backupPath, CancellationToken ct)
@@ -197,20 +207,29 @@ public class BackupService : IBackupService
             InitialCatalog = "master"
         }.ConnectionString;
 
-        var sql = $"""
-            ALTER DATABASE [{databaseName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-            RESTORE DATABASE [{databaseName}]
-            FROM DISK = N'{backupPath}'
-            WITH REPLACE, STATS = 10;
-            ALTER DATABASE [{databaseName}] SET MULTI_USER;
-            """;
-
         await using var connection = new SqlConnection(masterConnectionString);
         await connection.OpenAsync(ct);
 
-        await using var command = new SqlCommand(sql, connection);
-        command.CommandTimeout = 900;
-        await command.ExecuteNonQueryAsync(ct);
+        var setSingleUser = $"ALTER DATABASE [{databaseName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;";
+        await using (var cmd = new SqlCommand(setSingleUser, connection) { CommandTimeout = 60 })
+            await cmd.ExecuteNonQueryAsync(ct);
+
+        try
+        {
+            var restoreSql = $"""
+                RESTORE DATABASE [{databaseName}]
+                FROM DISK = N'{backupPath}'
+                WITH REPLACE, STATS = 10;
+                """;
+            await using var cmd = new SqlCommand(restoreSql, connection) { CommandTimeout = 900 };
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+        finally
+        {
+            var setMultiUser = $"ALTER DATABASE [{databaseName}] SET MULTI_USER;";
+            await using var cmd = new SqlCommand(setMultiUser, connection) { CommandTimeout = 60 };
+            await cmd.ExecuteNonQueryAsync(CancellationToken.None);
+        }
     }
 
     private async Task CreateArchiveAsync(string archivePath, string bakPath, CancellationToken ct)

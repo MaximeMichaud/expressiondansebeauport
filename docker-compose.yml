@@ -4,7 +4,7 @@ services:
     container_name: expressiondansebeauport-db
     user: root
     command: >
-      bash -c "chown mssql:mssql /var/opt/mssql/backup && chmod 777 /var/opt/mssql/backup && exec runuser -u mssql -- /opt/mssql/bin/sqlservr"
+      bash -c "chown mssql:mssql /var/opt/mssql/backup && chmod 770 /var/opt/mssql/backup && exec runuser -u mssql -- /opt/mssql/bin/sqlservr"
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: "DockerDev@2026!"
