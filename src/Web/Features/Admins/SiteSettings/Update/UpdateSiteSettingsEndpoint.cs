@@ -62,6 +62,15 @@ public class UpdateSiteSettingsValidator : Validator<UpdateSiteSettingsRequest>
             .NotNull().NotEmpty()
             .WithErrorCode("BodyFontRequired")
             .WithMessage("Body font is required.");
+
+        RuleFor(x => x.FooterDescription).MaximumLength(500);
+        RuleFor(x => x.FooterAddress).MaximumLength(200);
+        RuleFor(x => x.FooterCity).MaximumLength(100);
+        RuleFor(x => x.FooterPhone).MaximumLength(20);
+        RuleFor(x => x.FooterEmail).MaximumLength(100).EmailAddress().When(x => !string.IsNullOrEmpty(x.FooterEmail));
+        RuleFor(x => x.FacebookUrl).MaximumLength(500);
+        RuleFor(x => x.InstagramUrl).MaximumLength(500);
+        RuleFor(x => x.CopyrightText).MaximumLength(200);
     }
 }
 

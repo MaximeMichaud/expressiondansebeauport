@@ -183,15 +183,20 @@ function getSocialLabel(platform?: string) {
 
 onMounted(async () => {
   isLoading.value = true
-  const [settingsData, mediaResponse] = await Promise.all([
-    settingsService.get(),
-    mediaService.getAll(1, 100)
-  ])
-  settings.value = settingsData
-  socialLinks.value = settingsData.socialLinks || []
-  footerPartners.value = settingsData.footerPartners || []
-  if (mediaResponse?.items) allMedia.value = mediaResponse.items
-  isLoading.value = false
+  try {
+    const [settingsData, mediaResponse] = await Promise.all([
+      settingsService.get(),
+      mediaService.getAll(1, 100)
+    ])
+    settings.value = settingsData
+    socialLinks.value = settingsData.socialLinks || []
+    footerPartners.value = settingsData.footerPartners || []
+    if (mediaResponse?.items) allMedia.value = mediaResponse.items
+  } catch {
+    notifyError(t('pages.customizer.update.validation.failedMessage'))
+  } finally {
+    isLoading.value = false
+  }
 })
 
 async function onSave() {
@@ -216,6 +221,8 @@ async function addSocialLink() {
     socialLinks.value.push(link)
     newSocialPlatform.value = ""
     newSocialUrl.value = ""
+  } else {
+    notifyError(t('pages.customizer.update.validation.failedMessage'))
   }
 }
 
@@ -224,6 +231,8 @@ async function removeSocialLink(link: SocialLink) {
   const response = await settingsService.deleteSocialLink(link.id)
   if (response.succeeded) {
     socialLinks.value = socialLinks.value.filter(l => l.id !== link.id)
+  } else {
+    notifyError(t('pages.customizer.update.validation.failedMessage'))
   }
 }
 
@@ -239,6 +248,8 @@ async function addPartner() {
     newPartnerMediaFileId.value = ""
     newPartnerAltText.value = ""
     newPartnerUrl.value = ""
+  } else {
+    notifyError(t('pages.customizer.update.validation.failedMessage'))
   }
 }
 
@@ -247,6 +258,8 @@ async function removePartner(partner: FooterPartner) {
   const response = await settingsService.deleteFooterPartner(partner.id)
   if (response.succeeded) {
     footerPartners.value = footerPartners.value.filter(p => p.id !== partner.id)
+  } else {
+    notifyError(t('pages.customizer.update.validation.failedMessage'))
   }
 }
 </script>
