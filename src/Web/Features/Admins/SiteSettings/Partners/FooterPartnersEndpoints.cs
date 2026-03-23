@@ -23,7 +23,9 @@ public class CreateFooterPartnerValidator : Validator<CreateFooterPartnerRequest
     {
         RuleFor(x => x.MediaFileId).NotEmpty();
         RuleFor(x => x.AltText).NotEmpty().MaximumLength(200);
-        RuleFor(x => x.Url).MaximumLength(500);
+        RuleFor(x => x.Url).MaximumLength(500)
+            .Must(url => url is null || Uri.TryCreate(url, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+            .WithMessage("URL must start with http:// or https://.");
     }
 }
 
@@ -82,7 +84,9 @@ public class UpdateFooterPartnerValidator : Validator<UpdateFooterPartnerRequest
     {
         RuleFor(x => x.MediaFileId).NotEmpty();
         RuleFor(x => x.AltText).NotEmpty().MaximumLength(200);
-        RuleFor(x => x.Url).MaximumLength(500);
+        RuleFor(x => x.Url).MaximumLength(500)
+            .Must(url => url is null || Uri.TryCreate(url, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+            .WithMessage("URL must start with http:// or https://.");
     }
 }
 

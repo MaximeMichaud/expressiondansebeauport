@@ -53,13 +53,14 @@
 
       <div v-if="footerPartners.length" class="public-footer__col public-footer__col--partners">
         <div class="public-footer__partners-logos">
-          <a v-for="partner in footerPartners" :key="partner.id"
-             :href="partner.url || undefined"
-             :target="partner.url ? '_blank' : undefined"
-             :rel="partner.url ? 'noopener noreferrer' : undefined"
-             class="public-footer__partner-link">
-            <img :src="partner.mediaUrl" :alt="partner.altText" class="public-footer__partner-logo" />
-          </a>
+          <template v-for="partner in footerPartners" :key="partner.id">
+            <a v-if="partner.url" :href="partner.url" target="_blank" rel="noopener noreferrer" class="public-footer__partner-link">
+              <img :src="partner.mediaUrl" :alt="partner.altText" class="public-footer__partner-logo" />
+            </a>
+            <div v-else class="public-footer__partner-link">
+              <img :src="partner.mediaUrl" :alt="partner.altText" class="public-footer__partner-logo" />
+            </div>
+          </template>
         </div>
       </div>
     </div>

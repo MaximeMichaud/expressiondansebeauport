@@ -167,9 +167,12 @@ onMounted(async () => {
 
 async function loadMenus() {
   isLoading.value = true
-  allMenus.value = await menuService.getAll()
-  await loadMenuByLocation(activeLocation.value)
-  isLoading.value = false
+  try {
+    allMenus.value = await menuService.getAll()
+    await loadMenuByLocation(activeLocation.value)
+  } finally {
+    isLoading.value = false
+  }
 }
 
 async function loadMenuByLocation(location: string) {
@@ -190,10 +193,14 @@ async function loadMenuByLocation(location: string) {
 }
 
 async function switchLocation(location: string) {
+  if (isLoading.value) return
   activeLocation.value = location
   isLoading.value = true
-  await loadMenuByLocation(location)
-  isLoading.value = false
+  try {
+    await loadMenuByLocation(location)
+  } finally {
+    isLoading.value = false
+  }
 }
 
 async function reloadCurrentMenu() {

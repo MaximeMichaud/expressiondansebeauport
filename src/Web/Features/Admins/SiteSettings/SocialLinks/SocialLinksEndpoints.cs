@@ -21,7 +21,9 @@ public class CreateSocialLinkValidator : Validator<CreateSocialLinkRequest>
     public CreateSocialLinkValidator()
     {
         RuleFor(x => x.Platform).NotEmpty().MaximumLength(50);
-        RuleFor(x => x.Url).NotEmpty().MaximumLength(500);
+        RuleFor(x => x.Url).NotEmpty().MaximumLength(500)
+            .Must(url => Uri.TryCreate(url, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+            .WithMessage("URL must start with http:// or https://.");
     }
 }
 
@@ -71,7 +73,9 @@ public class UpdateSocialLinkValidator : Validator<UpdateSocialLinkRequest>
     public UpdateSocialLinkValidator()
     {
         RuleFor(x => x.Platform).NotEmpty().MaximumLength(50);
-        RuleFor(x => x.Url).NotEmpty().MaximumLength(500);
+        RuleFor(x => x.Url).NotEmpty().MaximumLength(500)
+            .Must(url => Uri.TryCreate(url, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+            .WithMessage("URL must start with http:// or https://.");
     }
 }
 
