@@ -3,51 +3,127 @@
     <div class="public-footer__inner">
       <div class="public-footer__col public-footer__col--brand">
         <LogoEdb class="public-footer__logo" />
-        <p class="public-footer__description">{{ t('public.footer.description') }}</p>
-        <h3 class="public-footer__heading">{{ t('public.footer.followUs') }}</h3>
-        <div class="public-footer__social-links">
-          <a href="https://www.facebook.com/expressiondansebeauport" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-            <IconFacebook fill-color="#ffffff" :size="22" />
-          </a>
-          <a href="https://www.instagram.com/expressiondansebeauport" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-            <IconInstagram fill-color="#ffffff" :size="22" />
-          </a>
-        </div>
+        <p v-if="settings.footerDescription" class="public-footer__description">{{ settings.footerDescription }}</p>
+        <p v-else class="public-footer__description">{{ t('public.footer.description') }}</p>
+        <template v-if="socialLinks.length">
+          <h3 class="public-footer__heading">{{ t('public.footer.followUs') }}</h3>
+          <div class="public-footer__social-links">
+            <a v-for="link in socialLinks" :key="link.id" :href="link.url" target="_blank" rel="noopener noreferrer" :aria-label="link.platform">
+              <component :is="getSocialIcon(link.platform)" fill-color="#ffffff" :size="22" />
+            </a>
+          </div>
+        </template>
       </div>
 
       <div class="public-footer__col public-footer__col--contact">
-        <h3 class="public-footer__heading">{{ t('public.footer.address') }}</h3>
-        <p>15, rue de la Promenade-des-Soeurs</p>
-        <p>Beauport, QC G1C 0G3</p>
+        <template v-if="settings.footerAddress || settings.footerCity">
+          <h3 class="public-footer__heading">{{ t('public.footer.address') }}</h3>
+          <p v-if="settings.footerAddress">{{ settings.footerAddress }}</p>
+          <p v-if="settings.footerCity">{{ settings.footerCity }}</p>
+        </template>
 
-        <h3 class="public-footer__heading">{{ t('public.footer.phone') }}</h3>
-        <p><a href="tel:4186601086">418-660-1086</a></p>
+        <template v-if="settings.footerPhone">
+          <h3 class="public-footer__heading">{{ t('public.footer.phone') }}</h3>
+          <p><a :href="'tel:' + settings.footerPhone.replace(/[^0-9+]/g, '')">{{ settings.footerPhone }}</a></p>
+        </template>
 
-        <h3 class="public-footer__heading">{{ t('public.footer.email') }}</h3>
-        <p><a href="mailto:info@expressiondansebeauport.com">info@expressiondansebeauport.com</a></p>
+        <template v-if="settings.footerEmail">
+          <h3 class="public-footer__heading">{{ t('public.footer.email') }}</h3>
+          <p><a :href="'mailto:' + settings.footerEmail">{{ settings.footerEmail }}</a></p>
+        </template>
       </div>
 
-      <div class="public-footer__col public-footer__col--partners">
+      <div v-if="footerMenuItems.length" class="public-footer__col public-footer__col--nav">
+        <h3 class="public-footer__heading">{{ t('global.quickLinks') }}</h3>
+        <ul class="public-footer__nav-links">
+          <li v-for="item in footerMenuItems" :key="item.id">
+            <a
+              v-if="item.url?.startsWith('http')"
+              :href="item.url"
+              :target="item.target === 'Blank' ? '_blank' : '_self'"
+              :rel="item.target === 'Blank' ? 'noopener noreferrer' : undefined">
+              {{ item.label }}
+            </a>
+            <RouterLink v-else :to="item.url || `/${item.pageSlug}`">
+              {{ item.label }}
+            </RouterLink>
+          </li>
+        </ul>
+      </div>
+
+      <div v-if="footerPartners.length" class="public-footer__col public-footer__col--partners">
         <div class="public-footer__partners-logos">
-          <img src="@/assets/images/partners/logo_vdq_beauport.png" alt="Ville de Québec – Beauport" class="public-footer__partner-logo" />
-          <img src="@/assets/images/partners/cafe_de_julie.png" alt="Café de Julie" class="public-footer__partner-logo" />
-          <img src="@/assets/images/partners/logo_culture_beauport.png" alt="Culture Beauport" class="public-footer__partner-logo" />
+          <a v-for="partner in footerPartners" :key="partner.id"
+             :href="partner.url || undefined"
+             :target="partner.url ? '_blank' : undefined"
+             :rel="partner.url ? 'noopener noreferrer' : undefined"
+             class="public-footer__partner-link">
+            <img :src="partner.mediaUrl" :alt="partner.altText" class="public-footer__partner-logo" />
+          </a>
         </div>
       </div>
     </div>
 
     <div class="public-footer__copyright">
-      <p>&copy; {{ currentYear }} {{ t('public.footer.copyright') }}</p>
+      <p>&copy; {{ currentYear }} {{ settings.copyrightText || t('public.footer.copyright') }}</p>
     </div>
   </footer>
 </template>
 
 <script lang="ts" setup>
+import { ref, onMounted } from "vue";
 import { useI18n } from "vue3-i18n";
+import axios from "axios";
 import LogoEdb from "@/assets/icons/logo__edb.svg";
 import IconFacebook from "vue-material-design-icons/Facebook.vue";
 import IconInstagram from "vue-material-design-icons/Instagram.vue";
+import IconYoutube from "vue-material-design-icons/Youtube.vue";
+import IconTwitter from "vue-material-design-icons/Twitter.vue";
+import IconLinkedin from "vue-material-design-icons/Linkedin.vue";
+import IconWeb from "vue-material-design-icons/Web.vue";
+import { SiteSettings, SocialLink, FooterPartner, NavigationMenuItem } from "@/types/entities";
 
 const { t } = useI18n();
 const currentYear = new Date().getFullYear();
+const settings = ref<SiteSettings>(new SiteSettings());
+const socialLinks = ref<SocialLink[]>([]);
+const footerPartners = ref<FooterPartner[]>([]);
+const footerMenuItems = ref<NavigationMenuItem[]>([]);
+
+function getSocialIcon(platform?: string) {
+  switch (platform) {
+    case "facebook": return IconFacebook;
+    case "instagram": return IconInstagram;
+    case "youtube": return IconYoutube;
+    case "twitter": return IconTwitter;
+    case "linkedin": return IconLinkedin;
+    default: return IconWeb;
+  }
+}
+
+async function loadSettings() {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/public/site-settings`);
+    const data = response.data || new SiteSettings();
+    settings.value = data;
+    socialLinks.value = data.socialLinks || [];
+    footerPartners.value = data.footerPartners || [];
+  } catch {
+    settings.value = new SiteSettings();
+  }
+}
+
+async function loadFooterMenu() {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/public/menus/Footer`);
+    footerMenuItems.value = response.data?.menuItems || [];
+  } catch {
+    footerMenuItems.value = [];
+  }
+}
+
+onMounted(() => {
+  loadSettings();
+  loadFooterMenu();
+});
 </script>
