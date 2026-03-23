@@ -7,7 +7,7 @@ import {
   ITwoFactorRequest
 } from "@/types/requests"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
-import {Administrator, MediaFile, NavigationMenu, NavigationMenuItem, Page, SiteHealth, SiteSettings, User} from "@/types/entities"
+import {Administrator, BackupRecord, MediaFile, NavigationMenu, NavigationMenuItem, Page, SiteHealth, SiteSettings, User} from "@/types/entities"
 export interface IApiService {
   headersWithJsonContentType(): any
 
@@ -100,4 +100,16 @@ export interface IImportExportService {
   exportData(): Promise<Blob>
 
   importData(file: File): Promise<SucceededOrNotResponse>
+}
+
+export interface IBackupService {
+  getAll(): Promise<BackupRecord[]>
+
+  create(): Promise<BackupRecord | null>
+
+  download(fileName: string): Promise<Blob>
+
+  deleteBackup(id: string): Promise<SucceededOrNotResponse>
+
+  restore(fileName: string): Promise<SucceededOrNotResponse>
 }

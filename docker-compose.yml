@@ -2,6 +2,9 @@ services:
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: expressiondansebeauport-db
+    user: root
+    command: >
+      bash -c "chown mssql:mssql /var/opt/mssql/backup && chmod 777 /var/opt/mssql/backup && exec runuser -u mssql -- /opt/mssql/bin/sqlservr"
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: "DockerDev@2026!"
@@ -9,6 +12,7 @@ services:
       - "1433:1433"
     volumes:
       - sqlserver-data:/var/opt/mssql
+      - backups:/var/opt/mssql/backup
     healthcheck:
       test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "DockerDev@2026!" -Q "SELECT 1" -C -N || exit 1
       interval: 10s
@@ -40,7 +44,9 @@ services:
         condition: service_healthy
     volumes:
       - app-logs:/app/logs
+      - backups:/app/backups
 
 volumes:
   sqlserver-data:
+  backups:
   app-logs:

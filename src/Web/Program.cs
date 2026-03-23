@@ -9,6 +9,7 @@ using Infrastructure.ExternalApis.Local;
 using Microsoft.AspNetCore.Diagnostics;
 using Persistence;
 using Serilog;
+using Web.BackgroundServices;
 using Web.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,6 +50,7 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(Log.Logger);
 
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
+builder.Services.AddHostedService<BackupSchedulerService>();
 
 builder.Services.AddCors(options =>
 {
