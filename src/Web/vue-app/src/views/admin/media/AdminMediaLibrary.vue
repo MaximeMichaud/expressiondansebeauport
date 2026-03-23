@@ -43,7 +43,7 @@
         <img v-if="isImage(selectedMedia.contentType)" :src="selectedMedia.blobUrl" :alt="selectedMedia.altText" />
         <div v-else class="media-detail__file-preview">
           <span class="media-detail__file-ext">{{ getFileExtension(selectedMedia.originalFileName) }}</span>
-          <a :href="selectedMedia.blobUrl" target="_blank" class="btn btn--small">{{ t('pages.media.downloadFile') }}</a>
+          <a :href="selectedMedia.blobUrl" target="_blank" rel="noopener noreferrer" class="btn btn--small">{{ t('pages.media.downloadFile') }}</a>
         </div>
       </div>
       <div class="media-detail__info">
