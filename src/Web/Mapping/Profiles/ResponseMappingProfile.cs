@@ -25,7 +25,8 @@ public class ResponseMappingProfile : Profile
             .ForMember(x => x.PhoneNumber, opt => opt.MapFrom(x => x.PhoneNumber))
             .ForMember(x => x.PhoneExtension, opt => opt.MapFrom(x => x.PhoneExtension));
 
-        CreateMap<MediaFile, MediaFileDto>();
+        CreateMap<MediaFile, MediaFileDto>()
+            .ForMember(x => x.FileType, opt => opt.MapFrom(x => x.FileType.ToString()));
 
         CreateMap<Page, PageDto>()
             .ForMember(x => x.Status, opt => opt.MapFrom(x => x.Status.ToString()))
@@ -41,5 +42,10 @@ public class ResponseMappingProfile : Profile
         CreateMap<SiteSettings, SiteSettingsDto>()
             .ForMember(x => x.LogoUrl, opt => opt.MapFrom(x => x.LogoMediaFile != null ? x.LogoMediaFile.BlobUrl : null))
             .ForMember(x => x.FaviconUrl, opt => opt.MapFrom(x => x.FaviconMediaFile != null ? x.FaviconMediaFile.BlobUrl : null));
+
+        CreateMap<SocialLink, SocialLinkDto>();
+
+        CreateMap<FooterPartner, FooterPartnerDto>()
+            .ForMember(x => x.MediaUrl, opt => opt.MapFrom(x => x.MediaFile != null ? x.MediaFile.BlobUrl : null));
     }
 }

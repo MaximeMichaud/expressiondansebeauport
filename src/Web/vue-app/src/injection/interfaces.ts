@@ -7,7 +7,7 @@ import {
   ITwoFactorRequest
 } from "@/types/requests"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
-import {Administrator, BackupRecord, MediaFile, NavigationMenu, NavigationMenuItem, Page, SiteHealth, SiteSettings, User} from "@/types/entities"
+import {Administrator, BackupRecord, FooterPartner, MediaFile, NavigationMenu, NavigationMenuItem, Page, SiteHealth, SiteSettings, SocialLink, User} from "@/types/entities"
 export interface IApiService {
   headersWithJsonContentType(): any
 
@@ -90,6 +90,18 @@ export interface ISiteSettingsService {
   update(settings: SiteSettings): Promise<SucceededOrNotResponse>
 
   getPublic(): Promise<SiteSettings>
+
+  addSocialLink(link: SocialLink): Promise<SocialLink | null>
+
+  updateSocialLink(link: SocialLink): Promise<SucceededOrNotResponse>
+
+  deleteSocialLink(id: string): Promise<SucceededOrNotResponse>
+
+  addFooterPartner(partner: FooterPartner): Promise<FooterPartner | null>
+
+  updateFooterPartner(partner: FooterPartner): Promise<SucceededOrNotResponse>
+
+  deleteFooterPartner(id: string): Promise<SucceededOrNotResponse>
 }
 
 export interface ISiteHealthService {

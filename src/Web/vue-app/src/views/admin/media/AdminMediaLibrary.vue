@@ -4,9 +4,22 @@
       <h1 class="back-link">{{ t('routes.admin.children.media.name') }}</h1>
       <label class="btn">
         {{ t('global.addFile') }}
-        <input type="file" accept="image/*,application/pdf" multiple hidden @change="onFilesSelected" />
+        <input type="file" :accept="acceptedFileTypes" multiple hidden @change="onFilesSelected" />
       </label>
     </div>
+
+    <div class="media-filters">
+      <button
+        v-for="filter in filters"
+        :key="filter.value"
+        class="media-filters__btn"
+        :class="{ 'media-filters__btn--active': activeFilter === filter.value }"
+        @click="onFilterChange(filter.value)"
+      >
+        {{ filter.label }}
+      </button>
+    </div>
+
     <Loader v-if="isLoading" />
     <p v-else-if="!mediaFiles.length" class="media-empty">{{ t('global.table.noData') }}</p>
     <div v-else class="media-grid">
@@ -18,8 +31,8 @@
         @click="selectMedia(media)"
       >
         <img v-if="isImage(media.contentType)" :src="media.blobUrl" :alt="media.altText || media.originalFileName" />
-        <div v-else class="media-grid__file-icon">
-          <span>{{ getFileExtension(media.fileName) }}</span>
+        <div v-else class="media-grid__file-icon" :class="'media-grid__file-icon--' + (media.fileType || '').toLowerCase()">
+          <span>{{ getFileExtension(media.originalFileName) }}</span>
         </div>
         <div class="media-grid__name">{{ media.originalFileName }}</div>
       </div>
@@ -28,14 +41,19 @@
     <div v-if="selectedMedia" class="media-detail">
       <div class="media-detail__preview">
         <img v-if="isImage(selectedMedia.contentType)" :src="selectedMedia.blobUrl" :alt="selectedMedia.altText" />
+        <div v-else class="media-detail__file-preview">
+          <span class="media-detail__file-ext">{{ getFileExtension(selectedMedia.originalFileName) }}</span>
+          <a :href="selectedMedia.blobUrl" target="_blank" rel="noopener noreferrer" class="btn btn--small">{{ t('pages.media.downloadFile') }}</a>
+        </div>
       </div>
       <div class="media-detail__info">
         <p><strong>{{ t('global.name') }}:</strong> {{ selectedMedia.originalFileName }}</p>
-        <p><strong>{{ t('pages.media.type') }} :</strong> {{ selectedMedia.contentType }}</p>
+        <p><strong>{{ t('pages.media.type') }}:</strong> {{ selectedMedia.contentType }}</p>
+        <p><strong>{{ t('pages.media.fileType') }}:</strong> {{ selectedMedia.fileType }}</p>
         <p v-if="selectedMedia.width"><strong>{{ t('pages.media.dimensions') }}:</strong> {{ selectedMedia.width }} x {{ selectedMedia.height }}px</p>
-        <div class="media-detail__alt">
+        <div v-if="isImage(selectedMedia.contentType)" class="media-detail__alt">
           <label>{{ t('pages.media.altText') }}</label>
-          <input type="text" v-model="editAltText" @blur="saveAltText" placeholder="Ex: Photo de groupe lors du spectacle de juin" />
+          <input type="text" v-model="editAltText" @blur="saveAltText" :placeholder="t('pages.media.placeholderAltText')" />
         </div>
         <button class="btn" @click="onDelete">{{ t('global.delete') }}</button>
       </div>
@@ -51,7 +69,7 @@
 
 <script lang="ts" setup>
 import {useI18n} from "vue3-i18n"
-import {onMounted, ref} from "vue"
+import {computed, onMounted, ref} from "vue"
 import {useMediaService} from "@/inversify.config"
 import {MediaFile} from "@/types/entities"
 import {PaginatedResponse} from "@/types/responses"
@@ -61,12 +79,28 @@ const {t} = useI18n()
 const mediaService = useMediaService()
 
 const isLoading = ref(false)
-const mediaFiles = ref<MediaFile[]>([])
+const allMediaFiles = ref<MediaFile[]>([])
 const paginatedResponse = ref<PaginatedResponse<MediaFile>>({totalItems: 0})
 const selectedMedia = ref<MediaFile | null>(null)
 const editAltText = ref("")
 const pageIndex = ref(1)
 const pageSize = 24
+const activeFilter = ref("all")
+
+const acceptedFileTypes = "image/*,video/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.csv,.txt"
+
+const filters = computed(() => [
+  { value: "all", label: t('pages.media.filterAll') },
+  { value: "Image", label: t('pages.media.filterImages') },
+  { value: "Document", label: t('pages.media.filterDocuments') },
+  { value: "Video", label: t('pages.media.filterVideos') },
+  { value: "Other", label: t('pages.media.filterOther') },
+])
+
+const mediaFiles = computed(() => {
+  if (activeFilter.value === "all") return allMediaFiles.value
+  return allMediaFiles.value.filter(m => m.fileType === activeFilter.value)
+})
 
 onMounted(async () => {
   await loadMedia(1, pageSize)
@@ -79,9 +113,14 @@ async function loadMedia(page: number, size: number) {
   if (response) {
     paginatedResponse.value = response
     if (response.items)
-      mediaFiles.value = response.items
+      allMediaFiles.value = response.items
   }
   isLoading.value = false
+}
+
+function onFilterChange(filter: string) {
+  activeFilter.value = filter
+  selectedMedia.value = null
 }
 
 function selectMedia(media: MediaFile) {
@@ -128,7 +167,7 @@ async function onDelete() {
 
   const response = await mediaService.delete(selectedMedia.value.id)
   if (response && response.succeeded) {
-    mediaFiles.value = mediaFiles.value.filter(m => m.id !== selectedMedia.value?.id)
+    allMediaFiles.value = allMediaFiles.value.filter(m => m.id !== selectedMedia.value?.id)
     selectedMedia.value = null
   }
 }
@@ -139,6 +178,33 @@ async function onDelete() {
   color: #5c5c5c;
   font-size: 0.875rem;
   padding: 16px 0;
+}
+
+.media-filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.media-filters__btn {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--color-gray-300, #d1d5db);
+  border-radius: 0.25rem;
+  background: white;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  transition: all 0.2s;
+}
+
+.media-filters__btn:hover {
+  background: var(--color-gray-100, #f3f4f6);
+}
+
+.media-filters__btn--active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
 }
 
 .media-grid {
@@ -178,7 +244,16 @@ async function onDelete() {
   align-items: center;
   justify-content: center;
   font-weight: bold;
+  font-size: 0.875rem;
   color: var(--color-gray-500, #6b7280);
+}
+
+.media-grid__file-icon--document {
+  color: #dc2626;
+}
+
+.media-grid__file-icon--video {
+  color: #7c3aed;
 }
 
 .media-grid__name {
@@ -202,6 +277,25 @@ async function onDelete() {
   max-width: 300px;
   max-height: 300px;
   object-fit: contain;
+}
+
+.media-detail__file-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.media-detail__file-ext {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-gray-500, #6b7280);
+}
+
+.btn--small {
+  font-size: 0.8125rem;
+  padding: 0.375rem 0.75rem;
 }
 
 .media-detail__info {

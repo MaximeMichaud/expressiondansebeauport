@@ -4,6 +4,18 @@
       <h1>{{ t('routes.admin.children.menus.name') }}</h1>
     </div>
 
+    <div class="menu-location-tabs">
+      <button
+        v-for="loc in locations"
+        :key="loc.value"
+        class="menu-location-tabs__btn"
+        :class="{ 'menu-location-tabs__btn--active': activeLocation === loc.value }"
+        @click="switchLocation(loc.value)"
+      >
+        {{ loc.label }}
+      </button>
+    </div>
+
     <Loader v-if="isLoading" />
 
     <div v-else class="menu-builder">
@@ -24,7 +36,7 @@
             @end="onDragEnd">
             <template #item="{ element: item }">
               <div class="menu-item">
-                <button class="menu-item__drag" aria-label="Réordonner">
+                <button class="menu-item__drag" :aria-label="t('pages.menus.reorder')">
                   <GripVertical :size="14" />
                 </button>
                 <div class="menu-item__info">
@@ -50,12 +62,12 @@
           <h3>{{ t('pages.menus.addItem') }}</h3>
           <div :class="['form__field', { error: newItemErrors.label }]">
             <label>{{ t('pages.menus.label') }}</label>
-            <input type="text" v-model="newItem.label" placeholder="Accueil" />
+            <input type="text" v-model="newItem.label" :placeholder="t('pages.menus.placeholderLabel')" />
             <span v-if="newItemErrors.label" class="form__error-message">{{ newItemErrors.label }}</span>
           </div>
           <div :class="['form__field', { error: newItemErrors.url }]">
             <label>{{ t('pages.menus.url') }}</label>
-            <input type="text" v-model="newItem.url" placeholder="https://exemple.com ou /ma-page" />
+            <input type="text" v-model="newItem.url" :placeholder="t('pages.menus.placeholderUrl')" />
             <span v-if="newItemErrors.url" class="form__error-message">{{ newItemErrors.url }}</span>
           </div>
           <div class="form__field">
@@ -70,7 +82,7 @@
         </div>
       </div>
 
-      <p v-else class="menu-builder__empty">Menu principal introuvable.</p>
+      <p v-else class="menu-builder__empty">{{ t('global.table.noData') }}</p>
     </div>
 
     <!-- Edit modal -->
@@ -79,12 +91,12 @@
         <h3>{{ t('pages.menus.editItem') }}</h3>
         <div :class="['form__field', { error: editItemErrors.label }]">
           <label>{{ t('pages.menus.label') }}</label>
-          <input type="text" v-model="editingItem.label" placeholder="Accueil" />
+          <input type="text" v-model="editingItem.label" :placeholder="t('pages.menus.placeholderLabel')" />
           <span v-if="editItemErrors.label" class="form__error-message">{{ editItemErrors.label }}</span>
         </div>
         <div :class="['form__field', { error: editItemErrors.url }]">
           <label>{{ t('pages.menus.url') }}</label>
-          <input type="text" v-model="editingItem.url" placeholder="https://exemple.com ou /ma-page" />
+          <input type="text" v-model="editingItem.url" :placeholder="t('pages.menus.placeholderUrl')" />
           <span v-if="editItemErrors.url" class="form__error-message">{{ editItemErrors.url }}</span>
         </div>
         <div class="form__field">
@@ -118,10 +130,17 @@ const menuService = useMenuService()
 
 const isLoading = ref(false)
 const currentMenu = ref<NavigationMenu | null>(null)
+const allMenus = ref<NavigationMenu[]>([])
+const activeLocation = ref('Primary')
 const newItem = ref<NavigationMenuItem>(new NavigationMenuItem())
 const editingItem = ref<NavigationMenuItem | null>(null)
 const newItemErrors = ref<{label?: string; url?: string}>({})
 const editItemErrors = ref<{label?: string; url?: string}>({})
+
+const locations = computed(() => [
+  { value: 'Primary', label: t('pages.menus.locationPrimary') },
+  { value: 'Footer', label: t('pages.menus.locationFooter') },
+])
 
 const draggableItems = computed({
   get() {
@@ -143,23 +162,57 @@ async function onDragEnd() {
 }
 
 onMounted(async () => {
-  await loadPrimaryMenu()
+  await loadMenus()
 })
 
-async function loadPrimaryMenu() {
+async function loadMenus() {
   isLoading.value = true
-  const menus = await menuService.getAll()
-  const primary = menus.find(m => m.location === 'Primary')
-  if (primary?.id) {
-    currentMenu.value = await menuService.get(primary.id)
+  try {
+    allMenus.value = await menuService.getAll()
+    await loadMenuByLocation(activeLocation.value)
+  } finally {
+    isLoading.value = false
   }
-  isLoading.value = false
+}
+
+async function loadMenuByLocation(location: string) {
+  let menu = allMenus.value.find(m => m.location === location)
+  if (!menu) {
+    const name = location === 'Primary' ? 'Menu principal' : 'Menu pied de page'
+    const response = await menuService.create({ name, location } as NavigationMenu)
+    if (response?.succeeded) {
+      allMenus.value = await menuService.getAll()
+      menu = allMenus.value.find(m => m.location === location)
+    }
+  }
+  if (menu?.id) {
+    currentMenu.value = await menuService.get(menu.id)
+  } else {
+    currentMenu.value = null
+  }
+}
+
+async function switchLocation(location: string) {
+  if (isLoading.value) return
+  activeLocation.value = location
+  isLoading.value = true
+  try {
+    await loadMenuByLocation(location)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+async function reloadCurrentMenu() {
+  if (currentMenu.value?.id) {
+    currentMenu.value = await menuService.get(currentMenu.value.id)
+  }
 }
 
 function validateItem(item: NavigationMenuItem): {label?: string; url?: string} {
   const errors: {label?: string; url?: string} = {}
-  if (!item.label?.trim()) errors.label = "Ce champ est requis"
-  if (!item.url?.trim()) errors.url = "Ce champ est requis"
+  if (!item.label?.trim()) errors.label = t('validation.empty')
+  if (!item.url?.trim()) errors.url = t('validation.empty')
   return errors
 }
 
@@ -173,7 +226,7 @@ async function addItem() {
   if (response && response.succeeded) {
     newItem.value = new NavigationMenuItem()
     newItemErrors.value = {}
-    await loadPrimaryMenu()
+    await reloadCurrentMenu()
   }
 }
 
@@ -190,7 +243,7 @@ async function saveEditItem() {
   if (response && response.succeeded) {
     editingItem.value = null
     editItemErrors.value = {}
-    await loadPrimaryMenu()
+    await reloadCurrentMenu()
   }
 }
 
@@ -206,12 +259,39 @@ async function removeItem(item: NavigationMenuItem) {
 
   const response = await menuService.deleteMenuItem(currentMenu.value.id, item.id)
   if (response && response.succeeded) {
-    await loadPrimaryMenu()
+    await reloadCurrentMenu()
   }
 }
 </script>
 
 <style scoped>
+.menu-location-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.menu-location-tabs__btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-gray-300, #d1d5db);
+  border-radius: 0.25rem;
+  background: white;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.menu-location-tabs__btn:hover {
+  background: var(--color-gray-100, #f3f4f6);
+}
+
+.menu-location-tabs__btn--active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
 .menu-builder {
   display: flex;
   flex-direction: column;
