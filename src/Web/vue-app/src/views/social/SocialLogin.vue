@@ -82,13 +82,13 @@ async function handleLogin() {
     } else {
       const emailNotConfirmed = result.errors?.some((e: any) => e.errorType === 'EmailNotConfirmed')
       if (emailNotConfirmed) {
-        await router.push({ path: '/confirmation', query: { email: email.value } })
+        await router.push({ name: 'socialConfirm', query: { email: email.value } })
         return
       }
       toast.error('Courriel ou mot de passe invalide.')
       showConfirmationLink.value = true
     }
-  } catch (e) {
+  } catch {
     toast.error('Une erreur est survenue. Veuillez réessayer.')
   } finally {
     loading.value = false

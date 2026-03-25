@@ -201,11 +201,6 @@ function getTitle(content: string) {
   return content?.split('\n')[0] || ''
 }
 
-function getDescription(content: string) {
-  const lines = content?.split('\n')
-  return lines?.length > 1 ? lines.slice(1).join('\n').trim() : ''
-}
-
 function getInitials(name: string) {
   if (!name || !name.trim()) return '??'
   return name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase().slice(0, 2)

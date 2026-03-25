@@ -80,17 +80,6 @@ function getInitials(name: string) {
   return name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-const avatarColors = [
-  '#e53e3e', '#dd6b20', '#d69e2e', '#38a169', '#319795',
-  '#3182ce', '#5a67d8', '#805ad5', '#d53f8c', '#e53e3e'
-]
-
-function getAvatarColor(name: string) {
-  let hash = 0
-  for (let i = 0; i < (name?.length || 0); i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  return avatarColors[Math.abs(hash) % avatarColors.length]
-}
-
 function isProfessor(member: any) {
   return member.roles?.includes('professor')
 }

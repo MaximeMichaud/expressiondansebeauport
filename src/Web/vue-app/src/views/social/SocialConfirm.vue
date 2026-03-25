@@ -43,16 +43,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useSocialService, useAuthenticationService, useUserService } from '@/inversify.config'
-import { useUserStore } from '@/stores/userStore'
+import { useSocialService } from '@/inversify.config'
 import { useSocialToast } from '@/composables/useSocialToast'
 
 const route = useRoute()
 const router = useRouter()
 const socialService = useSocialService()
-const authService = useAuthenticationService()
-const userService = useUserService()
-const userStore = useUserStore()
 const toast = useSocialToast()
 
 const emailAddress = computed(() => (route.query.email as string) || '')
@@ -88,7 +84,7 @@ async function handleConfirm() {
     } else {
       toast.error('Code invalide ou expiré.')
     }
-  } catch (e) {
+  } catch {
     toast.error('Une erreur est survenue.')
   } finally {
     loading.value = false
@@ -106,7 +102,7 @@ async function handleResend() {
       resendCooldown.value--
       if (resendCooldown.value <= 0) clearInterval(interval)
     }, 1000)
-  } catch (e) {
+  } catch {
     toast.error('Impossible de renvoyer le code.')
   } finally {
     resendLoading.value = false

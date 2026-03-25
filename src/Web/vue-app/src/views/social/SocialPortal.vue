@@ -179,8 +179,6 @@ const myGroups = ref<Group[]>([])
 const allActiveGroups = ref<Group[]>([])
 const loadingGroups = ref(true)
 const searchQuery = ref('')
-const inviteCode = ref('')
-const joining = ref(false)
 const groupTab = ref<'mine' | 'all'>('mine')
 const copiedCode = ref('')
 
@@ -216,7 +214,7 @@ async function loadGroups() {
     ])
     myGroups.value = mine
     allActiveGroups.value = active
-  } catch (e) {
+  } catch {
     // silently fail
   } finally {
     loadingGroups.value = false
@@ -235,30 +233,10 @@ async function createGroup() {
     } else {
       toast.error(result.errors?.[0]?.errorMessage || 'Erreur lors de la création.')
     }
-  } catch (e) {
+  } catch {
     toast.error('Erreur lors de la création du groupe.')
   }
   creatingGroup.value = false
-}
-
-async function joinGroup() {
-  if (!inviteCode.value) return
-  joining.value = true
-
-  try {
-    const result = await socialService.joinGroup(inviteCode.value)
-    if (result.succeeded) {
-      toast.success('Vous avez rejoint le groupe!')
-      inviteCode.value = ''
-      await loadGroups()
-    } else {
-      toast.error(result.errors?.[0]?.errorMessage || 'Code invalide.')
-    }
-  } catch (e) {
-    toast.error('Code invalide ou erreur de connexion.')
-  } finally {
-    joining.value = false
-  }
 }
 
 // Join modal

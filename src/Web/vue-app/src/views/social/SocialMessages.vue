@@ -171,7 +171,7 @@ async function loadConversations() {
   try {
     const all = await socialService.getConversations()
     conversations.value = all.filter((c: any) => c.lastMessage)
-  } catch (e) { /* */ }
+  } catch { /* */ }
   loading.value = false
 }
 

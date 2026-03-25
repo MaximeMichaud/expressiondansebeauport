@@ -176,7 +176,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useUserStore } from '@/stores/userStore'
 import { useMemberStore } from '@/stores/memberStore'
@@ -185,7 +185,6 @@ import { Role } from '@/types/enums'
 import type { Post } from '@/types/entities'
 
 const route = useRoute()
-const router = useRouter()
 const socialService = useSocialService()
 const toast = useSocialToast()
 const userStore = useUserStore()
@@ -258,14 +257,14 @@ async function confirmDelete() {
 async function loadGroup() {
   try {
     group.value = await socialService.getGroupDetails(groupId.value)
-  } catch (e) { /* */ }
+  } catch { /* */ }
 }
 
 async function loadPosts() {
   loadingPosts.value = true
   try {
     posts.value = await socialService.getGroupFeed(groupId.value)
-  } catch (e) { /* */ }
+  } catch { /* */ }
   loadingPosts.value = false
 }
 
@@ -276,7 +275,7 @@ async function submitPost() {
     await socialService.createPost(groupId.value, newPostContent.value)
     newPostContent.value = ''
     await loadPosts()
-  } catch (e) { /* */ }
+  } catch { /* */ }
   submittingPost.value = false
 }
 
@@ -285,7 +284,7 @@ async function toggleLike(post: Post) {
     await socialService.toggleLike(post.id)
     post.hasLiked = !post.hasLiked
     post.likeCount += post.hasLiked ? 1 : -1
-  } catch (e) { /* */ }
+  } catch { /* */ }
 }
 
 // Comment methods

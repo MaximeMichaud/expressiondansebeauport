@@ -136,11 +136,11 @@ async function handleRegister() {
   try {
     const result = await socialService.register(firstName.value, lastName.value, email.value, password.value)
     if (result.succeeded) {
-      await router.push({ path: '/confirmation', query: { email: email.value } })
+      await router.push({ name: 'socialConfirm', query: { email: email.value } })
     } else {
       toast.error(result.errors?.[0]?.errorMessage || "Une erreur est survenue lors de l'inscription.")
     }
-  } catch (e) {
+  } catch {
     toast.error("Une erreur est survenue. Veuillez réessayer.")
   } finally {
     loading.value = false
