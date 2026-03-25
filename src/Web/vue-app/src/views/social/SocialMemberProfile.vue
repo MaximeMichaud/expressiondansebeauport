@@ -219,11 +219,6 @@ function getAvatarColor(name: string) {
   return avatarColors[Math.abs(hash) % avatarColors.length]
 }
 
-function getRoleLabel(role: string) {
-  const labels: Record<string, string> = { admin: 'Admin', professor: 'Prof', member: 'Membre' }
-  return labels[role] || role
-}
-
 async function startDM() {
   startingDM.value = true
   try {
