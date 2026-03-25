@@ -42,5 +42,10 @@ public class ResponseMappingProfile : Profile
         CreateMap<SiteSettings, SiteSettingsDto>()
             .ForMember(x => x.LogoUrl, opt => opt.MapFrom(x => x.LogoMediaFile != null ? x.LogoMediaFile.BlobUrl : null))
             .ForMember(x => x.FaviconUrl, opt => opt.MapFrom(x => x.FaviconMediaFile != null ? x.FaviconMediaFile.BlobUrl : null));
+
+        CreateMap<SocialLink, SocialLinkDto>();
+
+        CreateMap<FooterPartner, FooterPartnerDto>()
+            .ForMember(x => x.MediaUrl, opt => opt.MapFrom(x => x.MediaFile != null ? x.MediaFile.BlobUrl : null));
     }
 }

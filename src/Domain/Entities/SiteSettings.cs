@@ -14,8 +14,19 @@ public class SiteSettings : Entity
     public string HeadingFont { get; private set; } = "Montserrat";
     public string BodyFont { get; private set; } = "Karla";
 
+    public string? FooterDescription { get; private set; }
+    public string? FooterAddress { get; private set; }
+    public string? FooterCity { get; private set; }
+    public string? FooterPhone { get; private set; }
+    public string? FooterEmail { get; private set; }
+    public string? FacebookUrl { get; private set; }
+    public string? InstagramUrl { get; private set; }
+    public string? CopyrightText { get; private set; }
+
     public MediaFile? LogoMediaFile { get; private set; }
     public MediaFile? FaviconMediaFile { get; private set; }
+    public ICollection<SocialLink> SocialLinks { get; private set; } = new List<SocialLink>();
+    public ICollection<FooterPartner> FooterPartners { get; private set; } = new List<FooterPartner>();
 
     public SiteSettings() { }
 
@@ -38,6 +49,14 @@ public class SiteSettings : Entity
     public void SetFaviconMediaFileId(Guid? id) => FaviconMediaFileId = id;
     public void SetHeadingFont(string font) => HeadingFont = font;
     public void SetBodyFont(string font) => BodyFont = font;
+    public void SetFooterDescription(string? description) => FooterDescription = description;
+    public void SetFooterAddress(string? address) => FooterAddress = address;
+    public void SetFooterCity(string? city) => FooterCity = city;
+    public void SetFooterPhone(string? phone) => FooterPhone = phone;
+    public void SetFooterEmail(string? email) => FooterEmail = email;
+    public void SetFacebookUrl(string? url) => FacebookUrl = url;
+    public void SetInstagramUrl(string? url) => InstagramUrl = url;
+    public void SetCopyrightText(string? text) => CopyrightText = text;
 
     private static void ValidateHexColor(string color)
     {

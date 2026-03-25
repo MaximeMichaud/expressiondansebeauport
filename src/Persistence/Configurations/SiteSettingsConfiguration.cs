@@ -15,6 +15,14 @@ public class SiteSettingsConfiguration : IEntityTypeConfiguration<SiteSettings>
         builder.Property(s => s.SecondaryColor).HasMaxLength(7);
         builder.Property(s => s.HeadingFont).HasMaxLength(100).IsRequired();
         builder.Property(s => s.BodyFont).HasMaxLength(100).IsRequired();
+        builder.Property(s => s.FooterDescription).HasMaxLength(500);
+        builder.Property(s => s.FooterAddress).HasMaxLength(200);
+        builder.Property(s => s.FooterCity).HasMaxLength(100);
+        builder.Property(s => s.FooterPhone).HasMaxLength(20);
+        builder.Property(s => s.FooterEmail).HasMaxLength(100);
+        builder.Property(s => s.FacebookUrl).HasMaxLength(500);
+        builder.Property(s => s.InstagramUrl).HasMaxLength(500);
+        builder.Property(s => s.CopyrightText).HasMaxLength(200);
 
         builder.HasOne(s => s.LogoMediaFile)
             .WithMany()
