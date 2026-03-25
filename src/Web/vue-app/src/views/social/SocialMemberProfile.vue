@@ -243,7 +243,7 @@ async function executeDelete() {
     const result = await socialService.deleteMember(memberId)
     console.log('Delete result:', result)
     showDeleteModal.value = false
-    await router.push('/membres')
+    await router.push({ name: 'socialMembers' })
   } catch (e: any) {
     console.error('Delete error:', e?.response?.status, e?.response?.data, e)
     showDeleteModal.value = false

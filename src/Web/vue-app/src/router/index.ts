@@ -22,108 +22,86 @@ import AdminImportExport from "@/views/admin/importexport/AdminImportExport.vue"
 
 import {useUserStore} from "@/stores/userStore";
 
-const isSocialSubdomain = (): boolean => {
-  const hostname = window.location.hostname
-  return hostname.startsWith('social.')
-    || import.meta.env.VITE_FORCE_SOCIAL === 'true'
-    || localStorage.getItem('forceSocial') === 'true'
-}
-
-export const isSocial = isSocialSubdomain()
-
 const socialRoutes = [
   {
-    path: '/connexion',
+    path: '/social/connexion',
     name: 'socialLogin',
     component: () => import('@/views/social/SocialLogin.vue'),
-    meta: { title: 'Connexion', public: true, socialAuth: true }
+    meta: { title: 'Connexion', public: true, socialAuth: true, social: true }
   },
   {
-    path: '/inscription',
+    path: '/social/inscription',
     name: 'socialRegister',
     component: () => import('@/views/social/SocialRegister.vue'),
-    meta: { title: 'Inscription', public: true, socialAuth: true }
+    meta: { title: 'Inscription', public: true, socialAuth: true, social: true }
   },
   {
-    path: '/confirmation',
+    path: '/social/confirmation',
     name: 'socialConfirm',
     component: () => import('@/views/social/SocialConfirm.vue'),
-    meta: { title: 'Confirmation', public: true, socialAuth: true }
+    meta: { title: 'Confirmation', public: true, socialAuth: true, social: true }
   },
   {
-    path: '/',
-    redirect: '/annonces'
+    path: '/social',
+    redirect: '/social/annonces'
   },
   {
-    path: '/annonces',
+    path: '/social/annonces',
     name: 'socialImportant',
     component: () => import('@/views/social/SocialImportant.vue'),
-    meta: { title: 'Annonces', requiredRole: [Role.Member, Role.Professor, Role.Admin] }
+    meta: { title: 'Annonces', requiredRole: [Role.Member, Role.Professor, Role.Admin], social: true }
   },
   {
-    path: '/annonces/:id',
+    path: '/social/annonces/:id',
     name: 'socialAnnouncement',
     component: () => import('@/views/social/SocialAnnouncement.vue'),
-    meta: { title: 'Annonce', requiredRole: [Role.Member, Role.Professor, Role.Admin] },
+    meta: { title: 'Annonce', requiredRole: [Role.Member, Role.Professor, Role.Admin], social: true },
     props: true
   },
   {
-    path: '/annonces/:id',
-    name: 'socialAnnouncement',
-    component: () => import('@/views/social/SocialAnnouncement.vue'),
-    meta: { title: 'Annonce', requiredRole: [Role.Member, Role.Professor, Role.Admin] },
-    props: true
-  },
-  {
-    path: '/groupes',
+    path: '/social/groupes',
     name: 'socialPortal',
     component: () => import('@/views/social/SocialPortal.vue'),
-    meta: { title: 'Groupes', requiredRole: [Role.Member, Role.Professor, Role.Admin] }
+    meta: { title: 'Groupes', requiredRole: [Role.Member, Role.Professor, Role.Admin], social: true }
   },
   {
-    path: '/groupes/:id',
+    path: '/social/groupes/:id',
     name: 'socialGroup',
     component: () => import('@/views/social/SocialGroup.vue'),
-    meta: { title: 'Groupe', requiredRole: [Role.Member, Role.Professor, Role.Admin] },
+    meta: { title: 'Groupe', requiredRole: [Role.Member, Role.Professor, Role.Admin], social: true },
     props: true
   },
   {
-    path: '/membres',
+    path: '/social/membres',
     name: 'socialMembers',
     component: () => import('@/views/social/SocialMembers.vue'),
-    meta: { title: 'Membres', requiredRole: [Role.Member, Role.Professor, Role.Admin] }
+    meta: { title: 'Membres', requiredRole: [Role.Member, Role.Professor, Role.Admin], social: true }
   },
   {
-    path: '/membres/:id',
+    path: '/social/membres/:id',
     name: 'socialMemberProfile',
     component: () => import('@/views/social/SocialMemberProfile.vue'),
-    meta: { title: 'Profil', requiredRole: [Role.Member, Role.Professor, Role.Admin] },
+    meta: { title: 'Profil', requiredRole: [Role.Member, Role.Professor, Role.Admin], social: true },
     props: true
   },
   {
-    path: '/messages',
+    path: '/social/messages',
     name: 'socialMessages',
     component: () => import('@/views/social/SocialMessages.vue'),
-    meta: { title: 'Messages', requiredRole: [Role.Member, Role.Professor, Role.Admin] }
+    meta: { title: 'Messages', requiredRole: [Role.Member, Role.Professor, Role.Admin], social: true }
   },
   {
-    path: '/messages/:conversationId',
+    path: '/social/messages/:conversationId',
     name: 'socialConversation',
     component: () => import('@/views/social/SocialConversation.vue'),
-    meta: { title: 'Conversation', requiredRole: [Role.Member, Role.Professor, Role.Admin] },
+    meta: { title: 'Conversation', requiredRole: [Role.Member, Role.Professor, Role.Admin], social: true },
     props: true
   },
   {
-    path: '/compte',
+    path: '/social/compte',
     name: 'socialAccount',
     component: () => import('@/views/social/SocialAccount.vue'),
-    meta: { title: 'Mon compte', requiredRole: [Role.Member, Role.Professor, Role.Admin] }
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    name: 'notFound',
-    component: NotFound,
-    meta: { public: true }
+    meta: { title: 'Mon compte', requiredRole: [Role.Member, Role.Professor, Role.Admin], social: true }
   },
 ]
 
@@ -281,8 +259,12 @@ const router = createRouter({
     return {top: 0};
   },
   history: createWebHistory(),
-  routes: isSocial ? socialRoutes : mainRoutes
+  routes: [...mainRoutes, ...socialRoutes]
 });
+
+export function isSocialRoute(route: { meta?: Record<string, any> }): boolean {
+  return route.meta?.social === true || route.meta?.socialAuth === true
+}
 
 // eslint-disable-next-line
 router.beforeEach(async (to, from) => {
@@ -296,7 +278,7 @@ router.beforeEach(async (to, from) => {
   const doesNotHaveGivenRole = !isRoleArray && !userStore.hasRole(requiredRole as Role);
   const hasNoRoleAmongRoleList = isRoleArray && !userStore.hasOneOfTheseRoles(requiredRole as Role[]);
   if (doesNotHaveGivenRole || hasNoRoleAmongRoleList) {
-    if (isSocial) {
+    if (isSocialRoute(to)) {
       return { name: "socialLogin" };
     }
     return {
@@ -306,13 +288,13 @@ router.beforeEach(async (to, from) => {
 });
 
 router.afterEach((to) => {
+  const social = isSocialRoute(to)
   const titleKey = [...to.matched].reverse().find(r => r.meta.title)?.meta.title as string | undefined;
   if (!titleKey) {
-    document.title = isSocial ? 'EDB Social' : 'EDB';
+    document.title = social ? 'EDB Social' : 'EDB';
     return;
   }
-  // Social routes use plain strings, main routes use i18n keys
-  const title = isSocial ? titleKey : i18n.t(titleKey);
+  const title = social ? titleKey : i18n.t(titleKey);
   document.title = title ? `${title} - EDB Social` : 'EDB Social';
 });
 

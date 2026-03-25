@@ -79,13 +79,13 @@
           :to="{ name: 'socialGroup', params: { id: group.id } }"
           class="flex items-center gap-3 rounded-xl border border-gray-200 p-3 cursor-pointer hover:bg-gray-50 transition"
         >
-          <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#1a1a1a]">
+          <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#1a1a1a] group-logo">
             <img v-if="group.imageUrl" :src="group.imageUrl" :alt="group.name" class="h-full w-full rounded-lg object-cover" />
             <span v-else class="text-[10px] font-bold text-white">EDB</span>
           </div>
           <div class="flex-1 min-w-0">
             <p class="truncate text-sm font-semibold text-gray-900">{{ group.name }}</p>
-            <p class="text-[11px] text-gray-400">{{ group.memberCount }} membres</p>
+            <p class="text-[11px] text-gray-400">{{ group.season }} · {{ group.memberCount }} membres</p>
           </div>
         </router-link>
       </div>
@@ -101,31 +101,27 @@
         <div
           v-for="group in filteredAllGroups"
           :key="group.id"
-          class="overflow-hidden rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50 transition"
+          class="flex items-center gap-3 rounded-xl border border-gray-200 p-3 cursor-pointer hover:bg-gray-50 transition"
           @click="onGroupClick(group)"
         >
-          <div class="flex items-center gap-3 p-3">
-            <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#1a1a1a]">
-              <img v-if="group.imageUrl" :src="group.imageUrl" :alt="group.name" class="h-full w-full rounded-lg object-cover" />
-              <span v-else class="text-[10px] font-bold text-white">EDB</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="truncate text-sm font-semibold text-gray-900">{{ group.name }}</p>
-              <p class="text-[11px] text-gray-400">{{ group.memberCount }} membres</p>
-              <div v-if="isAdmin && group.inviteCode" class="mt-1 flex items-center gap-2">
-                <span class="font-mono text-[11px] font-semibold text-indigo-600">{{ group.inviteCode }}</span>
-                <button
-                  @click.stop="copyCode(group.inviteCode)"
-                  class="flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium text-indigo-500 transition hover:bg-[rgba(99,102,241,0.1)] cursor-pointer"
-                  :title="'Copier le code'"
-                >
-                  <svg v-if="copiedCode !== group.inviteCode" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-                  <svg v-else width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-                  {{ copiedCode === group.inviteCode ? 'Copié!' : 'Copier' }}
-                </button>
-              </div>
-            </div>
+          <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#1a1a1a] group-logo">
+            <img v-if="group.imageUrl" :src="group.imageUrl" :alt="group.name" class="h-full w-full rounded-lg object-cover" />
+            <span v-else class="text-[10px] font-bold text-white">EDB</span>
           </div>
+          <div class="flex-1 min-w-0">
+            <p class="truncate text-sm font-semibold text-gray-900">{{ group.name }}</p>
+            <p class="text-[11px] text-gray-400">{{ group.season }} · {{ group.memberCount }} membres</p>
+          </div>
+          <button
+            v-if="isAdmin && group.inviteCode"
+            @click.stop="copyCode(group.inviteCode)"
+            class="flex flex-shrink-0 items-center gap-1 rounded px-1.5 py-0.5 font-mono text-[11px] font-semibold text-indigo-600 transition hover:bg-[rgba(99,102,241,0.08)] cursor-pointer"
+            :title="'Copier le code'"
+          >
+            {{ group.inviteCode }}
+            <svg v-if="copiedCode !== group.inviteCode" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            <svg v-else width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          </button>
         </div>
       </div>
     </div>

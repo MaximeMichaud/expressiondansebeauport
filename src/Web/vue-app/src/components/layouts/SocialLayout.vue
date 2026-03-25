@@ -1,5 +1,5 @@
 <template>
-  <div :class="['soc', isDarkMode && 'soc--dark']">
+  <div :class="['soc', isDarkMode && 'soc--dark']" data-social>
     <!-- Theme toggle (fixed, top-right) -->
     <button @click="toggleTheme" class="soc-theme-toggle" :title="isDarkMode ? 'Mode clair' : 'Mode sombre'">
       <svg v-if="isDarkMode" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -10,7 +10,7 @@
     <header class="soc-header">
       <div class="soc-header__strip">
         <div class="soc-header__left">
-          <router-link to="/" class="soc-header__brand">
+          <router-link :to="{ name: 'socialImportant' }" class="soc-header__brand">
             <span class="soc-header__logo-circle">
               <LogoEdb class="soc-header__logo-svg" />
             </span>
@@ -196,7 +196,7 @@ async function handleLogout() {
   await authService.logout()
   userStore.reset()
   memberStore.reset()
-  await router.push('/connexion')
+  await router.push({ name: 'socialLogin' })
 }
 const isAuthenticated = computed(() => !!userStore.user.email)
 
@@ -218,7 +218,7 @@ watch(isAuthenticated, async (val) => {
   }
 }, { immediate: true })
 
-// Poll unread count globally every 15 seconds
+// Poll unread count globally every 3 seconds
 let unreadPoll: ReturnType<typeof setInterval> | null = null
 watch(isAuthenticated, (val) => {
   if (val) {
@@ -227,7 +227,7 @@ watch(isAuthenticated, (val) => {
         const count = await socialService.getUnreadCount()
         memberStore.setUnreadCount(count)
       } catch { /* */ }
-    }, 15000)
+    }, 3000)
   } else if (unreadPoll) {
     clearInterval(unreadPoll)
     unreadPoll = null
@@ -240,13 +240,7 @@ onUnmounted(() => {
 
 const isActive = (name: string) => router.currentRoute.value.name === name
 
-const mainSiteUrl = computed(() => {
-  const hostname = window.location.hostname
-  if (hostname.startsWith('social.')) {
-    return window.location.protocol + '//' + hostname.replace('social.', '')
-  }
-  return '/'
-})
+const mainSiteUrl = computed(() => '/')
 
 const IconBell = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('path', { d: 'M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9' }), h('path', { d: 'M13.73 21a2 2 0 01-3.46 0' })]) }
 const IconGrid = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('rect', { x: '3', y: '3', width: '7', height: '7', rx: '1' }), h('rect', { x: '14', y: '3', width: '7', height: '7', rx: '1' }), h('rect', { x: '3', y: '14', width: '7', height: '7', rx: '1' }), h('rect', { x: '14', y: '14', width: '7', height: '7', rx: '1' })]) }
@@ -327,7 +321,7 @@ $soc-font-body: 'Karla', sans-serif;
   &--dark {
     --soc-page-bg: #0a0a09;
     --soc-content-bg: #181716;
-    --soc-content-border: rgba(255,255,255,0.06);
+    --soc-content-border: transparent;
     --soc-text: #e7e5e4;
     --soc-text-muted: #a8a29e;
     --soc-border: rgba(255,255,255,0.12);
@@ -842,6 +836,18 @@ $soc-font-body: 'Karla', sans-serif;
     color: var(--soc-text) !important;
     &::placeholder { color: #57534e !important; }
   }
+
+  // Card shadow/outline removal
+  .soc-main { box-shadow: none; outline: none; border: none; }
+
+  // Group banner
+  .group-banner { background: var(--soc-content-bg) !important; border-color: var(--soc-divider) !important; button { color: rgba(255,255,255,0.6) !important; } h1 { color: white !important; } }
+
+  // Group logo
+  .group-logo.bg-\[\#1a1a1a\] { background-color: white !important; span { color: #1a1a1a !important; } }
+
+  // Publish button
+  .btn-publish.bg-\[\#1a1a1a\] { background-color: #e7e5e4 !important; color: #1c1917 !important; &:hover { background-color: white !important; } }
 
   // Buttons with bg-[#1a1a1a]
   .bg-\[\#1a1a1a\] { background-color: #e7e5e4 !important; color: #1c1917 !important; }

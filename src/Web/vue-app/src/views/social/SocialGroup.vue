@@ -1,174 +1,43 @@
 <template>
   <div class="flex min-h-[calc(100vh-120px)] flex-col">
     <!-- Group header -->
-    <div class="flex items-center gap-3 bg-[#1a1a1a] px-4 py-3">
-      <button @click="$router.push({ name: 'socialPortal' })" class="text-white">
+    <div class="group-banner flex items-center gap-3 border-b border-gray-200 bg-white px-4 py-3">
+      <button @click="$router.push({ name: 'socialPortal' })" class="text-gray-600">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
       </button>
-      <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700">
-        <span class="text-[8px] font-bold text-white">EDB</span>
+      <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#1a1a1a] group-logo">
+        <img v-if="group?.imageUrl" :src="group.imageUrl" :alt="group?.name" class="h-full w-full rounded-lg object-cover" />
+        <span v-else class="text-[8px] font-bold text-white">EDB</span>
       </div>
-      <h1 class="text-base font-semibold text-white">{{ group?.name || 'Groupe' }}</h1>
+      <h1 class="text-base font-semibold text-gray-900">{{ group?.name || 'Groupe' }}</h1>
     </div>
 
-    <!-- Tabs -->
-    <div class="flex flex-shrink-0 gap-2 overflow-x-auto px-4 py-3">
-      <button
-        v-for="tab in tabs"
-        :key="tab.id"
-        @click="activeTab = tab.id"
-        :class="[
-          'whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-semibold transition',
-          activeTab === tab.id ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-600'
-        ]"
-      >
-        {{ tab.label }}
-      </button>
-    </div>
-
-    <!-- Tab content -->
+    <!-- Feed -->
     <div class="flex-1">
-      <!-- Feed tab -->
-      <div v-if="activeTab === 'feed'">
         <!-- Post composer -->
-        <div class="border-b-8 border-gray-100 px-4 py-3">
+        <div class="border-b-[6px] border-[var(--soc-page-bg,#f0f0f0)] px-4 py-3">
           <div class="flex items-start gap-3">
-            <div v-if="!showPollComposer && !showPhotoComposer" class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: myAvatarColor }">
+            <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: myAvatarColor }">
               {{ userInitials }}
             </div>
             <div class="flex-1">
-              <!-- Default text mode -->
-              <template v-if="!showPollComposer && !showPhotoComposer">
-                <textarea
-                  v-model="newPostContent"
-                  rows="2"
-                  class="w-full resize-none rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#1a1a1a]"
-                  placeholder="Partager quelque chose..."
-                ></textarea>
-                <div class="mt-2 flex items-center justify-between">
-                  <div class="flex gap-2 text-gray-400">
-                    <button @click="showPhotoComposer = true" class="hover:text-[#1a1a1a] transition cursor-pointer" title="Photo">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-                    </button>
-                    <button @click="showPollComposer = true" class="hover:text-[#1a1a1a] transition cursor-pointer" title="Sondage">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
-                    </button>
-                  </div>
-                  <button
-                    @click="submitPost"
-                    :disabled="!newPostContent.trim() || submittingPost"
-                    class="rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#000] disabled:opacity-50 cursor-pointer"
-                  >
-                    Publier
-                  </button>
-                </div>
-              </template>
-
-              <!-- Poll composer mode -->
-              <template v-if="showPollComposer">
-                <div class="space-y-3">
-                  <div class="flex items-center justify-between">
-                    <span class="text-sm font-semibold text-gray-700">Nouveau sondage</span>
-                    <button @click="cancelPoll" class="text-xs text-gray-500 hover:text-gray-700">Annuler</button>
-                  </div>
-                  <input
-                    v-model="pollQuestion"
-                    type="text"
-                    class="w-full rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#1a1a1a]"
-                    placeholder="Posez votre question..."
-                  />
-                  <div class="space-y-2">
-                    <div v-for="(_, index) in pollOptions" :key="index" class="flex items-center gap-2">
-                      <input
-                        v-model="pollOptions[index]"
-                        type="text"
-                        class="flex-1 rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#1a1a1a]"
-                        :placeholder="`Option ${index + 1}`"
-                      />
-                      <button
-                        v-if="pollOptions.length > 2"
-                        @click="pollOptions.splice(index, 1)"
-                        class="text-gray-400 hover:text-red-500 text-sm"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  </div>
-                  <button
-                    v-if="pollOptions.length < 6"
-                    @click="pollOptions.push('')"
-                    class="text-xs text-[#1a1a1a] hover:underline"
-                  >
-                    + Ajouter une option
-                  </button>
-                  <label class="flex items-center gap-2 text-xs text-gray-600">
-                    <input v-model="pollAllowMultiple" type="checkbox" class="rounded border-gray-300 text-[#1a1a1a] focus:ring-[#1a1a1a]" />
-                    Autoriser les réponses multiples
-                  </label>
-                  <button
-                    @click="submitPoll"
-                    :disabled="!pollQuestion.trim() || pollOptions.filter(o => o.trim()).length < 2 || submittingPost"
-                    class="w-full rounded-lg bg-[#1a1a1a] px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
-                  >
-                    Publier le sondage
-                  </button>
-                </div>
-              </template>
-
-              <!-- Photo composer mode -->
-              <template v-if="showPhotoComposer">
-                <div class="space-y-3">
-                  <div class="flex items-center justify-between">
-                    <span class="text-sm font-semibold text-gray-700">Publier avec photo</span>
-                    <button @click="cancelPhoto" class="text-xs text-gray-500 hover:text-gray-700">Annuler</button>
-                  </div>
-                  <textarea
-                    v-model="newPostContent"
-                    rows="2"
-                    class="w-full resize-none rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#1a1a1a]"
-                    placeholder="Ajouter une description..."
-                  ></textarea>
-                  <input
-                    ref="photoInput"
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    class="hidden"
-                    @change="onPhotoSelected"
-                  />
-                  <button
-                    @click="($refs.photoInput as HTMLInputElement)?.click()"
-                    class="flex items-center gap-2 rounded-lg border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500 hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition w-full justify-center"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    Choisir des photos
-                  </button>
-                  <!-- Image previews -->
-                  <div v-if="photoPreviews.length" class="grid grid-cols-3 gap-2">
-                    <div v-for="(preview, index) in photoPreviews" :key="index" class="relative">
-                      <img :src="preview" class="h-24 w-full rounded-lg object-cover" />
-                      <button
-                        @click="removePhoto(index)"
-                        class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  </div>
-                  <!-- TODO: Actual upload to POST /api/social/upload not yet implemented on backend -->
-                  <button
-                    @click="submitPhotoPost"
-                    :disabled="!newPostContent.trim() && !photoFiles.length || submittingPost"
-                    class="w-full rounded-lg bg-[#1a1a1a] px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
-                  >
-                    Publier
-                  </button>
-                </div>
-              </template>
+              <textarea
+                v-model="newPostContent"
+                rows="2"
+                class="w-full resize-none rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#1a1a1a]"
+                placeholder="Partager quelque chose..."
+              ></textarea>
+              <div class="mt-2 flex justify-end">
+                <button
+                  @click="submitPost"
+                  :disabled="!newPostContent.trim() || submittingPost"
+                  class="btn-publish rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#000] disabled:opacity-50 cursor-pointer"
+                >
+                  Publier
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -182,7 +51,7 @@
           <span class="text-sm">Aucun post pour le moment. Soyez le premier à publier!</span>
         </div>
         <div v-else>
-          <div v-for="post in posts" :key="post.id" class="border-b-8 border-gray-100 px-4 py-4">
+          <div v-for="post in posts" :key="post.id" class="border-b-[6px] border-[var(--soc-page-bg,#f0f0f0)] px-4 py-4">
             <!-- Author info -->
             <div class="mb-3 flex items-center gap-2.5">
               <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: post.authorAvatarColor || '#1a1a1a' }">
@@ -195,6 +64,15 @@
               <span v-if="post.isPinned" class="rounded bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-700">
                 Épinglé
               </span>
+              <button
+                v-if="isAdmin || post.authorMemberId === myMemberId"
+                @click="deleteTarget = post"
+                class="soc-header__icon-btn soc-header__icon-btn--logout"
+                style="width: 30px; height: 30px;"
+                title="Supprimer"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+              </button>
             </div>
 
             <!-- Content -->
@@ -206,7 +84,7 @@
             </div>
 
             <!-- Actions -->
-            <div class="mt-3 flex border-t border-gray-100 pt-2">
+            <div class="mt-3 flex border-t border-[var(--soc-divider,#f0f0f0)] pt-2">
               <button
                 @click="toggleLike(post)"
                 :class="['flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium transition cursor-pointer', post.hasLiked ? 'text-red-600' : 'text-gray-400 hover:text-gray-600']"
@@ -224,7 +102,7 @@
             </div>
 
             <!-- Comments section -->
-            <div v-if="expandedComments === post.id" class="mt-3 border-t border-gray-100 pt-3">
+            <div v-if="expandedComments === post.id" class="mt-3 border-t border-[var(--soc-divider,#f0f0f0)] pt-3">
               <div v-if="loadingComments" class="flex justify-center py-3">
                 <div class="h-4 w-4 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
               </div>
@@ -235,7 +113,16 @@
                   </div>
                   <div class="flex-1">
                     <div class="rounded-lg bg-gray-50 px-3 py-2">
-                      <p class="text-xs font-semibold text-gray-900">{{ comment.authorName }}</p>
+                      <div class="flex items-center justify-between">
+                        <p class="text-xs font-semibold text-gray-900">{{ comment.authorName }}</p>
+                        <button
+                          v-if="isAdmin || comment.authorMemberId === myMemberId"
+                          @click="removeComment(comment.id)"
+                          class="soc-header__icon-btn soc-header__icon-btn--logout !w-5 !h-5 !rounded-md"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                        </button>
+                      </div>
                       <p class="text-xs text-gray-700">{{ comment.content }}</p>
                     </div>
                     <p class="mt-0.5 text-[10px] text-gray-400">{{ formatDate(comment.created) }}</p>
@@ -255,7 +142,7 @@
                 <button
                   @click="submitComment(post)"
                   :disabled="!newComment.trim() || submittingComment"
-                  class="flex items-center justify-center rounded-full bg-[#1a1a1a] w-7 h-7 text-white disabled:opacity-50 cursor-pointer flex-shrink-0"
+                  class="btn-publish flex items-center justify-center rounded-full bg-[#1a1a1a] w-7 h-7 text-white disabled:opacity-50 cursor-pointer flex-shrink-0"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
                 </button>
@@ -263,43 +150,27 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Members tab -->
-      <div v-else-if="activeTab === 'members'" class="p-4">
-        <div v-if="loadingMembers" class="flex justify-center py-10">
-          <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
-        </div>
-        <div v-else class="space-y-3">
-          <div v-for="gm in groupMembers" :key="gm.id" class="flex items-center gap-3">
-            <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" :style="{ background: gm.avatarColor || getAvatarColor(gm.fullName) }">
-              {{ getInitials(gm.fullName) }}
-            </div>
-            <div class="flex-1">
-              <p class="text-sm font-medium text-gray-900">{{ gm.fullName }}</p>
-            </div>
-            <button
-              @click="startConversationWith(gm)"
-              :disabled="startingConversation === gm.id"
-              class="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium text-gray-600 transition hover:border-[#1a1a1a] hover:text-[#1a1a1a] disabled:opacity-50"
-            >
-              {{ startingConversation === gm.id ? '...' : 'Message' }}
+    </div>
+
+    <!-- Delete confirmation modal -->
+    <Teleport to="body">
+      <div v-if="deleteTarget" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-5" @click.self="deleteTarget = null">
+        <div class="w-full max-w-[380px] rounded-2xl bg-white p-8 pt-7 text-center shadow-2xl">
+          <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+          </div>
+          <h3 class="mb-1 text-base font-bold text-gray-900">Supprimer cette publication?</h3>
+          <p class="mb-5 text-sm text-gray-500">Cette publication sera définitivement supprimée.</p>
+          <div class="flex gap-3">
+            <button @click="deleteTarget = null" class="flex-1 rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 cursor-pointer">Annuler</button>
+            <button @click="confirmDelete" :disabled="deleting" class="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-50 cursor-pointer">
+              {{ deleting ? 'Suppression...' : 'Supprimer' }}
             </button>
           </div>
         </div>
       </div>
-
-      <!-- About tab -->
-      <div v-else-if="activeTab === 'about'" class="p-4">
-        <h3 class="mb-2 font-semibold text-gray-900">{{ group?.name }}</h3>
-        <p v-if="group?.description" class="mb-4 text-sm text-gray-600">{{ group.description }}</p>
-        <p class="text-sm text-gray-500">Saison : {{ group?.season }}</p>
-        <div v-if="group?.inviteCode" class="mt-4 rounded-lg border border-gray-200 p-3">
-          <p class="text-xs font-medium text-gray-500">Code d'invitation</p>
-          <p class="mt-1 text-lg font-bold text-gray-900">{{ group.inviteCode }}</p>
-        </div>
-      </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -309,36 +180,30 @@ import { useRoute, useRouter } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useUserStore } from '@/stores/userStore'
 import { useMemberStore } from '@/stores/memberStore'
-import type { Post, GroupMember } from '@/types/entities'
+import { useSocialToast } from '@/composables/useSocialToast'
+import { Role } from '@/types/enums'
+import type { Post } from '@/types/entities'
 
 const route = useRoute()
 const router = useRouter()
 const socialService = useSocialService()
+const toast = useSocialToast()
 const userStore = useUserStore()
 const memberStore = useMemberStore()
 
+const isAdmin = computed(() => userStore.hasRole(Role.Admin))
+const myMemberId = computed(() => memberStore.member?.id || '')
 const groupId = computed(() => route.params.id as string)
 
 const group = ref<any>(null)
 const posts = ref<Post[]>([])
-const groupMembers = ref<GroupMember[]>([])
-const activeTab = ref('feed')
 const loadingPosts = ref(true)
-const loadingMembers = ref(false)
 const newPostContent = ref('')
 const submittingPost = ref(false)
 
-// Poll composer state
-const showPollComposer = ref(false)
-const pollQuestion = ref('')
-const pollOptions = ref<string[]>(['', ''])
-const pollAllowMultiple = ref(false)
-
-// Photo composer state
-const showPhotoComposer = ref(false)
-const photoFiles = ref<File[]>([])
-const photoPreviews = ref<string[]>([])
-const photoInput = ref<HTMLInputElement | null>(null)
+// Delete state
+const deleteTarget = ref<Post | null>(null)
+const deleting = ref(false)
 
 // Comments state
 const expandedComments = ref<string | null>(null)
@@ -346,22 +211,6 @@ const postComments = ref<any[]>([])
 const newComment = ref('')
 const loadingComments = ref(false)
 const submittingComment = ref(false)
-
-// Message from member list
-const startingConversation = ref<string | null>(null)
-
-const tabs = [
-  { id: 'feed', label: 'Fil' },
-  { id: 'members', label: 'Membres' },
-  { id: 'about', label: 'À propos' },
-]
-
-const avatarColors = ['#e53e3e', '#dd6b20', '#d69e2e', '#38a169', '#319795', '#3182ce', '#5a67d8', '#805ad5', '#d53f8c', '#e53e3e']
-function getAvatarColor(name: string) {
-  let hash = 0
-  for (let i = 0; i < (name?.length || 0); i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  return avatarColors[Math.abs(hash) % avatarColors.length]
-}
 
 const myAvatarColor = computed(() => memberStore.member.avatarColor || '#1a1a1a')
 
@@ -392,6 +241,20 @@ function formatDate(dateStr: string) {
   return date.toLocaleDateString('fr-CA')
 }
 
+async function confirmDelete() {
+  if (!deleteTarget.value) return
+  deleting.value = true
+  try {
+    await socialService.deletePost(deleteTarget.value.id)
+    deleteTarget.value = null
+    toast.success('Publication supprimée.')
+    await loadPosts()
+  } catch {
+    toast.error('Erreur lors de la suppression.')
+  }
+  deleting.value = false
+}
+
 async function loadGroup() {
   try {
     group.value = await socialService.getGroupDetails(groupId.value)
@@ -404,14 +267,6 @@ async function loadPosts() {
     posts.value = await socialService.getGroupFeed(groupId.value)
   } catch (e) { /* */ }
   loadingPosts.value = false
-}
-
-async function loadMembers() {
-  loadingMembers.value = true
-  try {
-    groupMembers.value = await socialService.getGroupMembers(groupId.value)
-  } catch (e) { /* */ }
-  loadingMembers.value = false
 }
 
 async function submitPost() {
@@ -459,86 +314,16 @@ async function submitComment(post: Post) {
   submittingComment.value = false
 }
 
-// Poll methods
-function cancelPoll() {
-  showPollComposer.value = false
-  pollQuestion.value = ''
-  pollOptions.value = ['', '']
-  pollAllowMultiple.value = false
-}
-
-async function submitPoll() {
-  const validOptions = pollOptions.value.filter(o => o.trim())
-  if (!pollQuestion.value.trim() || validOptions.length < 2) return
-  submittingPost.value = true
+async function removeComment(commentId: string) {
   try {
-    // Send poll data as JSON in content since backend PostService.CreatePost
-    // doesn't handle poll creation yet. The question is the post content with type 'Poll'.
-    const pollData = JSON.stringify({
-      question: pollQuestion.value,
-      options: validOptions,
-      allowMultiple: pollAllowMultiple.value,
-    })
-    await socialService.createPost(groupId.value, pollData, 'Poll')
-    cancelPoll()
-    await loadPosts()
-  } catch (e) { /* */ }
-  submittingPost.value = false
-}
-
-// Photo methods
-function cancelPhoto() {
-  showPhotoComposer.value = false
-  newPostContent.value = ''
-  photoFiles.value = []
-  photoPreviews.value = []
-}
-
-function onPhotoSelected(event: Event) {
-  const input = event.target as HTMLInputElement
-  if (!input.files) return
-  for (const file of Array.from(input.files)) {
-    photoFiles.value.push(file)
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      photoPreviews.value.push(e.target?.result as string)
-    }
-    reader.readAsDataURL(file)
+    await socialService.deleteComment(commentId)
+    postComments.value = postComments.value.filter(c => c.id !== commentId)
+    const post = posts.value.find(p => p.id === expandedComments.value)
+    if (post) post.commentCount = Math.max(0, (post.commentCount || 0) - 1)
+    toast.success('Commentaire supprimé.')
+  } catch {
+    toast.error('Erreur lors de la suppression.')
   }
-  // Reset input so the same file can be selected again
-  input.value = ''
-}
-
-function removePhoto(index: number) {
-  photoFiles.value.splice(index, 1)
-  photoPreviews.value.splice(index, 1)
-}
-
-async function submitPhotoPost() {
-  if (!newPostContent.value.trim() && !photoFiles.value.length) return
-  submittingPost.value = true
-  try {
-    // TODO: Upload photos to POST /api/social/upload when backend endpoint is ready.
-    // For now, create a text post with the description.
-    await socialService.createPost(groupId.value, newPostContent.value || '(Photo)')
-    cancelPhoto()
-    await loadPosts()
-  } catch (e) { /* */ }
-  submittingPost.value = false
-}
-
-// Start conversation from member list (Task 5)
-async function startConversationWith(member: GroupMember) {
-  startingConversation.value = member.id
-  try {
-    const conversation = await socialService.startConversation(member.memberId)
-    if (conversation?.id) {
-      router.push({ name: 'socialConversation', params: { conversationId: conversation.id } })
-    } else {
-      router.push({ name: 'socialMessages' })
-    }
-  } catch (e) { /* */ }
-  startingConversation.value = null
 }
 
 let pollInterval: ReturnType<typeof setInterval> | null = null
@@ -546,10 +331,20 @@ let pollInterval: ReturnType<typeof setInterval> | null = null
 onMounted(async () => {
   await loadGroup()
   await loadPosts()
-  loadMembers()
   pollInterval = setInterval(async () => {
-    try { posts.value = await socialService.getGroupFeed(groupId.value) } catch { /* */ }
-  }, 1000)
+    if (expandedComments.value || submittingComment.value) return
+    try {
+      const fresh = await socialService.getGroupFeed(groupId.value)
+      const oldCounts = new Map(posts.value.map(p => [p.id, p.commentCount]))
+      for (const p of fresh) {
+        const old = oldCounts.get(p.id)
+        if (old != null && old > (p.commentCount || 0)) {
+          p.commentCount = old
+        }
+      }
+      posts.value = fresh
+    } catch { /* */ }
+  }, 5000)
 })
 
 onUnmounted(() => {

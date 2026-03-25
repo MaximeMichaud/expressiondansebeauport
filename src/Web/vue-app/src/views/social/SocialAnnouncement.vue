@@ -72,7 +72,7 @@
                 <div class="flex items-center justify-between">
                     <p class="text-xs font-semibold text-gray-900">{{ comment.authorName }}</p>
                   <button
-                    v-if="isAdmin"
+                    v-if="isAdmin || comment.authorMemberId === myMemberId"
                     @click="removeComment(comment.id)"
                     class="soc-header__icon-btn soc-header__icon-btn--logout !w-5 !h-5 !rounded-md"
                   >
@@ -100,7 +100,7 @@
           <button
             @click="submitComment"
             :disabled="!newComment.trim() || submitting"
-            class="flex items-center justify-center rounded-full bg-[#1a1a1a] w-9 h-9 text-white disabled:opacity-50 cursor-pointer flex-shrink-0"
+            class="btn-publish flex items-center justify-center rounded-full bg-[#1a1a1a] w-9 h-9 text-white disabled:opacity-50 cursor-pointer flex-shrink-0"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
           </button>
@@ -139,6 +139,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useSocialToast } from '@/composables/useSocialToast'
 import { useUserStore } from '@/stores/userStore'
+import { useMemberStore } from '@/stores/memberStore'
 import { Role } from '@/types/enums'
 import type { Post } from '@/types/entities'
 
@@ -147,9 +148,11 @@ const router = useRouter()
 const socialService = useSocialService()
 const toast = useSocialToast()
 const userStore = useUserStore()
+const memberStore = useMemberStore()
 
 const postId = computed(() => route.params.id as string)
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
+const myMemberId = computed(() => memberStore.member?.id || '')
 
 const post = ref<Post | null>(null)
 const comments = ref<any[]>([])

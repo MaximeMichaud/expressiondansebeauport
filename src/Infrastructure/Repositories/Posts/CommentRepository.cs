@@ -32,7 +32,7 @@ public class CommentRepository : ICommentRepository
             .AsNoTracking()
             .Where(c => c.PostId == postId)
             .Include(c => c.AuthorMember).ThenInclude(m => m.User).ThenInclude(u => u.UserRoles).ThenInclude(ur => ur.Role)
-            .OrderBy(c => c.Created)
+            .OrderByDescending(c => c.Created)
             .Skip(skip).Take(take)
             .ToListAsync();
     }

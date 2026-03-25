@@ -93,10 +93,14 @@
 import { ref, onMounted, onUnmounted, watch, onActivated } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
+import { useSignalR } from '@/composables/useSignalR'
+import { useMemberStore } from '@/stores/memberStore'
 import type { Conversation } from '@/types/entities'
 
 const router = useRouter()
 const socialService = useSocialService()
+const { onMessage, offMessage } = useSignalR()
+const memberStore = useMemberStore()
 const conversations = ref<Conversation[]>([])
 const loading = ref(true)
 
@@ -173,19 +177,27 @@ async function loadConversations() {
 
 let pollInterval: ReturnType<typeof setInterval> | null = null
 
+// Refresh list instantly when a new DM arrives via SignalR
+const onNewMessage = () => loadConversations()
+
+// Refresh list when unread count changes (syncs with nav badge)
+watch(() => memberStore.unreadMessageCount, () => loadConversations())
+
 onMounted(() => {
   loadConversations()
+  onMessage(onNewMessage)
   pollInterval = setInterval(async () => {
     try {
       const all = await socialService.getConversations()
       conversations.value = all.filter((c: any) => c.lastMessage)
     } catch { /* */ }
-  }, 15000)
+  }, 3000)
 })
 
 onActivated(loadConversations)
 
 onUnmounted(() => {
+  offMessage(onNewMessage)
   if (pollInterval) clearInterval(pollInterval)
 })
 </script>

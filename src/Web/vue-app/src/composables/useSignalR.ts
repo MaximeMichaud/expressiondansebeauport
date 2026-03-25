@@ -3,6 +3,7 @@ import { ref, onUnmounted } from 'vue'
 
 const connection = ref<signalR.HubConnection | null>(null)
 const isConnected = ref(false)
+const messageCallbacks = new Set<(data: any) => void>()
 
 export function useSignalR() {
   function getAccessToken(): string {
@@ -23,6 +24,11 @@ export function useSignalR() {
       .withAutomaticReconnect()
       .build()
 
+    // Forward SignalR events to all registered callbacks
+    connection.value.on('ReceiveMessage', (data: any) => {
+      messageCallbacks.forEach(cb => cb(data))
+    })
+
     connection.value.onreconnected(() => { isConnected.value = true })
     connection.value.onclose(() => { isConnected.value = false })
 
@@ -35,11 +41,11 @@ export function useSignalR() {
   }
 
   function onMessage(callback: (data: any) => void) {
-    connection.value?.on('ReceiveMessage', callback)
+    messageCallbacks.add(callback)
   }
 
   function offMessage(callback: (data: any) => void) {
-    connection.value?.off('ReceiveMessage', callback)
+    messageCallbacks.delete(callback)
   }
 
   async function stop() {

@@ -54,6 +54,11 @@ public class GetFeedEndpoint : Endpoint<GetFeedRequest>
             ? await _groupMemberRepository.GetRolesForMembers(req.GroupId, authorIds)
             : new Dictionary<Guid, string>();
 
+        // Get comment counts individually (reliable, same approach as GetPostById)
+        var commentCounts = new Dictionary<Guid, int>();
+        foreach (var p in posts)
+            commentCounts[p.Id] = await _postRepository.GetCommentCount(p.Id);
+
         var result = posts.Select(p => new
         {
             p.Id,
@@ -69,7 +74,7 @@ public class GetFeedEndpoint : Endpoint<GetFeedRequest>
             p.IsPinned,
             p.ViewCount,
             LikeCount = p.Reactions?.Count ?? 0,
-            CommentCount = p.Comments?.Count ?? 0,
+            CommentCount = commentCounts.TryGetValue(p.Id, out var cc) ? cc : 0,
             HasLiked = p.Reactions?.Any(r => r.MemberId == member.Id) ?? false,
             Media = p.Media?.Select(m => new
             {
