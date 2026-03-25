@@ -28,6 +28,7 @@ export interface GroupMember {
   fullName: string
   email: string
   profileImageUrl?: string
+  avatarColor?: string
   role: string
 }
 

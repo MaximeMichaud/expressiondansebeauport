@@ -51,7 +51,7 @@
         <div class="members-dir__info">
           <span class="members-dir__name">{{ member.fullName }}</span>
           <span v-if="isAdminRole(member)" class="members-dir__badge members-dir__badge--admin">Admin</span>
-          <span v-else-if="isProfessor(member)" class="members-dir__badge members-dir__badge--professor">Professeur</span>
+          <span v-else-if="isProfessor(member)" class="members-dir__badge members-dir__badge--professor">Prof</span>
           <span v-else class="members-dir__badge members-dir__badge--member">Membre</span>
         </div>
 
@@ -81,8 +81,8 @@ function getInitials(name: string) {
 }
 
 const avatarColors = [
-  '#1a1a1a', '#3b3b3b', '#6b4c3b', '#4a5568', '#2d3748',
-  '#553c2e', '#44403c', '#1e293b', '#374151', '#292524'
+  '#e53e3e', '#dd6b20', '#d69e2e', '#38a169', '#319795',
+  '#3182ce', '#5a67d8', '#805ad5', '#d53f8c', '#e53e3e'
 ]
 
 function getAvatarColor(name: string) {

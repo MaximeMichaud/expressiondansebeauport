@@ -21,8 +21,10 @@ public class PostRepository : IPostRepository
     public async Task<Post?> FindById(Guid id, bool asNoTracking = true)
     {
         var query = _context.Posts
-            .Include(p => p.AuthorMember).ThenInclude(m => m.User)
+            .Include(p => p.AuthorMember).ThenInclude(m => m.User).ThenInclude(u => u.UserRoles).ThenInclude(ur => ur.Role)
             .Include(p => p.Media.OrderBy(m => m.SortOrder))
+            .Include(p => p.Reactions)
+            .Include(p => p.Comments)
             .Include(p => p.Poll).ThenInclude(pl => pl!.Options.OrderBy(o => o.SortOrder)).ThenInclude(o => o.Votes)
             .AsQueryable();
         if (asNoTracking) query = query.AsNoTracking();
@@ -34,7 +36,7 @@ public class PostRepository : IPostRepository
         return await _context.Posts
             .AsNoTracking()
             .Where(p => p.GroupId == groupId)
-            .Include(p => p.AuthorMember).ThenInclude(m => m.User)
+            .Include(p => p.AuthorMember).ThenInclude(m => m.User).ThenInclude(u => u.UserRoles).ThenInclude(ur => ur.Role)
             .Include(p => p.Media.OrderBy(m => m.SortOrder))
             .Include(p => p.Reactions)
             .Include(p => p.Poll).ThenInclude(pl => pl!.Options.OrderBy(o => o.SortOrder)).ThenInclude(o => o.Votes)
@@ -49,9 +51,10 @@ public class PostRepository : IPostRepository
         return await _context.Posts
             .AsNoTracking()
             .Where(p => p.GroupId == null)
-            .Include(p => p.AuthorMember).ThenInclude(m => m.User)
+            .Include(p => p.AuthorMember).ThenInclude(m => m.User).ThenInclude(u => u.UserRoles).ThenInclude(ur => ur.Role)
             .Include(p => p.Media.OrderBy(m => m.SortOrder))
             .Include(p => p.Reactions)
+            .Include(p => p.Comments)
             .OrderByDescending(p => p.Created)
             .Skip(skip).Take(take)
             .ToListAsync();

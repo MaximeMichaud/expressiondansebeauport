@@ -12,17 +12,20 @@ public class GetFeedEndpoint : Endpoint<GetFeedRequest>
     private readonly IAuthenticatedUserService _authenticatedUserService;
     private readonly IMemberRepository _memberRepository;
     private readonly IPostRepository _postRepository;
+    private readonly IGroupMemberRepository _groupMemberRepository;
 
     public GetFeedEndpoint(
         IPostService postService,
         IAuthenticatedUserService authenticatedUserService,
         IMemberRepository memberRepository,
-        IPostRepository postRepository)
+        IPostRepository postRepository,
+        IGroupMemberRepository groupMemberRepository)
     {
         _postService = postService;
         _authenticatedUserService = authenticatedUserService;
         _memberRepository = memberRepository;
         _postRepository = postRepository;
+        _groupMemberRepository = groupMemberRepository;
     }
 
     public override void Configure()
@@ -45,6 +48,12 @@ public class GetFeedEndpoint : Endpoint<GetFeedRequest>
 
         var posts = await _postService.GetGroupFeed(req.GroupId, req.Page);
 
+        // Build role lookup for authors in this group
+        var authorIds = posts.Select(p => p.AuthorMemberId).Where(id => id != Guid.Empty).Distinct().ToList();
+        var groupMemberRoles = req.GroupId != Guid.Empty
+            ? await _groupMemberRepository.GetRolesForMembers(req.GroupId, authorIds)
+            : new Dictionary<Guid, string>();
+
         var result = posts.Select(p => new
         {
             p.Id,
@@ -53,6 +62,8 @@ public class GetFeedEndpoint : Endpoint<GetFeedRequest>
             AuthorName = p.AuthorMember?.FullName ?? "Inconnu",
             AuthorProfileImageUrl = p.AuthorMember?.ProfileImageUrl,
             AuthorAvatarColor = p.AuthorMember?.AvatarColor ?? "#1a1a1a",
+            AuthorRole = groupMemberRoles.TryGetValue(p.AuthorMemberId, out var role) ? role : "Member",
+            AuthorRoles = p.AuthorMember?.User?.UserRoles?.Select(ur => ur.Role.Name).ToList() ?? new List<string?>(),
             p.Content,
             Type = p.Type.ToString(),
             p.IsPinned,
@@ -86,7 +97,7 @@ public class GetFeedEndpoint : Endpoint<GetFeedRequest>
                     HasVoted = o.Votes.Any(v => v.MemberId == member.Id)
                 })
             } : null,
-            Created = p.Created.ToString()
+            Created = p.Created.ToDateTimeUtc().ToString("yyyy-MM-ddTHH:mm:ssZ")
         });
 
         await Send.OkAsync(result, ct);

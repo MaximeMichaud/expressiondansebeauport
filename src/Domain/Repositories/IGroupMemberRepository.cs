@@ -11,5 +11,6 @@ public interface IGroupMemberRepository
     Task<int> GetMemberCount(Guid groupId);
     Task<GroupMember?> FindByGroupAndMember(Guid groupId, Guid memberId);
     Task Remove(GroupMember groupMember);
+    Task<Dictionary<Guid, string>> GetRolesForMembers(Guid groupId, List<Guid> memberIds);
     Task<GroupMember?> FindProfessorInGroup(Guid groupId, Guid memberId);
 }

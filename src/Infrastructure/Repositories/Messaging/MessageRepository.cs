@@ -2,6 +2,7 @@ using Domain.Entities;
 using Domain.Helpers;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 using Persistence;
 
 namespace Infrastructure.Repositories.Messaging;
@@ -44,7 +45,18 @@ public class MessageRepository : IMessageRepository
 
         if (participant == null) return;
 
-        participant.SetLastReadAt(InstantHelper.GetLocalNow());
+        // Find the latest message in this conversation to ensure LastReadAt is after it
+        var latestMessage = await _context.Messages
+            .Where(m => m.ConversationId == conversationId)
+            .OrderByDescending(m => m.Created)
+            .Select(m => m.Created)
+            .FirstOrDefaultAsync();
+
+        // Set LastReadAt to whichever is later: now or latest message + 1 second
+        var now = InstantHelper.GetLocalNow().Plus(Duration.FromSeconds(1));
+        var readAt = latestMessage > now ? latestMessage.Plus(Duration.FromSeconds(1)) : now;
+
+        participant.SetLastReadAt(readAt);
         await _context.SaveChangesAsync();
     }
 

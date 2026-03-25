@@ -28,6 +28,7 @@ public class ActiveGroupsEndpoint : EndpointWithoutRequest
             g.Description,
             g.ImageUrl,
             g.Season,
+            g.InviteCode,
             MemberCount = g.Members.Count
         }), ct);
     }

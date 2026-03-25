@@ -10,7 +10,7 @@
 
     <!-- Avatar + Name -->
     <div class="soc-account__identity">
-      <div class="soc-account__avatar">{{ userInitials }}</div>
+      <div class="soc-account__avatar" :style="{ background: userAvatarColor }">{{ userInitials }}</div>
       <div>
         <p class="text-sm font-semibold text-gray-900">{{ firstName || 'Prénom' }} {{ lastName || 'Nom' }}</p>
         <p class="text-xs text-gray-500">{{ email || 'courriel@exemple.com' }}</p>
@@ -66,14 +66,14 @@
               <div
                 :class="[
                   'flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full transition-all duration-200',
-                  rule.valid ? 'bg-[#1a1a1a]' : 'border border-gray-300'
+                  rule.valid ? 'bg-emerald-600' : 'border border-gray-300'
                 ]"
               >
                 <svg v-if="rule.valid" class="h-2.5 w-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <span :class="['text-xs transition-colors duration-200', rule.valid ? 'text-gray-900' : 'text-gray-400']">
+              <span :class="['text-xs transition-colors duration-200', rule.valid ? 'text-emerald-700' : 'text-gray-400']">
                 {{ rule.label }}
               </span>
             </div>
@@ -131,6 +131,18 @@ const userInitials = computed(() => {
   return (f + l).toUpperCase() || '?'
 })
 
+const avatarColors = ['#e53e3e', '#dd6b20', '#d69e2e', '#38a169', '#319795', '#3182ce', '#5a67d8', '#805ad5', '#d53f8c', '#e53e3e']
+function getAvatarColor(name: string) {
+  let hash = 0
+  for (let i = 0; i < (name?.length || 0); i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  return avatarColors[Math.abs(hash) % avatarColors.length]
+}
+const userAvatarColor = computed(() => {
+  const m = memberStore.member
+  if (m?.avatarColor) return m.avatarColor
+  return getAvatarColor(`${firstName.value} ${lastName.value}`)
+})
+
 const passwordRules = computed(() => [
   { label: '10 caractères minimum', valid: newPassword.value.length >= 10 },
   { label: 'Une lettre majuscule', valid: /[A-Z]/.test(newPassword.value) },
@@ -163,8 +175,16 @@ onMounted(async () => {
 async function updateProfile() {
   savingProfile.value = true
   try {
-    // TODO: wire to member update endpoint when created
-    toast.success('Profil mis à jour.')
+    const result = await socialService.updateMyProfile(firstName.value, lastName.value, email.value)
+    if (result.succeeded) {
+      // Update memberStore so the name changes immediately in the navbar
+      const updated = { ...memberStore.member, firstName: firstName.value, lastName: lastName.value, fullName: `${firstName.value} ${lastName.value}`, email: email.value }
+      memberStore.setMember(updated)
+      toast.success('Profil mis à jour.')
+    } else {
+      const errorMsg = (result as any).errors?.[0]?.errorMessage || (result as any).errors?.[0]?.ErrorMessage || 'Erreur lors de la sauvegarde.'
+      toast.error(errorMsg)
+    }
   } catch {
     toast.error('Erreur lors de la sauvegarde.')
   }
@@ -253,7 +273,6 @@ $soc-black: #1a1a1a;
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: var(--soc-avatar-bg, $soc-black);
     color: var(--soc-avatar-text, white);
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;

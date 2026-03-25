@@ -7,17 +7,19 @@ const isConnected = ref(false)
 export function useSignalR() {
   function getAccessToken(): string {
     const cookies = document.cookie.split('; ')
-    const accessCookie = cookies.find(c => c.startsWith('access='))
+    const accessCookie = cookies.find(c => c.startsWith('accessToken='))
     return accessCookie?.split('=')[1] ?? ''
   }
 
   async function start() {
     if (connection.value?.state === signalR.HubConnectionState.Connected) return
+    if (!getAccessToken()) return
 
     connection.value = new signalR.HubConnectionBuilder()
       .withUrl('/hubs/chat', {
         accessTokenFactory: () => getAccessToken()
       })
+      .configureLogging(signalR.LogLevel.None)
       .withAutomaticReconnect()
       .build()
 
@@ -27,8 +29,7 @@ export function useSignalR() {
     try {
       await connection.value.start()
       isConnected.value = true
-    } catch (err) {
-      console.error('SignalR connection failed:', err)
+    } catch {
       isConnected.value = false
     }
   }

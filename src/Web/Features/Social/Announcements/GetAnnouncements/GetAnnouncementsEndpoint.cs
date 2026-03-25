@@ -36,7 +36,7 @@ public class GetAnnouncementsEndpoint : Endpoint<GetAnnouncementsRequest>
         var member = _memberRepository.FindByUserId(user!.Id);
         if (member == null)
         {
-            await Send.NotFoundAsync(ct);
+            await Send.OkAsync(new List<object>(), ct);
             return;
         }
 
@@ -46,6 +46,7 @@ public class GetAnnouncementsEndpoint : Endpoint<GetAnnouncementsRequest>
         {
             p.Id,
             AuthorName = p.AuthorMember?.FullName ?? "Inconnu",
+            AuthorRoles = p.AuthorMember?.User?.UserRoles?.Select(ur => ur.Role.Name).ToList() ?? new List<string?>(),
             p.Content,
             Type = p.Type.ToString(),
             p.ViewCount,
@@ -59,7 +60,7 @@ public class GetAnnouncementsEndpoint : Endpoint<GetAnnouncementsRequest>
                 m.ThumbnailUrl,
                 m.ContentType
             }) ?? Enumerable.Empty<object>(),
-            Created = p.Created.ToString()
+            Created = p.Created.ToDateTimeUtc().ToString("yyyy-MM-ddTHH:mm:ssZ")
         });
 
         await Send.OkAsync(result, ct);

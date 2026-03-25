@@ -40,6 +40,7 @@ public class GetMyMemberProfileEndpoint : EndpointWithoutRequest
             member.LastName,
             member.Email,
             member.ProfileImageUrl,
+            member.AvatarColor,
         }, ct);
     }
 }

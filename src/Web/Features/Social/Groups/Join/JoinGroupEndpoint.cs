@@ -25,7 +25,6 @@ public class JoinGroupEndpoint : Endpoint<JoinGroupRequest, SucceededOrNotRespon
 
     public override void Configure()
     {
-        DontCatchExceptions();
         Post("social/groups/join");
         Roles(Domain.Constants.User.Roles.MEMBER, Domain.Constants.User.Roles.PROFESSOR, Domain.Constants.User.Roles.ADMINISTRATOR);
         AuthSchemes(JwtBearerDefaults.AuthenticationScheme);
@@ -41,7 +40,18 @@ public class JoinGroupEndpoint : Endpoint<JoinGroupRequest, SucceededOrNotRespon
             return;
         }
 
-        await _groupService.JoinByInviteCode(req.InviteCode, member.Id);
-        await Send.OkAsync(new SucceededOrNotResponse(true), ct);
+        try
+        {
+            await _groupService.JoinByInviteCode(req.InviteCode, member.Id);
+            await Send.OkAsync(new SucceededOrNotResponse(true), ct);
+        }
+        catch (Exception ex)
+        {
+            var innerMsg = ex.InnerException?.InnerException?.Message
+                ?? ex.InnerException?.Message
+                ?? ex.Message;
+            Logger.LogError(ex, "JoinGroup failed");
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("JoinFailed", innerMsg)), ct);
+        }
     }
 }

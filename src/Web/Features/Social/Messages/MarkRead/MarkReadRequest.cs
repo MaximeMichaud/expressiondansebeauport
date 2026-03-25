@@ -1,6 +1,2 @@
-namespace Web.Features.Social.Messages.MarkRead;
-
-public class MarkReadRequest
-{
-    public Guid ConversationId { get; set; }
-}
+// This file is kept for reference but the endpoint now uses EndpointWithoutRequest
+// and Route<Guid>("conversationId") for binding.

@@ -53,14 +53,14 @@
             <div
               :class="[
                 'flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full transition-all duration-200',
-                rule.valid ? 'bg-[#1a1a1a]' : 'border border-gray-300'
+                rule.valid ? 'bg-emerald-600' : 'border border-gray-300'
               ]"
             >
               <svg v-if="rule.valid" class="h-2.5 w-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <span :class="['text-xs transition-colors duration-200', rule.valid ? 'text-gray-900' : 'text-gray-400']">
+            <span :class="['text-xs transition-colors duration-200', rule.valid ? 'text-emerald-700' : 'text-gray-400']">
               {{ rule.label }}
             </span>
           </div>

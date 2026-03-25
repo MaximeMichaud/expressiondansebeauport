@@ -24,7 +24,9 @@ import {useUserStore} from "@/stores/userStore";
 
 const isSocialSubdomain = (): boolean => {
   const hostname = window.location.hostname
-  return hostname.startsWith('social.') || import.meta.env.VITE_FORCE_SOCIAL === 'true'
+  return hostname.startsWith('social.')
+    || import.meta.env.VITE_FORCE_SOCIAL === 'true'
+    || localStorage.getItem('forceSocial') === 'true'
 }
 
 export const isSocial = isSocialSubdomain()
@@ -50,15 +52,33 @@ const socialRoutes = [
   },
   {
     path: '/',
-    name: 'socialPortal',
-    component: () => import('@/views/social/SocialPortal.vue'),
-    meta: { title: 'Groupes', requiredRole: [Role.Member, Role.Professor, Role.Admin] }
+    redirect: '/annonces'
   },
   {
-    path: '/important',
+    path: '/annonces',
     name: 'socialImportant',
     component: () => import('@/views/social/SocialImportant.vue'),
     meta: { title: 'Annonces', requiredRole: [Role.Member, Role.Professor, Role.Admin] }
+  },
+  {
+    path: '/annonces/:id',
+    name: 'socialAnnouncement',
+    component: () => import('@/views/social/SocialAnnouncement.vue'),
+    meta: { title: 'Annonce', requiredRole: [Role.Member, Role.Professor, Role.Admin] },
+    props: true
+  },
+  {
+    path: '/annonces/:id',
+    name: 'socialAnnouncement',
+    component: () => import('@/views/social/SocialAnnouncement.vue'),
+    meta: { title: 'Annonce', requiredRole: [Role.Member, Role.Professor, Role.Admin] },
+    props: true
+  },
+  {
+    path: '/groupes',
+    name: 'socialPortal',
+    component: () => import('@/views/social/SocialPortal.vue'),
+    meta: { title: 'Groupes', requiredRole: [Role.Member, Role.Professor, Role.Admin] }
   },
   {
     path: '/groupes/:id',

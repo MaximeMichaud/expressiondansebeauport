@@ -47,6 +47,19 @@ public class GetPostByIdEndpoint : Endpoint<GetPostByIdRequest>
             return;
         }
 
-        await Send.OkAsync(post, ct);
+        await Send.OkAsync(new
+        {
+            post.Id,
+            AuthorName = post.AuthorMember?.FullName ?? "Inconnu",
+            AuthorRoles = post.AuthorMember?.User?.UserRoles?.Select(ur => ur.Role.Name).ToList() ?? new List<string?>(),
+            post.Content,
+            Type = post.Type.ToString(),
+            post.IsPinned,
+            post.ViewCount,
+            LikeCount = post.Reactions?.Count ?? 0,
+            CommentCount = post.Comments?.Count ?? 0,
+            HasLiked = post.Reactions?.Any(r => r.MemberId == member.Id) ?? false,
+            Created = post.Created.ToDateTimeUtc().ToString("yyyy-MM-ddTHH:mm:ssZ")
+        }, ct);
     }
 }

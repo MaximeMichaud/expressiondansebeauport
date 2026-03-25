@@ -36,36 +36,28 @@
       </div>
     </div>
 
-    <!-- Invite code input -->
-    <div class="mb-6 flex gap-2">
+    <!-- Search -->
+    <div class="mb-4 relative">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
       <input
-        v-model="inviteCode"
+        v-model="searchQuery"
         type="text"
-        class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
-        placeholder="Entrer un code d'invitation..."
-        @keyup.enter="joinGroup"
+        class="w-full rounded-lg border border-gray-300 py-2.5 pl-9 pr-3 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
+        placeholder="Rechercher un groupe..."
       />
-      <button
-        @click="joinGroup"
-        :disabled="!inviteCode || joining"
-        class="rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#000000] disabled:opacity-50"
-      >
-        Rejoindre
-      </button>
     </div>
-
 
     <!-- Tabs -->
     <div class="mb-4 flex border-b border-gray-200">
       <button
         @click="groupTab = 'mine'"
-        :class="['flex-1 py-2.5 text-center text-sm font-semibold transition cursor-pointer', groupTab === 'mine' ? 'border-b-2 border-[#1a1a1a] text-[#1a1a1a]' : 'text-gray-400 hover:text-gray-600']"
+        :class="['flex-1 py-2.5 text-center text-sm font-semibold transition cursor-pointer', groupTab === 'mine' ? 'border-b-2 border-gray-900 text-gray-900' : 'text-gray-400 hover:text-gray-600']"
       >
         Mes groupes
       </button>
       <button
         @click="groupTab = 'all'"
-        :class="['flex-1 py-2.5 text-center text-sm font-semibold transition cursor-pointer', groupTab === 'all' ? 'border-b-2 border-[#1a1a1a] text-[#1a1a1a]' : 'text-gray-400 hover:text-gray-600']"
+        :class="['flex-1 py-2.5 text-center text-sm font-semibold transition cursor-pointer', groupTab === 'all' ? 'border-b-2 border-gray-900 text-gray-900' : 'text-gray-400 hover:text-gray-600']"
       >
         Tous les groupes
       </button>
@@ -76,50 +68,63 @@
       <div v-if="loadingGroups" class="flex justify-center py-8">
         <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
       </div>
-      <div v-else-if="myGroups.length === 0" class="flex flex-col items-center justify-center gap-3 py-20 text-gray-400">
+      <div v-else-if="filteredMyGroups.length === 0" class="flex flex-col items-center justify-center gap-3 py-20 text-gray-400">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        <span class="text-sm">Entrez un code d'invitation pour rejoindre un groupe.</span>
+        <span class="text-sm">{{ searchQuery ? 'Aucun groupe trouvé.' : 'Vous n\'avez pas encore rejoint de groupe.' }}</span>
       </div>
-      <div v-else class="grid grid-cols-3 gap-3 sm:grid-cols-4">
+      <div v-else class="grid grid-cols-2 gap-3">
         <router-link
-          v-for="group in myGroups"
+          v-for="group in filteredMyGroups"
           :key="group.id"
           :to="{ name: 'socialGroup', params: { id: group.id } }"
-          class="text-center cursor-pointer"
+          class="flex items-center gap-3 rounded-xl border border-gray-200 p-3 cursor-pointer hover:bg-gray-50 transition"
         >
-          <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-lg bg-[#1a1a1a]">
+          <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#1a1a1a]">
             <img v-if="group.imageUrl" :src="group.imageUrl" :alt="group.name" class="h-full w-full rounded-lg object-cover" />
-            <span v-else class="text-xs font-bold text-white">EDB</span>
+            <span v-else class="text-[10px] font-bold text-white">EDB</span>
           </div>
-          <p class="mt-1 truncate text-xs font-medium text-gray-900">{{ group.name }}</p>
+          <div class="flex-1 min-w-0">
+            <p class="truncate text-sm font-semibold text-gray-900">{{ group.name }}</p>
+            <p class="text-[11px] text-gray-400">{{ group.memberCount }} membres</p>
+          </div>
         </router-link>
       </div>
     </div>
 
     <!-- All Groups tab -->
     <div v-if="groupTab === 'all'">
-      <div v-if="allActiveGroups.length === 0" class="flex flex-col items-center justify-center gap-3 py-20 text-gray-400">
+      <div v-if="filteredAllGroups.length === 0" class="flex flex-col items-center justify-center gap-3 py-20 text-gray-400">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        <span class="text-sm">Aucun groupe pour le moment.</span>
+        <span class="text-sm">{{ searchQuery ? 'Aucun groupe trouvé.' : 'Aucun groupe pour le moment.' }}</span>
       </div>
-      <div v-else class="space-y-3">
+      <div v-else class="grid grid-cols-2 gap-3">
         <div
-          v-for="group in allActiveGroups"
+          v-for="group in filteredAllGroups"
           :key="group.id"
-          :class="['overflow-hidden rounded-xl border border-gray-200 block cursor-pointer', myGroupIds.has(group.id) ? 'hover:bg-gray-50' : 'hover:bg-gray-50']"
+          class="overflow-hidden rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50 transition"
           @click="onGroupClick(group)"
         >
-          <div class="flex items-center gap-3 p-4">
-            <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[#1a1a1a]">
-              <img v-if="group.imageUrl" :src="group.imageUrl" :alt="group.name" class="h-full w-full rounded-full object-cover" />
+          <div class="flex items-center gap-3 p-3">
+            <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#1a1a1a]">
+              <img v-if="group.imageUrl" :src="group.imageUrl" :alt="group.name" class="h-full w-full rounded-lg object-cover" />
               <span v-else class="text-[10px] font-bold text-white">EDB</span>
             </div>
-            <div class="flex-1">
-              <p class="font-semibold text-gray-900">{{ group.name }}</p>
-              <p class="text-xs text-gray-500">{{ group.season }} · {{ group.memberCount }} membres</p>
+            <div class="flex-1 min-w-0">
+              <p class="truncate text-sm font-semibold text-gray-900">{{ group.name }}</p>
+              <p class="text-[11px] text-gray-400">{{ group.memberCount }} membres</p>
+              <div v-if="isAdmin && group.inviteCode" class="mt-1 flex items-center gap-2">
+                <span class="font-mono text-[11px] font-semibold text-indigo-600">{{ group.inviteCode }}</span>
+                <button
+                  @click.stop="copyCode(group.inviteCode)"
+                  class="flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium text-indigo-500 transition hover:bg-[rgba(99,102,241,0.1)] cursor-pointer"
+                  :title="'Copier le code'"
+                >
+                  <svg v-if="copiedCode !== group.inviteCode" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  <svg v-else width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                  {{ copiedCode === group.inviteCode ? 'Copié!' : 'Copier' }}
+                </button>
+              </div>
             </div>
-            <span v-if="myGroupIds.has(group.id)" class="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">Membre</span>
-            <span v-else class="text-xs font-medium text-gray-400">Code requis</span>
           </div>
         </div>
       </div>
@@ -177,14 +182,34 @@ const isAdmin = computed(() => userStore.hasRole(Role.Admin))
 const myGroups = ref<Group[]>([])
 const allActiveGroups = ref<Group[]>([])
 const loadingGroups = ref(true)
+const searchQuery = ref('')
 const inviteCode = ref('')
 const joining = ref(false)
 const groupTab = ref<'mine' | 'all'>('mine')
+const copiedCode = ref('')
+
+function copyCode(code: string) {
+  navigator.clipboard.writeText(code)
+  copiedCode.value = code
+  setTimeout(() => { copiedCode.value = '' }, 2000)
+}
 const showCreateGroup = ref(false)
 const creatingGroup = ref(false)
 const newGroup = ref({ name: '', season: '', inviteCode: '', description: '' })
 
 const myGroupIds = computed(() => new Set(myGroups.value.map(g => g.id)))
+
+const filteredMyGroups = computed(() => {
+  const q = searchQuery.value.toLowerCase().trim()
+  if (!q) return myGroups.value
+  return myGroups.value.filter(g => g.name.toLowerCase().includes(q) || g.season?.toLowerCase().includes(q))
+})
+
+const filteredAllGroups = computed(() => {
+  const q = searchQuery.value.toLowerCase().trim()
+  if (!q) return allActiveGroups.value
+  return allActiveGroups.value.filter(g => g.name.toLowerCase().includes(q) || g.season?.toLowerCase().includes(q))
+})
 
 async function loadGroups() {
   loadingGroups.value = true
@@ -389,10 +414,14 @@ $portal-font-display: 'Montserrat', sans-serif;
     }
 
     &--primary {
-      background: #1a1a1a;
-      color: white;
-      &:hover { background: #333; }
+      background: var(--soc-bar-text-strong, #1a1a1a);
+      color: var(--soc-card-bg, white);
+      &:hover { opacity: 0.85; }
     }
+  }
+
+  &__input:focus {
+    border-color: var(--soc-bar-text-strong, #1a1a1a);
   }
 }
 
