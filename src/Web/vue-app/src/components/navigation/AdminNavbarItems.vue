@@ -21,7 +21,7 @@ import { computed } from "vue";
 import { useI18n } from "vue3-i18n";
 import { useRouter } from "vue-router";
 import { getChildPath } from "@/router/helpers";
-import { Images, FileText, LayoutList, Palette, Activity, ArrowLeftRight, UserCircle } from "lucide-vue-next";
+import { Images, FileText, LayoutList, Palette, Activity, ArrowLeftRight, HardDriveDownload, UserCircle } from "lucide-vue-next";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -33,6 +33,7 @@ const iconMap: Record<string, unknown> = {
   'admin.children.customizer': Palette,
   'admin.children.siteHealth': Activity,
   'admin.children.importExport': ArrowLeftRight,
+  'admin.children.backup': HardDriveDownload,
 };
 
 const adminChildRoutes = computed(() => {

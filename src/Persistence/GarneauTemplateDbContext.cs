@@ -45,6 +45,7 @@ public class GarneauTemplateDbContext : IdentityDbContext<User, Role, Guid,
     public DbSet<Page> Pages { get; set; } = null!;
     public DbSet<SocialLink> SocialLinks { get; set; } = null!;
     public DbSet<FooterPartner> FooterPartners { get; set; } = null!;
+    public DbSet<BackupRecord> BackupRecords { get; set; } = null!;
 
     public GarneauTemplateDbContext()
     {

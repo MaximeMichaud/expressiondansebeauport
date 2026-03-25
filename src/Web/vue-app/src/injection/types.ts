@@ -9,5 +9,6 @@ export const TYPES = {
   IMenuService: Symbol.for("IMenuService"),
   ISiteSettingsService: Symbol.for("ISiteSettingsService"),
   ISiteHealthService: Symbol.for("ISiteHealthService"),
-  IImportExportService: Symbol.for("IImportExportService")
+  IImportExportService: Symbol.for("IImportExportService"),
+  IBackupService: Symbol.for("IBackupService")
 };
