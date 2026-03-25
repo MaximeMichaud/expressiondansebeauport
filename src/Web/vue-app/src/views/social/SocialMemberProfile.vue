@@ -485,7 +485,7 @@ $mp-font-body: 'Karla', sans-serif;
     font-family: $mp-font-display;
     font-size: 0.55rem;
     font-weight: 700;
-    color: white;
+    color: var(--soc-content-bg, white);
   }
 
   &__group-info {
