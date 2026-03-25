@@ -55,13 +55,22 @@ public class DuplicatePageEndpoint : Endpoint<DuplicatePageRequest, PageDto>
 
     private string GenerateUniqueSlug(string sourceSlug)
     {
-        var candidate = $"{sourceSlug}-2";
+        const int maxSlugLength = 200;
         var counter = 2;
+        var suffix = $"-{counter}";
+        var baseSlug = sourceSlug.Length + suffix.Length > maxSlugLength
+            ? sourceSlug[..(maxSlugLength - suffix.Length)]
+            : sourceSlug;
+        var candidate = $"{baseSlug}{suffix}";
 
         while (_pageRepository.SlugExistsIncludingDeleted(candidate))
         {
             counter++;
-            candidate = $"{sourceSlug}-{counter}";
+            suffix = $"-{counter}";
+            baseSlug = sourceSlug.Length + suffix.Length > maxSlugLength
+                ? sourceSlug[..(maxSlugLength - suffix.Length)]
+                : sourceSlug;
+            candidate = $"{baseSlug}{suffix}";
         }
 
         return candidate;

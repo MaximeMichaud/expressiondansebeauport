@@ -41,6 +41,7 @@ import DataTable from "@/components/layouts/items/DataTable.vue"
 import BtnLink from "@/components/layouts/items/BtnLink.vue"
 import Loader from "@/components/layouts/items/Loader.vue"
 import {Tables} from "@/types/enums"
+import {notifyError} from "@/notify"
 
 const {t} = useI18n()
 const router = useRouter()
@@ -93,11 +94,18 @@ async function onDuplicate(item: any) {
   if (preventMultipleSubmit.value) return
   preventMultipleSubmit.value = true
 
-  const duplicated = await pageService.duplicate(item.id)
-  if (duplicated && duplicated.id) {
-    router.push({name: 'admin.children.pages.edit', params: {id: duplicated.id}})
+  try {
+    const duplicated = await pageService.duplicate(item.id)
+    if (duplicated && duplicated.id) {
+      router.push({name: 'admin.children.pages.edit', params: {id: duplicated.id}})
+    } else {
+      notifyError(t('pages.pages.duplicate.validation.failedMessage'))
+    }
+  } catch {
+    notifyError(t('pages.pages.duplicate.validation.failedMessage'))
+  } finally {
+    preventMultipleSubmit.value = false
   }
-  preventMultipleSubmit.value = false
 }
 
 async function onDelete(item: any) {
