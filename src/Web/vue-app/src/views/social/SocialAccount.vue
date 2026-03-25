@@ -221,7 +221,7 @@ async function changePassword() {
 async function handleLogout() {
   await authService.logout()
   userStore.reset()
-  await router.push('/connexion')
+  await router.push({ name: 'socialLogin' })
 }
 </script>
 

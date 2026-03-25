@@ -92,7 +92,7 @@
 
     <p class="mt-6 text-center text-sm text-gray-500">
       Vous avez déjà un compte?
-      <router-link to="/connexion" class="font-medium text-[#1a1a1a] hover:underline">Se connecter</router-link>
+      <router-link :to="{ name: 'socialLogin' }" class="font-medium text-[#1a1a1a] hover:underline">Se connecter</router-link>
     </p>
   </div>
 </template>

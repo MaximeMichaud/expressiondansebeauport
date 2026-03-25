@@ -9,7 +9,7 @@ public static class InstantHelper
 {
     public static Instant GetLocalNow()
     {
-        return DateTime.Now.ParseToInstant();
+        return DateTime.UtcNow.ParseToInstant();
     }
     
     public static Instant ParseFromString(string dateString)

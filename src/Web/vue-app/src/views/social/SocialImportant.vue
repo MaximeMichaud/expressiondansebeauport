@@ -29,7 +29,7 @@
         <button
           @click="createAnnouncement"
           :disabled="!newTitle.trim() || creating"
-          class="rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#000] disabled:opacity-50 cursor-pointer"
+          class="btn-publish rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#000] disabled:opacity-50 cursor-pointer"
         >
           {{ creating ? 'Publication...' : 'Publier' }}
         </button>
@@ -103,7 +103,7 @@
                   <div class="flex items-center justify-between">
                     <p class="text-xs font-semibold text-gray-900">{{ comment.authorName }}</p>
                     <button
-                      v-if="isAdmin"
+                      v-if="isAdmin || comment.authorMemberId === myMemberId"
                       @click="deleteComment(comment.id, post)"
                       class="soc-header__icon-btn soc-header__icon-btn--logout !w-5 !h-5 !rounded-md"
                     >
@@ -130,7 +130,7 @@
             <button
               @click="submitComment(post)"
               :disabled="!newComment.trim() || submittingComment"
-              class="flex items-center justify-center rounded-full bg-[#1a1a1a] w-7 h-7 text-white disabled:opacity-50 cursor-pointer flex-shrink-0"
+              class="btn-publish flex items-center justify-center rounded-full bg-[#1a1a1a] w-7 h-7 text-white disabled:opacity-50 cursor-pointer flex-shrink-0"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
             </button>
@@ -169,14 +169,17 @@ import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useSocialService } from '@/inversify.config'
 import { useSocialToast } from '@/composables/useSocialToast'
 import { useUserStore } from '@/stores/userStore'
+import { useMemberStore } from '@/stores/memberStore'
 import { Role } from '@/types/enums'
 import type { Post } from '@/types/entities'
 
 const socialService = useSocialService()
 const toast = useSocialToast()
 const userStore = useUserStore()
+const memberStore = useMemberStore()
 
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
+const myMemberId = computed(() => memberStore.member?.id || '')
 const announcements = ref<Post[]>([])
 const loading = ref(true)
 const showCreate = ref(false)
@@ -209,7 +212,17 @@ function getInitials(name: string) {
 }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('fr-CA', { year: 'numeric', month: 'short', day: 'numeric' })
+  const date = new Date(dateStr)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffMin = Math.floor(diffMs / 60000)
+  if (diffMin < 1) return "à l'instant"
+  if (diffMin < 60) return `il y a ${diffMin} min`
+  const diffH = Math.floor(diffMin / 60)
+  if (diffH < 24) return `il y a ${diffH}h`
+  const diffD = Math.floor(diffH / 24)
+  if (diffD < 7) return `il y a ${diffD}j`
+  return date.toLocaleDateString('fr-CA', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
 let likeDebounce = 0
@@ -235,7 +248,7 @@ async function toggleComments(post: Post) {
   } catch { postComments.value = [] }
   loadingComments.value = false
   await nextTick()
-  commentInputRef.value?.focus()
+  if (commentInputRef.value instanceof HTMLElement) commentInputRef.value.focus()
 }
 
 async function submitComment(post: Post) {

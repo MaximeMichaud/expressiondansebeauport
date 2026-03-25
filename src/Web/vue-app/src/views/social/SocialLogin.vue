@@ -45,7 +45,7 @@
 
     <p class="mt-6 text-center text-sm text-gray-500">
       Pas encore de compte?
-      <router-link to="/inscription" class="font-medium text-[#1a1a1a] hover:underline">S'inscrire</router-link>
+      <router-link :to="{ name: 'socialRegister' }" class="font-medium text-[#1a1a1a] hover:underline">S'inscrire</router-link>
     </p>
   </div>
 </template>
@@ -78,7 +78,7 @@ async function handleLogin() {
     if (result.succeeded) {
       const user = await userService.getCurrentUser()
       userStore.setUser(user)
-      await router.push('/')
+      await router.push({ name: 'socialImportant' })
     } else {
       const emailNotConfirmed = result.errors?.some((e: any) => e.errorType === 'EmailNotConfirmed')
       if (emailNotConfirmed) {

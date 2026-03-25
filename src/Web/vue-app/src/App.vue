@@ -21,7 +21,7 @@ import DashboardLayout from "@/components/layouts/DashboardLayout.vue";
 import SocialLayout from "@/components/layouts/SocialLayout.vue";
 import SocialAuthLayout from "@/components/layouts/SocialAuthLayout.vue";
 import {useUserService, useSiteSettingsService} from "@/inversify.config";
-import {isSocial} from "@/router";
+import {isSocialRoute} from "@/router";
 import i18n from "@/i18n";
 import {applyThemeSettings} from "@/theme";
 
@@ -41,12 +41,14 @@ const isAuthenticationPath = computed(() => {
   return authenticationRoutes.includes(router.currentRoute.value.name as string)
 });
 
+const isSocial = computed(() => isSocialRoute(router.currentRoute.value))
+
 const isSocialAuthPath = computed(() => {
   return router.currentRoute.value.meta?.socialAuth === true
 });
 
 onMounted(async () => {
-  if (!isSocial) {
+  if (!isSocial.value) {
     const siteSettings = await siteSettingsService.getPublic().catch(() => null)
     if (siteSettings) {
       applyThemeSettings(siteSettings)
@@ -56,7 +58,7 @@ onMounted(async () => {
   if (isPublicPath.value)
     return
 
-  if (isSocial && isSocialAuthPath.value)
+  if (isSocial.value && isSocialAuthPath.value)
     return
 
   if (!userStore.user.email) {
@@ -64,8 +66,8 @@ onMounted(async () => {
     if (user) {
       userStore.setUser(user)
     } else if (!isAuthenticationPath.value && !isSocialAuthPath.value) {
-      if (isSocial) {
-        await router.push('/connexion')
+      if (isSocial.value) {
+        await router.push({ name: 'socialLogin' })
       } else {
         await router.push(i18n.t("routes.login.path"))
       }

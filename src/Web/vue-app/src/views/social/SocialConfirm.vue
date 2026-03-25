@@ -84,7 +84,7 @@ async function handleConfirm() {
     const result = await socialService.confirmEmail(emailAddress.value, code.value)
     if (result.succeeded) {
       toast.success('Compte confirmé! Redirection...')
-      setTimeout(() => router.push('/connexion'), 1500)
+      setTimeout(() => router.push({ name: 'socialLogin' }), 1500)
     } else {
       toast.error('Code invalide ou expiré.')
     }

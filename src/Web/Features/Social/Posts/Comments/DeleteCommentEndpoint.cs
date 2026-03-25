@@ -12,15 +12,18 @@ public class DeleteCommentEndpoint : Endpoint<DeleteCommentRequest, SucceededOrN
     private readonly IPostService _postService;
     private readonly IAuthenticatedUserService _authenticatedUserService;
     private readonly IMemberRepository _memberRepository;
+    private readonly ICommentRepository _commentRepository;
 
     public DeleteCommentEndpoint(
         IPostService postService,
         IAuthenticatedUserService authenticatedUserService,
-        IMemberRepository memberRepository)
+        IMemberRepository memberRepository,
+        ICommentRepository commentRepository)
     {
         _postService = postService;
         _authenticatedUserService = authenticatedUserService;
         _memberRepository = memberRepository;
+        _commentRepository = commentRepository;
     }
 
     public override void Configure()
@@ -38,6 +41,20 @@ public class DeleteCommentEndpoint : Endpoint<DeleteCommentRequest, SucceededOrN
         if (member == null)
         {
             await Send.NotFoundAsync(ct);
+            return;
+        }
+
+        var comment = await _commentRepository.FindById(req.Id);
+        if (comment == null)
+        {
+            await Send.NotFoundAsync(ct);
+            return;
+        }
+
+        var isAdmin = user.HasRole(Domain.Constants.User.Roles.ADMINISTRATOR);
+        if (comment.AuthorMemberId != member.Id && !isAdmin)
+        {
+            await Send.ForbiddenAsync(ct);
             return;
         }
 
