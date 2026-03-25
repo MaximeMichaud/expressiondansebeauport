@@ -124,15 +124,18 @@ export interface ISocialService {
   deleteComment(id: string): Promise<SucceededOrNotResponse>
   votePoll(postId: string, pollOptionId: string): Promise<SucceededOrNotResponse>
   getAnnouncements(page?: number): Promise<Post[]>
+  createAnnouncement(content: string): Promise<SucceededOrNotResponse>
   getConversations(page?: number): Promise<Conversation[]>
   getMessages(conversationId: string, page?: number): Promise<Message[]>
   sendMessage(conversationId: string, content: string): Promise<SucceededOrNotResponse>
+  deleteMessage(messageId: string): Promise<SucceededOrNotResponse>
   startConversation(otherMemberId: string): Promise<any>
   markAsRead(conversationId: string): Promise<void>
   getUnreadCount(): Promise<number>
   searchMembers(query: string): Promise<any[]>
   getMemberProfile(id: string): Promise<any>
   getMyProfile(): Promise<any>
+  updateMyProfile(firstName: string, lastName: string, email: string): Promise<SucceededOrNotResponse>
   deleteMember(id: string): Promise<SucceededOrNotResponse>
   promoteMember(id: string): Promise<SucceededOrNotResponse>
   demoteMember(id: string): Promise<SucceededOrNotResponse>

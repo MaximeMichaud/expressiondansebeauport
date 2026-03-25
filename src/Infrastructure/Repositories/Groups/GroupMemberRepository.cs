@@ -40,7 +40,7 @@ public class GroupMemberRepository : IGroupMemberRepository
         return await _context.GroupMembers
             .AsNoTracking()
             .Where(gm => gm.GroupId == groupId)
-            .Include(gm => gm.Member).ThenInclude(m => m.User)
+            .Include(gm => gm.Member).ThenInclude(m => m.User).ThenInclude(u => u.UserRoles).ThenInclude(ur => ur.Role)
             .OrderBy(gm => gm.Member.LastName).ThenBy(gm => gm.Member.FirstName)
             .Skip(skip).Take(take)
             .ToListAsync();
@@ -61,6 +61,14 @@ public class GroupMemberRepository : IGroupMemberRepository
     {
         _context.GroupMembers.Remove(groupMember);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<Dictionary<Guid, string>> GetRolesForMembers(Guid groupId, List<Guid> memberIds)
+    {
+        return await _context.GroupMembers
+            .AsNoTracking()
+            .Where(gm => gm.GroupId == groupId && memberIds.Contains(gm.MemberId))
+            .ToDictionaryAsync(gm => gm.MemberId, gm => gm.Role.ToString());
     }
 
     public async Task<GroupMember?> FindProfessorInGroup(Guid groupId, Guid memberId)

@@ -38,7 +38,7 @@
           :disabled="startingConvo"
           class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition hover:bg-white disabled:opacity-50"
         >
-          <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">
+          <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: member.avatarColor || getAvatarColor(member.fullName) }">
             {{ getInitials(member.fullName) }}
           </div>
           <div class="flex-1 min-w-0">
@@ -59,29 +59,30 @@
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
       <span class="text-sm">Aucune conversation pour le moment.</span>
     </div>
-    <div v-else-if="!showNewConvo" class="flex-1 divide-y divide-gray-100 overflow-y-auto">
+    <div v-else-if="!showNewConvo" class="flex-1 overflow-y-auto">
       <router-link
         v-for="conv in conversations"
         :key="conv.id"
         :to="{ name: 'socialConversation', params: { conversationId: conv.id } }"
-        class="flex items-center gap-3 px-4 py-3 transition hover:bg-gray-50"
+        class="flex items-center gap-3 border-b px-4 py-3 transition hover:bg-gray-50"
+        style="border-color: var(--soc-divider, #f0f0f0);"
       >
-        <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" :style="{ background: conv.otherMember.avatarColor || '#1a1a1a' }">
+        <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" :style="{ background: conv.otherMember.avatarColor || getAvatarColor(conv.otherMember.fullName) }">
           {{ getInitials(conv.otherMember.fullName) }}
         </div>
         <div class="min-w-0 flex-1">
-          <div class="flex items-center justify-between">
-            <span :class="['text-sm', conv.unreadCount > 0 ? 'font-bold text-gray-900' : 'font-medium text-gray-700']">
-              {{ conv.otherMember.fullName }}
-            </span>
-            <span class="text-xs text-gray-400">{{ formatTime(conv.lastMessage?.created) }}</span>
-          </div>
+          <span :class="['text-sm', conv.unreadCount > 0 ? 'font-bold text-gray-900' : 'font-medium text-gray-700']">
+            {{ conv.otherMember.fullName }}
+          </span>
           <p :class="['truncate text-xs', conv.unreadCount > 0 ? 'font-semibold text-gray-700' : 'text-gray-500']">
-            {{ conv.lastMessage?.content || 'Aucun message' }}
+            <span v-if="conv.lastMessage?.isMine" class="font-semibold">Vous: </span>{{ conv.lastMessage?.content || 'Aucun message' }}
           </p>
         </div>
-        <div v-if="conv.unreadCount > 0" class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#1a1a1a] text-[10px] font-bold text-white">
-          {{ conv.unreadCount }}
+        <div class="flex flex-col items-end gap-1 flex-shrink-0">
+          <span class="text-[10px] text-gray-400">{{ formatTime(conv.lastMessage?.created) }}</span>
+          <div v-if="conv.unreadCount > 0" class="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#dc2626] px-1.5 text-[10px] font-bold text-white">
+            {{ conv.unreadCount }}
+          </div>
         </div>
       </router-link>
     </div>
@@ -89,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, onActivated } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import type { Conversation } from '@/types/entities'
@@ -112,7 +113,7 @@ function getInitials(name: string) {
   return name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-const avatarColors = ['#1a1a1a', '#3b3b3b', '#6b4c3b', '#4a5568', '#2d3748', '#553c2e', '#44403c', '#1e293b', '#374151', '#292524']
+const avatarColors = ['#e53e3e', '#dd6b20', '#d69e2e', '#38a169', '#319795', '#3182ce', '#5a67d8', '#805ad5', '#d53f8c', '#e53e3e']
 function getAvatarColor(name: string) {
   let hash = 0
   for (let i = 0; i < (name?.length || 0); i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
@@ -162,11 +163,29 @@ watch(showNewConvo, (val) => {
   }
 })
 
-onMounted(async () => {
+async function loadConversations() {
   try {
     const all = await socialService.getConversations()
     conversations.value = all.filter((c: any) => c.lastMessage)
   } catch (e) { /* */ }
   loading.value = false
+}
+
+let pollInterval: ReturnType<typeof setInterval> | null = null
+
+onMounted(() => {
+  loadConversations()
+  pollInterval = setInterval(async () => {
+    try {
+      const all = await socialService.getConversations()
+      conversations.value = all.filter((c: any) => c.lastMessage)
+    } catch { /* */ }
+  }, 15000)
+})
+
+onActivated(loadConversations)
+
+onUnmounted(() => {
+  if (pollInterval) clearInterval(pollInterval)
 })
 </script>

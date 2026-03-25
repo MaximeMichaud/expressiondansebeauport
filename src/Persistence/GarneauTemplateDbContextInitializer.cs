@@ -279,16 +279,33 @@ public class GarneauTemplateDbContextInitializer
 
     private async Task AssignAvatarColorsToExistingMembers()
     {
+        // Specific color assignments
+        var colorMap = new Dictionary<string, string>
+        {
+            { "Alexandre", "#38a169" },  // vert
+            { "Adam", "#5a67d8" },       // indigo
+            { "Super", "#d53f8c" },      // rose (admin)
+        };
+
+        foreach (var (firstName, color) in colorMap)
+        {
+            var member = _context.Members.FirstOrDefault(m => m.FirstName == firstName);
+            if (member != null && member.AvatarColor != color)
+            {
+                member.SetAvatarColor(color);
+            }
+        }
+
+        // Assign random colors to any remaining members with default color
         var membersWithoutColor = _context.Members
             .Where(m => m.AvatarColor == "#1a1a1a" || m.AvatarColor == null)
             .ToList();
-
-        if (membersWithoutColor.Count == 0) return;
 
         foreach (var member in membersWithoutColor)
         {
             member.AssignRandomAvatarColor();
         }
+
         await _context.SaveChangesAsync();
     }
 

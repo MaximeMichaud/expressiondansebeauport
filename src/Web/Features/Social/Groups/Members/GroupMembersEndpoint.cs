@@ -36,7 +36,9 @@ public class GroupMembersEndpoint : Endpoint<GroupMembersRequest>
                 m.Member.LastName,
                 m.Member.FullName,
                 m.Member.ProfileImageUrl,
+                m.Member.AvatarColor,
                 Role = m.Role.ToString(),
+                Roles = m.Member.User?.UserRoles?.Select(ur => ur.Role.Name).ToList() ?? new List<string?>(),
                 m.JoinedAt
             }),
             Total = totalCount,

@@ -16,7 +16,7 @@
 
       <!-- Identity -->
       <div class="mp__identity">
-        <div class="mp__avatar" :style="{ background: member.avatarColor || '#1a1a1a' }">
+        <div class="mp__avatar" :style="{ background: member.avatarColor || getAvatarColor(member.fullName) }">
           <img v-if="member.profileImageUrl" :src="member.profileImageUrl" :alt="member.fullName" class="mp__avatar-img" />
           <span v-else class="mp__avatar-initials">{{ getInitials(member.fullName) }}</span>
         </div>
@@ -179,7 +179,7 @@ const highestRoleKey = computed(() => {
   return 'member'
 })
 const highestRole = computed(() => {
-  const map: Record<string, string> = { admin: 'Admin', professor: 'Professeur', member: 'Membre' }
+  const map: Record<string, string> = { admin: 'Admin', professor: 'Prof', member: 'Membre' }
   return map[highestRoleKey.value]
 })
 
@@ -212,7 +212,7 @@ function getInitials(name: string) {
   return name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-const avatarColors = ['#1a1a1a', '#3b3b3b', '#6b4c3b', '#4a5568', '#2d3748', '#553c2e', '#44403c', '#1e293b', '#374151', '#292524']
+const avatarColors = ['#e53e3e', '#dd6b20', '#d69e2e', '#38a169', '#319795', '#3182ce', '#5a67d8', '#805ad5', '#d53f8c', '#e53e3e']
 function getAvatarColor(name: string) {
   let hash = 0
   for (let i = 0; i < (name?.length || 0); i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
@@ -220,7 +220,7 @@ function getAvatarColor(name: string) {
 }
 
 function getRoleLabel(role: string) {
-  const labels: Record<string, string> = { admin: 'Admin', professor: 'Professeur', member: 'Membre' }
+  const labels: Record<string, string> = { admin: 'Admin', professor: 'Prof', member: 'Membre' }
   return labels[role] || role
 }
 

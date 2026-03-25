@@ -14,14 +14,14 @@
     </div>
 
     <!-- Tabs -->
-    <div class="flex gap-2 overflow-x-auto px-4 py-3">
+    <div class="flex flex-shrink-0 gap-2 overflow-x-auto px-4 py-3">
       <button
         v-for="tab in tabs"
         :key="tab.id"
         @click="activeTab = tab.id"
         :class="[
           'whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-semibold transition',
-          activeTab === tab.id ? 'bg-[#1a1a1a] text-white' : 'bg-gray-100 text-gray-600'
+          activeTab === tab.id ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-600'
         ]"
       >
         {{ tab.label }}
@@ -35,7 +35,7 @@
         <!-- Post composer -->
         <div class="border-b-8 border-gray-100 px-4 py-3">
           <div class="flex items-start gap-3">
-            <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">
+            <div v-if="!showPollComposer && !showPhotoComposer" class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: myAvatarColor }">
               {{ userInitials }}
             </div>
             <div class="flex-1">
@@ -48,14 +48,18 @@
                   placeholder="Partager quelque chose..."
                 ></textarea>
                 <div class="mt-2 flex items-center justify-between">
-                  <div class="flex gap-4 text-xs text-gray-500">
-                    <button @click="showPhotoComposer = true" class="hover:text-[#1a1a1a] transition">Photo</button>
-                    <button @click="showPollComposer = true" class="hover:text-[#1a1a1a] transition">Sondage</button>
+                  <div class="flex gap-2 text-gray-400">
+                    <button @click="showPhotoComposer = true" class="hover:text-[#1a1a1a] transition cursor-pointer" title="Photo">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                    </button>
+                    <button @click="showPollComposer = true" class="hover:text-[#1a1a1a] transition cursor-pointer" title="Sondage">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+                    </button>
                   </div>
                   <button
                     @click="submitPost"
                     :disabled="!newPostContent.trim() || submittingPost"
-                    class="rounded-lg bg-[#1a1a1a] px-3 py-1 text-xs font-semibold text-white disabled:opacity-50"
+                    class="rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#000] disabled:opacity-50 cursor-pointer"
                   >
                     Publier
                   </button>
@@ -181,7 +185,7 @@
           <div v-for="post in posts" :key="post.id" class="border-b-8 border-gray-100 px-4 py-4">
             <!-- Author info -->
             <div class="mb-3 flex items-center gap-2.5">
-              <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-[8px] font-bold text-white" :style="{ background: post.authorAvatarColor || '#1a1a1a' }">
+              <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: post.authorAvatarColor || '#1a1a1a' }">
                 {{ getInitials(post.authorName) }}
               </div>
               <div class="flex-1">
@@ -201,26 +205,21 @@
               <img v-for="media in post.media" :key="media.id" :src="media.thumbnailUrl || media.mediaUrl" class="w-full rounded-lg object-cover" />
             </div>
 
-            <!-- Stats -->
-            <div class="mb-2 flex items-center gap-4 text-xs text-gray-500">
-              <span>{{ post.likeCount }} j'aime</span>
-              <span>{{ post.commentCount }} commentaires</span>
-              <span class="ml-auto">{{ post.viewCount }} vues</span>
-            </div>
-
             <!-- Actions -->
-            <div class="flex border-t border-gray-100 pt-2">
+            <div class="mt-3 flex border-t border-gray-100 pt-2">
               <button
                 @click="toggleLike(post)"
-                :class="['flex-1 py-1 text-center text-sm font-medium transition cursor-pointer', post.hasLiked ? 'text-[#1a1a1a] font-bold' : 'text-gray-500 hover:text-gray-700']"
+                :class="['flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium transition cursor-pointer', post.hasLiked ? 'text-red-600' : 'text-gray-400 hover:text-gray-600']"
               >
-                {{ post.hasLiked ? 'Aimé' : 'Aimer' }}
+                <svg width="14" height="14" viewBox="0 0 24 24" :fill="post.hasLiked ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                {{ post.likeCount || 0 }}
               </button>
               <button
                 @click="toggleComments(post)"
-                class="flex-1 py-1 text-center text-sm font-medium text-gray-500 hover:text-gray-700 cursor-pointer"
+                class="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium text-gray-400 hover:text-gray-600 transition cursor-pointer"
               >
-                Commenter
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                {{ post.commentCount || 0 }}
               </button>
             </div>
 
@@ -256,9 +255,9 @@
                 <button
                   @click="submitComment(post)"
                   :disabled="!newComment.trim() || submittingComment"
-                  class="rounded-full bg-[#1a1a1a] px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50 cursor-pointer"
+                  class="flex items-center justify-center rounded-full bg-[#1a1a1a] w-7 h-7 text-white disabled:opacity-50 cursor-pointer flex-shrink-0"
                 >
-                  Envoyer
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
                 </button>
               </div>
             </div>
@@ -273,12 +272,11 @@
         </div>
         <div v-else class="space-y-3">
           <div v-for="gm in groupMembers" :key="gm.id" class="flex items-center gap-3">
-            <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-600">
+            <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" :style="{ background: gm.avatarColor || getAvatarColor(gm.fullName) }">
               {{ getInitials(gm.fullName) }}
             </div>
             <div class="flex-1">
               <p class="text-sm font-medium text-gray-900">{{ gm.fullName }}</p>
-              <p v-if="gm.role === 'Professor'" class="text-xs text-[#1a1a1a]">Professeur</p>
             </div>
             <button
               @click="startConversationWith(gm)"
@@ -296,9 +294,9 @@
         <h3 class="mb-2 font-semibold text-gray-900">{{ group?.name }}</h3>
         <p v-if="group?.description" class="mb-4 text-sm text-gray-600">{{ group.description }}</p>
         <p class="text-sm text-gray-500">Saison : {{ group?.season }}</p>
-        <div v-if="group?.inviteCode" class="mt-4 rounded-lg bg-gray-50 p-3">
+        <div v-if="group?.inviteCode" class="mt-4 rounded-lg border border-gray-200 p-3">
           <p class="text-xs font-medium text-gray-500">Code d'invitation</p>
-          <p class="mt-1 text-lg font-bold text-[#1a1a1a]">{{ group.inviteCode }}</p>
+          <p class="mt-1 text-lg font-bold text-gray-900">{{ group.inviteCode }}</p>
         </div>
       </div>
     </div>
@@ -306,16 +304,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useUserStore } from '@/stores/userStore'
+import { useMemberStore } from '@/stores/memberStore'
 import type { Post, GroupMember } from '@/types/entities'
 
 const route = useRoute()
 const router = useRouter()
 const socialService = useSocialService()
 const userStore = useUserStore()
+const memberStore = useMemberStore()
 
 const groupId = computed(() => route.params.id as string)
 
@@ -356,7 +356,18 @@ const tabs = [
   { id: 'about', label: 'À propos' },
 ]
 
+const avatarColors = ['#e53e3e', '#dd6b20', '#d69e2e', '#38a169', '#319795', '#3182ce', '#5a67d8', '#805ad5', '#d53f8c', '#e53e3e']
+function getAvatarColor(name: string) {
+  let hash = 0
+  for (let i = 0; i < (name?.length || 0); i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  return avatarColors[Math.abs(hash) % avatarColors.length]
+}
+
+const myAvatarColor = computed(() => memberStore.member.avatarColor || '#1a1a1a')
+
 const userInitials = computed(() => {
+  const m = memberStore.member
+  if (m?.firstName) return getInitials(`${m.firstName} ${m.lastName || ''}`)
   const user = userStore.user
   if (!user?.email) return '?'
   return user.email.charAt(0).toUpperCase()
@@ -530,9 +541,18 @@ async function startConversationWith(member: GroupMember) {
   startingConversation.value = null
 }
 
+let pollInterval: ReturnType<typeof setInterval> | null = null
+
 onMounted(async () => {
   await loadGroup()
   await loadPosts()
   loadMembers()
+  pollInterval = setInterval(async () => {
+    try { posts.value = await socialService.getGroupFeed(groupId.value) } catch { /* */ }
+  }, 1000)
+})
+
+onUnmounted(() => {
+  if (pollInterval) clearInterval(pollInterval)
 })
 </script>

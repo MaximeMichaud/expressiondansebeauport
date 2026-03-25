@@ -50,9 +50,13 @@ public class GetConversationsEndpoint : Endpoint<GetConversationsRequest>
             var other = c.ParticipantAMemberId == member.Id ? c.ParticipantB : c.ParticipantA;
             var lastMsg = c.Messages?.OrderByDescending(m => m.Created).FirstOrDefault();
             var participant = c.Participants?.FirstOrDefault(p => p.MemberId == member.Id);
-            var unread = lastMsg != null && participant?.LastReadAt != null
-                ? lastMsg.Created > participant.LastReadAt ? 1 : 0
-                : lastMsg != null && participant?.LastReadAt == null ? 1 : 0;
+            // Check if last message is from the other person and unread
+            var unread = 0;
+            if (lastMsg != null && lastMsg.SenderMemberId != member.Id)
+            {
+                if (participant?.LastReadAt == null || lastMsg.Created > participant.LastReadAt)
+                    unread = 1;
+            }
 
             return new
             {
@@ -61,13 +65,16 @@ public class GetConversationsEndpoint : Endpoint<GetConversationsRequest>
                 {
                     Id = otherMemberId,
                     FullName = other?.FullName ?? "Inconnu",
-                    ProfileImageUrl = other?.ProfileImageUrl
+                    ProfileImageUrl = other?.ProfileImageUrl,
+                    AvatarColor = other?.AvatarColor ?? "#1a1a1a",
+                    Roles = other?.User?.UserRoles?.Select(ur => ur.Role.Name).ToList() ?? new List<string?>()
                 },
                 LastMessage = lastMsg != null ? new
                 {
                     Content = lastMsg.Content,
                     SenderName = lastMsg.SenderMember?.FullName ?? "",
-                    Created = lastMsg.Created.ToString()
+                    IsMine = lastMsg.SenderMemberId == member.Id,
+                    Created = lastMsg.Created.ToDateTimeUtc().ToString("yyyy-MM-ddTHH:mm:ssZ")
                 } : null,
                 UnreadCount = unread
             };

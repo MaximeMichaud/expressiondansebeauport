@@ -126,6 +126,11 @@ export class SocialService extends ApiService {
   }
 
   // === Announcements ===
+  async createAnnouncement(content: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.post<SucceededOrNotResponse>(`${API}/social/announcements`, { content }, this.headersWithJsonContentType())
+    return response.data
+  }
+
   async getAnnouncements(page: number = 1): Promise<Post[]> {
     const response = await this._httpClient.get(`${API}/social/announcements?Page=${page}`)
     return toCamel(response.data)
@@ -158,7 +163,7 @@ export class SocialService extends ApiService {
   }
 
   async markAsRead(conversationId: string): Promise<void> {
-    await this._httpClient.put(`${API}/social/conversations/${conversationId}/read`)
+    await this._httpClient.put(`${API}/social/conversations/${conversationId}/read`, null)
   }
 
   async getUnreadCount(): Promise<number> {
@@ -171,6 +176,11 @@ export class SocialService extends ApiService {
   async getMyProfile(): Promise<Member> {
     const response = await this._httpClient.get(`${API}/social/members/me`)
     return toCamel(response.data)
+  }
+
+  async updateMyProfile(firstName: string, lastName: string, email: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.put<SucceededOrNotResponse>(`${API}/social/members/me`, { firstName, lastName, email }, this.headersWithJsonContentType())
+    return response.data
   }
 
   async searchMembers(query: string): Promise<any[]> {

@@ -31,7 +31,7 @@ public class CommentRepository : ICommentRepository
         return await _context.Comments
             .AsNoTracking()
             .Where(c => c.PostId == postId)
-            .Include(c => c.AuthorMember).ThenInclude(m => m.User)
+            .Include(c => c.AuthorMember).ThenInclude(m => m.User).ThenInclude(u => u.UserRoles).ThenInclude(ur => ur.Role)
             .OrderBy(c => c.Created)
             .Skip(skip).Take(take)
             .ToListAsync();

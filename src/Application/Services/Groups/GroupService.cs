@@ -97,8 +97,9 @@ public class GroupService : IGroupService
         if (member == null) throw new InvalidOperationException("Member not found.");
 
         var gm = new GroupMember();
-        gm.SetGroup(group);
-        gm.SetMember(member);
+        gm.SetId(Guid.NewGuid());
+        gm.SetGroupId(group.Id);
+        gm.SetMemberId(member.Id);
         gm.SetRole(GroupMemberRole.Member);
         gm.SetJoinedAt(InstantHelper.GetLocalNow());
 

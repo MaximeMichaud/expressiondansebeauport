@@ -44,6 +44,7 @@ public class GroupRepository : IGroupRepository
     public async Task<List<Group>> GetActive()
     {
         return await _context.Groups
+            .Include(g => g.Members)
             .AsNoTracking()
             .Where(g => !g.IsArchived)
             .OrderBy(g => g.Name)

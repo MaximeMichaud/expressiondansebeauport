@@ -7,8 +7,8 @@ namespace Domain.Entities;
 public class Member : AuditableAndSoftDeletableEntity, ISanitizable
 {
     private static readonly string[] AvatarColors = [
-        "#1a1a1a", "#3b3b3b", "#6b4c3b", "#4a5568", "#2d3748",
-        "#553c2e", "#44403c", "#1e293b", "#374151", "#292524"
+        "#e53e3e", "#dd6b20", "#d69e2e", "#38a169", "#319795",
+        "#3182ce", "#5a67d8", "#805ad5", "#d53f8c", "#e53e3e"
     ];
 
     public string FirstName { get; private set; } = null!;

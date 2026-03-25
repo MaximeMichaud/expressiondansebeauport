@@ -1,5 +1,11 @@
 <template>
   <div :class="['soc', isDarkMode && 'soc--dark']">
+    <!-- Theme toggle (fixed, top-right) -->
+    <button @click="toggleTheme" class="soc-theme-toggle" :title="isDarkMode ? 'Mode clair' : 'Mode sombre'">
+      <svg v-if="isDarkMode" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+    </button>
+
     <!-- Header -->
     <header class="soc-header">
       <div class="soc-header__strip">
@@ -26,22 +32,19 @@
         </div>
 
         <div v-if="isAuthenticated" class="soc-header__right">
+          <router-link :to="{ name: 'socialAccount' }" class="soc-header__profile-btn" title="Mon compte">
+            <span class="soc-header__pfp" :style="{ background: userAvatarColor }">
+              <img v-if="userPfp" :src="userPfp" alt="" class="soc-header__pfp-img" />
+              <span v-else class="soc-header__pfp-initials">{{ userInitials }}</span>
+            </span>
+            <span class="soc-header__profile-name">{{ userName }}</span>
+          </router-link>
           <router-link :to="{ name: 'socialMessages' }" class="soc-header__icon-btn" title="Messages">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
             </svg>
             <span v-if="unreadCount > 0" class="soc-header__notif">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
           </router-link>
-          <router-link :to="{ name: 'socialAccount' }" class="soc-header__profile-btn" title="Mon compte">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 00-16 0"/>
-            </svg>
-            <span class="soc-header__profile-name">{{ userName }}</span>
-          </router-link>
-          <button @click="toggleTheme" class="soc-header__icon-btn" :title="isDarkMode ? 'Mode clair' : 'Mode sombre'">
-            <svg v-if="isDarkMode" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-            <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-          </button>
           <button @click="handleLogout" class="soc-header__icon-btn soc-header__icon-btn--logout" title="Se déconnecter">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
@@ -128,7 +131,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, h, onMounted, watch } from 'vue'
+import { ref, computed, h, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import { useMemberStore } from '@/stores/memberStore'
@@ -150,9 +153,16 @@ const authService = useAuthenticationService()
 const isMenuOpen = ref(false)
 const isDarkMode = ref(localStorage.getItem('soc-theme') === 'dark')
 
+// Sync dark class on body so <Teleport to="body"> content (modals, toasts) inherits dark mode
+function syncBodyDark(dark: boolean) {
+  document.body.classList.toggle('soc--dark', dark)
+}
+syncBodyDark(isDarkMode.value)
+
 function toggleTheme() {
   isDarkMode.value = !isDarkMode.value
   localStorage.setItem('soc-theme', isDarkMode.value ? 'dark' : 'light')
+  syncBodyDark(isDarkMode.value)
 }
 const unreadCount = computed(() => memberStore.unreadMessageCount)
 const userName = computed(() => {
@@ -160,6 +170,26 @@ const userName = computed(() => {
   if (m?.firstName) return m.firstName
   const email = userStore.user?.email
   return email ? email.split('@')[0] : ''
+})
+const userPfp = computed(() => memberStore.member?.profileImageUrl || '')
+const userInitials = computed(() => {
+  const m = memberStore.member
+  const f = m?.firstName?.[0] || ''
+  const l = m?.lastName?.[0] || ''
+  return (f + l).toUpperCase() || '?'
+})
+
+const avatarColors = ['#e53e3e', '#dd6b20', '#d69e2e', '#38a169', '#319795', '#3182ce', '#5a67d8', '#805ad5', '#d53f8c', '#e53e3e']
+function getAvatarColor(name: string) {
+  let hash = 0
+  for (let i = 0; i < (name?.length || 0); i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  return avatarColors[Math.abs(hash) % avatarColors.length]
+}
+const userAvatarColor = computed(() => {
+  const m = memberStore.member
+  if (m?.avatarColor) return m.avatarColor
+  const name = m?.firstName ? `${m.firstName} ${m.lastName || ''}` : userName.value
+  return getAvatarColor(name)
 })
 
 async function handleLogout() {
@@ -188,6 +218,26 @@ watch(isAuthenticated, async (val) => {
   }
 }, { immediate: true })
 
+// Poll unread count globally every 15 seconds
+let unreadPoll: ReturnType<typeof setInterval> | null = null
+watch(isAuthenticated, (val) => {
+  if (val) {
+    unreadPoll = setInterval(async () => {
+      try {
+        const count = await socialService.getUnreadCount()
+        memberStore.setUnreadCount(count)
+      } catch { /* */ }
+    }, 15000)
+  } else if (unreadPoll) {
+    clearInterval(unreadPoll)
+    unreadPoll = null
+  }
+}, { immediate: true })
+onUnmounted(() => {
+  if (unreadPoll) clearInterval(unreadPoll)
+  document.body.classList.remove('soc--dark')
+})
+
 const isActive = (name: string) => router.currentRoute.value.name === name
 
 const mainSiteUrl = computed(() => {
@@ -203,13 +253,37 @@ const IconGrid = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0
 const IconUsers = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('path', { d: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2' }), h('circle', { cx: '9', cy: '7', r: '4' }), h('path', { d: 'M23 21v-2a4 4 0 00-3-3.87' }), h('path', { d: 'M16 3.13a4 4 0 010 7.75' })]) }
 
 const tabs = [
-  { name: 'socialPortal', label: 'Groupes', icon: IconGrid },
   { name: 'socialImportant', label: 'Annonces', icon: IconBell },
+  { name: 'socialPortal', label: 'Groupes', icon: IconGrid },
   { name: 'socialMembers', label: 'Membres', icon: IconUsers },
 ]
 </script>
 
 <style lang="scss">
+.soc-theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: #78716c;
+  background: rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  z-index: 999;
+  &:hover { color: #1a1a1a; background: rgba(0,0,0,0.08); }
+
+  .soc--dark & {
+    color: rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.06);
+    &:hover { color: white; background: rgba(255,255,255,0.1); }
+  }
+}
+
 $soc-black: #1a1a1a;
 $soc-black-light: #f0f0f0;
 $soc-black-subtle: #f7f7f7;
@@ -419,11 +493,36 @@ $soc-font-body: 'Karla', sans-serif;
     &--logout:hover { color: #dc2626; background: rgba(#dc2626, 0.08); }
   }
 
+  &__pfp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--soc-avatar-bg);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  &__pfp-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__pfp-initials {
+    font-family: $soc-font-display;
+    font-weight: 700;
+    font-size: 0.55rem;
+    color: var(--soc-avatar-text);
+  }
+
   &__profile-btn {
     display: flex;
     align-items: center;
     gap: 7px;
-    padding: 6px 12px 6px 8px;
+    padding: 4px 12px 4px 4px;
     border-radius: 10px;
     color: var(--soc-bar-text);
     text-decoration: none;
@@ -546,7 +645,8 @@ $soc-font-body: 'Karla', sans-serif;
   transition: background 0.3s;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 @media (min-width: 48em) {
@@ -667,14 +767,17 @@ $soc-font-body: 'Karla', sans-serif;
   max-width: 360px;
 
   &--success {
-    background: $soc-dark;
-    color: white;
+    background: rgba(21, 128, 61, 0.06);
+    color: #15803d;
+    border: 1px solid rgba(21, 128, 61, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(21, 128, 61, 0.1);
   }
 
   &--error {
-    background: #fef2f2;
+    background: rgba(220, 38, 38, 0.06);
     color: #dc2626;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(220, 38, 38, 0.12);
+    border: 1px solid rgba(220, 38, 38, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(220, 38, 38, 0.1);
   }
 
   &__icon { flex-shrink: 0; }
@@ -728,6 +831,7 @@ $soc-font-body: 'Karla', sans-serif;
   .border-gray-100 { border-color: var(--soc-divider) !important; }
   .border-gray-200 { border-color: var(--soc-border) !important; }
   .border-gray-300 { border-color: var(--soc-border) !important; }
+  .border-gray-900 { border-color: #e7e5e4 !important; }
   .divide-gray-100 > * + * { border-color: var(--soc-divider) !important; }
   .divide-gray-200 > * + * { border-color: var(--soc-border) !important; }
 
@@ -748,9 +852,13 @@ $soc-font-body: 'Karla', sans-serif;
 
   // Alert backgrounds
   .bg-red-50 { background-color: rgba(220, 38, 38, 0.1) !important; }
-  .text-red-700, .text-red-600, .text-red-500 { color: #fca5a5 !important; }
+  .text-red-700, .text-red-600, .text-red-500 { color: #dc2626 !important; }
   .bg-green-50 { background-color: rgba(34, 197, 94, 0.1) !important; }
   .text-green-700 { color: #86efac !important; }
+
+  // Password validation
+  .text-emerald-700 { color: #6ee7b7 !important; }
+  .bg-emerald-600 { background-color: #059669 !important; }
 
   // Group header dark bg stays dark
   .bg-\[\#1a1a1a\] { background-color: #0f0f0e !important; color: white !important; }
@@ -775,5 +883,50 @@ $soc-font-body: 'Karla', sans-serif;
     &__label { color: var(--soc-text-muted) !important; }
     &__btn-logout { color: var(--soc-text-muted) !important; border-color: var(--soc-card-border) !important; &:hover { color: #fca5a5 !important; background: rgba(220,38,38,0.08) !important; } }
   }
+
+  // Conversation
+  .soc-convo__bubble--mine { background: #e7e5e4 !important; color: #1c1917 !important; }
+  .soc-convo__bubble--other { background: #292524 !important; color: #d6d3d1 !important; }
+  .soc-convo__bubble--pending { background: #57534e !important; }
+  .soc-convo__send { background: #e7e5e4 !important; color: #1c1917 !important; }
+}
+
+// Dark mode for teleported content (modals, toasts)
+// <Teleport to="body"> escapes .soc--dark wrapper, so we duplicate vars on body
+body.soc--dark {
+  --soc-page-bg: #0a0a09;
+  --soc-content-bg: #181716;
+  --soc-text: #e7e5e4;
+  --soc-text-muted: #a8a29e;
+  --soc-border: rgba(255,255,255,0.12);
+  --soc-bar-bg: #181716;
+  --soc-bar-text: rgba(255,255,255,0.5);
+  --soc-bar-text-strong: white;
+  --soc-bar-hover: rgba(255,255,255,0.08);
+  --soc-bar-active: rgba(255,255,255,0.12);
+  --soc-input-bg: rgba(255,255,255,0.06);
+  --soc-input-border: rgba(255,255,255,0.12);
+  --soc-card-bg: #222120;
+  --soc-card-border: rgba(255,255,255,0.1);
+  --soc-divider: rgba(255,255,255,0.08);
+
+  // Toasts
+  .soc-toast {
+    &--success {
+      background: rgba(21, 128, 61, 0.15);
+      color: #86efac;
+      border-color: rgba(21, 128, 61, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(21, 128, 61, 0.2);
+    }
+    &--error {
+      background: rgba(220, 38, 38, 0.15);
+      color: #fca5a5;
+      border-color: rgba(220, 38, 38, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(220, 38, 38, 0.2);
+    }
+  }
+
+  // Portal modal icon needs light stroke in dark mode
+  .portal-modal__icon-ring svg { stroke: white; }
 }
 </style>

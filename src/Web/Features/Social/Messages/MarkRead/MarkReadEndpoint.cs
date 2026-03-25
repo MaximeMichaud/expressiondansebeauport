@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Web.Features.Social.Messages.MarkRead;
 
-public class MarkReadEndpoint : Endpoint<MarkReadRequest, SucceededOrNotResponse>
+public class MarkReadEndpoint : EndpointWithoutRequest<SucceededOrNotResponse>
 {
     private readonly IConversationService _conversationService;
     private readonly IAuthenticatedUserService _authenticatedUserService;
@@ -26,13 +26,15 @@ public class MarkReadEndpoint : Endpoint<MarkReadRequest, SucceededOrNotResponse
     public override void Configure()
     {
         DontCatchExceptions();
-        Put("social/conversations/{ConversationId}/read");
+        Put("social/conversations/{conversationId}/read");
         Roles(Domain.Constants.User.Roles.MEMBER, Domain.Constants.User.Roles.PROFESSOR, Domain.Constants.User.Roles.ADMINISTRATOR);
         AuthSchemes(JwtBearerDefaults.AuthenticationScheme);
     }
 
-    public override async Task HandleAsync(MarkReadRequest req, CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
+        var conversationId = Route<Guid>("conversationId");
+
         var user = _authenticatedUserService.GetAuthenticatedUser();
         var member = _memberRepository.FindByUserId(user!.Id);
         if (member == null)
@@ -41,7 +43,7 @@ public class MarkReadEndpoint : Endpoint<MarkReadRequest, SucceededOrNotResponse
             return;
         }
 
-        await _conversationService.MarkAsRead(req.ConversationId, member.Id);
+        await _conversationService.MarkAsRead(conversationId, member.Id);
         await Send.OkAsync(new SucceededOrNotResponse(true), ct);
     }
 }

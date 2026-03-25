@@ -19,11 +19,15 @@ public class GroupMember : Entity
         GroupId = group.Id;
     }
 
+    public void SetGroupId(Guid groupId) => GroupId = groupId;
+
     public void SetMember(Member member)
     {
         Member = member;
         MemberId = member.Id;
     }
+
+    public void SetMemberId(Guid memberId) => MemberId = memberId;
 
     public void SetRole(GroupMemberRole role) => Role = role;
     public void SetJoinedAt(Instant joinedAt) => JoinedAt = joinedAt;

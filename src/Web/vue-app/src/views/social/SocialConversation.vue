@@ -6,13 +6,15 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
       </button>
       <router-link v-if="otherMemberId" :to="{ name: 'socialMemberProfile', params: { id: otherMemberId } }" class="soc-convo__profile-link">
-        <div class="soc-convo__avatar" :style="{ background: otherMemberColor || '#1a1a1a' }">
+        <div class="soc-convo__avatar" :style="{ background: otherMemberColor || getAvatarColor(otherMemberName) }">
           <img v-if="otherMemberPfp" :src="otherMemberPfp" :alt="otherMemberName" class="soc-convo__avatar-img" />
           <span v-else class="soc-convo__avatar-initials">{{ getInitials(otherMemberName) }}</span>
         </div>
         <h2 class="soc-convo__name">{{ otherMemberName }}</h2>
       </router-link>
-      <span v-else class="soc-convo__name">{{ otherMemberName }}</span>
+      <template v-else>
+        <span class="soc-convo__name">{{ otherMemberName }}</span>
+      </template>
     </div>
 
     <!-- Messages (scrollable) -->
@@ -26,15 +28,31 @@
           :key="msg.id"
           :class="['soc-convo__row', msg.isMine && 'soc-convo__row--mine']"
         >
+          <!-- Deleted message -->
+          <div v-if="msg.isDeleted" class="soc-convo__bubble soc-convo__bubble--deleted">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            Ce message a été supprimé
+          </div>
+          <!-- Normal message -->
           <div
+            v-else
             :class="[
               'soc-convo__bubble',
               msg.isMine ? (msg.pending ? 'soc-convo__bubble--pending' : 'soc-convo__bubble--mine') : 'soc-convo__bubble--other'
             ]"
+            @contextmenu.prevent="msg.isMine && !msg.pending ? openDeleteMenu(msg) : null"
+            @click.self="msg.isMine && !msg.pending ? openDeleteMenu(msg) : null"
           >
             {{ msg.content }}
+            <button
+              v-if="msg.isMine && !msg.pending"
+              @click.stop="openDeleteMenu(msg)"
+              class="soc-convo__delete-trigger"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+            </button>
           </div>
-          <div :class="['soc-convo__meta', msg.isMine && 'soc-convo__meta--mine']">
+          <div v-if="!msg.isDeleted" :class="['soc-convo__meta', msg.isMine && 'soc-convo__meta--mine']">
             <span>{{ formatTime(msg.created) }}</span>
             <span v-if="msg.isMine && msg.pending" class="soc-convo__status">Envoi...</span>
             <span v-else-if="msg.isMine && msg.isRead" class="soc-convo__status soc-convo__status--read">Lu</span>
@@ -47,6 +65,7 @@
     <!-- Input -->
     <div class="soc-convo__input-bar">
       <input
+        ref="messageInput"
         v-model="newMessage"
         type="text"
         class="soc-convo__input"
@@ -63,6 +82,29 @@
         </svg>
       </button>
     </div>
+
+    <!-- Delete confirmation modal -->
+    <Teleport to="body">
+      <Transition name="convo-modal">
+        <div v-if="deleteTarget" class="convo-modal__overlay" @click.self="deleteTarget = null">
+          <div class="convo-modal__card">
+            <div class="convo-modal__icon-ring">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+              </svg>
+            </div>
+            <h3 class="convo-modal__title">Supprimer ce message?</h3>
+            <p class="convo-modal__text">Le message sera remplacé par « Ce message a été supprimé ».</p>
+            <div class="convo-modal__actions">
+              <button @click="deleteTarget = null" class="convo-modal__btn convo-modal__btn--cancel">Annuler</button>
+              <button @click="confirmDelete" :disabled="deleting" class="convo-modal__btn convo-modal__btn--danger">
+                {{ deleting ? 'Suppression...' : 'Supprimer' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -80,6 +122,7 @@ interface ChatMessage {
   isMine: boolean
   pending?: boolean
   isRead?: boolean
+  isDeleted?: boolean
 }
 
 const route = useRoute()
@@ -94,10 +137,10 @@ const newMessage = ref('')
 const otherMemberName = ref('Conversation')
 const otherMemberId = ref('')
 const otherMemberPfp = ref('')
-const otherMemberColor = ref('#1a1a1a')
+const otherMemberColor = ref('')
 const currentMemberId = ref('')
 
-const avatarColors = ['#1a1a1a', '#3b3b3b', '#6b4c3b', '#4a5568', '#2d3748', '#553c2e', '#44403c', '#1e293b', '#374151', '#292524']
+const avatarColors = ['#e53e3e', '#dd6b20', '#d69e2e', '#38a169', '#319795', '#3182ce', '#5a67d8', '#805ad5', '#d53f8c', '#e53e3e']
 function getAvatarColor(name: string) {
   let hash = 0
   for (let i = 0; i < (name?.length || 0); i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
@@ -108,6 +151,7 @@ function getInitials(name: string) {
   if (!name || !name.trim()) return '??'
   return name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
+const messageInput = ref<HTMLInputElement | null>(null)
 const messagesContainer = ref<HTMLElement | null>(null)
 const ready = ref(false)
 
@@ -152,7 +196,7 @@ async function loadConversationInfo() {
       otherMemberName.value = convo.otherMember.fullName || 'Conversation'
       otherMemberId.value = convo.otherMember.id || ''
       otherMemberPfp.value = convo.otherMember.profileImageUrl || ''
-      otherMemberColor.value = convo.otherMember.avatarColor || '#1a1a1a'
+      otherMemberColor.value = convo.otherMember.avatarColor || ''
     }
   } catch { /* */ }
 }
@@ -169,6 +213,7 @@ async function loadMessages(smooth = false) {
       created: m.created,
       isMine: m.senderMemberId === currentMemberId.value,
       isRead: m.isRead ?? false,
+      isDeleted: m.isDeleted ?? false,
     }))
     pendingMessages.value = pendingMessages.value.filter(
       pm => !serverMessages.value.some(sm => sm.content === pm.content)
@@ -209,6 +254,25 @@ async function sendMessage() {
   }
 }
 
+// Delete message
+const deleteTarget = ref<ChatMessage | null>(null)
+const deleting = ref(false)
+
+function openDeleteMenu(msg: ChatMessage) {
+  deleteTarget.value = msg
+}
+
+async function confirmDelete() {
+  if (!deleteTarget.value) return
+  deleting.value = true
+  try {
+    await socialService.deleteMessage(deleteTarget.value.id)
+    deleteTarget.value = null
+    await pollMessages()
+  } catch { /* */ }
+  deleting.value = false
+}
+
 // Silent poll for read receipts and new messages
 let pollInterval: ReturnType<typeof setInterval> | null = null
 
@@ -223,14 +287,19 @@ async function pollMessages() {
       created: m.created,
       isMine: m.senderMemberId === currentMemberId.value,
       isRead: m.isRead ?? false,
+      isDeleted: m.isDeleted ?? false,
     }))
     pendingMessages.value = pendingMessages.value.filter(
       pm => !serverMessages.value.some(sm => sm.content === pm.content)
     )
-    // New message received — scroll down
+    // New message received — scroll down and update unread count
     if (serverMessages.value.length > prevCount) {
       scrollToBottom(true)
       await socialService.markAsRead(conversationId.value)
+      try {
+        const count = await socialService.getUnreadCount()
+        memberStore.setUnreadCount(count)
+      } catch { /* */ }
     }
   } catch { /* */ }
 }
@@ -238,6 +307,7 @@ async function pollMessages() {
 onMounted(async () => {
   await loadConversationInfo()
   await loadMessages()
+  nextTick(() => messageInput.value?.focus())
   pollInterval = setInterval(pollMessages, 1000)
 })
 
@@ -365,11 +435,15 @@ $convo-font-body: 'Karla', sans-serif;
     font-size: 0.88rem;
     line-height: 1.45;
     word-break: break-word;
+    position: relative;
 
     &--mine {
       background: #1a1a1a;
       color: white;
       border-bottom-right-radius: 6px;
+
+      .soc-convo__delete-trigger { opacity: 0; }
+      &:hover .soc-convo__delete-trigger { opacity: 1; }
     }
 
     &--pending {
@@ -383,6 +457,36 @@ $convo-font-body: 'Karla', sans-serif;
       color: var(--soc-bar-text-strong, #1a1a1a);
       border-bottom-left-radius: 6px;
     }
+
+    &--deleted {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      max-width: 75%;
+      padding: 8px 14px;
+      border-radius: 18px;
+      font-size: 0.78rem;
+      font-style: italic;
+      color: var(--soc-text-muted, #a8a29e);
+      background: transparent;
+      border: 1px dashed var(--soc-border, #e7e0da);
+    }
+  }
+
+  &__delete-trigger {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #dc2626;
+    color: white;
+    transition: opacity 0.15s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   }
 
   &__meta {
@@ -441,4 +545,88 @@ $convo-font-body: 'Karla', sans-serif;
 }
 
 @keyframes convo-spin { to { transform: rotate(360deg); } }
+
+// Delete modal
+.convo-modal {
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    padding: 20px;
+  }
+
+  &__card {
+    width: 100%;
+    max-width: 360px;
+    background: var(--soc-card-bg, white);
+    border-radius: 16px;
+    padding: 32px 28px 24px;
+    text-align: center;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  }
+
+  &__icon-ring {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(220, 38, 38, 0.08);
+    border: 2px solid rgba(220, 38, 38, 0.2);
+    margin-bottom: 16px;
+  }
+
+  &__title {
+    font-family: $convo-font-display;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--soc-bar-text-strong, #1a1a1a);
+    margin-bottom: 6px;
+  }
+
+  &__text {
+    font-size: 0.83rem;
+    line-height: 1.5;
+    color: var(--soc-text-muted, #78716c);
+    margin-bottom: 20px;
+  }
+
+  &__actions { display: flex; gap: 10px; }
+
+  &__btn {
+    flex: 1;
+    padding: 11px 16px;
+    font-family: $convo-font-display;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    &:active { transform: scale(0.98); }
+    &:disabled { opacity: 0.5; cursor: default; }
+
+    &--cancel {
+      background: var(--soc-bar-hover, #f5f3f0);
+      color: var(--soc-bar-text-strong, #1a1a1a);
+      &:hover { background: var(--soc-bar-active, #eae8e4); }
+    }
+
+    &--danger {
+      background: #dc2626;
+      color: white;
+      &:hover { background: #b91c1c; }
+    }
+  }
+}
+
+.convo-modal-enter-active { transition: all 0.2s ease; }
+.convo-modal-leave-active { transition: all 0.15s ease; }
+.convo-modal-enter-from { opacity: 0; }
+.convo-modal-leave-to { opacity: 0; }
 </style>

@@ -57,7 +57,7 @@ public class GetMessagesEndpoint : Endpoint<GetMessagesRequest>
             SenderMemberId = m.SenderMemberId,
             SenderName = m.SenderMember?.FullName ?? "Inconnu",
             Content = m.Deleted.HasValue ? null : m.Content,
-            Created = m.Created.ToString(),
+            Created = m.Created.ToDateTimeUtc().ToString("yyyy-MM-ddTHH:mm:ssZ"),
             IsDeleted = m.Deleted.HasValue,
             IsRead = m.SenderMemberId == member.Id && otherLastReadAt != null && m.Created <= otherLastReadAt
         });

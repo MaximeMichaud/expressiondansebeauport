@@ -49,6 +49,7 @@ public class GetMemberProfileEndpoint : Endpoint<GetMemberProfileRequest>
             member.LastName,
             member.Email,
             member.ProfileImageUrl,
+            member.AvatarColor,
             Roles = member.User.UserRoles.Select(ur => ur.Role.Name).ToList(),
             Groups = groups.Select(g => new
             {
