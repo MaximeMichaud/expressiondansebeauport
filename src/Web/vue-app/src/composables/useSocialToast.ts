@@ -22,8 +22,8 @@ function dismiss(id: number) {
 export function useSocialToast() {
   return {
     toasts: readonly(toasts),
-    success: (msg: string) => show(msg, 'success'),
-    error: (msg: string) => show(msg, 'error'),
+    success: (msg: string, duration?: number) => show(msg, 'success', duration),
+    error: (msg: string, duration?: number) => show(msg, 'error', duration),
     dismiss,
   }
 }

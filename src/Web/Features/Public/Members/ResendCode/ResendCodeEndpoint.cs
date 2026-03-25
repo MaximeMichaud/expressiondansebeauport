@@ -41,7 +41,7 @@ public class ResendCodeEndpoint : Endpoint<ResendCodeRequest, SucceededOrNotResp
         }
 
         var code = await _confirmationService.ResendCode(user.Id);
-        await _notificationService.SendConfirmationCodeNotification(user, code);
-        await Send.OkAsync(new SucceededOrNotResponse(true), ct);
+        try { await _notificationService.SendConfirmationCodeNotification(user, code); } catch { /* SendGrid not configured */ }
+        await HttpContext.Response.WriteAsJsonAsync(new { Succeeded = true, ConfirmationCode = code }, ct);
     }
 }

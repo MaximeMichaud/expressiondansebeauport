@@ -5,7 +5,7 @@
       <button @click="$router.back()" class="soc-account__back">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
       </button>
-      <h2 class="soc-account__title">Mon compte</h2>
+      <h2 class="soc-account__title" style="margin: 0">Mon compte</h2>
     </div>
 
     <!-- Avatar + Name -->
@@ -225,7 +225,7 @@ $soc-black: #1a1a1a;
   &__header {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     padding: 16px 20px;
     border-bottom: 1px solid #f0f0f0;
   }
@@ -234,18 +234,18 @@ $soc-black: #1a1a1a;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
+    flex-shrink: 0;
+    padding: 0;
     color: #78716c;
-    transition: color 0.15s, background 0.15s;
-    &:hover { color: $soc-black; background: #f5f3f0; }
+    transition: color 0.15s;
+    &:hover { color: $soc-black; }
   }
 
   &__title {
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
     font-size: 1.1rem;
+    line-height: 1;
     color: #1c1917;
     letter-spacing: -0.01em;
   }
