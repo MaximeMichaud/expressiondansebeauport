@@ -10,6 +10,7 @@ public interface IPageRepository
     Page? FindById(Guid id);
     Page? FindBySlug(string slug);
     bool SlugExists(string slug, Guid? excludeId = null);
+    bool SlugExistsIncludingDeleted(string slug);
     Task Create(Page page);
     Task Update(Page page);
     Task Delete(Page page);
