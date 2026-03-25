@@ -5,7 +5,7 @@
       <button @click="$router.back()" class="soc-account__back">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
       </button>
-      <h2 class="soc-account__title" style="margin: 0">Mon compte</h2>
+      <h2 class="soc-account__title">Mon compte</h2>
     </div>
 
     <!-- Avatar + Name -->
