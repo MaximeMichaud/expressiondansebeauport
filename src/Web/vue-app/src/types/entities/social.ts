@@ -99,6 +99,7 @@ export interface Conversation {
     content: string
     senderName: string
     created: string
+    isMine?: boolean
   }
   unreadCount: number
 }
