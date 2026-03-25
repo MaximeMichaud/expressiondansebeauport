@@ -11,25 +11,22 @@
       <div class="page-editor__main">
         <div class="form-group">
           <label>{{ t('global.title') }}</label>
-          <input type="text" v-model="page.title" class="form-input" placeholder="À propos de nous" />
+          <input type="text" v-model="page.title" class="form-input" :placeholder="t('pages.pages.placeholderTitle')" />
         </div>
         <div class="form-group">
           <label>{{ t('pages.pages.slug') }}</label>
-          <input type="text" v-model="page.slug" class="form-input" placeholder="a-propos-de-nous" />
+          <input type="text" v-model="page.slug" class="form-input" :placeholder="t('pages.pages.placeholderSlug')" />
         </div>
         <FormTextEditor
           v-model="page.content"
+          v-model:cssModelValue="page.customCss"
           name="content"
           :label="t('pages.pages.content')"
           :rules="[]"
         />
         <div class="form-group">
           <label>{{ t('pages.pages.metaDescription') }}</label>
-          <textarea v-model="page.metaDescription" rows="3" class="form-input form-textarea" placeholder="Brève description pour les moteurs de recherche (160 caractères max)"></textarea>
-        </div>
-        <div class="form-group">
-          <label>CSS personnalisé</label>
-          <textarea v-model="page.customCss" rows="8" class="form-input form-textarea form-textarea--code" placeholder=".public-page__title { color: red; }"></textarea>
+          <textarea v-model="page.metaDescription" rows="3" class="form-input form-textarea" :placeholder="t('pages.pages.placeholderMetaDescription')"></textarea>
         </div>
       </div>
       <div class="page-editor__sidebar">

@@ -9,6 +9,7 @@ using Infrastructure.ExternalApis.Local;
 using Microsoft.AspNetCore.Diagnostics;
 using Persistence;
 using Serilog;
+using Web.BackgroundServices;
 using Web.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,12 +20,8 @@ builder.Services
     .AddPersistenceServices(builder.Configuration)
     .AddInfrastructureServices(builder.Configuration);
 
-// Use local file storage in development (Azure Blob not configured)
-if (builder.Environment.IsDevelopment())
-{
-    var webRootPath = builder.Environment.WebRootPath ?? Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
-    builder.Services.AddScoped<IFileStorageApiConsumer>(_ => new LocalFileStorageConsumer(webRootPath));
-}
+var webRootPath = builder.Environment.WebRootPath ?? Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
+builder.Services.AddScoped<IFileStorageApiConsumer>(_ => new LocalFileStorageConsumer(webRootPath));
 
 builder.Services.AddSignalR();
 builder.Configuration.AddJsonFile("appsettings.local.json", true);
@@ -53,6 +50,7 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(Log.Logger);
 
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
+builder.Services.AddHostedService<BackupSchedulerService>();
 
 builder.Services.AddCors(options =>
 {
@@ -99,7 +97,7 @@ app.UseExceptionHandler(c => c.Run(async context =>
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseCors(corsPolicyBuilder => corsPolicyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseCors("corsDomains");
 app.UseAuthentication();
 app.UseAuthorization();
 

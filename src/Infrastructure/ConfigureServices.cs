@@ -1,11 +1,7 @@
 ﻿using System.Text;
-using Application.Interfaces.FileStorage;
 using Application.Interfaces.Services;
 using Domain.Entities.Identity;
 using Domain.Repositories;
-using Infrastructure.ExternalApis.Azure;
-using Infrastructure.ExternalApis.Azure.Consumers;
-using Infrastructure.ExternalApis.Azure.Http;
 using Infrastructure.Mailing;
 using Infrastructure.Repositories.Admins;
 using Infrastructure.Repositories.Authentication;
@@ -24,6 +20,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
 using ScottBrady91.AspNetCore.Identity;
@@ -84,9 +81,15 @@ public static class ConfigureServices
         services.AddScoped<IConversationRepository, ConversationRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
 
-        services.AddScoped<IFileStorageApiConsumer, AzureBlobApiConsumer>();
-        services.AddScoped<IAzureApiHttpClient, AzureApiHttpClient>();
-        services.AddScoped<IAzureBlobWrapper, AzureBlobWrapper>();
+        services.AddScoped<IBackupService>(sp =>
+        {
+            var context = sp.GetRequiredService<GarneauTemplateDbContext>();
+            var config = sp.GetRequiredService<IConfiguration>();
+            var logger = sp.GetRequiredService<ILogger<Services.BackupService>>();
+            var env = sp.GetRequiredService<Microsoft.Extensions.Hosting.IHostEnvironment>();
+            var webRootPath = Path.Combine(env.ContentRootPath, "wwwroot");
+            return new Services.BackupService(context, config, logger, webRootPath);
+        });
     }
 
     private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)

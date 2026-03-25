@@ -55,7 +55,7 @@ test: off
 
 artifacts:
   - path: ./src/Web/__publish
-    name: garneau-template.web
+    name: expressiondansebeauport.web
 
 deploy:
   - provider: WebDeploy
