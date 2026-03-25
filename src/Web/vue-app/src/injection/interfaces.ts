@@ -62,6 +62,8 @@ export interface IPageService {
   update(page: Page): Promise<SucceededOrNotResponse>
 
   delete(id: string): Promise<SucceededOrNotResponse>
+
+  duplicate(id: string): Promise<Page | null>
 }
 
 export interface IMenuService {
