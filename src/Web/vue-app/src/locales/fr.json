@@ -77,6 +77,11 @@
           "path": "import-export",
           "fullPath": "/admin/import-export",
           "name": "Import / Export"
+        },
+        "backup": {
+          "path": "sauvegardes",
+          "fullPath": "/admin/sauvegardes",
+          "name": "Sauvegardes"
         }
       }
     }
@@ -327,6 +332,30 @@
         "warning": "Avertissement",
         "critical": "Critique"
       }
+    },
+    "backup": {
+      "createBackup": "Créer un backup",
+      "creating": "Backup en cours...",
+      "description": "Gérer les sauvegardes de la base de données et des fichiers médias.",
+      "fileName": "Fichier",
+      "size": "Taille",
+      "date": "Date",
+      "type": "Type",
+      "status": "Statut",
+      "typeManual": "Manuel",
+      "typeScheduled": "Automatique",
+      "statusCompleted": "Terminé",
+      "statusInProgress": "En cours",
+      "statusFailed": "Échoué",
+      "noBackups": "Aucune sauvegarde disponible.",
+      "restore": "Restaurer",
+      "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer cette sauvegarde?",
+      "restoreConfirmation": "Êtes-vous sûr de vouloir restaurer cette sauvegarde? L'application sera temporairement indisponible et les données actuelles seront remplacées.",
+      "createSuccess": "Sauvegarde créée avec succès.",
+      "createFailed": "Erreur lors de la création de la sauvegarde.",
+      "deleteSuccess": "Sauvegarde supprimée.",
+      "restoreSuccess": "Restauration terminée. Rechargez la page.",
+      "restoreFailed": "Erreur lors de la restauration."
     },
     "importExport": {
       "exportTitle": "Exporter",

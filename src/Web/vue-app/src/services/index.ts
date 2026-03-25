@@ -7,3 +7,4 @@ export * from './menuService';
 export * from './siteSettingsService';
 export * from './siteHealthService';
 export * from './importExportService';
+export * from './backupService';
