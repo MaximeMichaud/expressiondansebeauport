@@ -48,7 +48,7 @@ public class RegisterEndpoint : EndpointWithSanitizedRequest<RegisterRequest, Su
                 _logger.LogWarning(ex, "Failed to send confirmation email to {Email}. Code: {Code}", req.Email, code);
             }
 
-            await Send.OkAsync(new SucceededOrNotResponse(true), cancellation: ct);
+            await HttpContext.Response.WriteAsJsonAsync(new { Succeeded = true, ConfirmationCode = code }, ct);
         }
         catch (UserWithEmailAlreadyExistsException)
         {
