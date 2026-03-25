@@ -475,7 +475,7 @@ $mp-font-body: 'Karla', sans-serif;
     width: 38px;
     height: 38px;
     border-radius: 10px;
-    background: var(--soc-notif-bg, #1a1a1a);
+    background: var(--soc-bar-text-strong, #1a1a1a);
     background-size: cover;
     background-position: center;
     display: flex;
@@ -485,7 +485,7 @@ $mp-font-body: 'Karla', sans-serif;
     font-family: $mp-font-display;
     font-size: 0.55rem;
     font-weight: 700;
-    color: var(--soc-notif-text, white);
+    color: white;
   }
 
   &__group-info {
