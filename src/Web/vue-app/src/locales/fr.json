@@ -117,6 +117,7 @@
     "login": {
       "username": "Nom d'utilisateur",
       "password": "Mot de passe",
+      "passwordPlaceholder": "Votre mot de passe",
       "passwordConfirmation": "Confirmation du mot de passe",
       "submit": "Se connecter",
       "forgotPassword": "Mot de passe oublié ?",
@@ -184,7 +185,15 @@
       },
       "type": "Type",
       "altText": "Texte alternatif",
-      "dimensions": "Dimensions"
+      "placeholderAltText": "Ex: Photo de groupe lors du spectacle de juin",
+      "dimensions": "Dimensions",
+      "fileType": "Type de fichier",
+      "filterAll": "Tout",
+      "filterImages": "Images",
+      "filterDocuments": "Documents",
+      "filterVideos": "Vidéos",
+      "filterOther": "Autres",
+      "downloadFile": "Télécharger le fichier"
     },
     "pages": {
       "slug": "Slug",
@@ -194,6 +203,9 @@
       "publishPanel": "Publication",
       "sortOrder": "Ordre de tri",
       "sortOrderTooltip": "Détermine l'ordre d'affichage dans le menu (0 = premier)",
+      "placeholderTitle": "À propos de nous",
+      "placeholderSlug": "a-propos-de-nous",
+      "placeholderMetaDescription": "Brève description pour les moteurs de recherche (160 caractères max)",
       "allStatuses": "Tous les statuts",
       "published": "Publié",
       "draft": "Brouillon",
@@ -233,6 +245,11 @@
       "targetPlaceholder": "Sélectionner une cible",
       "targetSelf": "Même fenêtre",
       "targetBlank": "Nouvelle fenêtre",
+      "reorder": "Réordonner",
+      "defaultPrimaryName": "Menu principal",
+      "defaultFooterName": "Menu pied de page",
+      "placeholderLabel": "Accueil",
+      "placeholderUrl": "https://exemple.com ou /ma-page",
       "create": {
         "validation": {
           "successMessage": "Le menu a été créé avec succès.",
@@ -292,6 +309,9 @@
       "partners": "Logos partenaires",
       "noPartners": "Aucun logo partenaire.",
       "selectImage": "Sélectionner une image",
+      "placeholderTagline": "L'art du mouvement, le cœur du quartier",
+      "placeholderFooterDescription": "École de danse offrant des cours pour tous les âges...",
+      "placeholderCopyright": "Expression Danse de Beauport inc. Tous droits réservés.",
       "update": {
         "validation": {
           "successMessage": "Les paramètres ont été mis à jour avec succès.",
@@ -300,7 +320,13 @@
       }
     },
     "siteHealth": {
-      "refresh": "Rafraîchir"
+      "refresh": "Rafraîchir",
+      "overallStatus": "Statut général",
+      "status": {
+        "good": "Bon",
+        "warning": "Avertissement",
+        "critical": "Critique"
+      }
     },
     "importExport": {
       "exportTitle": "Exporter",
@@ -398,6 +424,11 @@
     }
   },
   "public": {
+    "home": {
+      "eyebrow": "École de danse — Beauport, Québec",
+      "subtitle": "Quand le talent et la passion riment avec le plaisir !",
+      "cta": "S'inscrire maintenant"
+    },
     "nav": {
       "school": "Notre école",
       "recreational": "Récréatif",
@@ -421,6 +452,11 @@
       "backHome": "Retour à l'accueil"
     }
   },
+  "textEditor": {
+    "clean": "Nettoyer la mise en forme",
+    "normal": "Normal",
+    "imageUrl": "URL de l'image"
+  },
   "textEditorLinkPopup": {
     "addLink": "Ajouter un lien",
     "label": "Libellé",
@@ -441,6 +477,8 @@
     "zipCode": "Le code postal doit respecter le format X0X X0X.",
     "phoneNumber": "Le numéro de téléphone doit respecter le format 555-555-5555.",
     "errorsInForm": "Il y a des erreurs dans le formulaire.",
-    "errorOccured": "Une erreur est survenue."
+    "errorOccured": "Une erreur est survenue.",
+    "futureDate": "La date doit être dans le futur.",
+    "fieldRequired": "Ce champ est requis"
   }
 }

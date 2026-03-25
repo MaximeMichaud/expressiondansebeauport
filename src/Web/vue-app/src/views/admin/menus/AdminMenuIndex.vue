@@ -36,7 +36,7 @@
             @end="onDragEnd">
             <template #item="{ element: item }">
               <div class="menu-item">
-                <button class="menu-item__drag" aria-label="Réordonner">
+                <button class="menu-item__drag" :aria-label="t('pages.menus.reorder')">
                   <GripVertical :size="14" />
                 </button>
                 <div class="menu-item__info">
@@ -62,12 +62,12 @@
           <h3>{{ t('pages.menus.addItem') }}</h3>
           <div :class="['form__field', { error: newItemErrors.label }]">
             <label>{{ t('pages.menus.label') }}</label>
-            <input type="text" v-model="newItem.label" placeholder="Accueil" />
+            <input type="text" v-model="newItem.label" :placeholder="t('pages.menus.placeholderLabel')" />
             <span v-if="newItemErrors.label" class="form__error-message">{{ newItemErrors.label }}</span>
           </div>
           <div :class="['form__field', { error: newItemErrors.url }]">
             <label>{{ t('pages.menus.url') }}</label>
-            <input type="text" v-model="newItem.url" placeholder="https://exemple.com ou /ma-page" />
+            <input type="text" v-model="newItem.url" :placeholder="t('pages.menus.placeholderUrl')" />
             <span v-if="newItemErrors.url" class="form__error-message">{{ newItemErrors.url }}</span>
           </div>
           <div class="form__field">
@@ -91,12 +91,12 @@
         <h3>{{ t('pages.menus.editItem') }}</h3>
         <div :class="['form__field', { error: editItemErrors.label }]">
           <label>{{ t('pages.menus.label') }}</label>
-          <input type="text" v-model="editingItem.label" placeholder="Accueil" />
+          <input type="text" v-model="editingItem.label" :placeholder="t('pages.menus.placeholderLabel')" />
           <span v-if="editItemErrors.label" class="form__error-message">{{ editItemErrors.label }}</span>
         </div>
         <div :class="['form__field', { error: editItemErrors.url }]">
           <label>{{ t('pages.menus.url') }}</label>
-          <input type="text" v-model="editingItem.url" placeholder="https://exemple.com ou /ma-page" />
+          <input type="text" v-model="editingItem.url" :placeholder="t('pages.menus.placeholderUrl')" />
           <span v-if="editItemErrors.url" class="form__error-message">{{ editItemErrors.url }}</span>
         </div>
         <div class="form__field">
@@ -211,8 +211,8 @@ async function reloadCurrentMenu() {
 
 function validateItem(item: NavigationMenuItem): {label?: string; url?: string} {
   const errors: {label?: string; url?: string} = {}
-  if (!item.label?.trim()) errors.label = "Ce champ est requis"
-  if (!item.url?.trim()) errors.url = "Ce champ est requis"
+  if (!item.label?.trim()) errors.label = t('validation.empty')
+  if (!item.url?.trim()) errors.url = t('validation.empty')
   return errors
 }
 
