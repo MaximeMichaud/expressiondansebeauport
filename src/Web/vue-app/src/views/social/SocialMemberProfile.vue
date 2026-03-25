@@ -330,8 +330,7 @@ $mp-font-body: 'Karla', sans-serif;
     justify-content: center;
     overflow: hidden;
     flex-shrink: 0;
-    background: var(--soc-avatar-bg, #1a1a1a);
-    color: var(--soc-avatar-text, white);
+    color: white;
     box-shadow: 0 4px 16px rgba(0,0,0,0.1);
   }
 

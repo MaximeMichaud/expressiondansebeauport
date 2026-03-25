@@ -881,7 +881,7 @@ $soc-font-body: 'Karla', sans-serif;
     &__card { background: var(--soc-card-bg) !important; border-color: var(--soc-card-border) !important; }
     &__card-header { border-color: var(--soc-divider) !important; color: var(--soc-text-muted); h3 { color: var(--soc-text-muted) !important; } }
     &__input { background: var(--soc-input-bg) !important; border-color: var(--soc-input-border) !important; color: var(--soc-text) !important; &::placeholder { color: #57534e !important; } }
-    &__avatar { background: var(--soc-avatar-bg) !important; color: var(--soc-avatar-text) !important; }
+    &__avatar { color: white !important; }
     &__btn-primary { background: #e7e5e4 !important; color: #1c1917 !important; &:hover { background: white !important; } }
     &__header { border-color: var(--soc-divider) !important; }
     &__back { color: var(--soc-text-muted) !important; &:hover { color: var(--soc-text) !important; background: var(--soc-bar-hover) !important; } }
