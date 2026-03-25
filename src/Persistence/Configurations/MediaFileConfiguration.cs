@@ -14,6 +14,10 @@ public class MediaFileConfiguration : IEntityTypeConfiguration<MediaFile>
         builder.Property(m => m.OriginalFileName).HasMaxLength(500).IsRequired();
         builder.Property(m => m.ContentType).HasMaxLength(100).IsRequired();
         builder.Property(m => m.BlobUrl).HasMaxLength(2000).IsRequired();
+        builder.Property(m => m.FileType)
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .HasDefaultValue(MediaFileType.Image);
         builder.Property(m => m.AltText).HasMaxLength(200);
     }
 }
