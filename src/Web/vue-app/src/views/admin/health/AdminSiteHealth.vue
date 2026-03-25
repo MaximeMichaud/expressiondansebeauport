@@ -14,7 +14,7 @@
       <div class="site-health__summary card">
         <component :is="statusIcon(health.overallStatus)" :size="32" :class="`site-health__icon--${health.overallStatus?.toLowerCase()}`" />
         <div>
-          <p class="site-health__summary-label">Statut général</p>
+          <p class="site-health__summary-label">{{ t('pages.siteHealth.overallStatus') }}</p>
           <p class="site-health__summary-value" :class="`site-health__text--${health.overallStatus?.toLowerCase()}`">
             {{ translateStatus(health.overallStatus) }}
           </p>
@@ -68,9 +68,9 @@ onMounted(async () => {
 
 function translateStatus(status?: string): string {
   const map: Record<string, string> = {
-    'Good': 'Bon',
-    'Warning': 'Avertissement',
-    'Critical': 'Critique',
+    'Good': t('pages.siteHealth.status.good'),
+    'Warning': t('pages.siteHealth.status.warning'),
+    'Critical': t('pages.siteHealth.status.critical'),
   }
   return status ? (map[status] ?? status) : ''
 }

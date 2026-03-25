@@ -53,7 +53,7 @@
         <p v-if="selectedMedia.width"><strong>{{ t('pages.media.dimensions') }}:</strong> {{ selectedMedia.width }} x {{ selectedMedia.height }}px</p>
         <div v-if="isImage(selectedMedia.contentType)" class="media-detail__alt">
           <label>{{ t('pages.media.altText') }}</label>
-          <input type="text" v-model="editAltText" @blur="saveAltText" placeholder="Ex: Photo de groupe lors du spectacle de juin" />
+          <input type="text" v-model="editAltText" @blur="saveAltText" :placeholder="t('pages.media.placeholderAltText')" />
         </div>
         <button class="btn" @click="onDelete">{{ t('global.delete') }}</button>
       </div>
