@@ -7,6 +7,7 @@ import {
   IAdministratorService,
   IApiService,
   IAuthenticationService,
+  IBackupService,
   IImportExportService,
   IMediaService,
   IMenuService,
@@ -29,6 +30,7 @@ import {
 } from "@/services";
 import {AdministratorService} from "@/services/administratorService";
 import {SocialService} from "@/services/socialService";
+import {BackupService} from "@/services/backupService";
 
 const dependencyInjection = new Container();
 dependencyInjection.bind<AxiosInstance>(TYPES.AxiosInstance).toConstantValue(axios.create())
@@ -43,6 +45,7 @@ dependencyInjection.bind<ISiteSettingsService>(TYPES.ISiteSettingsService).to(Si
 dependencyInjection.bind<ISiteHealthService>(TYPES.ISiteHealthService).to(SiteHealthService).inSingletonScope()
 dependencyInjection.bind<IImportExportService>(TYPES.IImportExportService).to(ImportExportService).inSingletonScope()
 dependencyInjection.bind<ISocialService>(TYPES.ISocialService).to(SocialService).inSingletonScope()
+dependencyInjection.bind<IBackupService>(TYPES.IBackupService).to(BackupService).inSingletonScope()
 
 function useAdministratorService() {
   return dependencyInjection.get<IAdministratorService>(TYPES.IAdministratorService);
@@ -84,6 +87,10 @@ function useSocialService() {
   return dependencyInjection.get<ISocialService>(TYPES.ISocialService);
 }
 
+function useBackupService() {
+  return dependencyInjection.get<IBackupService>(TYPES.IBackupService);
+}
+
 export {
   dependencyInjection,
   useAdministratorService,
@@ -95,5 +102,6 @@ export {
   useSiteSettingsService,
   useSiteHealthService,
   useImportExportService,
-  useSocialService
+  useSocialService,
+  useBackupService
 };

@@ -22,7 +22,7 @@ env:
 
 jobs:
   deploy-preview:
-    if: github.event.action != 'closed'
+    if: github.event.action != 'closed' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -152,7 +152,7 @@ jobs:
             > First request may take ~30s (cold start). Credentials: `admin@gmail.com` / `Qwerty123!`
 
   destroy-preview:
-    if: github.event.action == 'closed'
+    if: github.event.action == 'closed' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Log in to Azure
