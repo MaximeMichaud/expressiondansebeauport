@@ -19,6 +19,9 @@ public class SiteSettingsRepository : ISiteSettingsRepository
         var settings = await _context.SiteSettings
             .Include(s => s.LogoMediaFile)
             .Include(s => s.FaviconMediaFile)
+            .Include(s => s.SocialLinks.OrderBy(sl => sl.SortOrder))
+            .Include(s => s.FooterPartners.OrderBy(fp => fp.SortOrder))
+                .ThenInclude(fp => fp.MediaFile)
             .FirstOrDefaultAsync();
 
         if (settings is not null) return settings;

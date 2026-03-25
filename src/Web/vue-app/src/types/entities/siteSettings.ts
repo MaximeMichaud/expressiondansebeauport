@@ -1,3 +1,6 @@
+import type { SocialLink } from "./socialLink"
+import type { FooterPartner } from "./footerPartner"
+
 export class SiteSettings {
   id?: string
   siteTitle?: string
@@ -10,4 +13,14 @@ export class SiteSettings {
   faviconUrl?: string
   headingFont?: string
   bodyFont?: string
+  footerDescription?: string
+  footerAddress?: string
+  footerCity?: string
+  footerPhone?: string
+  footerEmail?: string
+  facebookUrl?: string
+  instagramUrl?: string
+  copyrightText?: string
+  socialLinks?: SocialLink[]
+  footerPartners?: FooterPartner[]
 }
