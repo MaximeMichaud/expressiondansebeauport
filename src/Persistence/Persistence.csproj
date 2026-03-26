@@ -9,13 +9,13 @@
 
     <ItemGroup>
       <PackageReference Include="EFCore.NamingConventions" Version="10.0.1" />
-      <PackageReference Include="Humanizer.Core" Version="3.0.1" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2">
+      <PackageReference Include="Humanizer.Core" Version="3.0.10" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.2" />
-      <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="10.0.2" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.5" />
+      <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="10.0.5" />
       <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="10.0.0" />
       
     </ItemGroup>
@@ -26,6 +26,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Azure.Identity" Version="1.19.0" />
+      <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.5" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.5" />
       <Compile Remove="Migrations\20230215155530_AddContactAndMemberTablesAndRegularIndividualRegularSyndicateAndCorporateOrganizationTables.cs" />
       <Compile Remove="Migrations\20230215155530_AddContactAndMemberTablesAndRegularIndividualRegularSyndicateAndCorporateOrganizationTables.Designer.cs" />
     </ItemGroup>
