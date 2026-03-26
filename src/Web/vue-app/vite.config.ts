@@ -30,6 +30,8 @@ export default defineConfig({
   },
   css: {
     lightningcss: {
+      // Workaround: vue3-easy-data-table utilise des variables CSS sans préfixe "--"
+      // À retirer quand ce package sera remplacé
       errorRecovery: true
     }
   },
