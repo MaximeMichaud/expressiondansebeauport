@@ -33,8 +33,6 @@ public class BackupService : IBackupService
         _databaseBackupPath = configuration["Backup:DatabaseBackupPath"] ?? _backupPath;
         _uploadsPath = Path.Combine(webRootPath, "uploads");
         _retentionCount = int.TryParse(configuration["Backup:RetentionCount"], out var r) ? r : 7;
-
-        Directory.CreateDirectory(_backupPath);
     }
 
     public async Task<BackupRecord> CreateBackupAsync(string type, CancellationToken ct)
@@ -45,6 +43,8 @@ public class BackupService : IBackupService
 
         _context.BackupRecords.Add(record);
         await _context.SaveChangesAsync(ct);
+
+        Directory.CreateDirectory(_backupPath);
 
         try
         {
@@ -160,11 +160,13 @@ public class BackupService : IBackupService
             .ToList();
     }
 
-    public string? GetFilePath(string fileName)
+    public Task<Stream?> GetFileStreamAsync(string fileName, CancellationToken ct)
     {
         ValidateFileName(fileName);
         var path = Path.Combine(_backupPath, fileName);
-        return File.Exists(path) ? path : null;
+        if (!File.Exists(path))
+            return Task.FromResult<Stream?>(null);
+        return Task.FromResult<Stream?>(File.OpenRead(path));
     }
 
     private static void ValidateFileName(string fileName)
