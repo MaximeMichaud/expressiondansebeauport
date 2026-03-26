@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts" setup>
-import {useI18n} from "vue3-i18n"
+import {useI18n} from "vue-i18n"
 import {onMounted, ref} from "vue"
 import {useSiteHealthService} from "@/inversify.config"
 import {SiteHealth} from "@/types/entities"

@@ -57,7 +57,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import { useI18n } from "vue3-i18n";
+import { useI18n } from "vue-i18n";
 import axios from "axios";
 import LogoEdb from "@/assets/icons/logo__edb.svg";
 import { NavigationMenuItem } from "@/types/entities";

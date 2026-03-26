@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import {useI18n} from "vue3-i18n";
+import {useI18n} from "vue-i18n";
 import {useRouter} from "vue-router";
 import {useUserStore} from "@/stores/userStore";
 import {useAuthenticationService} from "@/inversify.config";
