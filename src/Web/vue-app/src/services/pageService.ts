@@ -67,4 +67,20 @@ export class PageService extends ApiService implements IPageService {
       })
     return new SucceededOrNotResponse(response.status === 204)
   }
+
+  public async duplicate(id: string): Promise<Page | null> {
+    const response = await this
+      ._httpClient
+      .post<any, AxiosResponse<Page>>(
+        `${import.meta.env.VITE_API_BASE_URL}/admin/pages/${id}/duplicate`,
+        {},
+        this.headersWithJsonContentType())
+      .catch(function (error: AxiosError): AxiosResponse<Page> {
+        return error.response as AxiosResponse<Page>
+      })
+    if (response.status >= 200 && response.status < 300) {
+      return response.data as Page
+    }
+    return null
+  }
 }
