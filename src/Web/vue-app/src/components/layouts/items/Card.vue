@@ -19,7 +19,7 @@
         type="button"
         class="plus-sign plus-sign--minus"
         :class="{ 'plus-sign--plus': isExpanded }"
-        v-if="$windowWidth < 768"
+        v-if="windowWidth < 768"
         @click="toggleExpansion"
       ></button>
     </div>
@@ -28,7 +28,7 @@
       <div
         class="card__content"
         ref="content"
-        v-show="isExpanded || $windowWidth >= 768 || title == null"
+        v-show="isExpanded || windowWidth >= 768 || title == null"
       >
         <slot></slot>
       </div>
@@ -40,6 +40,9 @@
 import { ref, onMounted } from "vue";
 import BtnLink from "@/components/layouts/items/BtnLink.vue";
 import IconDownload from "@/assets/icons/icon__download.svg";
+import {useWindowSize} from "@/composables/useWindowSize";
+
+const {width: windowWidth} = useWindowSize();
 
  
 defineProps<{
