@@ -29,7 +29,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Core.Flash" Version="2.1.1" />
 		<PackageReference Include="FastEndpoints" Version="8.0.1" />
 		<PackageReference Include="FastEndpoints.Security" Version="8.0.1" />
 		<PackageReference Include="FastEndpoints.Swagger" Version="7.2.0" />
