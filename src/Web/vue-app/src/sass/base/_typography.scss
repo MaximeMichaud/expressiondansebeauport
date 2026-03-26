@@ -1,17 +1,15 @@
 @use "../tools" as *;
-// typography
+// typography — skip social platform pages (.soc, .soc-auth)
 
 // Titles
-h1,
-.h1-like {
+:where(:not(.soc *, .soc-auth *)):where(h1, .h1-like) {
   font-weight: 700;
   font-size: rem(28);
   line-height: rem(34);
   text-transform: none;
 }
 
-h2,
-.h2-like {
+:where(:not(.soc *, .soc-auth *)):where(h2, .h2-like) {
   font-weight: 700;
   font-size: rem(22);
   line-height: rem(28);
@@ -19,8 +17,7 @@ h2,
   margin-bottom: 1rem;
 }
 
-h3,
-.h3-like {
+:where(:not(.soc *, .soc-auth *)):where(h3, .h3-like) {
   font-weight: 700;
   font-size: rem(18);
   line-height: rem(18);
@@ -28,9 +25,7 @@ h3,
   margin-bottom: 0.75rem;
 }
 
-
-h4,
-.h4-like {
+:where(:not(.soc *, .soc-auth *)):where(h4, .h4-like) {
   font-weight: 700;
   font-size: rem(14);
   line-height: rem(14);
@@ -44,8 +39,7 @@ h4,
   }
 }
 
-h5,
-.h5-like {
+:where(:not(.soc *, .soc-auth *)):where(h5, .h5-like) {
   font-weight: 700;
   font-size: rem(13);
   line-height: rem(15);

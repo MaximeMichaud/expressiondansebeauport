@@ -1,0 +1,21 @@
+using Domain.Entities;
+using Domain.Enums;
+
+namespace Application.Services.Posts;
+
+public interface IPostService
+{
+    Task<Post> CreatePost(Guid? groupId, Guid authorMemberId, string content, PostType type);
+    Task<Post> CreateAnnouncement(Guid authorMemberId, string content);
+    Task DeletePost(Guid postId);
+    Task PinPost(Guid postId, Guid groupId);
+    Task<bool> ToggleLike(Guid postId, Guid memberId);
+    Task AddComment(Guid postId, Guid authorMemberId, string content);
+    Task DeleteComment(Guid commentId);
+    Task RecordView(Guid postId, Guid memberId);
+    Task VoteOnPoll(Guid pollOptionId, Guid memberId);
+    Task<List<Post>> GetGroupFeed(Guid groupId, int page);
+    Task<List<Post>> GetAnnouncements(int page);
+    Task<Post?> GetPostById(Guid postId);
+    Task<List<Comment>> GetComments(Guid postId, int page);
+}

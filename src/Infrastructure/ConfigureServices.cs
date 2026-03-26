@@ -6,6 +6,10 @@ using Infrastructure.Mailing;
 using Infrastructure.Repositories.Admins;
 using Infrastructure.Repositories.Authentication;
 using Infrastructure.Repositories.Media;
+using Infrastructure.Repositories.Groups;
+using Infrastructure.Repositories.Messaging;
+using Infrastructure.Repositories.Posts;
+using Infrastructure.Repositories.Members;
 using Infrastructure.Repositories.Menus;
 using Infrastructure.Repositories.Pages;
 using Infrastructure.Repositories.Users;
@@ -67,6 +71,15 @@ public static class ConfigureServices
         services.AddScoped<ISiteSettingsRepository, Infrastructure.Repositories.SiteSettings.SiteSettingsRepository>();
         services.AddScoped<INavigationMenuRepository, NavigationMenuRepository>();
         services.AddScoped<IPageRepository, PageRepository>();
+        services.AddScoped<IMemberRepository, MemberRepository>();
+        services.AddScoped<IEmailConfirmationCodeRepository, EmailConfirmationCodeRepository>();
+        services.AddScoped<IGroupRepository, GroupRepository>();
+        services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
+        services.AddScoped<IPostRepository, PostRepository>();
+        services.AddScoped<ICommentRepository, CommentRepository>();
+        services.AddScoped<IPollRepository, PollRepository>();
+        services.AddScoped<IConversationRepository, ConversationRepository>();
+        services.AddScoped<IMessageRepository, MessageRepository>();
 
         var backupProvider = configuration["Backup:Provider"] ?? "Local";
         if (backupProvider.Equals("Azure", StringComparison.OrdinalIgnoreCase))
@@ -140,6 +153,20 @@ public static class ConfigureServices
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(tokenSigningKey)),
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromSeconds(10)
+                };
+
+                o.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             });
     }

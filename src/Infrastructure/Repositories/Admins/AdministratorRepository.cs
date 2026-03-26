@@ -26,6 +26,17 @@ public class AdministratorRepository : IAdministratorRepository
             .FirstOrDefault(x => x.User.Id == userId);
     }
 
+    public async Task<List<Administrator>> GetAll()
+    {
+        return await _context.Administrators
+            .AsNoTracking()
+            .Include(a => a.User)
+            .ThenInclude(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .OrderBy(a => a.LastName).ThenBy(a => a.FirstName)
+            .ToListAsync();
+    }
+
     public async Task Update(Administrator admin)
     {
         if (_context.Entry(admin).State == EntityState.Detached)

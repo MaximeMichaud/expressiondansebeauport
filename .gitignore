@@ -698,3 +698,5 @@ src/Web/wwwroot/assets/
 .taskmaster/
 
 .DS_Store
+.superpowers/
+docs/

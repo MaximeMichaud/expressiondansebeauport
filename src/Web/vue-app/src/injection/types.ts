@@ -10,5 +10,6 @@ export const TYPES = {
   ISiteSettingsService: Symbol.for("ISiteSettingsService"),
   ISiteHealthService: Symbol.for("ISiteHealthService"),
   IImportExportService: Symbol.for("IImportExportService"),
+  ISocialService: Symbol.for("ISocialService"),
   IBackupService: Symbol.for("IBackupService")
 };

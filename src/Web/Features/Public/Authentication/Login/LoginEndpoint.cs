@@ -3,6 +3,7 @@ using Application.Interfaces.Services.Users;
 using Application.Settings;
 using Domain.Common;
 using Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Web.Cookies;
 using Web.Features.Common;
@@ -14,15 +15,18 @@ public class LoginEndpoint : EndpointWithSanitizedRequest<LoginRequest, Succeede
     private readonly CookieSettings _cookieSettings;
     private readonly INotificationService _notificationService;
     private readonly IAuthenticationService _authenticationService;
+    private readonly UserManager<User> _userManager;
 
     public LoginEndpoint(
         IOptions<CookieSettings> cookieSettings,
         INotificationService notificationService,
-        IAuthenticationService authenticationService)
+        IAuthenticationService authenticationService,
+        UserManager<User> userManager)
     {
         _cookieSettings = cookieSettings.Value;
         _notificationService = notificationService;
         _authenticationService = authenticationService;
+        _userManager = userManager;
     }
 
     public override void Configure()
@@ -35,6 +39,15 @@ public class LoginEndpoint : EndpointWithSanitizedRequest<LoginRequest, Succeede
 
     public override async Task HandleAsync(LoginRequest req, CancellationToken ct)
     {
+        // Check if user exists but is unconfirmed
+        var existingUser = await _userManager.FindByEmailAsync(req.Username);
+        if (existingUser != null && !existingUser.EmailConfirmed)
+        {
+            var confirmError = new Error("EmailNotConfirmed", "Please confirm your email address.");
+            await Send.OkAsync(new SucceededOrNotResponse(succeeded: false, confirmError), ct);
+            return;
+        }
+
         var user = await _authenticationService.FindUserWithUsernameAndPassword(req.Username, req.Password);
         if (user == null)
         {
