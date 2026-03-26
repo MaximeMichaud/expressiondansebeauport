@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build --mode production",
@@ -49,16 +52,16 @@
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
+    "@eslint/js": "^10.0.1",
     "@types/luxon": "^3.4.0",
     "@types/node": "^25.2.1",
     "@vitejs/plugin-vue": "^6.0.4",
-    "eslint": "^9.0.0",
-    "eslint-plugin-vue": "^10.7.0",
+    "eslint": "^10.1.0",
+    "eslint-plugin-vue": "^10.8.0",
     "globals": "^17.3.0",
     "sass": "^1.83.0",
     "typescript": "^5.7.0",
-    "typescript-eslint": "^8.54.0",
+    "typescript-eslint": "^8.57.2",
     "vite": "^7.3.1",
     "vite-svg-loader": "^5.1.0",
     "vue-tsc": "^3.2.4"
