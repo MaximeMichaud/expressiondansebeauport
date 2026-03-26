@@ -3,6 +3,7 @@ import {Role} from "@/types/enums";
 import {createRouter, createWebHistory} from "vue-router";
 
 import Home from "@/views/public/Home.vue";
+import PublicContact from "@/views/public/PublicContact.vue";
 import PublicPage from "@/views/public/PublicPage.vue";
 import NotFound from "@/views/public/NotFound.vue";
 import InternalError from "@/views/public/InternalError.vue";
@@ -248,6 +249,15 @@ const mainRoutes = [
     name: "internalError",
     component: InternalError,
     meta: { public: true, title: "routes.internalError.name" }
+  },
+  {
+    path: "/nous-joindre",
+    name: "publicContact",
+    component: PublicContact,
+    meta: {
+      title: "routes.home.name",
+      public: true
+    }
   },
   {
     path: "/:slug",
