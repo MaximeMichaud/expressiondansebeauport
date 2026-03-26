@@ -125,11 +125,11 @@ const mainRoutes = [
   },
   {
     // Redirect old /connexion to /admin/connexion
-    path: i18n.t("routes.login.path"),
+    path: i18n.global.t("routes.login.path"),
     redirect: "/admin/connexion"
   },
   {
-    path: i18n.t("routes.twoFactor.path"),
+    path: i18n.global.t("routes.twoFactor.path"),
     name: "twoFactor",
     component: TwoFactor,
     meta: {
@@ -137,7 +137,7 @@ const mainRoutes = [
     }
   },
   {
-    path: i18n.t("routes.forgotPassword.path"),
+    path: i18n.global.t("routes.forgotPassword.path"),
     name: "forgotPassword",
     component: ForgotPassword,
     meta: {
@@ -145,7 +145,7 @@ const mainRoutes = [
     }
   },
   {
-    path: i18n.t("routes.resetPassword.path"),
+    path: i18n.global.t("routes.resetPassword.path"),
     name: "resetPassword",
     component: ResetPassword,
     props: (route: any) => ({userId: route.query.userId, token: route.query.token}),
@@ -154,7 +154,7 @@ const mainRoutes = [
     }
   },
   {
-    path: i18n.t("routes.account.path"),
+    path: i18n.global.t("routes.account.path"),
     name: "account",
     component: Account,
     meta: {
@@ -162,7 +162,7 @@ const mainRoutes = [
     }
   },
   {
-    path: i18n.t("routes.admin.path"),
+    path: i18n.global.t("routes.admin.path"),
     name: "admin",
     component: Admin,
     meta: {
@@ -173,7 +173,7 @@ const mainRoutes = [
     redirect: {name: 'admin.children.pages.index'},
     children: [
       {
-        path: i18n.t("routes.admin.children.pages.path"),
+        path: i18n.global.t("routes.admin.children.pages.path"),
         name: "admin.children.pages",
         component: Admin,
         children: [
@@ -183,12 +183,12 @@ const mainRoutes = [
             component: AdminPageIndex,
           },
           {
-            path: i18n.t("routes.admin.children.pages.add.path"),
+            path: i18n.global.t("routes.admin.children.pages.add.path"),
             name: "admin.children.pages.add",
             component: AdminPageEditor,
           },
           {
-            path: i18n.t("routes.admin.children.pages.edit.path"),
+            path: i18n.global.t("routes.admin.children.pages.edit.path"),
             name: "admin.children.pages.edit",
             component: AdminPageEditor,
             props: true,
@@ -196,32 +196,32 @@ const mainRoutes = [
         ],
       },
       {
-        path: i18n.t("routes.admin.children.menus.path"),
+        path: i18n.global.t("routes.admin.children.menus.path"),
         name: "admin.children.menus",
         component: AdminMenuIndex,
       },
       {
-        path: i18n.t("routes.admin.children.media.path"),
+        path: i18n.global.t("routes.admin.children.media.path"),
         name: "admin.children.media",
         component: AdminMediaLibrary,
       },
       {
-        path: i18n.t("routes.admin.children.customizer.path"),
+        path: i18n.global.t("routes.admin.children.customizer.path"),
         name: "admin.children.customizer",
         component: AdminCustomizer,
       },
       {
-        path: i18n.t("routes.admin.children.siteHealth.path"),
+        path: i18n.global.t("routes.admin.children.siteHealth.path"),
         name: "admin.children.siteHealth",
         component: AdminSiteHealth,
       },
       {
-        path: i18n.t("routes.admin.children.importExport.path"),
+        path: i18n.global.t("routes.admin.children.importExport.path"),
         name: "admin.children.importExport",
         component: AdminImportExport,
       },
       {
-        path: i18n.t("routes.admin.children.backup.path"),
+        path: i18n.global.t("routes.admin.children.backup.path"),
         name: "admin.children.backup",
         component: AdminBackup,
       },
@@ -300,7 +300,7 @@ router.afterEach((to) => {
     document.title = social ? 'EDB Social' : 'EDB';
     return;
   }
-  const title = social ? titleKey : i18n.t(titleKey);
+  const title = social ? titleKey : i18n.global.t(titleKey);
   document.title = title ? `${title} - EDB Social` : 'EDB Social';
 });
 
