@@ -1,7 +1,7 @@
 <template>
   <p class="navbar__section-title">{{ t('routes.admin.name') }}</p>
   <ul class="navbar__nav">
-    <li v-for="child in adminChildRoutes" :key="child.name">
+    <li v-for="child in visibleRoutes" :key="child.name">
       <RouterLink :to="getChildPath('admin', child.name?.toString())" class="navbar__navlink">
         <component :is="iconMap[child.name?.toString() ?? '']" :size="16" />
         {{ t(`routes.${child.name?.toString()}.name`) }}
@@ -17,14 +17,18 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue3-i18n";
 import { useRouter } from "vue-router";
 import { getChildPath } from "@/router/helpers";
 import { Images, FileText, LayoutList, Palette, Activity, ArrowLeftRight, HardDriveDownload, UserCircle, Users, UsersRound, CalendarDays } from "lucide-vue-next";
+import { useBackupService } from "@/inversify.config";
+import { Images, FileText, LayoutList, Palette, Activity, ArrowLeftRight, HardDriveDownload, UserCircle } from "lucide-vue-next";
 
 const { t } = useI18n();
 const router = useRouter();
+const backupService = useBackupService();
+const backupAvailable = ref(true);
 
 const iconMap: Record<string, unknown> = {
   'admin.children.media': Images,
@@ -43,5 +47,15 @@ const adminChildRoutes = computed(() => {
   const routes = router.getRoutes();
   const match = routes.find(r => r.path === t('routes.admin.path'));
   return match?.children ?? [];
+});
+
+const visibleRoutes = computed(() =>
+  adminChildRoutes.value.filter(r =>
+    r.name !== 'admin.children.backup' || backupAvailable.value
+  )
+);
+
+onMounted(async () => {
+  backupAvailable.value = await backupService.checkStatus();
 });
 </script>

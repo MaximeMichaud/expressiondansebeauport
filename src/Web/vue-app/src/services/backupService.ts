@@ -64,4 +64,12 @@ export class BackupService extends ApiService implements IBackupService {
       })
     return new SucceededOrNotResponse(response.status >= 200 && response.status < 300)
   }
+
+  public async checkStatus(): Promise<boolean> {
+    const response = await this
+      ._httpClient
+      .get<{available: boolean}>(`${import.meta.env.VITE_API_BASE_URL}/admin/backup/status`)
+      .catch(() => null)
+    return response?.data?.available ?? false
+  }
 }

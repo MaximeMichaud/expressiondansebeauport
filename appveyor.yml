@@ -67,6 +67,6 @@ deploy:
     aspnet_core_force_restart: true
     app_offline: true
     remove_files: true
-    skip_dirs: \\App_Data;\\.well-known;
+    skip_dirs: \\App_Data;\\.well-known;\\wwwroot\\uploads;
     on:
       branch: main

@@ -8,5 +8,6 @@ public interface IBackupService
     Task RestoreAsync(string fileName, CancellationToken ct);
     Task DeleteAsync(Guid id, CancellationToken ct);
     List<BackupRecord> GetAll();
-    string? GetFilePath(string fileName);
+    Task<Stream?> GetFileStreamAsync(string fileName, CancellationToken ct);
+    bool IsAvailable();
 }

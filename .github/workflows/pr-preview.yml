@@ -107,7 +107,17 @@ jobs:
                 "Application__RedirectUrl=https://${PREVIEW_FQDN}" \
                 "Cookies__Domain=${PREVIEW_FQDN}" \
                 "Cookies__Secure=true" \
-                "SendGrid__ApiKey=SG.preview-placeholder"
+                "SendGrid__ApiKey=SG.preview-placeholder" \
+                "Backup__Provider=Azure" \
+                "Azure__SubscriptionId=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+                "Azure__ResourceGroupName=${{ env.RESOURCE_GROUP }}" \
+                "Azure__SqlServerName=edb-preview-sql" \
+                "Azure__SqlDatabaseName=${{ env.DB_NAME }}" \
+                "Azure__SqlAdminUser=${{ secrets.AZURE_SQL_ADMIN_USER }}" \
+                "Azure__SqlAdminPassword=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }}" \
+                "Azure__StorageConnectionString=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}" \
+                "Azure__StorageAccountKey=${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}" \
+                "Azure__BlobContainerName=backups-pr-${{ github.event.pull_request.number }}"
           else
             az containerapp update \
               --name ${{ env.CONTAINER_APP_NAME }} \
@@ -124,7 +134,17 @@ jobs:
                 "Application__RedirectUrl=https://${PREVIEW_FQDN}" \
                 "Cookies__Domain=${PREVIEW_FQDN}" \
                 "Cookies__Secure=true" \
-                "SendGrid__ApiKey=SG.preview-placeholder"
+                "SendGrid__ApiKey=SG.preview-placeholder" \
+                "Backup__Provider=Azure" \
+                "Azure__SubscriptionId=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+                "Azure__ResourceGroupName=${{ env.RESOURCE_GROUP }}" \
+                "Azure__SqlServerName=edb-preview-sql" \
+                "Azure__SqlDatabaseName=${{ env.DB_NAME }}" \
+                "Azure__SqlAdminUser=${{ secrets.AZURE_SQL_ADMIN_USER }}" \
+                "Azure__SqlAdminPassword=${{ secrets.AZURE_SQL_ADMIN_PASSWORD }}" \
+                "Azure__StorageConnectionString=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}" \
+                "Azure__StorageAccountKey=${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}" \
+                "Azure__BlobContainerName=backups-pr-${{ github.event.pull_request.number }}"
           fi
 
       - name: Get preview URL
@@ -176,6 +196,13 @@ jobs:
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --name ${{ env.DB_NAME }} \
             --yes 2>/dev/null || echo "Database not found"
+
+      - name: Delete PR backup container
+        run: |
+          az storage container delete \
+            --name "backups-pr-${{ github.event.pull_request.number }}" \
+            --connection-string "${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}" \
+            2>/dev/null || echo "Backup container not found"
 
       - name: Update PR comment
         uses: marocchino/sticky-pull-request-comment@v2
