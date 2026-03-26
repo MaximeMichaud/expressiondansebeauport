@@ -28,7 +28,7 @@ public static class ConfigureServices
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services,
         IConfiguration configuration)
     {
-        ConfigureInfrastructureServices(services);
+        ConfigureInfrastructureServices(services, configuration);
         ConfigureFormsServices(services);
 
         services.AddAutoMapper(cfg => cfg.AddMaps(typeof(ConfigureServices).Assembly));
@@ -55,7 +55,7 @@ public static class ConfigureServices
         });
     }
 
-    private static void ConfigureInfrastructureServices(IServiceCollection services)
+    private static void ConfigureInfrastructureServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<IHttpContextUserService, HttpContextUserService>();
 
@@ -68,15 +68,29 @@ public static class ConfigureServices
         services.AddScoped<INavigationMenuRepository, NavigationMenuRepository>();
         services.AddScoped<IPageRepository, PageRepository>();
 
-        services.AddScoped<IBackupService>(sp =>
+        var backupProvider = configuration["Backup:Provider"] ?? "Local";
+        if (backupProvider.Equals("Azure", StringComparison.OrdinalIgnoreCase))
         {
-            var context = sp.GetRequiredService<GarneauTemplateDbContext>();
-            var config = sp.GetRequiredService<IConfiguration>();
-            var logger = sp.GetRequiredService<ILogger<Services.BackupService>>();
-            var env = sp.GetRequiredService<Microsoft.Extensions.Hosting.IHostEnvironment>();
-            var webRootPath = Path.Combine(env.ContentRootPath, "wwwroot");
-            return new Services.BackupService(context, config, logger, webRootPath);
-        });
+            services.AddScoped<IBackupService>(sp =>
+            {
+                var context = sp.GetRequiredService<GarneauTemplateDbContext>();
+                var config = sp.GetRequiredService<IConfiguration>();
+                var logger = sp.GetRequiredService<ILogger<Services.AzureBackupService>>();
+                return new Services.AzureBackupService(context, config, logger);
+            });
+        }
+        else
+        {
+            services.AddScoped<IBackupService>(sp =>
+            {
+                var context = sp.GetRequiredService<GarneauTemplateDbContext>();
+                var config = sp.GetRequiredService<IConfiguration>();
+                var logger = sp.GetRequiredService<ILogger<Services.BackupService>>();
+                var env = sp.GetRequiredService<Microsoft.Extensions.Hosting.IHostEnvironment>();
+                var webRootPath = Path.Combine(env.ContentRootPath, "wwwroot");
+                return new Services.BackupService(context, config, logger, webRootPath);
+            });
+        }
     }
 
     private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)
