@@ -67,7 +67,7 @@ onMounted(async () => {
       if (isSocial.value) {
         await router.push({ name: 'socialLogin' })
       } else {
-        await router.push(i18n.t("routes.login.path"))
+        await router.push(i18n.global.t("routes.login.path"))
       }
     }
   }

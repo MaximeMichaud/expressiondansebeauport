@@ -30,29 +30,26 @@
           <draggable
             v-if="currentMenu.menuItems && currentMenu.menuItems.length"
             v-model="draggableItems"
-            item-key="id"
             handle=".menu-item__drag"
             class="menu-items-list"
             @end="onDragEnd">
-            <template #item="{ element: item }">
-              <div class="menu-item">
-                <button class="menu-item__drag" :aria-label="t('pages.menus.reorder')">
-                  <GripVertical :size="14" />
-                </button>
-                <div class="menu-item__info">
-                  <span class="menu-item__label">{{ item.label }}</span>
-                  <span v-if="item.url || item.pageSlug" class="menu-item__url">{{ item.url || item.pageSlug }}</span>
-                </div>
-                <div class="menu-item__actions">
-                  <button class="menu-item__btn" @click="editItem(item)">
-                    <Pencil :size="14" />
-                  </button>
-                  <button class="menu-item__btn" @click="removeItem(item)">
-                    <Trash2 :size="14" />
-                  </button>
-                </div>
+            <div v-for="item in draggableItems" :key="item.id" class="menu-item">
+              <button class="menu-item__drag" :aria-label="t('pages.menus.reorder')">
+                <GripVertical :size="14" />
+              </button>
+              <div class="menu-item__info">
+                <span class="menu-item__label">{{ item.label }}</span>
+                <span v-if="item.url || item.pageSlug" class="menu-item__url">{{ item.url || item.pageSlug }}</span>
               </div>
-            </template>
+              <div class="menu-item__actions">
+                <button class="menu-item__btn" @click="editItem(item)">
+                  <Pencil :size="14" />
+                </button>
+                <button class="menu-item__btn" @click="removeItem(item)">
+                  <Trash2 :size="14" />
+                </button>
+              </div>
+            </div>
           </draggable>
           <p v-else class="menu-builder__empty">{{ t('global.table.noData') }}</p>
         </div>
