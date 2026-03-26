@@ -1,0 +1,10 @@
+# Default owners for everything
+* @MaximeMichaud @arksyy @jujultFr @AtomGjectas @Ruth-arl
+
+# CI/CD, DevOps, dependencies
+.github/ @MaximeMichaud
+appveyor.yml @MaximeMichaud
+Dockerfile @MaximeMichaud
+docker-compose.yml @MaximeMichaud
+src/Web/vue-app/package.json @MaximeMichaud
+src/Web/vue-app/package-lock.json @MaximeMichaud
