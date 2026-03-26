@@ -8,3 +8,4 @@ Dockerfile @MaximeMichaud
 docker-compose.yml @MaximeMichaud
 src/Web/vue-app/package.json @MaximeMichaud
 src/Web/vue-app/package-lock.json @MaximeMichaud
+**/*.csproj @MaximeMichaud
