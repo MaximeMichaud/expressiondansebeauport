@@ -14,6 +14,7 @@ import {
   IPageService,
   ISiteHealthService,
   ISiteSettingsService,
+  ISocialService,
   IUserService
 } from "@/injection/interfaces";
 import {
@@ -28,6 +29,7 @@ import {
   UserService
 } from "@/services";
 import {AdministratorService} from "@/services/administratorService";
+import {SocialService} from "@/services/socialService";
 import {BackupService} from "@/services/backupService";
 
 const dependencyInjection = new Container();
@@ -42,6 +44,7 @@ dependencyInjection.bind<IMenuService>(TYPES.IMenuService).to(MenuService).inSin
 dependencyInjection.bind<ISiteSettingsService>(TYPES.ISiteSettingsService).to(SiteSettingsService).inSingletonScope()
 dependencyInjection.bind<ISiteHealthService>(TYPES.ISiteHealthService).to(SiteHealthService).inSingletonScope()
 dependencyInjection.bind<IImportExportService>(TYPES.IImportExportService).to(ImportExportService).inSingletonScope()
+dependencyInjection.bind<ISocialService>(TYPES.ISocialService).to(SocialService).inSingletonScope()
 dependencyInjection.bind<IBackupService>(TYPES.IBackupService).to(BackupService).inSingletonScope()
 
 function useAdministratorService() {
@@ -80,6 +83,10 @@ function useImportExportService() {
   return dependencyInjection.get<IImportExportService>(TYPES.IImportExportService);
 }
 
+function useSocialService() {
+  return dependencyInjection.get<ISocialService>(TYPES.ISocialService);
+}
+
 function useBackupService() {
   return dependencyInjection.get<IBackupService>(TYPES.IBackupService);
 }
@@ -95,5 +102,6 @@ export {
   useSiteSettingsService,
   useSiteHealthService,
   useImportExportService,
+  useSocialService,
   useBackupService
 };

@@ -708,3 +708,5 @@ xmlrpc.php
 .taskmaster/
 
 .DS_Store
+.superpowers/
+docs/

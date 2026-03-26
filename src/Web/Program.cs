@@ -104,6 +104,8 @@ app.UseAuthorization();
 app.UseFastEndpoints(config => { config.Endpoints.RoutePrefix = "api"; });
 app.UseSwaggerGen();
 
+app.MapHub<Web.Hubs.ChatHub>("/hubs/chat");
+
 // SPA fallback - serve Vue app for any non-API route
 app.MapFallbackToFile("index.html");
 

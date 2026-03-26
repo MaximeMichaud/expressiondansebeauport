@@ -1,0 +1,352 @@
+<template>
+  <div class="flex min-h-[calc(100vh-120px)] flex-col">
+    <!-- Group header -->
+    <div class="group-banner flex items-center gap-3 border-b border-gray-200 bg-white px-4 py-3">
+      <button @click="$router.push({ name: 'socialPortal' })" class="text-gray-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#1a1a1a] group-logo">
+        <img v-if="group?.imageUrl" :src="group.imageUrl" :alt="group?.name" class="h-full w-full rounded-lg object-cover" />
+        <span v-else class="text-[8px] font-bold text-white">EDB</span>
+      </div>
+      <h1 class="text-base font-semibold text-gray-900">{{ group?.name || 'Groupe' }}</h1>
+    </div>
+
+    <!-- Feed -->
+    <div class="flex-1">
+        <!-- Post composer -->
+        <div class="border-b-[6px] border-[var(--soc-page-bg,#f0f0f0)] px-4 py-3">
+          <div class="flex items-start gap-3">
+            <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: myAvatarColor }">
+              {{ userInitials }}
+            </div>
+            <div class="flex-1">
+              <textarea
+                v-model="newPostContent"
+                rows="2"
+                class="w-full resize-none rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#1a1a1a]"
+                placeholder="Partager quelque chose..."
+              ></textarea>
+              <div class="mt-2 flex justify-end">
+                <button
+                  @click="submitPost"
+                  :disabled="!newPostContent.trim() || submittingPost"
+                  class="btn-publish rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#000] disabled:opacity-50 cursor-pointer"
+                >
+                  Publier
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Posts feed -->
+        <div v-if="loadingPosts" class="flex justify-center py-10">
+          <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
+        </div>
+        <div v-else-if="posts.length === 0" class="flex flex-col items-center justify-center gap-3 py-20 text-gray-400">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          <span class="text-sm">Aucun post pour le moment. Soyez le premier à publier!</span>
+        </div>
+        <div v-else>
+          <div v-for="post in posts" :key="post.id" class="border-b-[6px] border-[var(--soc-page-bg,#f0f0f0)] px-4 py-4">
+            <!-- Author info -->
+            <div class="mb-3 flex items-center gap-2.5">
+              <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: post.authorAvatarColor || '#1a1a1a' }">
+                {{ getInitials(post.authorName) }}
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-semibold text-gray-900">{{ post.authorName }}</p>
+                <p class="text-xs text-gray-500">{{ formatDate(post.created) }}</p>
+              </div>
+              <span v-if="post.isPinned" class="rounded bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-700">
+                Épinglé
+              </span>
+              <button
+                v-if="isAdmin || post.authorMemberId === myMemberId"
+                @click="deleteTarget = post"
+                class="soc-header__icon-btn soc-header__icon-btn--logout"
+                style="width: 30px; height: 30px;"
+                title="Supprimer"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+              </button>
+            </div>
+
+            <!-- Content -->
+            <p class="mb-3 whitespace-pre-wrap text-sm leading-relaxed text-gray-800">{{ post.content }}</p>
+
+            <!-- Media -->
+            <div v-if="post.media && post.media.length" class="mb-3 grid gap-1" :class="post.media.length > 1 ? 'grid-cols-2' : ''">
+              <img v-for="media in post.media" :key="media.id" :src="media.thumbnailUrl || media.mediaUrl" class="w-full rounded-lg object-cover" />
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-3 flex border-t border-[var(--soc-divider,#f0f0f0)] pt-2">
+              <button
+                @click="toggleLike(post)"
+                :class="['flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium transition cursor-pointer', post.hasLiked ? 'text-red-600' : 'text-gray-400 hover:text-gray-600']"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" :fill="post.hasLiked ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                {{ post.likeCount || 0 }}
+              </button>
+              <button
+                @click="toggleComments(post)"
+                class="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium text-gray-400 hover:text-gray-600 transition cursor-pointer"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                {{ post.commentCount || 0 }}
+              </button>
+            </div>
+
+            <!-- Comments section -->
+            <div v-if="expandedComments === post.id" class="mt-3 border-t border-[var(--soc-divider,#f0f0f0)] pt-3">
+              <div v-if="loadingComments" class="flex justify-center py-3">
+                <div class="h-4 w-4 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
+              </div>
+              <div v-else>
+                <div v-for="comment in postComments" :key="comment.id" class="mb-3 flex gap-2">
+                  <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-[9px] font-bold text-white" :style="{ background: comment.authorAvatarColor || '#1a1a1a' }">
+                    {{ getInitials(comment.authorName) }}
+                  </div>
+                  <div class="flex-1">
+                    <div class="rounded-lg bg-gray-50 px-3 py-2">
+                      <div class="flex items-center justify-between">
+                        <p class="text-xs font-semibold text-gray-900">{{ comment.authorName }}</p>
+                        <button
+                          v-if="isAdmin || comment.authorMemberId === myMemberId"
+                          @click="removeComment(comment.id)"
+                          class="soc-header__icon-btn soc-header__icon-btn--logout !w-5 !h-5 !rounded-md"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                        </button>
+                      </div>
+                      <p class="text-xs text-gray-700">{{ comment.content }}</p>
+                    </div>
+                    <p class="mt-0.5 text-[10px] text-gray-400">{{ formatDate(comment.created) }}</p>
+                  </div>
+                </div>
+                <p v-if="postComments.length === 0" class="text-center text-xs text-gray-400 py-2">Aucun commentaire</p>
+              </div>
+              <!-- Add comment -->
+              <div class="mt-2 flex gap-2">
+                <input
+                  v-model="newComment"
+                  type="text"
+                  class="flex-1 rounded-full border border-gray-200 px-3 py-1.5 text-xs focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
+                  placeholder="Écrire un commentaire..."
+                  @keyup.enter="submitComment(post)"
+                />
+                <button
+                  @click="submitComment(post)"
+                  :disabled="!newComment.trim() || submittingComment"
+                  class="btn-publish flex items-center justify-center rounded-full bg-[#1a1a1a] w-7 h-7 text-white disabled:opacity-50 cursor-pointer flex-shrink-0"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+
+    <!-- Delete confirmation modal -->
+    <Teleport to="body">
+      <div v-if="deleteTarget" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-5" @click.self="deleteTarget = null">
+        <div class="w-full max-w-[380px] rounded-2xl bg-white p-8 pt-7 text-center shadow-2xl">
+          <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+          </div>
+          <h3 class="mb-1 text-base font-bold text-gray-900">Supprimer cette publication?</h3>
+          <p class="mb-5 text-sm text-gray-500">Cette publication sera définitivement supprimée.</p>
+          <div class="flex gap-3">
+            <button @click="deleteTarget = null" class="flex-1 rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 cursor-pointer">Annuler</button>
+            <button @click="confirmDelete" :disabled="deleting" class="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-50 cursor-pointer">
+              {{ deleting ? 'Suppression...' : 'Supprimer' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { useSocialService } from '@/inversify.config'
+import { useUserStore } from '@/stores/userStore'
+import { useMemberStore } from '@/stores/memberStore'
+import { useSocialToast } from '@/composables/useSocialToast'
+import { Role } from '@/types/enums'
+import type { Post } from '@/types/entities'
+
+const route = useRoute()
+const socialService = useSocialService()
+const toast = useSocialToast()
+const userStore = useUserStore()
+const memberStore = useMemberStore()
+
+const isAdmin = computed(() => userStore.hasRole(Role.Admin))
+const myMemberId = computed(() => memberStore.member?.id || '')
+const groupId = computed(() => route.params.id as string)
+
+const group = ref<any>(null)
+const posts = ref<Post[]>([])
+const loadingPosts = ref(true)
+const newPostContent = ref('')
+const submittingPost = ref(false)
+
+// Delete state
+const deleteTarget = ref<Post | null>(null)
+const deleting = ref(false)
+
+// Comments state
+const expandedComments = ref<string | null>(null)
+const postComments = ref<any[]>([])
+const newComment = ref('')
+const loadingComments = ref(false)
+const submittingComment = ref(false)
+
+const myAvatarColor = computed(() => memberStore.member.avatarColor || '#1a1a1a')
+
+const userInitials = computed(() => {
+  const m = memberStore.member
+  if (m?.firstName) return getInitials(`${m.firstName} ${m.lastName || ''}`)
+  const user = userStore.user
+  if (!user?.email) return '?'
+  return user.email.charAt(0).toUpperCase()
+})
+
+function getInitials(name: string) {
+  if (!name || !name.trim()) return '??'
+  return name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase().slice(0, 2)
+}
+
+function formatDate(dateStr: string) {
+  const date = new Date(dateStr)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffMin = Math.floor(diffMs / 60000)
+  if (diffMin < 1) return "à l'instant"
+  if (diffMin < 60) return `il y a ${diffMin} min`
+  const diffH = Math.floor(diffMin / 60)
+  if (diffH < 24) return `il y a ${diffH}h`
+  const diffD = Math.floor(diffH / 24)
+  if (diffD < 7) return `il y a ${diffD}j`
+  return date.toLocaleDateString('fr-CA')
+}
+
+async function confirmDelete() {
+  if (!deleteTarget.value) return
+  deleting.value = true
+  try {
+    await socialService.deletePost(deleteTarget.value.id)
+    deleteTarget.value = null
+    toast.success('Publication supprimée.')
+    await loadPosts()
+  } catch {
+    toast.error('Erreur lors de la suppression.')
+  }
+  deleting.value = false
+}
+
+async function loadGroup() {
+  try {
+    group.value = await socialService.getGroupDetails(groupId.value)
+  } catch { /* */ }
+}
+
+async function loadPosts() {
+  loadingPosts.value = true
+  try {
+    posts.value = await socialService.getGroupFeed(groupId.value)
+  } catch { /* */ }
+  loadingPosts.value = false
+}
+
+async function submitPost() {
+  if (!newPostContent.value.trim()) return
+  submittingPost.value = true
+  try {
+    await socialService.createPost(groupId.value, newPostContent.value)
+    newPostContent.value = ''
+    await loadPosts()
+  } catch { /* */ }
+  submittingPost.value = false
+}
+
+async function toggleLike(post: Post) {
+  try {
+    await socialService.toggleLike(post.id)
+    post.hasLiked = !post.hasLiked
+    post.likeCount += post.hasLiked ? 1 : -1
+  } catch { /* */ }
+}
+
+// Comment methods
+async function toggleComments(post: Post) {
+  if (expandedComments.value === post.id) {
+    expandedComments.value = null
+    return
+  }
+  expandedComments.value = post.id
+  loadingComments.value = true
+  try {
+    postComments.value = await socialService.getComments(post.id)
+  } catch { postComments.value = [] }
+  loadingComments.value = false
+}
+
+async function submitComment(post: Post) {
+  if (!newComment.value.trim()) return
+  submittingComment.value = true
+  try {
+    await socialService.addComment(post.id, newComment.value)
+    newComment.value = ''
+    postComments.value = await socialService.getComments(post.id)
+    post.commentCount = (post.commentCount || 0) + 1
+  } catch { /* */ }
+  submittingComment.value = false
+}
+
+async function removeComment(commentId: string) {
+  try {
+    await socialService.deleteComment(commentId)
+    postComments.value = postComments.value.filter(c => c.id !== commentId)
+    const post = posts.value.find(p => p.id === expandedComments.value)
+    if (post) post.commentCount = Math.max(0, (post.commentCount || 0) - 1)
+    toast.success('Commentaire supprimé.')
+  } catch {
+    toast.error('Erreur lors de la suppression.')
+  }
+}
+
+let pollInterval: ReturnType<typeof setInterval> | null = null
+
+onMounted(async () => {
+  await loadGroup()
+  await loadPosts()
+  pollInterval = setInterval(async () => {
+    if (expandedComments.value || submittingComment.value) return
+    try {
+      const fresh = await socialService.getGroupFeed(groupId.value)
+      const oldCounts = new Map(posts.value.map(p => [p.id, p.commentCount]))
+      for (const p of fresh) {
+        const old = oldCounts.get(p.id)
+        if (old != null && old > (p.commentCount || 0)) {
+          p.commentCount = old
+        }
+      }
+      posts.value = fresh
+    } catch { /* */ }
+  }, 5000)
+})
+
+onUnmounted(() => {
+  if (pollInterval) clearInterval(pollInterval)
+})
+</script>

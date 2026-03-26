@@ -49,6 +49,7 @@ public class GarneauTemplateDbContextInitializer
             await SeedAdmins();
             await SeedPages();
             await SeedMenus();
+            await AssignAvatarColorsToExistingMembers();
         }
         catch (Exception ex)
         {
@@ -61,13 +62,29 @@ public class GarneauTemplateDbContextInitializer
     {
         if (!await _roleManager.RoleExistsAsync(Roles.ADMINISTRATOR))
             await _roleManager.CreateAsync(new Role { Name = Roles.ADMINISTRATOR, NormalizedName = Roles.ADMINISTRATOR.Normalize() });
+
+        if (!await _roleManager.RoleExistsAsync(Roles.PROFESSOR))
+            await _roleManager.CreateAsync(new Role { Name = Roles.PROFESSOR, NormalizedName = Roles.PROFESSOR.Normalize() });
+
+        if (!await _roleManager.RoleExistsAsync(Roles.MEMBER))
+            await _roleManager.CreateAsync(new Role { Name = Roles.MEMBER, NormalizedName = Roles.MEMBER.Normalize() });
     }
 
     private async Task SeedAdmins()
     {
         var user = await _userManager.FindByEmailAsync(AdminEmail);
         if (user != null)
+        {
+            // Ensure admin has a Member record (may be missing if DB was seeded before social platform)
+            if (!_context.Members.Any(m => m.UserId == user.Id))
+            {
+                var existingAdminMember = new Member("Super", "Admin");
+                existingAdminMember.SetUser(user);
+                _context.Members.Add(existingAdminMember);
+                await _context.SaveChangesAsync();
+            }
             return;
+        }
 
         user = BuildUser(AdminEmail);
         var result = await _userManager.CreateAsync(user, Password);
@@ -81,6 +98,11 @@ public class GarneauTemplateDbContextInitializer
         var admin = new Administrator("Super", "Admin");
         admin.SetUser(user);
         _context.Administrators.Add(admin);
+
+        var adminMember = new Member("Super", "Admin");
+        adminMember.SetUser(user);
+        _context.Members.Add(adminMember);
+
         await _context.SaveChangesAsync();
     }
 
@@ -252,6 +274,38 @@ public class GarneauTemplateDbContextInitializer
             item.SetUrl($"/{page.Slug}");
             _context.NavigationMenuItems.Add(item);
         }
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task AssignAvatarColorsToExistingMembers()
+    {
+        // Specific color assignments
+        var colorMap = new Dictionary<string, string>
+        {
+            { "Alexandre", "#38a169" },  // vert
+            { "Adam", "#5a67d8" },       // indigo
+            { "Super", "#d53f8c" },      // rose (admin)
+        };
+
+        foreach (var (firstName, color) in colorMap)
+        {
+            var member = _context.Members.FirstOrDefault(m => m.FirstName == firstName);
+            if (member != null && member.AvatarColor != color)
+            {
+                member.SetAvatarColor(color);
+            }
+        }
+
+        // Assign random colors to any remaining members with default color
+        var membersWithoutColor = _context.Members
+            .Where(m => m.AvatarColor == "#1a1a1a" || m.AvatarColor == null)
+            .ToList();
+
+        foreach (var member in membersWithoutColor)
+        {
+            member.AssignRandomAvatarColor();
+        }
+
         await _context.SaveChangesAsync();
     }
 
