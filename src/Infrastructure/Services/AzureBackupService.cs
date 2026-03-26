@@ -174,6 +174,12 @@ public class AzureBackupService : IBackupService
         return await blobClient.OpenReadAsync(cancellationToken: ct);
     }
 
+    public bool IsAvailable()
+    {
+        return !string.IsNullOrEmpty(_configuration["Azure:StorageConnectionString"])
+            && !string.IsNullOrEmpty(_configuration["Azure:SubscriptionId"]);
+    }
+
     private static void ValidateFileName(string fileName)
     {
         if (string.IsNullOrWhiteSpace(fileName)

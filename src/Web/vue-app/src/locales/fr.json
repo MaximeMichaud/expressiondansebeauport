@@ -347,6 +347,7 @@
       "statusCompleted": "Terminé",
       "statusInProgress": "En cours",
       "statusFailed": "Échoué",
+      "unavailable": "La fonctionnalité de sauvegarde n'est pas disponible dans cet environnement. Contactez l'administrateur système pour la configurer.",
       "noBackups": "Aucune sauvegarde disponible.",
       "restore": "Restaurer",
       "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer cette sauvegarde?",
