@@ -46,6 +46,11 @@ public class GetPublicMenuEndpoint : Endpoint<GetPublicMenuRequest, NavigationMe
 
         var dto = _mapper.Map<NavigationMenuDto>(menu);
         // Build hierarchy
+        // EF Core's relationship fix-up pre-populates Children even with AsNoTracking,
+        // so we clear them first to avoid duplicates when we rebuild the tree below.
+        foreach (var item in dto.MenuItems)
+            item.Children.Clear();
+
         var lookup = dto.MenuItems.ToDictionary(i => i.Id);
         var roots = new List<NavigationMenuItemDto>();
         foreach (var item in dto.MenuItems)

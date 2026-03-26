@@ -3,6 +3,22 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import { pinia } from "@/stores/pinia";
 import { Router } from "./router";
+import axios from "axios";
+
+// Redirige les visiteurs vers la page d'erreur 500 en cas d'erreur serveur,
+// sauf dans les pages admin (qui gèrent leurs propres erreurs).
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 500) {
+      const isAdminRoute = !!Router.currentRoute.value.meta.requiredRole;
+      if (!isAdminRoute) {
+        Router.push({ name: "internalError" });
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 import i18n from "@/i18n";
 import { createHead } from "@unhead/vue/client";
 import { VueWindowSizePlugin } from 'vue-window-size/plugin';
