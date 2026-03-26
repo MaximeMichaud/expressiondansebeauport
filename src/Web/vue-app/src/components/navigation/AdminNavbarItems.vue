@@ -23,7 +23,6 @@ import { useRouter } from "vue-router";
 import { getChildPath } from "@/router/helpers";
 import { Images, FileText, LayoutList, Palette, Activity, ArrowLeftRight, HardDriveDownload, UserCircle, Users, UsersRound, CalendarDays } from "lucide-vue-next";
 import { useBackupService } from "@/inversify.config";
-import { Images, FileText, LayoutList, Palette, Activity, ArrowLeftRight, HardDriveDownload, UserCircle } from "lucide-vue-next";
 
 const { t } = useI18n();
 const router = useRouter();
