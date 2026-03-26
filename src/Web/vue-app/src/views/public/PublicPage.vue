@@ -24,12 +24,16 @@
 import {ref, watch} from "vue"
 import {useRoute} from "vue-router"
 import {useI18n} from "vue3-i18n"
+import {useHead} from "@unhead/vue"
 import axios from "axios"
 import {Page} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 
 const {t} = useI18n()
 const route = useRoute()
+const pageTitle = ref('')
+
+useHead({title: pageTitle})
 
 const page = ref<Page | null>(null)
 const isLoading = ref(true)
@@ -39,7 +43,7 @@ async function loadPage(slug: string) {
   try {
     const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/public/pages/${slug}`)
     page.value = response.data
-    document.title = `${page.value!.title} - EDB`
+    pageTitle.value = page.value!.title ?? ''
   } catch {
     page.value = null
   }
