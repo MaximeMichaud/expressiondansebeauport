@@ -5,7 +5,6 @@ import { pinia } from "@/stores/pinia";
 import { Router } from "./router";
 import i18n from "@/i18n";
 import { createHead } from "@unhead/vue/client";
-import { VueWindowSizePlugin } from 'vue-window-size/plugin';
 import Notifications from "@kyvg/vue3-notification";
 import Vue3EasyDataTable from "vue3-easy-data-table";
 import "vue3-easy-data-table/dist/style.css";
@@ -17,7 +16,6 @@ const head = createHead();
 const app = createApp(App)
   .use(head)
   .use(i18n)
-  .use(VueWindowSizePlugin)
   .use(Router)
   .use(pinia) // pinia store should be loaded after router to access  (https://pinia.vuejs.org/core-concepts/outside-component-usage.html#single-page-applications)
   .use(Notifications)
