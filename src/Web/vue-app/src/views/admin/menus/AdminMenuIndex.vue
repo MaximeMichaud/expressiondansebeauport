@@ -123,7 +123,7 @@ import {useMenuService} from "@/inversify.config"
 import {NavigationMenu, NavigationMenuItem} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import {GripVertical, Pencil, Trash2} from "lucide-vue-next"
-import draggable from 'vuedraggable'
+import { VueDraggable as draggable } from 'vue-draggable-plus'
 
 const {t} = useI18n()
 const menuService = useMenuService()
