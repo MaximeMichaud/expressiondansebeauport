@@ -30,9 +30,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Core.Flash" Version="2.1.1" />
-		<PackageReference Include="FastEndpoints" Version="7.2.0" />
+		<PackageReference Include="FastEndpoints" Version="8.0.1" />
 		<PackageReference Include="FastEndpoints.Security" Version="7.2.0" />
-		<PackageReference Include="FastEndpoints.Swagger" Version="7.2.0" />
+		<PackageReference Include="FastEndpoints.Swagger" Version="8.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
