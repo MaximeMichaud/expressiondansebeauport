@@ -292,6 +292,10 @@ async function removeItem(item: NavigationMenuItem) {
   border-color: var(--primary);
 }
 
+.menu-location-tabs__btn--active:hover {
+  background: color-mix(in srgb, var(--primary) 85%, black);
+}
+
 .menu-builder {
   display: flex;
   flex-direction: column;

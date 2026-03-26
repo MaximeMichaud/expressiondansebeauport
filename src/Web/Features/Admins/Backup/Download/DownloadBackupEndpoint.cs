@@ -28,15 +28,18 @@ public class DownloadBackupEndpoint : Endpoint<DownloadBackupRequest>
 
     public override async Task HandleAsync(DownloadBackupRequest req, CancellationToken ct)
     {
-        var filePath = _backupService.GetFilePath(req.FileName);
-        if (filePath is null)
+        await using var stream = await _backupService.GetFileStreamAsync(req.FileName, ct);
+        if (stream is null)
         {
             await Send.NotFoundAsync(ct);
             return;
         }
 
-        HttpContext.Response.ContentType = "application/zstd";
+        var contentType = req.FileName.EndsWith(".bacpac", StringComparison.OrdinalIgnoreCase)
+            ? "application/octet-stream"
+            : "application/zstd";
+        HttpContext.Response.ContentType = contentType;
         HttpContext.Response.Headers.Append("Content-Disposition", $"attachment; filename=\"{req.FileName}\"");
-        await HttpContext.Response.SendFileAsync(filePath, ct);
+        await stream.CopyToAsync(HttpContext.Response.Body, ct);
     }
 }

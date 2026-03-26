@@ -2,12 +2,17 @@
   <div class="content-grid content-grid--subpage">
     <div class="content-grid__header">
       <h1 class="back-link">{{ t('routes.admin.children.backup.name') }}</h1>
-      <button class="btn" :disabled="isCreating" @click="onCreateBackup">
+      <button v-if="isAvailable" class="btn" :disabled="isCreating" @click="onCreateBackup">
         <HardDriveDownload :size="15" />
         {{ isCreating ? t('pages.backup.creating') : t('pages.backup.createBackup') }}
       </button>
     </div>
 
+    <div v-if="!isAvailable && !isLoading" class="backup__unavailable">
+      <p>{{ t('pages.backup.unavailable') }}</p>
+    </div>
+
+    <template v-else>
     <p class="backup__description">{{ t('pages.backup.description') }}</p>
 
     <Loader v-if="isLoading" />
@@ -56,6 +61,7 @@
         </tr>
       </tbody>
     </table>
+    </template>
   </div>
 </template>
 
@@ -72,10 +78,16 @@ const backupService = useBackupService()
 
 const isLoading = ref(false)
 const isCreating = ref(false)
+const isAvailable = ref(true)
 const backups = ref<BackupRecord[]>([])
 
 onMounted(async () => {
-  await loadBackups()
+  isLoading.value = true
+  isAvailable.value = await backupService.checkStatus()
+  if (isAvailable.value) {
+    await loadBackups()
+  }
+  isLoading.value = false
 })
 
 async function loadBackups() {
@@ -172,6 +184,16 @@ function statusClass(status: string): string {
 </script>
 
 <style scoped>
+.backup__unavailable {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 1.5rem;
+  color: #92400e;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
 .backup__description {
   color: #6b7280;
   font-size: 0.875rem;
