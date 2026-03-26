@@ -5,6 +5,7 @@ import {createRouter, createWebHistory} from "vue-router";
 import Home from "@/views/public/Home.vue";
 import PublicPage from "@/views/public/PublicPage.vue";
 import NotFound from "@/views/public/NotFound.vue";
+import InternalError from "@/views/public/InternalError.vue";
 import Login from "@/views/Login.vue";
 import TwoFactor from "@/views/TwoFactor.vue";
 import ForgotPassword from "@/views/ForgotPassword.vue";
@@ -250,6 +251,12 @@ const mainRoutes = [
       title: "routes.home.name",
       public: true
     }
+  },
+  {
+    path: "/erreur",
+    name: "internalError",
+    component: InternalError,
+    meta: { public: true, title: "routes.internalError.name" }
   },
   {
     path: "/:pathMatch(.*)*",

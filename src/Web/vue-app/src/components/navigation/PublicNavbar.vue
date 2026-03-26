@@ -16,24 +16,33 @@
 
       <div class="public-navbar__menu" :class="{ 'is-open': isMenuOpen }">
         <ul class="public-navbar__links">
-          <li v-for="item in menuItems" :key="item.id">
-            <a
-              v-if="item.url?.startsWith('http')"
-              :href="item.url"
-              :target="item.target === 'Blank' ? '_blank' : '_self'"
-              :rel="item.target === 'Blank' ? 'noopener noreferrer' : undefined"
-              class="public-navbar__link"
-              @click="isMenuOpen = false">
-              {{ item.label }}
-            </a>
+          <li v-for="item in menuItems" :key="item.id" class="nav-item">
+
             <RouterLink
-              v-else
+              v-if="!item.children || item.children.length === 0"
               :to="item.url || `/${item.pageSlug}`"
               class="public-navbar__link"
-              @click="isMenuOpen = false">
+            >
               {{ item.label }}
             </RouterLink>
+
+            <span v-else class="public-navbar__link nav-parent">
+              {{ item.label }}
+            </span>
+
+            <ul v-if="item.children && item.children.length" class="submenu">
+              <li v-for="child in item.children" :key="child.id">
+                <RouterLink
+                  :to="child.url || `/${child.pageSlug}`"
+                  class="submenu-link"
+                >
+                  {{ child.label }}
+                </RouterLink>
+              </li>
+            </ul>
+
           </li>
+
           <template v-if="menuItems.length === 0">
             <li v-for="link in fallbackLinks" :key="link.key">
               <a href="#" class="public-navbar__link" @click="isMenuOpen = false">
@@ -87,3 +96,57 @@ onMounted(() => {
   loadMenu();
 });
 </script>
+
+<style scoped>
+
+.nav-item{
+  position: relative;
+}
+
+.submenu{
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  list-style: none;
+  padding: 6px 0;
+  min-width: 200px;
+  z-index: 50;
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(5px);
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover .submenu{
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.nav-item{
+  padding-bottom: 10px;
+}
+
+.nav-parent{
+  cursor: default;
+}
+
+.submenu-link{
+  display: block;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+}
+
+.submenu-link:hover{
+  background: var(--color-muted);
+}
+
+</style>
