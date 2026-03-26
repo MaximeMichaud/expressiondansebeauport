@@ -38,6 +38,14 @@
           <Pencil :size="16" color="white" />
         </router-link>
         <button
+            v-if="item.actions.duplicate && item.id"
+            class="vue3-easy-data-table__action"
+            type="button"
+            @click="handleDuplicate(item)"
+        >
+          <Copy :size="16" color="white" />
+        </button>
+        <button
             v-if="item.actions.delete && item.id"
             class="vue3-easy-data-table__action"
             type="button"
@@ -54,7 +62,7 @@
 <script lang="ts" setup>
 import type {FilterOption, Header, Item} from "vue3-easy-data-table"
 import {useI18n} from "vue3-i18n"
-import { Eye, Pencil, Trash2 } from "lucide-vue-next"
+import { Copy, Eye, Pencil, Trash2 } from "lucide-vue-next"
 import { computed } from "vue"
 
 const {t} = useI18n()
@@ -74,9 +82,14 @@ defineProps<{
 
 const emit = defineEmits<{
   (event: "delete", item: any): void
+  (event: "duplicate", item: any): void
 }>()
 
 function handleDelete(item: any) {
   emit("delete", item)
+}
+
+function handleDuplicate(item: any) {
+  emit("duplicate", item)
 }
 </script>

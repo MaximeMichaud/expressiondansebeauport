@@ -249,6 +249,11 @@
           "successMessage": "La page a été supprimée avec succès.",
           "failedMessage": "Une erreur s'est produite lors de la suppression de la page."
         }
+      },
+      "duplicate": {
+        "validation": {
+          "failedMessage": "Une erreur s'est produite lors de la duplication de la page."
+        }
       }
     },
     "menus": {
