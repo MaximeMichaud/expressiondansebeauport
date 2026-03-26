@@ -61,7 +61,7 @@
 
 <script lang="ts" setup>
 import type {FilterOption, Header, Item} from "vue3-easy-data-table"
-import {useI18n} from "vue3-i18n"
+import {useI18n} from "vue-i18n"
 import { Copy, Eye, Pencil, Trash2 } from "lucide-vue-next"
 import { computed } from "vue"
 

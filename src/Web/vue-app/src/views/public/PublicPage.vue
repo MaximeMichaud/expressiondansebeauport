@@ -23,7 +23,7 @@
 <script lang="ts" setup>
 import {ref, watch} from "vue"
 import {useRoute} from "vue-router"
-import {useI18n} from "vue3-i18n"
+import {useI18n} from "vue-i18n"
 import axios from "axios"
 import {Page} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"

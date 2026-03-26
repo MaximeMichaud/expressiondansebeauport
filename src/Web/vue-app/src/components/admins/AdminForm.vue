@@ -32,7 +32,7 @@
 
 <script lang="ts" setup>
 import { ref, type ComponentPublicInstance } from "vue"
-import { useI18n } from "vue3-i18n"
+import { useI18n } from "vue-i18n"
 import { Status } from "@/validation"
 import { Administrator } from "@/types/entities"
 import { required } from "@/validation/rules"

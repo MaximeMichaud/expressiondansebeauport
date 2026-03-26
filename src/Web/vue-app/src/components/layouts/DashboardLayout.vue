@@ -29,13 +29,13 @@
 <script setup lang="ts">
 import {onMounted, ref, computed} from "vue";
 import {useRouter} from "vue-router";
-import {useI18n} from "vue3-i18n";
+import {useI18n} from "vue-i18n";
 import {useAdministratorService} from "@/inversify.config";
 import Navbar from "@/components/navigation/Navbar.vue";
 import LogoutPopup from "@/components/layouts/items/LogoutPopup.vue";
 import Notifications from "@/components/layouts/items/Notifications.vue";
 import Loader from "@/components/layouts/items/Loader.vue";
-import {useWindowSize} from "vue-window-size";
+import {useWindowSize} from "@/composables/useWindowSize";
 import UserAvatar from "@/components/account/UserAvatar.vue";
 import {Administrator} from "@/types";
 import {useAdministratorStore} from "@/stores/administratorStore";

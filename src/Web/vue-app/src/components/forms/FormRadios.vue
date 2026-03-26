@@ -34,7 +34,7 @@
 import { FormOption } from "@/types/formOption";
 import { Status} from '@/validation'
 import { ref } from "vue";
-import { useI18n } from "vue3-i18n";
+import { useI18n } from "vue-i18n";
 
  
 const props = defineProps<{

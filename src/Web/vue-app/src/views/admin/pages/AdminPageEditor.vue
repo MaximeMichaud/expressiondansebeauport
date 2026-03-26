@@ -53,7 +53,7 @@
 </template>
 
 <script lang="ts" setup>
-import {useI18n} from "vue3-i18n"
+import {useI18n} from "vue-i18n"
 import {onMounted, ref} from "vue"
 import {useRoute, useRouter} from "vue-router"
 import {usePageService} from "@/inversify.config"

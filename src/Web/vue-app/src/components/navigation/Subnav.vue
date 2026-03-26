@@ -25,7 +25,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed } from "vue";
 import IconChevron from "@/assets/icons/icon__chevron.svg";
-import { useI18n } from "vue3-i18n";
+import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { getChildPath } from "@/router/helpers";
 
