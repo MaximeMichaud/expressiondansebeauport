@@ -15,7 +15,7 @@ export default defineConfig({
     outDir: '../wwwroot',
     emptyOutDir: true,
     chunkSizeWarningLimit: 1000,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         entryFileNames: 'js/[name]-[hash].js',
         chunkFileNames: 'js/[name]-[hash].js',
@@ -26,6 +26,11 @@ export default defineConfig({
           return 'assets/[name]-[hash][extname]'
         }
       }
+    }
+  },
+  css: {
+    lightningcss: {
+      errorRecovery: true
     }
   },
   resolve: {
