@@ -124,4 +124,6 @@ export interface IBackupService {
   deleteBackup(id: string): Promise<SucceededOrNotResponse>
 
   restore(fileName: string): Promise<SucceededOrNotResponse>
+
+  checkStatus(): Promise<boolean>
 }

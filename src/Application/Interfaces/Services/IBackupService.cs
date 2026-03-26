@@ -9,4 +9,5 @@ public interface IBackupService
     Task DeleteAsync(Guid id, CancellationToken ct);
     List<BackupRecord> GetAll();
     Task<Stream?> GetFileStreamAsync(string fileName, CancellationToken ct);
+    bool IsAvailable();
 }

@@ -169,6 +169,19 @@ public class BackupService : IBackupService
         return Task.FromResult<Stream?>(File.OpenRead(path));
     }
 
+    public bool IsAvailable()
+    {
+        try
+        {
+            Directory.CreateDirectory(_backupPath);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     private static void ValidateFileName(string fileName)
     {
         if (string.IsNullOrWhiteSpace(fileName)
