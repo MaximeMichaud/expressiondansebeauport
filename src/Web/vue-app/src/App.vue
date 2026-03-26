@@ -22,11 +22,28 @@ import {useUserService, useSiteSettingsService} from "@/inversify.config";
 import {isSocialRoute} from "@/router";
 import i18n from "@/i18n";
 import {applyThemeSettings} from "@/theme";
+import {useSiteSettingsStore} from "@/stores/siteSettingsStore";
+import {useHead} from "@unhead/vue";
 
 const router = useRouter();
 const userStore = useUserStore();
 const userService = useUserService();
 const siteSettingsService = useSiteSettingsService();
+const siteSettingsStore = useSiteSettingsStore();
+
+const pageTitle = computed(() => {
+  const titleKey = [...router.currentRoute.value.matched].reverse().find(r => r.meta.title)?.meta.title as string | undefined
+  return titleKey ? i18n.t(titleKey) : ''
+})
+
+useHead({
+  title: pageTitle,
+  titleTemplate: (title) => {
+    const siteName = siteSettingsStore.siteTitle
+    if (!title) return siteName || ''
+    return siteName ? `${title} | ${siteName}` : title
+  }
+})
 
 const publicRoutes = ['home', 'publicPage', 'notFound']
 const isPublicPath = computed(() => {
@@ -50,6 +67,9 @@ onMounted(async () => {
     const siteSettings = await siteSettingsService.getPublic().catch(() => null)
     if (siteSettings) {
       applyThemeSettings(siteSettings)
+      if (siteSettings.siteTitle) {
+        siteSettingsStore.setSiteTitle(siteSettings.siteTitle)
+      }
     }
   }
 
