@@ -579,7 +579,7 @@ public class GarneauTemplateDbContextInitializer
                 mediaIds.Add(existing.Id);
                 continue;
             }
-            var media = new MediaFile(fileName, originalName, "image/jpeg", size, $"/images/seed/{fileName}");
+            var media = new MediaFile(fileName, originalName, "image/jpeg", size, $"/images/{fileName}");
             media.SetAltText(alt);
             _context.Set<MediaFile>().Add(media);
             await _context.SaveChangesAsync();
@@ -587,7 +587,7 @@ public class GarneauTemplateDbContextInitializer
         }
 
         var imagesJson = string.Join(",", seedImages.Select((img, i) =>
-            $"{{\"url\":\"/images/seed/{img.Item1}\",\"alt\":\"{img.Item4.Replace("\"", "\\\"")}\"}}"
+            $"{{\"url\":\"/images/{img.Item1}\",\"alt\":\"{img.Item4.Replace("\"", "\\\"")}\"}}"
         ));
 
         var blocksJson =
