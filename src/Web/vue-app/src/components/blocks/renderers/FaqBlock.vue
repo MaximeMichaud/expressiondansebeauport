@@ -20,7 +20,7 @@
             stroke-linejoin="round" />
         </svg>
       </summary>
-      <div class="faq-block__answer" v-html="item.answer"></div>
+      <p class="faq-block__answer" v-for="(line, li) in item.answer.split('\n')" :key="li">{{ line }}</p>
     </details>
   </div>
 </template>
