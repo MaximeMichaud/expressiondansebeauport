@@ -25,7 +25,7 @@
             type="text"
             class="form-input"
             :value="image.url"
-            :placeholder="https://..."
+            placeholder="https://..."
             @input="updateImage(index, 'url', ($event.target as HTMLInputElement).value)"
           />
         </div>
