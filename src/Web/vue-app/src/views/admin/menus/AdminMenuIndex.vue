@@ -213,7 +213,8 @@ const draggableItems = computed({
   },
   set(newItems: NavigationMenuItem[]) {
     if (currentMenu.value) {
-      currentMenu.value.menuItems = newItems
+      const children = currentMenu.value.menuItems?.filter(i => i.parentId) ?? []
+      currentMenu.value.menuItems = [...newItems, ...children]
     }
   }
 })

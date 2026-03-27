@@ -3,6 +3,7 @@ using Domain.Entities;
 using Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Persistence;
@@ -16,16 +17,19 @@ public class GarneauTemplateDbContextInitializer
     private readonly GarneauTemplateDbContext _context;
     private readonly RoleManager<Role> _roleManager;
     private readonly UserManager<User> _userManager;
+    private readonly IHostEnvironment _environment;
 
     public GarneauTemplateDbContextInitializer(ILogger<GarneauTemplateDbContextInitializer> logger,
         GarneauTemplateDbContext context,
         RoleManager<Role> roleManager,
-        UserManager<User> userManager)
+        UserManager<User> userManager,
+        IHostEnvironment environment)
     {
         _logger = logger;
         _context = context;
         _roleManager = roleManager;
         _userManager = userManager;
+        _environment = environment;
     }
 
     public async Task InitialiseAsync()
@@ -128,7 +132,7 @@ public class GarneauTemplateDbContextInitializer
                 "</ul>"),
 
             CreatePage("Camp d’été", "camp-d-ete", 3,
-                "<div class=’camp-hero’>" +
+                "<div class='camp-hero'>" +
                     "<div>" +
                         "<p>Un été rempli de danse, d’énergie et de plaisir pour les 5 à 12 ans !</p>" +
                         "<a href='https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session' target='_blank' class='btn-camp'>S'inscrire maintenant</a>" +
@@ -238,32 +242,33 @@ public class GarneauTemplateDbContextInitializer
             await _context.SaveChangesAsync();
         }
 
-        
-        var notreEcole = _context.Pages.FirstOrDefault(p => p.Slug == "notre-ecole");
-        if (notreEcole != null)
+        if (_environment.IsDevelopment())
         {
-            notreEcole.SetContent(EcolePageContent());
-            notreEcole.SetCustomCss(EcolePageCss());
-            await _context.SaveChangesAsync();
-        }
-
-        const string correctRegistrationUrl = "https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session";
-        var campEte = _context.Pages.FirstOrDefault(p => p.Slug == "camp-d-ete");
-        if (campEte != null)
-        {
-            campEte.SetCustomCss(CampPageCss());
-
-            if (campEte.Content != null && !campEte.Content.Contains(correctRegistrationUrl))
+            var notreEcole = _context.Pages.FirstOrDefault(p => p.Slug == "notre-ecole");
+            if (notreEcole != null)
             {
-
-                var fixedContent = System.Text.RegularExpressions.Regex.Replace(
-                    campEte.Content,
-                    @"<a[^>]+btn-camp[^>]*>[^<]*</a>",
-                    $"<a href='{correctRegistrationUrl}' target='_blank' class='btn-camp'>S'inscrire maintenant</a>");
-                campEte.SetContent(fixedContent);
+                notreEcole.SetContent(EcolePageContent());
+                notreEcole.SetCustomCss(EcolePageCss());
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
+            const string correctRegistrationUrl = "https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session";
+            var campEte = _context.Pages.FirstOrDefault(p => p.Slug == "camp-d-ete");
+            if (campEte != null)
+            {
+                campEte.SetCustomCss(CampPageCss());
+
+                if (campEte.Content != null && !campEte.Content.Contains(correctRegistrationUrl))
+                {
+                    var fixedContent = System.Text.RegularExpressions.Regex.Replace(
+                        campEte.Content,
+                        @"<a[^>]+btn-camp[^>]*>[^<]*</a>",
+                        $"<a href='{correctRegistrationUrl}' target='_blank' class='btn-camp'>S'inscrire maintenant</a>");
+                    campEte.SetContent(fixedContent);
+                }
+
+                await _context.SaveChangesAsync();
+            }
         }
 
         await SeedPageIfNotExists("Camp d'hiver", "camp-d-hiver", 6,
@@ -333,12 +338,15 @@ public class GarneauTemplateDbContextInitializer
             "</section>",
             CampPageCss());
 
-        var campLibre = _context.Pages.FirstOrDefault(p => p.Slug == "camp-libre");
-        if (campLibre != null)
+        if (_environment.IsDevelopment())
         {
-            campLibre.SetTitle("Camp relâche");
-            campLibre.SetSlug("camp-relache");
-            await _context.SaveChangesAsync();
+            var campLibre = _context.Pages.FirstOrDefault(p => p.Slug == "camp-libre");
+            if (campLibre != null)
+            {
+                campLibre.SetTitle("Camp relâche");
+                campLibre.SetSlug("camp-relache");
+                await _context.SaveChangesAsync();
+            }
         }
 
         await SeedPageIfNotExists("Camp relâche", "camp-relache", 7,
