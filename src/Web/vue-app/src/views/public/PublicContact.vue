@@ -3,12 +3,12 @@
     v-if="page"
     class="public-page">
     <component :is="'style'" v-if="page.customCss">{{ page.customCss }}</component>
-    <div class="public-page__container">
+    <div class="public-page__container public-contact__container">
       <h1 class="public-page__title">{{ page.title }}</h1>
       <div class="public-page__content" v-html="page.content"></div>
-      <section class="public-page__map-section">
+      <section class="public-contact__map-section">
         <h2>Carte</h2>
-        <p class="public-page__map-address">
+        <p class="public-contact__map-address">
           <a
             :href="googleMapsLink"
             target="_blank"
@@ -16,7 +16,7 @@
             788 avenue du Cénacle, 788 Av. de l'Éducation, Québec, QC G1E 5J4
           </a>
         </p>
-        <div class="public-page__map-frame">
+        <div class="public-contact__map-frame">
           <iframe
             title="Carte de l'école Expression Danse de Beauport"
             :src="googleMapsEmbedUrl"
@@ -26,36 +26,36 @@
           </iframe>
         </div>
       </section>
-      <section class="public-page__directions-section">
-        <div class="public-page__directions-intro">
-          <p class="public-page__directions-eyebrow">Accès au studio</p>
+      <section class="public-contact__directions-section">
+        <div class="public-contact__directions-intro">
+          <p class="public-contact__directions-eyebrow">Accès au studio</p>
           <h2>Comment se rendre au studio</h2>
           <p>
-            L’accès au stationnement et au local se fait par l’Avenue de l’Éducation. Google Maps peut
+            L'accès au stationnement et au local se fait par l'Avenue de l'Éducation. Google Maps peut
             parfois manquer de précision sur ce point, donc voici les repères visuels à suivre.
           </p>
-          <p class="public-page__directions-address">
-            788 avenue du Cénacle / 788 avenue de l’Éducation, Québec, QC G1E 5J4
+          <p class="public-contact__directions-address">
+            788 avenue du Cénacle / 788 avenue de l'Éducation, Québec, QC G1E 5J4
           </p>
         </div>
 
-        <div class="public-page__directions-grid">
+        <div class="public-contact__directions-grid">
           <article
             v-for="step in directionsSteps"
             :key="step.title"
-            class="public-page__direction-card"
-            :class="{ 'public-page__direction-card--stacked': step.layout === 'stacked' }">
+            class="public-contact__direction-card"
+            :class="{ 'public-contact__direction-card--stacked': step.layout === 'stacked' }">
             <button
               type="button"
-              class="public-page__direction-image-button"
+              class="public-contact__direction-image-button"
               @click="openLightbox(step.image, step.alt)">
               <img
                 :src="step.image"
                 :alt="step.alt"
-                class="public-page__direction-image">
+                class="public-contact__direction-image">
             </button>
-            <div class="public-page__direction-content">
-              <p class="public-page__direction-step">{{ step.step }}</p>
+            <div class="public-contact__direction-content">
+              <p class="public-contact__direction-step">{{ step.step }}</p>
               <h3>{{ step.title }}</h3>
               <p>{{ step.description }}</p>
             </div>
@@ -76,12 +76,12 @@
   </div>
   <div
     v-if="lightboxImage"
-    class="public-page__lightbox"
+    class="public-contact__lightbox"
     @click.self="closeLightbox">
-    <div class="public-page__lightbox-dialog">
+    <div class="public-contact__lightbox-dialog">
       <button
         type="button"
-        class="public-page__lightbox-close"
+        class="public-contact__lightbox-close"
         aria-label="Fermer l'image agrandie"
         @click="closeLightbox">
         ×
@@ -89,13 +89,13 @@
       <img
         :src="lightboxImage"
         :alt="lightboxAlt"
-        class="public-page__lightbox-image">
+        class="public-contact__lightbox-image">
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {onMounted, ref} from "vue"
+import {onMounted, onUnmounted, ref, watch} from "vue"
 import {useI18n} from "vue3-i18n"
 import axios from "axios"
 import {Page} from "@/types/entities"
@@ -112,14 +112,14 @@ const directionsSteps = [
   {
     step: "Étape 1",
     title: "Repérez le Centre des loisirs",
-    description: "Le studio se trouve dans ce secteur. C’est le premier bon repère pour confirmer que vous êtes au bon endroit.",
+    description: "Le studio se trouve dans ce secteur. C'est le premier bon repère pour confirmer que vous êtes au bon endroit.",
     image: imageDevantStudio,
     alt: "Vue du centre des loisirs où se situe le studio de danse"
   },
   {
     step: "Étape 2",
-    title: "Passez par l’Avenue de l’Éducation",
-    description: "Repérez l’église et l’école, puis prenez l’entrée à droite pour accéder au bon stationnement et à l’entrée du local.",
+    title: "Passez par l'Avenue de l'Éducation",
+    description: "Repérez l'église et l'école, puis prenez l'entrée à droite pour accéder au bon stationnement et à l'entrée du local.",
     image: vueDeRueEducation,
     alt: "Repère visuel montrant l'église, l'école et l'entrée à droite par l'Avenue de l'Éducation",
     layout: "stacked"
@@ -150,10 +150,6 @@ async function loadPage() {
   isLoading.value = false
 }
 
-onMounted(() => {
-  loadPage()
-})
-
 function openLightbox(image: string, alt: string) {
   lightboxImage.value = image
   lightboxAlt.value = alt
@@ -163,84 +159,42 @@ function closeLightbox() {
   lightboxImage.value = null
   lightboxAlt.value = ""
 }
+
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === "Escape" && lightboxImage.value) {
+    closeLightbox()
+  }
+}
+
+watch(lightboxImage, (val) => {
+  document.body.style.overflow = val ? "hidden" : ""
+})
+
+onMounted(() => {
+  loadPage()
+  document.addEventListener("keydown", onKeydown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener("keydown", onKeydown)
+  document.body.style.overflow = ""
+})
 </script>
 
-<style>
-.public-page {
-  min-height: 60vh;
-  padding: 140px 1rem 3rem;
-}
-
-.public-page--loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.public-page--not-found {
-  text-align: center;
-  padding-top: 8rem;
-}
-
-.public-page--not-found h1 {
-  margin-bottom: 1.5rem;
-}
-
-.public-page--not-found .btn {
-  margin-top: 2.5rem;
-  display: inline-block;
-}
-
-.public-page__container {
+<style scoped>
+.public-contact__container {
   max-width: 800px;
-  margin: 0 auto;
 }
 
-.public-page__title {
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
-  color: var(--color-primary, #be1e2c);
-  text-align: center;
-}
-
-.public-page__content :deep(h2) {
-  font-size: 1.75rem;
-  margin: 2rem 0 1rem;
-}
-
-.public-page__content :deep(h3) {
-  font-size: 1.25rem;
-  margin: 1.5rem 0 0.75rem;
-}
-
-.public-page__content :deep(p) {
-  margin-bottom: 1rem;
-  line-height: 1.7;
-}
-
-.public-page__content :deep(ul) {
-  margin-bottom: 1rem;
-  padding-left: 1.5rem;
-}
-
-.public-page__content :deep(li) {
-  margin-bottom: 0.5rem;
-  line-height: 1.5;
-}
-
-.public-page__content :deep(a) {
-  color: var(--color-primary, #be1e2c);
-}
-
-.public-page__map-section {
+.public-contact__map-section {
   margin-top: 2.5rem;
 }
 
-.public-page__map-address {
+.public-contact__map-address {
   margin-bottom: 1rem;
 }
 
-.public-page__map-frame {
+.public-contact__map-frame {
   overflow: hidden;
   border-radius: 16px;
   border: 1px solid rgba(190, 30, 44, 0.12);
@@ -249,25 +203,25 @@ function closeLightbox() {
   background: #f4f6f8;
 }
 
-.public-page__map-frame iframe {
+.public-contact__map-frame iframe {
   width: 100%;
   height: 100%;
   border: 0;
   display: block;
 }
 
-.public-page__directions-section {
+.public-contact__directions-section {
   margin-top: 3rem;
 }
 
-.public-page__directions-intro {
+.public-contact__directions-intro {
   padding: 1.5rem;
   border-radius: 16px;
   background: #f4f6f8;
   border: 1px solid rgba(190, 30, 44, 0.12);
 }
 
-.public-page__directions-eyebrow {
+.public-contact__directions-eyebrow {
   margin-bottom: 0.5rem;
   font-size: 0.85rem;
   font-weight: 700;
@@ -276,23 +230,23 @@ function closeLightbox() {
   color: var(--color-primary, #be1e2c);
 }
 
-.public-page__directions-intro h2 {
+.public-contact__directions-intro h2 {
   margin-bottom: 0.75rem;
 }
 
-.public-page__directions-address {
+.public-contact__directions-address {
   margin-top: 1rem;
   margin-bottom: 0;
   font-weight: 700;
 }
 
-.public-page__directions-grid {
+.public-contact__directions-grid {
   display: grid;
   gap: 1.5rem;
   margin-top: 1.5rem;
 }
 
-.public-page__direction-card {
+.public-contact__direction-card {
   overflow: hidden;
   border-radius: 16px;
   background: #ffffff;
@@ -300,7 +254,7 @@ function closeLightbox() {
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
 }
 
-.public-page__direction-image-button {
+.public-contact__direction-image-button {
   display: block;
   width: 100%;
   padding: 0;
@@ -309,7 +263,7 @@ function closeLightbox() {
   cursor: zoom-in;
 }
 
-.public-page__direction-image {
+.public-contact__direction-image {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 10;
@@ -317,11 +271,11 @@ function closeLightbox() {
   background: #f4f6f8;
 }
 
-.public-page__direction-content {
+.public-contact__direction-content {
   padding: 1.25rem;
 }
 
-.public-page__direction-step {
+.public-contact__direction-step {
   margin-bottom: 0.4rem;
   font-size: 0.85rem;
   font-weight: 700;
@@ -330,15 +284,15 @@ function closeLightbox() {
   color: var(--color-primary, #be1e2c);
 }
 
-.public-page__direction-content h3 {
+.public-contact__direction-content h3 {
   margin-bottom: 0.6rem;
 }
 
-.public-page__direction-content p:last-child {
+.public-contact__direction-content p:last-child {
   margin-bottom: 0;
 }
 
-.public-page__lightbox {
+.public-contact__lightbox {
   position: fixed;
   inset: 0;
   z-index: 4000;
@@ -349,13 +303,13 @@ function closeLightbox() {
   background: rgba(0, 0, 0, 0.8);
 }
 
-.public-page__lightbox-dialog {
+.public-contact__lightbox-dialog {
   position: relative;
   width: min(1100px, 100%);
   padding-top: 3rem;
 }
 
-.public-page__lightbox-close {
+.public-contact__lightbox-close {
   position: absolute;
   top: 0;
   right: 0;
@@ -372,7 +326,7 @@ function closeLightbox() {
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
 }
 
-.public-page__lightbox-image {
+.public-contact__lightbox-image {
   display: block;
   width: 100%;
   max-height: 85vh;
@@ -382,41 +336,41 @@ function closeLightbox() {
 }
 
 @media (max-width: 640px) {
-  .public-page__map-frame {
+  .public-contact__map-frame {
     aspect-ratio: 4 / 3;
   }
 }
 
 @media (min-width: 768px) {
-  .public-page__directions-grid {
+  .public-contact__directions-grid {
     grid-template-columns: 1fr;
   }
 
-  .public-page__direction-card {
+  .public-contact__direction-card {
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
     align-items: stretch;
   }
 
-  .public-page__direction-image {
+  .public-contact__direction-image {
     aspect-ratio: auto;
     height: 100%;
     min-height: 340px;
     object-fit: contain;
   }
 
-  .public-page__direction-content {
+  .public-contact__direction-content {
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 1.5rem;
   }
 
-  .public-page__direction-card--stacked {
+  .public-contact__direction-card--stacked {
     display: block;
   }
 
-  .public-page__direction-card--stacked .public-page__direction-image {
+  .public-contact__direction-card--stacked .public-contact__direction-image {
     width: 100%;
     height: auto;
     min-height: 0;
@@ -424,25 +378,25 @@ function closeLightbox() {
     object-fit: contain;
   }
 
-  .public-page__direction-card--stacked .public-page__direction-content {
+  .public-contact__direction-card--stacked .public-contact__direction-content {
     display: block;
   }
 }
 
 @media (min-width: 1100px) {
-  .public-page__container {
+  .public-contact__container {
     max-width: 1080px;
   }
 
-  .public-page__direction-card {
+  .public-contact__direction-card {
     grid-template-columns: minmax(0, 1.55fr) minmax(340px, 0.85fr);
   }
 
-  .public-page__direction-image {
+  .public-contact__direction-image {
     min-height: 420px;
   }
 
-  .public-page__direction-card--stacked .public-page__direction-image {
+  .public-contact__direction-card--stacked .public-contact__direction-image {
     min-height: 0;
   }
 }

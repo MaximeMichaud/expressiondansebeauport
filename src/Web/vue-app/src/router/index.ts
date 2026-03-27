@@ -255,7 +255,7 @@ const mainRoutes = [
     name: "publicContact",
     component: PublicContact,
     meta: {
-      title: "routes.home.name",
+      title: "Nous joindre",
       public: true
     }
   },
