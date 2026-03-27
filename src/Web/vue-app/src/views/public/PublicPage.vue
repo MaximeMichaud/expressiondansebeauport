@@ -5,7 +5,10 @@
     <component :is="'style'" v-if="page.customCss">{{ page.customCss }}</component>
     <div class="public-page__container">
       <h1 class="public-page__title">{{ page.title }}</h1>
-      <div class="public-page__content" v-html="page.content"></div>
+      <template v-if="page.contentMode === 'blocks' && parsedBlocks.length">
+        <BlockRenderer v-for="block in parsedBlocks" :key="block.id" :block="block" />
+      </template>
+      <div v-else class="public-page__content" v-html="page.content"></div>
     </div>
   </article>
   <div v-else-if="isLoading" class="public-page public-page--loading">
@@ -21,13 +24,15 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, watch} from "vue"
+import {computed, ref, watch} from "vue"
 import {useRoute} from "vue-router"
 import {useI18n} from "vue-i18n"
 import {useHead} from "@unhead/vue"
 import axios from "axios"
 import {Page} from "@/types/entities"
+import type {PageBlock} from "@/types/entities/pageBlock"
 import Loader from "@/components/layouts/items/Loader.vue"
+import BlockRenderer from "@/components/blocks/BlockRenderer.vue"
 
 const {t} = useI18n()
 const route = useRoute()
@@ -37,6 +42,11 @@ useHead({title: pageTitle})
 
 const page = ref<Page | null>(null)
 const isLoading = ref(true)
+
+const parsedBlocks = computed<PageBlock[]>(() => {
+  if (!page.value?.blocks) return []
+  try { return JSON.parse(page.value.blocks) } catch { return [] }
+})
 
 async function loadPage(slug: string) {
   isLoading.value = true
