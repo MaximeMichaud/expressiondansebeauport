@@ -1,7 +1,7 @@
 <template>
   <div class="rich-text-editor">
     <FormTextEditor
-      v-model="props.modelValue.html"
+      :modelValue="props.modelValue.html"
       name="block-rich-text"
       :label="t('pages.blocks.richText.content')"
       :rules="[]"
