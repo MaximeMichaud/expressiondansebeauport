@@ -24,7 +24,7 @@
 </template>
 <script lang="ts" setup>
 import {ref, type ComponentPublicInstance} from "vue"
-import {useI18n} from "vue3-i18n"
+import {useI18n} from "vue-i18n"
 import {required} from "@/validation/rules"
 import {useAuthenticationService} from "@/inversify.config";
 import {notifyError, notifySuccess} from "@/notify";

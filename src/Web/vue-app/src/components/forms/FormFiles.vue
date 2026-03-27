@@ -64,7 +64,7 @@
 <script setup lang="ts">
 import { Status } from "@/validation";
 import { computed, ref, watch } from "vue";
-import { useI18n } from "vue3-i18n";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 

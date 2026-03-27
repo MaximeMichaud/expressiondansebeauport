@@ -30,11 +30,10 @@
           <draggable
             v-if="currentMenu.menuItems && currentMenu.menuItems.length"
             v-model="draggableItems"
-            item-key="id"
             handle=".menu-item__drag"
             class="menu-items-list"
             @end="onDragEnd">
-            <!-- <template #item="{ element: item }">
+            <div v-for="item in draggableItems" :key="item.id">
               <div class="menu-item">
                 <button class="menu-item__drag" :aria-label="t('pages.menus.reorder')">
                   <GripVertical :size="14" />
@@ -52,55 +51,28 @@
                   </button>
                 </div>
               </div>
-            </template> -->
-            <template #item="{ element: item }">
-              <div>
-                <div class="menu-item">
-                  <button class="menu-item__drag" aria-label="Réordonner">
-                    <GripVertical :size="14" />
+
+              <div
+                v-for="child in currentMenu?.menuItems?.filter(i => i.parentId === item.id)"
+                :key="child.id"
+                class="menu-item menu-item--child"
+              >
+                <div class="menu-item__info">
+                  <span class="menu-item__label">↳ {{ child.label }}</span>
+                  <span v-if="child.url || child.pageSlug" class="menu-item__url">
+                    {{ child.url || child.pageSlug }}
+                  </span>
+                </div>
+                <div class="menu-item__actions">
+                  <button class="menu-item__btn" @click="editItem(child)">
+                    <Pencil :size="14" />
                   </button>
-
-                  <div class="menu-item__info">
-                    <span class="menu-item__label">{{ item.label }}</span>
-                    <span v-if="item.url || item.pageSlug" class="menu-item__url">
-                      {{ item.url || item.pageSlug }}
-                    </span>
-                  </div>
-
-                  <div class="menu-item__actions">
-                    <button class="menu-item__btn" @click="editItem(item)">
-                      <Pencil :size="14" />
-                    </button>
-                    <button class="menu-item__btn" @click="removeItem(item)">
-                      <Trash2 :size="14" />
-                    </button>
-                  </div>
+                  <button class="menu-item__btn" @click="removeItem(child)">
+                    <Trash2 :size="14" />
+                  </button>
                 </div>
-
-                <div
-                  v-for="child in currentMenu?.menuItems?.filter(i => i.parentId === item.id)"
-                  :key="child.id"
-                  class="menu-item menu-item--child"
-                >
-                  <div class="menu-item__info">
-                    <span class="menu-item__label">↳ {{ child.label }}</span>
-                    <span v-if="child.url || child.pageSlug" class="menu-item__url">
-                      {{ child.url || child.pageSlug }}
-                    </span>
-                  </div>
-
-                  <div class="menu-item__actions">
-                    <button class="menu-item__btn" @click="editItem(child)">
-                      <Pencil :size="14" />
-                    </button>
-                    <button class="menu-item__btn" @click="removeItem(child)">
-                      <Trash2 :size="14" />
-                    </button>
-                  </div>
-                </div>
-
               </div>
-            </template>
+            </div>
           </draggable>
           <p v-else class="menu-builder__empty">{{ t('global.table.noData') }}</p>
         </div>
@@ -182,13 +154,13 @@
 </template>
 
 <script lang="ts" setup>
-import {useI18n} from "vue3-i18n"
+import {useI18n} from "vue-i18n"
 import {computed, onMounted, ref} from "vue"
 import {useMenuService} from "@/inversify.config"
 import {NavigationMenu, NavigationMenuItem} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import {GripVertical, Pencil, Trash2} from "lucide-vue-next"
-import draggable from 'vuedraggable'
+import { VueDraggable as draggable } from 'vue-draggable-plus'
 
 const {t} = useI18n()
 const menuService = useMenuService()

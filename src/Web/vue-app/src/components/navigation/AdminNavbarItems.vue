@@ -18,7 +18,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
-import { useI18n } from "vue3-i18n";
+import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { getChildPath } from "@/router/helpers";
 import { Images, FileText, LayoutList, Palette, Activity, ArrowLeftRight, HardDriveDownload, UserCircle } from "lucide-vue-next";

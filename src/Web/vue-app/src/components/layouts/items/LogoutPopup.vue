@@ -26,7 +26,7 @@
 <script lang="ts" setup>
 import { useApiStore } from "@/stores/apiStore";
 import { computed, watch, ref, onBeforeUnmount } from "vue";
-import { useI18n } from "vue3-i18n";
+import { useI18n } from "vue-i18n";
 import ProgressRing from "./ProgressRing.vue";
 
 const {t} = useI18n()

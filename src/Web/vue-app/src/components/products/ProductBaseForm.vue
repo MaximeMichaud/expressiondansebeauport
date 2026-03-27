@@ -63,7 +63,7 @@
 import { ref, type ComponentPublicInstance } from "vue";
 import { Status } from "@/validation";
 import { required, min } from "@/validation/rules";
-import { useI18n } from "vue3-i18n";
+import { useI18n } from "vue-i18n";
 import FormInput from "@/components/forms/FormInput.vue";
 import Fieldset from "@/components/forms/Fieldset.vue";
 import FormRow from "@/components/forms/FormRow.vue";
