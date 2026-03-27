@@ -565,9 +565,9 @@ public class GarneauTemplateDbContextInitializer
 
         var seedImages = new[]
         {
-            ("seed-image-devant-studio.jpg", "image-devant-studio.jpg", 107520L, "Vue du centre des loisirs où se situe le studio de danse"),
-            ("seed-vue-de-rue-education.jpg", "vue-de-rue-education.jpg", 141312L, "Repère visuel montrant l'église, l'école et l'entrée par l'Avenue de l'Éducation"),
-            ("seed-directions-sur-map.jpg", "directions-sur-map.jpg", 59392L, "Vue aérienne annotée montrant le chemin à suivre vers le studio")
+            ("image-devant-studio.jpg", "image-devant-studio.jpg", 107520L, "Vue du centre des loisirs où se situe le studio de danse"),
+            ("vue-de-rue-education.jpg", "vue-de-rue-education.jpg", 141312L, "Repère visuel montrant l'église, l'école et l'entrée par l'Avenue de l'Éducation"),
+            ("directions-sur-map.jpg", "directions-sur-map.jpg", 59392L, "Vue aérienne annotée montrant le chemin à suivre vers le studio")
         };
 
         var mediaIds = new List<Guid>();
@@ -579,7 +579,7 @@ public class GarneauTemplateDbContextInitializer
                 mediaIds.Add(existing.Id);
                 continue;
             }
-            var media = new MediaFile(fileName, originalName, "image/jpeg", size, $"/uploads/{fileName}");
+            var media = new MediaFile(fileName, originalName, "image/jpeg", size, $"/images/seed/{fileName}");
             media.SetAltText(alt);
             _context.Set<MediaFile>().Add(media);
             await _context.SaveChangesAsync();
@@ -587,7 +587,7 @@ public class GarneauTemplateDbContextInitializer
         }
 
         var imagesJson = string.Join(",", seedImages.Select((img, i) =>
-            $"{{\"url\":\"/uploads/{img.Item1}\",\"alt\":\"{img.Item4.Replace("\"", "\\\"")}\"}}"
+            $"{{\"url\":\"/images/seed/{img.Item1}\",\"alt\":\"{img.Item4.Replace("\"", "\\\"")}\"}}"
         ));
 
         var blocksJson =
