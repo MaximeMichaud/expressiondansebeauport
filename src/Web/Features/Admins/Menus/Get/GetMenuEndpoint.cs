@@ -40,22 +40,12 @@ public class GetMenuEndpoint : Endpoint<GetMenuRequest, NavigationMenuDto>
         }
 
         var dto = _mapper.Map<NavigationMenuDto>(menu);
-        // Build hierarchy - only return top-level items with children nested
-        dto.MenuItems = BuildHierarchy(dto.MenuItems);
-        await Send.OkAsync(dto, cancellation: ct);
-    }
+        // Return a flat list so the admin template can use its own filtering
+        // (currentMenu.menuItems.filter(i => i.parentId === item.id)).
+        // We clear Children to avoid duplicates from EF's relationship fix-up.
+        foreach (var item in dto.MenuItems)
+            item.Children.Clear();
 
-    private static List<NavigationMenuItemDto> BuildHierarchy(List<NavigationMenuItemDto> items)
-    {
-        var lookup = items.ToDictionary(i => i.Id);
-        var roots = new List<NavigationMenuItemDto>();
-        foreach (var item in items)
-        {
-            if (item.ParentId.HasValue && lookup.TryGetValue(item.ParentId.Value, out var parent))
-                parent.Children.Add(item);
-            else
-                roots.Add(item);
-        }
-        return roots.OrderBy(i => i.SortOrder).ToList();
+        await Send.OkAsync(dto, cancellation: ct);
     }
 }
