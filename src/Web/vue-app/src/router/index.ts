@@ -244,6 +244,12 @@ const mainRoutes = [
     ]
   },
   {
+    path: "/erreur",
+    name: "internalError",
+    component: InternalError,
+    meta: { public: true, title: "routes.internalError.name" }
+  },
+  {
     path: "/:slug",
     name: "publicPage",
     component: PublicPage,
@@ -251,12 +257,6 @@ const mainRoutes = [
       title: "routes.home.name",
       public: true
     }
-  },
-  {
-    path: "/erreur",
-    name: "internalError",
-    component: InternalError,
-    meta: { public: true, title: "routes.internalError.name" }
   },
   {
     path: "/:pathMatch(.*)*",

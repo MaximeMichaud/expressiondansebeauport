@@ -16,25 +16,59 @@
 
       <div class="public-navbar__menu" :class="{ 'is-open': isMenuOpen }">
         <ul class="public-navbar__links">
-          <li v-for="item in menuItems" :key="item.id" class="nav-item">
+          <li
+            v-for="item in menuItems"
+            :key="item.id"
+            class="nav-item"
+            :class="{ 'is-submenu-open': openSubmenuId === item.id }"
+          >
 
-            <RouterLink
-              v-if="!item.children || item.children.length === 0"
-              :to="item.url || `/${item.pageSlug}`"
-              class="public-navbar__link"
+            <template v-if="!item.children || item.children.length === 0">
+              <a
+                v-if="isExternalUrl(item.url)"
+                :href="item.url"
+                target="_blank"
+                rel="noopener"
+                class="public-navbar__link"
+                @click="isMenuOpen = false"
+              >
+                {{ item.label }}
+              </a>
+              <RouterLink
+                v-else
+                :to="item.url || `/${item.pageSlug}`"
+                class="public-navbar__link"
+                @click="isMenuOpen = false"
+              >
+                {{ item.label }}
+              </RouterLink>
+            </template>
+
+            <span
+              v-else
+              class="public-navbar__link nav-parent"
+              @click="toggleSubmenu(item.id)"
             >
-              {{ item.label }}
-            </RouterLink>
-
-            <span v-else class="public-navbar__link nav-parent">
               {{ item.label }}
             </span>
 
             <ul v-if="item.children && item.children.length" class="submenu">
               <li v-for="child in item.children" :key="child.id">
+                <a
+                  v-if="isExternalUrl(child.url)"
+                  :href="child.url"
+                  target="_blank"
+                  rel="noopener"
+                  class="submenu-link"
+                  @click="closeAll"
+                >
+                  {{ child.label }}
+                </a>
                 <RouterLink
+                  v-else
                   :to="child.url || `/${child.pageSlug}`"
                   class="submenu-link"
+                  @click="closeAll"
                 >
                   {{ child.label }}
                 </RouterLink>
@@ -73,7 +107,21 @@ import { NavigationMenuItem } from "@/types/entities";
 
 const { t } = useI18n();
 const isMenuOpen = ref(false);
+const openSubmenuId = ref<string | null>(null);
 const menuItems = ref<NavigationMenuItem[]>([]);
+
+function isExternalUrl(url?: string): boolean {
+  return !!url && /^https?:\/\//.test(url);
+}
+
+function toggleSubmenu(id?: string) {
+  openSubmenuId.value = openSubmenuId.value === id ? null : (id ?? null);
+}
+
+function closeAll() {
+  isMenuOpen.value = false;
+  openSubmenuId.value = null;
+}
 
 const fallbackLinks = [
   { key: "school" },
@@ -122,7 +170,8 @@ onMounted(() => {
   transition: all 0.2s ease;
 }
 
-.nav-item:hover .submenu{
+.nav-item:hover .submenu,
+.nav-item.is-submenu-open .submenu{
   opacity: 1;
   visibility: visible;
   transform: translateY(0);

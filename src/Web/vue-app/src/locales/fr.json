@@ -33,6 +33,9 @@
     "notFound": {
       "name": "Page introuvable"
     },
+    "internalError": {
+      "name": "Erreur serveur"
+    },
     "admin": {
       "path": "/admin",
       "fullPath": "/admin",
