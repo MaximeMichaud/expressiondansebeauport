@@ -65,6 +65,10 @@ public class ImportEndpoint : Endpoint<ImportRequest, ImportResponse>
                         page.SetContent(contentEl.GetString());
                     if (pageEl.TryGetProperty("MetaDescription", out var metaEl))
                         page.SetMetaDescription(metaEl.GetString());
+                    if (pageEl.TryGetProperty("ContentMode", out var modeEl))
+                        page.SetContentMode(modeEl.GetString() ?? "html");
+                    if (pageEl.TryGetProperty("Blocks", out var blocksEl))
+                        page.SetBlocks(blocksEl.GetString());
                     if (pageEl.TryGetProperty("Status", out var statusEl) &&
                         statusEl.GetString() == "Published")
                         page.Publish();
