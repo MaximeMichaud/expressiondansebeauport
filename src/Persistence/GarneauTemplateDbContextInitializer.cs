@@ -571,12 +571,12 @@ public class GarneauTemplateDbContextInitializer
         };
 
         // Patterns d'URLs obsolètes provenant d'anciennes versions du seed
-        var obsoleteUrlPatterns = new[] { "/uploads/seed-", "/images/seed/" };
+        var obsoleteUrlPatterns = new[] { "/uploads/seed-", "/images/seed/", "/images/" };
 
         var mediaIds = new List<Guid>();
         foreach (var (fileName, originalName, size, alt) in seedImages)
         {
-            var correctUrl = $"/images/{fileName}";
+            var correctUrl = $"/{fileName}";
             var existing = _context.Set<MediaFile>().FirstOrDefault(m => m.FileName == fileName);
             if (existing != null)
             {
@@ -604,7 +604,7 @@ public class GarneauTemplateDbContextInitializer
         }
 
         var imagesJson = string.Join(",", seedImages.Select((img, i) =>
-            $"{{\"url\":\"/images/{img.Item1}\",\"alt\":\"{img.Item4.Replace("\"", "\\\"")}\"}}"
+            $"{{\"url\":\"/{img.Item1}\",\"alt\":\"{img.Item4.Replace("\"", "\\\"")}\"}}"
         ));
 
         var blocksJson =
@@ -651,8 +651,9 @@ public class GarneauTemplateDbContextInitializer
                     foreach (var (fileName, _, _, _) in seedImages)
                     {
                         updatedBlocks = updatedBlocks
-                            .Replace($"/uploads/seed-{fileName}", $"/images/{fileName}")
-                            .Replace($"/images/seed/{fileName}", $"/images/{fileName}");
+                            .Replace($"/uploads/seed-{fileName}", $"/{fileName}")
+                            .Replace($"/images/seed/{fileName}", $"/{fileName}")
+                            .Replace($"/images/{fileName}", $"/{fileName}");
                     }
                 }
                 page.SetBlocks(updatedBlocks);
