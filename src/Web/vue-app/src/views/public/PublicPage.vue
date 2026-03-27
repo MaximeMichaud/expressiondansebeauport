@@ -119,7 +119,35 @@ watch(() => route.params.slug, (newSlug) => {
   line-height: 1.5;
 }
 
-.public-page__content :deep(a) {
+.public-page__content :deep(a:not([class*="btn"])) {
   color: var(--color-primary, #be1e2c);
+}
+
+/* Bouton S'inscrire utilisé dans les pages de camp */
+.public-page__content :deep(.btn-camp) {
+  display: inline-block;
+  background: #be1e2c;
+  color: #fff !important;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-weight: 700;
+  text-decoration: none;
+  margin-top: 1rem;
+  transition: background 0.3s;
+}
+
+.public-page__content :deep(.btn-camp:hover) {
+  background: #9e1824;
+}
+
+/* Boîte hero utilisée dans les pages de camp */
+.public-page__content :deep(.camp-hero) {
+  background: #f4f6f8;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
 }
 </style>

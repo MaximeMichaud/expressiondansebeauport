@@ -34,7 +34,7 @@
             handle=".menu-item__drag"
             class="menu-items-list"
             @end="onDragEnd">
-            <template #item="{ element: item }">
+            <!-- <template #item="{ element: item }">
               <div class="menu-item">
                 <button class="menu-item__drag" :aria-label="t('pages.menus.reorder')">
                   <GripVertical :size="14" />
@@ -51,6 +51,54 @@
                     <Trash2 :size="14" />
                   </button>
                 </div>
+              </div>
+            </template> -->
+            <template #item="{ element: item }">
+              <div>
+                <div class="menu-item">
+                  <button class="menu-item__drag" aria-label="Réordonner">
+                    <GripVertical :size="14" />
+                  </button>
+
+                  <div class="menu-item__info">
+                    <span class="menu-item__label">{{ item.label }}</span>
+                    <span v-if="item.url || item.pageSlug" class="menu-item__url">
+                      {{ item.url || item.pageSlug }}
+                    </span>
+                  </div>
+
+                  <div class="menu-item__actions">
+                    <button class="menu-item__btn" @click="editItem(item)">
+                      <Pencil :size="14" />
+                    </button>
+                    <button class="menu-item__btn" @click="removeItem(item)">
+                      <Trash2 :size="14" />
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  v-for="child in currentMenu?.menuItems?.filter(i => i.parentId === item.id)"
+                  :key="child.id"
+                  class="menu-item menu-item--child"
+                >
+                  <div class="menu-item__info">
+                    <span class="menu-item__label">↳ {{ child.label }}</span>
+                    <span v-if="child.url || child.pageSlug" class="menu-item__url">
+                      {{ child.url || child.pageSlug }}
+                    </span>
+                  </div>
+
+                  <div class="menu-item__actions">
+                    <button class="menu-item__btn" @click="editItem(child)">
+                      <Pencil :size="14" />
+                    </button>
+                    <button class="menu-item__btn" @click="removeItem(child)">
+                      <Trash2 :size="14" />
+                    </button>
+                  </div>
+                </div>
+
               </div>
             </template>
           </draggable>
@@ -78,6 +126,23 @@
               <option value="Blank">{{ t('pages.menus.targetBlank') }}</option>
             </select>
           </div>
+
+          <div class="form__field">
+            <label>Parent</label>
+            <select v-model="newItem.parentId">
+              <option :value="undefined">Aucun</option>
+
+              <option
+                v-for="item in currentMenu?.menuItems"
+                :key="item.id"
+                :value="item.id"
+              >
+                {{ item.label }}
+              </option>
+
+            </select>
+          </div>
+
           <button class="btn" @click="addItem">{{ t('global.add') }}</button>
         </div>
       </div>
@@ -144,11 +209,12 @@ const locations = computed(() => [
 
 const draggableItems = computed({
   get() {
-    return currentMenu.value?.menuItems ?? []
+    return currentMenu.value?.menuItems?.filter(i => !i.parentId) ?? []
   },
   set(newItems: NavigationMenuItem[]) {
     if (currentMenu.value) {
-      currentMenu.value.menuItems = newItems
+      const children = currentMenu.value.menuItems?.filter(i => i.parentId) ?? []
+      currentMenu.value.menuItems = [...newItems, ...children]
     }
   }
 })
