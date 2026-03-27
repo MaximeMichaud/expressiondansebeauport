@@ -46,6 +46,7 @@ async function loadPage(slug: string) {
     pageTitle.value = page.value!.title ?? ''
   } catch {
     page.value = null
+    pageTitle.value = ''
   }
   isLoading.value = false
 }
