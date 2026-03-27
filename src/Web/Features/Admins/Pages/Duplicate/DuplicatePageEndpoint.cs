@@ -45,6 +45,8 @@ public class DuplicatePageEndpoint : Endpoint<DuplicatePageRequest, PageDto>
         var duplicate = new Page(source.Title, slug);
         duplicate.SetContent(source.Content);
         duplicate.SetCustomCss(source.CustomCss);
+        duplicate.SetContentMode(source.ContentMode);
+        duplicate.SetBlocks(source.Blocks);
         duplicate.SetFeaturedImageId(source.FeaturedImageId);
         duplicate.SetMetaDescription(source.MetaDescription);
         duplicate.SetSortOrder(source.SortOrder);

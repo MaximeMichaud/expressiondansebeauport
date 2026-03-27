@@ -13,6 +13,7 @@ public class PageConfiguration : IEntityTypeConfiguration<Page>
         builder.Property(p => p.Title).HasMaxLength(200).IsRequired();
         builder.Property(p => p.Slug).HasMaxLength(200).IsRequired();
         builder.Property(p => p.MetaDescription).HasMaxLength(320);
+        builder.Property(p => p.ContentMode).HasMaxLength(10).HasDefaultValue("html");
         builder.Property(p => p.Status)
             .HasConversion<string>()
             .HasMaxLength(20);
