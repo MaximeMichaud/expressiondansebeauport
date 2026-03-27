@@ -66,7 +66,11 @@ public class ImportEndpoint : Endpoint<ImportRequest, ImportResponse>
                     if (pageEl.TryGetProperty("MetaDescription", out var metaEl))
                         page.SetMetaDescription(metaEl.GetString());
                     if (pageEl.TryGetProperty("ContentMode", out var modeEl))
-                        page.SetContentMode(modeEl.GetString() ?? "html");
+                    {
+                        var mode = modeEl.GetString();
+                        if (mode is "html" or "blocks")
+                            page.SetContentMode(mode);
+                    }
                     if (pageEl.TryGetProperty("Blocks", out var blocksEl))
                         page.SetBlocks(blocksEl.GetString());
                     if (pageEl.TryGetProperty("Status", out var statusEl) &&

@@ -231,11 +231,13 @@ public class GarneauTemplateDbContextInitializer
 
             CreatePage("Nous joindre", "nous-joindre", 5,
                 "<h2>Nous joindre</h2>" +
-                "<p><strong>Adresse :</strong> 15, rue de la Promenade-des-Soeurs, Beauport, QC G1C 0G3</p>" +
-                "<p><strong>Téléphone :</strong> <a href=\"tel:4186601086\">418-660-1086</a></p>" +
+                "<p>Pour toutes questions ou informations supplémentaires, n'hésitez surtout pas à nous joindre.</p>" +
+                "<p><strong>Téléphone :</strong> <a href=\"tel:4186666158\">418-666-6158</a></p>" +
                 "<p><strong>Courriel :</strong> <a href=\"mailto:info@expressiondansebeauport.com\">info@expressiondansebeauport.com</a></p>" +
-                "<h3>Heures d'ouverture</h3>" +
-                "<p>Lundi au vendredi : 16h00 - 21h00<br/>Samedi : 9h00 - 16h00<br/>Dimanche : Fermé</p>")
+                "<h3>Nos locaux</h3>" +
+                "<p>Centre de loisirs Ste-Gertrude<br/>788, avenue du Cénacle</p>" +
+                "<h3>Adresse postale</h3>" +
+                "<p>CP 29009 QUÉ CP RAYMOND PO<br/>G1B 3G0, Québec, QC</p>")
         };
 
             _context.Pages.AddRange(pages);
