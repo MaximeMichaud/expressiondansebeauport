@@ -24,6 +24,7 @@
       :total-items="paginatedResponse.totalItems"
       :search-value="''"
       @delete="onDelete"
+      @duplicate="onDuplicate"
       @reload="loadPages"
     />
   </div>
@@ -32,6 +33,7 @@
 <script lang="ts" setup>
 import {useI18n} from "vue3-i18n"
 import {computed, onMounted, ref} from "vue"
+import {useRouter} from "vue-router"
 import {usePageService} from "@/inversify.config"
 import {Page} from "@/types/entities"
 import {PaginatedResponse} from "@/types/responses"
@@ -39,8 +41,10 @@ import DataTable from "@/components/layouts/items/DataTable.vue"
 import BtnLink from "@/components/layouts/items/BtnLink.vue"
 import Loader from "@/components/layouts/items/Loader.vue"
 import {Tables} from "@/types/enums"
+import {notifyError} from "@/notify"
 
 const {t} = useI18n()
+const router = useRouter()
 const pageService = usePageService()
 
 const preventMultipleSubmit = ref(false)
@@ -64,6 +68,7 @@ const tablePages = computed(() => {
       statusRaw: x.status,
       actions: {
         edit: {name: 'admin.children.pages.edit', params: {id: x.id}},
+        duplicate: true,
         delete: true
       }
     }
@@ -83,6 +88,24 @@ async function loadPages(pageIndex: number, size: number) {
       pageItems.value = response.items
   }
   pagesAreLoading.value = false
+}
+
+async function onDuplicate(item: any) {
+  if (preventMultipleSubmit.value) return
+  preventMultipleSubmit.value = true
+
+  try {
+    const duplicated = await pageService.duplicate(item.id)
+    if (duplicated && duplicated.id) {
+      router.push({name: 'admin.children.pages.edit', params: {id: duplicated.id}})
+    } else {
+      notifyError(t('pages.pages.duplicate.validation.failedMessage'))
+    }
+  } catch {
+    notifyError(t('pages.pages.duplicate.validation.failedMessage'))
+  } finally {
+    preventMultipleSubmit.value = false
+  }
 }
 
 async function onDelete(item: any) {

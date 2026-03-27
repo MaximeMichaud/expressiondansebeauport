@@ -82,6 +82,21 @@
           "path": "sauvegardes",
           "fullPath": "/admin/sauvegardes",
           "name": "Sauvegardes"
+        },
+        "groups": {
+          "path": "groupes",
+          "fullPath": "/admin/groupes",
+          "name": "Groupes"
+        },
+        "members": {
+          "path": "membres",
+          "fullPath": "/admin/membres",
+          "name": "Membres"
+        },
+        "sessions": {
+          "path": "sessions",
+          "fullPath": "/admin/sessions",
+          "name": "Sessions"
         }
       }
     }
@@ -233,6 +248,11 @@
         "validation": {
           "successMessage": "La page a été supprimée avec succès.",
           "failedMessage": "Une erreur s'est produite lors de la suppression de la page."
+        }
+      },
+      "duplicate": {
+        "validation": {
+          "failedMessage": "Une erreur s'est produite lors de la duplication de la page."
         }
       }
     },

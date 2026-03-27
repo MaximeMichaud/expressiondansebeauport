@@ -62,6 +62,11 @@ public class PageRepository : IPageRepository
         return query.Any();
     }
 
+    public bool SlugExistsIncludingDeleted(string slug)
+    {
+        return _context.Pages.IgnoreQueryFilters().Any(p => p.Slug == slug);
+    }
+
     public async Task Create(Page page)
     {
         _context.Pages.Add(page);
