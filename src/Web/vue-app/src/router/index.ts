@@ -226,21 +226,6 @@ const mainRoutes = [
         name: "admin.children.backup",
         component: AdminBackup,
       },
-      {
-        path: 'groupes',
-        name: 'admin.children.groups',
-        component: () => import('@/views/admin/groups/AdminGroupIndex.vue'),
-      },
-      {
-        path: 'membres',
-        name: 'admin.children.members',
-        component: () => import('@/views/admin/members/AdminMemberIndex.vue'),
-      },
-      {
-        path: 'sessions',
-        name: 'admin.children.sessions',
-        component: () => import('@/views/admin/sessions/AdminSessionIndex.vue'),
-      },
     ]
   },
   {
