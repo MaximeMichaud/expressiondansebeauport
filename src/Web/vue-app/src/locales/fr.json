@@ -82,21 +82,6 @@
           "path": "sauvegardes",
           "fullPath": "/admin/sauvegardes",
           "name": "Sauvegardes"
-        },
-        "groups": {
-          "path": "groupes",
-          "fullPath": "/admin/groupes",
-          "name": "Groupes"
-        },
-        "members": {
-          "path": "membres",
-          "fullPath": "/admin/membres",
-          "name": "Membres"
-        },
-        "sessions": {
-          "path": "sessions",
-          "fullPath": "/admin/sessions",
-          "name": "Sessions"
         }
       }
     }
