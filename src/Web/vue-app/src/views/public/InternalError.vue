@@ -1,10 +1,13 @@
 <template>
   <div class="error-page">
     <div class="error-page__container">
-      <p class="error-page__code">404</p>
-      <h1 class="error-page__title">{{ t('public.page.notFound') }}</h1>
-      <p class="error-page__message">{{ t('public.page.notFoundMessage') }}</p>
+      <p class="error-page__code">500</p>
+      <h1 class="error-page__title">{{ t('public.page.serverError') }}</h1>
+      <p class="error-page__message">{{ t('public.page.serverErrorMessage') }}</p>
       <div class="error-page__actions">
+        <button class="error-page__btn error-page__btn--outline" @click="retry">
+          {{ t('public.page.retry') }}
+        </button>
         <RouterLink :to="{ name: 'home' }" class="error-page__btn">
           {{ t('public.page.backHome') }}
         </RouterLink>
@@ -15,7 +18,14 @@
 
 <script lang="ts" setup>
 import { useI18n } from "vue-i18n"
+import { useRouter } from "vue-router"
+
 const { t } = useI18n()
+const router = useRouter()
+
+function retry() {
+  router.go(-1)
+}
 </script>
 
 <style scoped>
@@ -71,10 +81,24 @@ const { t } = useI18n()
   font-weight: 700;
   font-size: 0.95rem;
   text-decoration: none;
-  transition: background 0.2s ease;
+  border: 2px solid #be1e2c;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .error-page__btn:hover {
   background: #9e1824;
+  border-color: #9e1824;
+}
+
+.error-page__btn--outline {
+  background: transparent;
+  color: #be1e2c;
+}
+
+.error-page__btn--outline:hover {
+  background: #be1e2c;
+  color: #fff;
 }
 </style>
+

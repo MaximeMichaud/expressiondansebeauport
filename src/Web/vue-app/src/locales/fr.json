@@ -33,6 +33,9 @@
     "notFound": {
       "name": "Page introuvable"
     },
+    "internalError": {
+      "name": "Erreur serveur"
+    },
     "admin": {
       "path": "/admin",
       "fullPath": "/admin",
@@ -499,7 +502,10 @@
     "page": {
       "notFound": "Page introuvable",
       "notFoundMessage": "La page que vous recherchez n'existe pas ou a été déplacée.",
-      "backHome": "Retour à l'accueil"
+      "backHome": "Retour à l'accueil",
+      "serverError": "Erreur serveur",
+      "serverErrorMessage": "Une erreur inattendue s'est produite. Veuillez réessayer ou contacter notre équipe si le problème persiste.",
+      "retry": "Réessayer"
     }
   },
   "textEditor": {

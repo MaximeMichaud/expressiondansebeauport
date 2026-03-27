@@ -171,6 +171,13 @@ public class DeleteMenuItemEndpoint : Endpoint<DeleteMenuItemRequest, EmptyRespo
             await Send.NotFoundAsync(ct);
             return;
         }
+
+        var children = await _context.NavigationMenuItems
+            .Where(i => i.ParentId == item.Id)
+            .ToListAsync(ct);
+        if (children.Count > 0)
+            _context.NavigationMenuItems.RemoveRange(children);
+
         _context.NavigationMenuItems.Remove(item);
         await _context.SaveChangesAsync();
         await Send.NoContentAsync(ct);

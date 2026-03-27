@@ -5,6 +5,7 @@ import {createRouter, createWebHistory} from "vue-router";
 import Home from "@/views/public/Home.vue";
 import PublicPage from "@/views/public/PublicPage.vue";
 import NotFound from "@/views/public/NotFound.vue";
+import InternalError from "@/views/public/InternalError.vue";
 import Login from "@/views/Login.vue";
 import TwoFactor from "@/views/TwoFactor.vue";
 import ForgotPassword from "@/views/ForgotPassword.vue";
@@ -225,22 +226,13 @@ const mainRoutes = [
         name: "admin.children.backup",
         component: AdminBackup,
       },
-      {
-        path: 'groupes',
-        name: 'admin.children.groups',
-        component: () => import('@/views/admin/groups/AdminGroupIndex.vue'),
-      },
-      {
-        path: 'membres',
-        name: 'admin.children.members',
-        component: () => import('@/views/admin/members/AdminMemberIndex.vue'),
-      },
-      {
-        path: 'sessions',
-        name: 'admin.children.sessions',
-        component: () => import('@/views/admin/sessions/AdminSessionIndex.vue'),
-      },
     ]
+  },
+  {
+    path: "/erreur",
+    name: "internalError",
+    component: InternalError,
+    meta: { public: true, title: "routes.internalError.name" }
   },
   {
     path: "/:slug",
@@ -295,13 +287,10 @@ router.beforeEach(async (to, from) => {
 
 router.afterEach((to) => {
   const social = isSocialRoute(to)
-  const titleKey = [...to.matched].reverse().find(r => r.meta.title)?.meta.title as string | undefined;
-  if (!titleKey) {
-    document.title = social ? 'EDB Social' : 'EDB';
-    return;
+  if (social) {
+    const titleKey = [...to.matched].reverse().find(r => r.meta.title)?.meta.title as string | undefined;
+    document.title = titleKey ? `${titleKey} - EDB Social` : 'EDB Social';
   }
-  const title = social ? titleKey : i18n.global.t(titleKey);
-  document.title = title ? `${title} - EDB Social` : 'EDB Social';
 });
 
 export const Router = router;
