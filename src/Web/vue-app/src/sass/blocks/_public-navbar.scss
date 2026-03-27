@@ -149,6 +149,7 @@
       display: flex;
       flex-direction: row;
       align-items: center;
+      justify-content: center;
       width: auto;
       flex: 1;
       padding: 0;
@@ -161,8 +162,6 @@
       flex-direction: row;
       align-items: center;
       gap: 8px;
-      flex: 1;
-      justify-content: center;
     }
 
     &__link {
