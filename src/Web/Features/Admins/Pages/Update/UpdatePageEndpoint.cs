@@ -39,6 +39,11 @@ public class UpdatePageValidator : Validator<UpdatePageRequest>
             .MaximumLength(320)
             .WithErrorCode("MetaDescriptionTooLong")
             .WithMessage("Meta description must be 320 characters or less.");
+
+        RuleFor(x => x.ContentMode)
+            .Must(x => x is "html" or "blocks")
+            .WithErrorCode("InvalidContentMode")
+            .WithMessage("Content mode must be 'html' or 'blocks'.");
     }
 }
 

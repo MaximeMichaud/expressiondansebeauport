@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, watch, nextTick} from "vue"
+import {ref, watch, nextTick, onUnmounted} from "vue"
 import type {ImageGalleryBlockData} from "@/types/entities/pageBlock"
 
 defineProps<{
@@ -69,6 +69,10 @@ watch(lightboxIndex, async (val) => {
     await nextTick()
     lightboxRef.value?.focus()
   }
+})
+
+onUnmounted(() => {
+  document.body.style.overflow = ''
 })
 </script>
 

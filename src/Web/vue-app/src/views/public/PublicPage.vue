@@ -5,7 +5,7 @@
     <component :is="'style'" v-if="page.customCss">{{ page.customCss }}</component>
     <div class="public-page__container">
       <h1 class="public-page__title">{{ page.title }}</h1>
-      <template v-if="page.contentMode === 'blocks' && parsedBlocks.length">
+      <template v-if="page.contentMode === 'blocks'">
         <BlockRenderer v-for="block in parsedBlocks" :key="block.id" :block="block" />
       </template>
       <div v-else class="public-page__content" v-html="page.content"></div>
