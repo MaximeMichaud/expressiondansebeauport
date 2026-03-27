@@ -7,6 +7,8 @@ public class PageDto
     public string Slug { get; set; } = null!;
     public string? Content { get; set; }
     public string? CustomCss { get; set; }
+    public string ContentMode { get; set; } = "html";
+    public string? Blocks { get; set; }
     public string Status { get; set; } = null!;
     public Guid? FeaturedImageId { get; set; }
     public string? FeaturedImageUrl { get; set; }

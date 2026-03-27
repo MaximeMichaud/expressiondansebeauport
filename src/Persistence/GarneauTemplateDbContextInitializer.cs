@@ -231,16 +231,20 @@ public class GarneauTemplateDbContextInitializer
 
             CreatePage("Nous joindre", "nous-joindre", 5,
                 "<h2>Nous joindre</h2>" +
-                "<p><strong>Adresse :</strong> 15, rue de la Promenade-des-Soeurs, Beauport, QC G1C 0G3</p>" +
-                "<p><strong>Téléphone :</strong> <a href=\"tel:4186601086\">418-660-1086</a></p>" +
+                "<p>Pour toutes questions ou informations supplémentaires, n'hésitez surtout pas à nous joindre.</p>" +
+                "<p><strong>Téléphone :</strong> <a href=\"tel:4186666158\">418-666-6158</a></p>" +
                 "<p><strong>Courriel :</strong> <a href=\"mailto:info@expressiondansebeauport.com\">info@expressiondansebeauport.com</a></p>" +
-                "<h3>Heures d'ouverture</h3>" +
-                "<p>Lundi au vendredi : 16h00 - 21h00<br/>Samedi : 9h00 - 16h00<br/>Dimanche : Fermé</p>")
+                "<h3>Nos locaux</h3>" +
+                "<p>Centre de loisirs Ste-Gertrude<br/>788, avenue du Cénacle</p>" +
+                "<h3>Adresse postale</h3>" +
+                "<p>CP 29009 QUÉ CP RAYMOND PO<br/>G1B 3G0, Québec, QC</p>")
         };
 
             _context.Pages.AddRange(pages);
             await _context.SaveChangesAsync();
         }
+
+        await SeedNousJoindreBlocks();
 
         if (_environment.IsDevelopment())
         {
@@ -553,6 +557,73 @@ public class GarneauTemplateDbContextInitializer
                 "<li><strong>Amélie Therrien</strong> — Administratrice</li>" +
             "</ul>" +
         "</section>";
+
+    private async Task SeedNousJoindreBlocks()
+    {
+        var page = _context.Pages.FirstOrDefault(p => p.Slug == "nous-joindre");
+        if (page == null || page.ContentMode == "blocks") return;
+
+        var seedImages = new[]
+        {
+            ("seed-image-devant-studio.jpg", "image-devant-studio.jpg", 107520L, "Vue du centre des loisirs où se situe le studio de danse"),
+            ("seed-vue-de-rue-education.jpg", "vue-de-rue-education.jpg", 141312L, "Repère visuel montrant l'église, l'école et l'entrée par l'Avenue de l'Éducation"),
+            ("seed-directions-sur-map.jpg", "directions-sur-map.jpg", 59392L, "Vue aérienne annotée montrant le chemin à suivre vers le studio")
+        };
+
+        var mediaIds = new List<Guid>();
+        foreach (var (fileName, originalName, size, alt) in seedImages)
+        {
+            var existing = _context.Set<MediaFile>().FirstOrDefault(m => m.FileName == fileName);
+            if (existing != null)
+            {
+                mediaIds.Add(existing.Id);
+                continue;
+            }
+            var media = new MediaFile(fileName, originalName, "image/jpeg", size, $"/uploads/{fileName}");
+            media.SetAltText(alt);
+            _context.Set<MediaFile>().Add(media);
+            await _context.SaveChangesAsync();
+            mediaIds.Add(media.Id);
+        }
+
+        var imagesJson = string.Join(",", seedImages.Select((img, i) =>
+            $"{{\"url\":\"/uploads/{img.Item1}\",\"alt\":\"{img.Item4.Replace("\"", "\\\"")}\"}}"
+        ));
+
+        var blocksJson =
+            "[" +
+                "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+                    "<h2>Nous joindre</h2>" +
+                    "<p>Pour toutes questions ou informations supplémentaires, n'hésitez surtout pas à nous joindre.</p>" +
+                    "<p><strong>Téléphone :</strong> <a href=\\\"tel:4186666158\\\">418-666-6158</a></p>" +
+                    "<p><strong>Courriel :</strong> <a href=\\\"mailto:info@expressiondansebeauport.com\\\">info@expressiondansebeauport.com</a></p>" +
+                    "<h3>Nos locaux</h3>" +
+                    "<p>Centre de loisirs Ste-Gertrude<br/>788, avenue du Cénacle</p>" +
+                    "<h3>Adresse postale</h3>" +
+                    "<p>CP 29009 QUÉ CP RAYMOND PO<br/>G1B 3G0, Québec, QC</p>" +
+                "\"}}," +
+                "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"google-map\",\"data\":{" +
+                    "\"embedUrl\":\"https://www.google.com/maps?q=788+avenue+du+C%C3%A9nacle,+Qu%C3%A9bec,+QC+G1E+5J4&z=15&output=embed\"," +
+                    "\"address\":\"788 avenue du Cénacle, Québec, QC G1E 5J4\"," +
+                    "\"height\":400" +
+                "}}," +
+                "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+                    "<h2>Comment s'y rendre?</h2>" +
+                    "<p>L'accès au stationnement et au local se fait par l'Avenue de l'Éducation. " +
+                    "Google Maps peut parfois manquer de précision sur ce point, donc voici les repères visuels à suivre.</p>" +
+                "\"}}," +
+                "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"image-gallery\",\"data\":{\"images\":[" + imagesJson + "],\"columns\":3}}," +
+                "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"cta-button\",\"data\":{" +
+                    "\"label\":\"S'inscrire maintenant\"," +
+                    "\"url\":\"https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session\"," +
+                    "\"style\":\"primary\",\"alignment\":\"center\",\"openInNewTab\":true" +
+                "}}" +
+            "]";
+
+        page.SetContentMode("blocks");
+        page.SetBlocks(blocksJson);
+        await _context.SaveChangesAsync();
+    }
 
     private async Task SeedPageIfNotExists(string title, string slug, int sortOrder, string content, string? customCss = null)
     {

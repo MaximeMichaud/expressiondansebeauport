@@ -15,6 +15,8 @@ public class Page : AuditableAndSoftDeletableEntity
     public string Slug { get; private set; } = null!;
     public string? Content { get; private set; }
     public string? CustomCss { get; private set; }
+    public string ContentMode { get; private set; } = "html";
+    public string? Blocks { get; private set; }
     public PageStatus Status { get; private set; } = PageStatus.Draft;
     public Guid? FeaturedImageId { get; private set; }
     public string? MetaDescription { get; private set; }
@@ -34,6 +36,8 @@ public class Page : AuditableAndSoftDeletableEntity
     public void SetSlug(string slug) => Slug = GenerateSlug(slug);
     public void SetContent(string? content) => Content = content;
     public void SetCustomCss(string? customCss) => CustomCss = customCss;
+    public void SetContentMode(string mode) => ContentMode = mode;
+    public void SetBlocks(string? blocks) => Blocks = blocks;
     public void SetFeaturedImageId(Guid? id) => FeaturedImageId = id;
     public void SetMetaDescription(string? description) => MetaDescription = description;
     public void SetSortOrder(int sortOrder) => SortOrder = sortOrder;

@@ -259,6 +259,75 @@
         }
       }
     },
+    "blocks": {
+      "noBlocks": "Aucun bloc. Cliquez sur le bouton ci-dessous pour en ajouter un.",
+      "addBlock": "Ajouter un bloc",
+      "remove": "Supprimer",
+      "moveUp": "Monter",
+      "moveDown": "Descendre",
+      "reorder": "Réordonner",
+      "contentMode": "Mode de contenu",
+      "contentModeHtml": "Contenu libre (HTML)",
+      "contentModeBlocks": "Blocs visuels",
+      "richText": {
+        "label": "Texte riche",
+        "content": "Contenu"
+      },
+      "googleMap": {
+        "label": "Carte Google Maps",
+        "embedUrl": "URL d'intégration",
+        "embedUrlPlaceholder": "https://www.google.com/maps/embed?...",
+        "address": "Adresse",
+        "addressPlaceholder": "788 avenue du Cénacle, Québec",
+        "height": "Hauteur (px)"
+      },
+      "imageGallery": {
+        "label": "Galerie d'images",
+        "columns": "Nombre de colonnes",
+        "addImage": "Ajouter une image",
+        "imageUrl": "URL de l'image",
+        "imageAlt": "Texte alternatif",
+        "imageAltPlaceholder": "Description de l'image",
+        "removeImage": "Retirer"
+      },
+      "hero": {
+        "label": "Section hero",
+        "title": "Titre",
+        "titlePlaceholder": "Titre principal",
+        "subtitle": "Sous-titre",
+        "subtitlePlaceholder": "Sous-titre optionnel",
+        "backgroundImageUrl": "URL de l'image de fond",
+        "backgroundImageUrlPlaceholder": "https://exemple.com/image.jpg",
+        "ctaLabel": "Texte du bouton",
+        "ctaLabelPlaceholder": "En savoir plus",
+        "ctaUrl": "URL du bouton",
+        "ctaUrlPlaceholder": "https://...",
+        "overlayOpacity": "Opacité de l'overlay"
+      },
+      "faq": {
+        "label": "FAQ (Accordion)",
+        "addItem": "Ajouter une question",
+        "question": "Question",
+        "questionPlaceholder": "Votre question",
+        "answer": "Réponse",
+        "answerPlaceholder": "La réponse",
+        "removeItem": "Retirer"
+      },
+      "ctaButton": {
+        "label": "Texte du bouton",
+        "labelPlaceholder": "S'inscrire",
+        "url": "URL",
+        "urlPlaceholder": "https://...",
+        "style": "Style",
+        "stylePrimary": "Principal",
+        "styleSecondary": "Secondaire",
+        "alignment": "Alignement",
+        "alignLeft": "Gauche",
+        "alignCenter": "Centre",
+        "alignRight": "Droite",
+        "openInNewTab": "Ouvrir dans un nouvel onglet"
+      }
+    },
     "menus": {
       "selectMenu": "Sélectionner un menu",
       "addItem": "Ajouter un élément de menu",

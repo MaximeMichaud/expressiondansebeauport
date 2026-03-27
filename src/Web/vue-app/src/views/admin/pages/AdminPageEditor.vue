@@ -17,13 +17,18 @@
           <label>{{ t('pages.pages.slug') }}</label>
           <input type="text" v-model="page.slug" class="form-input" :placeholder="t('pages.pages.placeholderSlug')" />
         </div>
-        <FormTextEditor
-          v-model="page.content"
-          v-model:cssModelValue="page.customCss"
-          name="content"
-          :label="t('pages.pages.content')"
-          :rules="[]"
-        />
+        <template v-if="page.contentMode === 'blocks'">
+          <PageBlocksEditor v-model="parsedBlocks" />
+        </template>
+        <template v-else>
+          <FormTextEditor
+            v-model="page.content"
+            v-model:cssModelValue="page.customCss"
+            name="content"
+            :label="t('pages.pages.content')"
+            :rules="[]"
+          />
+        </template>
         <div class="form-group">
           <label>{{ t('pages.pages.metaDescription') }}</label>
           <textarea v-model="page.metaDescription" rows="3" class="form-input form-textarea" :placeholder="t('pages.pages.placeholderMetaDescription')"></textarea>
@@ -43,6 +48,13 @@
             <label>{{ t('pages.pages.sortOrder') }}</label>
             <input type="number" v-model.number="page.sortOrder" class="form-input" />
           </div>
+          <div class="form-group">
+            <label>Mode de contenu</label>
+            <select v-model="page.contentMode" class="form-input">
+              <option value="html">Contenu libre (HTML)</option>
+              <option value="blocks">Blocs visuels</option>
+            </select>
+          </div>
           <button class="btn" :disabled="preventMultipleSubmit" @click="onSubmit">
             {{ t('global.save') }}
           </button>
@@ -54,13 +66,15 @@
 
 <script lang="ts" setup>
 import {useI18n} from "vue-i18n"
-import {onMounted, ref} from "vue"
+import {computed, onMounted, ref} from "vue"
 import {useRoute, useRouter} from "vue-router"
 import {usePageService} from "@/inversify.config"
 import {Page} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import BackLink from "@/components/layouts/items/BackLink.vue"
 import FormTextEditor from "@/components/forms/FormTextEditor.vue"
+import PageBlocksEditor from "@/components/blocks/PageBlocksEditor.vue"
+import type {PageBlock} from "@/types/entities/pageBlock"
 
 const {t} = useI18n()
 const route = useRoute()
@@ -72,6 +86,16 @@ const preventMultipleSubmit = ref(false)
 const isEditing = ref(false)
 const page = ref<Page>(new Page())
 
+const parsedBlocks = computed({
+  get(): PageBlock[] {
+    if (!page.value.blocks) return []
+    try { return JSON.parse(page.value.blocks) } catch { return [] }
+  },
+  set(val: PageBlock[]) {
+    page.value.blocks = JSON.stringify(val)
+  }
+})
+
 onMounted(async () => {
   const id = route.params.id as string
   if (id) {
@@ -82,6 +106,7 @@ onMounted(async () => {
   } else {
     page.value.status = "Draft"
     page.value.sortOrder = 0
+    page.value.contentMode = "html"
   }
 })
 
