@@ -561,7 +561,7 @@ public class GarneauTemplateDbContextInitializer
     private async Task SeedNousJoindreBlocks()
     {
         var page = _context.Pages.FirstOrDefault(p => p.Slug == "nous-joindre");
-        if (page == null || page.ContentMode == "blocks") return;
+        if (page == null) return;
 
         var seedImages = new[]
         {
@@ -570,16 +570,33 @@ public class GarneauTemplateDbContextInitializer
             ("directions-sur-map.jpg", "directions-sur-map.jpg", 59392L, "Vue aérienne annotée montrant le chemin à suivre vers le studio")
         };
 
+        // Patterns d'URLs obsolètes provenant d'anciennes versions du seed
+        var obsoleteUrlPatterns = new[] { "/uploads/seed-", "/images/seed/" };
+
         var mediaIds = new List<Guid>();
         foreach (var (fileName, originalName, size, alt) in seedImages)
         {
+            var correctUrl = $"/images/{fileName}";
             var existing = _context.Set<MediaFile>().FirstOrDefault(m => m.FileName == fileName);
             if (existing != null)
             {
+                if (obsoleteUrlPatterns.Any(p => existing.BlobUrl.Contains(p)) || existing.BlobUrl != correctUrl)
+                    existing.SetBlobUrl(correctUrl);
                 mediaIds.Add(existing.Id);
                 continue;
             }
-            var media = new MediaFile(fileName, originalName, "image/jpeg", size, $"/images/{fileName}");
+
+            // Chercher aussi les anciens MediaFile avec le préfixe seed-
+            var legacy = _context.Set<MediaFile>().FirstOrDefault(m =>
+                m.FileName == $"seed-{fileName}" || m.BlobUrl.Contains($"seed-{fileName}"));
+            if (legacy != null)
+            {
+                legacy.SetBlobUrl(correctUrl);
+                mediaIds.Add(legacy.Id);
+                continue;
+            }
+
+            var media = new MediaFile(fileName, originalName, "image/jpeg", size, correctUrl);
             media.SetAltText(alt);
             _context.Set<MediaFile>().Add(media);
             await _context.SaveChangesAsync();
@@ -619,6 +636,30 @@ public class GarneauTemplateDbContextInitializer
                     "\"style\":\"primary\",\"alignment\":\"center\",\"openInNewTab\":true" +
                 "}}" +
             "]";
+
+        // Si la page est déjà en mode blocks, vérifier si les URLs sont obsolètes
+        if (page.ContentMode == "blocks")
+        {
+            var needsUpdate = page.Blocks != null &&
+                obsoleteUrlPatterns.Any(p => page.Blocks.Contains(p));
+            if (needsUpdate)
+            {
+                var updatedBlocks = page.Blocks!;
+                foreach (var pattern in obsoleteUrlPatterns)
+                {
+                    // Remplacer /uploads/seed-X.jpg et /images/seed/X.jpg par /images/X.jpg
+                    foreach (var (fileName, _, _, _) in seedImages)
+                    {
+                        updatedBlocks = updatedBlocks
+                            .Replace($"/uploads/seed-{fileName}", $"/images/{fileName}")
+                            .Replace($"/images/seed/{fileName}", $"/images/{fileName}");
+                    }
+                }
+                page.SetBlocks(updatedBlocks);
+            }
+            await _context.SaveChangesAsync();
+            return;
+        }
 
         page.SetContentMode("blocks");
         page.SetBlocks(blocksJson);
