@@ -2,7 +2,7 @@
   <div class="navbar">
 
     <!-- Top bar: user avatar + hamburger (mobile only) -->
-    <div class="navbar__topbar" v-if="$windowWidth < 1225">
+    <div class="navbar__topbar" v-if="windowWidth < 1225">
       <UserAvatar />
       <button class="navbar__toggle" :class="{ 'navbar__toggle--open': isExpanded }" @click="toggleExpansion">
         <Menu v-if="!isExpanded" :size="22" />
@@ -12,7 +12,7 @@
 
     <!-- Nav content -->
     <div
-        v-show="!memberIsLoading && (isExpanded || $windowWidth >= 1225 || !$router.currentRoute.value.name)"
+        v-show="!memberIsLoading && (isExpanded || windowWidth >= 1225 || !$router.currentRoute.value.name)"
         class="navbar__content"
     >
       <AdminNavbarItems v-if="userStore.hasRole(Role.Admin)"/>
@@ -37,9 +37,12 @@ import {Menu, X} from "lucide-vue-next";
 import {useRouter} from "vue-router";
 import {useUserStore} from "@/stores/userStore";
 import {Role} from "@/types/enums";
+import {useWindowSize} from "@/composables/useWindowSize";
 import AdminNavbarItems from "@/components/navigation/AdminNavbarItems.vue";
 import LogoutButton from "@/components/navigation/LogoutButton.vue";
 import UserAvatar from "@/components/account/UserAvatar.vue";
+
+const {width: windowWidth} = useWindowSize();
 
 // eslint-disable-next-line
 const props = defineProps<{

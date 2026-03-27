@@ -128,7 +128,7 @@ import TextAlign from "@tiptap/extension-text-align";
 import { TextStyle } from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
 import FormTextEditorLinkPopup from "@/components/forms/FormTextEditorLinkPopup.vue";
-import { useI18n } from "vue3-i18n";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps<{
   name: string;

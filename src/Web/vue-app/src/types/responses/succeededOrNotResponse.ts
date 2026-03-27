@@ -16,11 +16,11 @@ export class SucceededOrNotResponse {
         const errorMessages: string[] = [];
         this.errors.forEach(error => {
             const errorKey = error.errorType.makeFirstLetterLowercase()
-            const errorMessage = i18n.t(`${translationLocation}.${errorKey}`)
+            const errorMessage = i18n.global.t(`${translationLocation}.${errorKey}`)
             if (fallbackKey)
-                errorMessages.push(errorMessage ? errorMessage : i18n.t(fallbackKey))
+                errorMessages.push(errorMessage ? errorMessage : i18n.global.t(fallbackKey))
             else
-                errorMessages.push(errorMessage ? errorMessage : i18n.t('validation.errorOccured'))
+                errorMessages.push(errorMessage ? errorMessage : i18n.global.t('validation.errorOccured'))
         })
         return errorMessages
     }

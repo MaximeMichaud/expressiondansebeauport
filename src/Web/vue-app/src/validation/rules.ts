@@ -15,7 +15,7 @@ export const isFutureDate: Rule = (value: string): Status => {
 
   return {
     valid: result,
-    message: result ? undefined : i18n.t("validation.futureDate"),
+    message: result ? undefined : i18n.global.t("validation.futureDate"),
   };
 };
 
@@ -27,7 +27,7 @@ export function minDate(min: string): Rule {
       valid: result,
       message: result
         ? undefined
-        : i18n.t('validation.min').replace("{min}", min.toString())
+        : i18n.global.t('validation.min').replace("{min}", min.toString())
     };
   };
 }
@@ -40,7 +40,7 @@ export function min(min: number): Rule {
       valid: result,
       message: result
         ? undefined
-        : i18n.t('validation.min').replace("{min}", min.toString()),
+        : i18n.global.t('validation.min').replace("{min}", min.toString()),
     };
   };
 }
@@ -53,7 +53,7 @@ export function max(max: number): Rule {
       valid: result,
       message: result
         ? undefined
-        : i18n.t('validation.max').toString().replace("{max}", max.toString()),
+        : i18n.global.t('validation.max').toString().replace("{max}", max.toString()),
     };
   };
 }
@@ -62,7 +62,7 @@ export const required: Rule = (value?: string): Status => {
   const result = value == undefined ? false : Boolean(value.toString());
   return {
     valid: result,
-    message: result ? undefined : i18n.t('validation.empty').toString()
+    message: result ? undefined : i18n.global.t('validation.empty').toString()
   };
 };
 
@@ -71,14 +71,14 @@ export const requiredTextEditor: Rule = (value: string): Status => {
 
   return {
     valid: result,
-    message: result ? undefined : i18n.t("validation.empty").toString(),
+    message: result ? undefined : i18n.global.t("validation.empty").toString(),
   };
 };
 
 export const requiredBoolean: RuleBoolean = (value: boolean): Status => {
   return {
     valid: value,
-    message: value ? undefined : i18n.t('validation.checked').toString()
+    message: value ? undefined : i18n.global.t('validation.checked').toString()
   };
 };
 
@@ -86,7 +86,7 @@ export const requiredArray: RuleArray = (array: any[]): Status => {
     const result = array != null && array.length > 0;
     return {
       valid: result,
-      message: result ? undefined : i18n.t('validation.empty').toString()
+      message: result ? undefined : i18n.global.t('validation.empty').toString()
     };
 }
 
@@ -95,7 +95,7 @@ export const mustMatchZipCodeFormat: Rule = (value: string): Status => {
   const valid = zipCodeRegex.test(value)
   return {
     valid: valid,
-    message: valid ? undefined : i18n.t('validation.zipCode').toString()
+    message: valid ? undefined : i18n.global.t('validation.zipCode').toString()
   };
 };
 
@@ -104,7 +104,7 @@ export const mustMatchPhoneNumberFormat: Rule = (value: string): Status => {
   const valid = phoneNumberRegex.test(value)
   return {
     valid: valid,
-    message: valid ? undefined : i18n.t('validation.phoneNumber').toString()
+    message: valid ? undefined : i18n.global.t('validation.phoneNumber').toString()
   };
 };
 
@@ -113,6 +113,6 @@ export const mustMatchEmailFormat: Rule = (value: string): Status => {
   const valid = emailRegex.test(value)
   return {
     valid: valid,
-    message: valid ? undefined : i18n.t('validation.email').toString()
+    message: valid ? undefined : i18n.global.t('validation.email').toString()
   };
 }

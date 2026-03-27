@@ -1,5 +1,5 @@
 import {useRoute} from "vue-router";
-import {useI18n} from "vue3-i18n";
+import {useI18n} from "vue-i18n";
 
 /**
  * @param parentKey string? if undefined, use current route path as base url

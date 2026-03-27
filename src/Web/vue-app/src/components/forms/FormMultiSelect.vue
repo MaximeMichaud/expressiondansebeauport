@@ -51,7 +51,7 @@ import {FormOption} from "@/types/formOption";
 import {Status, validateArray} from '@/validation'
 import {requiredArray, RuleArray} from '@/validation/rules'
 import {ref, watch} from "vue";
-import {useI18n} from "vue3-i18n";
+import {useI18n} from "vue-i18n";
 
  
 const props = defineProps<{
