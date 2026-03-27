@@ -207,6 +207,10 @@ async function onDelete() {
   border-color: var(--primary);
 }
 
+.media-filters__btn--active:hover {
+  background: color-mix(in srgb, var(--primary) 85%, black);
+}
+
 .media-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
