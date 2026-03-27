@@ -302,13 +302,10 @@ router.beforeEach(async (to, from) => {
 
 router.afterEach((to) => {
   const social = isSocialRoute(to)
-  const titleKey = [...to.matched].reverse().find(r => r.meta.title)?.meta.title as string | undefined;
-  if (!titleKey) {
-    document.title = social ? 'EDB Social' : 'EDB';
-    return;
+  if (social) {
+    const titleKey = [...to.matched].reverse().find(r => r.meta.title)?.meta.title as string | undefined;
+    document.title = titleKey ? `${titleKey} - EDB Social` : 'EDB Social';
   }
-  const title = social ? titleKey : i18n.t(titleKey);
-  document.title = title ? `${title} - EDB Social` : 'EDB Social';
 });
 
 export const Router = router;
