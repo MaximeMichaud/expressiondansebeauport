@@ -28,8 +28,6 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.5" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.5" />
-      <Compile Remove="Migrations\20230215155530_AddContactAndMemberTablesAndRegularIndividualRegularSyndicateAndCorporateOrganizationTables.cs" />
-      <Compile Remove="Migrations\20230215155530_AddContactAndMemberTablesAndRegularIndividualRegularSyndicateAndCorporateOrganizationTables.Designer.cs" />
     </ItemGroup>
 
 </Project>
