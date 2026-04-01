@@ -1,10 +1,11 @@
+using System.Diagnostics;
 using System.Formats.Tar;
 using Application.Interfaces.Services;
 using Domain.Entities;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 using Persistence;
 using ZstdSharp;
 
@@ -16,7 +17,6 @@ public class BackupService : IBackupService
     private readonly IConfiguration _configuration;
     private readonly ILogger<BackupService> _logger;
     private readonly string _backupPath;
-    private readonly string _databaseBackupPath;
     private readonly string _uploadsPath;
     private readonly int _retentionCount;
 
@@ -30,7 +30,6 @@ public class BackupService : IBackupService
         _configuration = configuration;
         _logger = logger;
         _backupPath = configuration["Backup:BackupPath"] ?? Path.Combine(webRootPath, "..", "backups");
-        _databaseBackupPath = configuration["Backup:DatabaseBackupPath"] ?? _backupPath;
         _uploadsPath = Path.Combine(webRootPath, "uploads");
         _retentionCount = int.TryParse(configuration["Backup:RetentionCount"], out var r) ? r : 7;
     }
@@ -48,17 +47,15 @@ public class BackupService : IBackupService
 
         try
         {
-            var tempBakName = $"temp-{record.Id}.bak";
-            var sqlBackupPath = Path.Combine(_databaseBackupPath, tempBakName);
-            var localBakPath = Path.Combine(_backupPath, tempBakName);
+            var dumpPath = Path.Combine(_backupPath, $"temp-{record.Id}.dump");
 
-            await BackupDatabaseAsync(sqlBackupPath, ct);
+            await BackupDatabaseAsync(dumpPath, ct);
 
             var archivePath = Path.Combine(_backupPath, archiveFileName);
-            await CreateArchiveAsync(archivePath, localBakPath, ct);
+            await CreateArchiveAsync(archivePath, dumpPath, ct);
 
-            if (File.Exists(localBakPath))
-                File.Delete(localBakPath);
+            if (File.Exists(dumpPath))
+                File.Delete(dumpPath);
 
             var fileInfo = new FileInfo(archivePath);
             record.MarkCompleted(fileInfo.Length);
@@ -96,25 +93,10 @@ public class BackupService : IBackupService
         {
             await ExtractArchiveAsync(archivePath, tempDir, ct);
 
-            var bakPath = Path.Combine(tempDir, "database.bak");
-            if (File.Exists(bakPath))
+            var dumpPath = Path.Combine(tempDir, "database.dump");
+            if (File.Exists(dumpPath))
             {
-                var restoreId = Guid.NewGuid();
-                var localRestorePath = Path.Combine(_backupPath, $"restore-{restoreId}.bak");
-                var sqlRestorePath = Path.Combine(_databaseBackupPath, $"restore-{restoreId}.bak");
-                File.Copy(bakPath, localRestorePath, true);
-                if (!OperatingSystem.IsWindows())
-                    File.SetUnixFileMode(localRestorePath, UnixFileMode.OtherRead | UnixFileMode.GroupRead | UnixFileMode.UserRead | UnixFileMode.UserWrite);
-
-                try
-                {
-                    await RestoreDatabaseAsync(sqlRestorePath, ct);
-                }
-                finally
-                {
-                    if (File.Exists(localRestorePath))
-                        File.Delete(localRestorePath);
-                }
+                await RestoreDatabaseAsync(dumpPath, ct);
             }
 
             var uploadsDir = Path.Combine(tempDir, "uploads");
@@ -190,72 +172,84 @@ public class BackupService : IBackupService
             throw new ArgumentException("Nom de fichier invalide.", nameof(fileName));
     }
 
-    private async Task BackupDatabaseAsync(string backupPath, CancellationToken ct)
+    private async Task BackupDatabaseAsync(string dumpPath, CancellationToken ct)
     {
         var connectionString = _configuration.GetConnectionString("DefaultConnection")!;
-        var builder = new SqlConnectionStringBuilder(connectionString);
-        var databaseName = builder.InitialCatalog;
+        var builder = new NpgsqlConnectionStringBuilder(connectionString);
 
-        var sql = $"""
-            BACKUP DATABASE [{databaseName}]
-            TO DISK = N'{backupPath}'
-            WITH FORMAT, INIT, COMPRESSION,
-                 CHECKSUM, STATS = 10
-            """;
+        var psi = new ProcessStartInfo
+        {
+            FileName = "pg_dump",
+            ArgumentList =
+            {
+                "-h", builder.Host ?? "localhost",
+                "-p", (builder.Port > 0 ? builder.Port : 5432).ToString(),
+                "-U", builder.Username ?? "postgres",
+                "-d", builder.Database ?? "expressiondansebeauport",
+                "-Fc",
+                "-f", dumpPath
+            },
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+        psi.Environment["PGPASSWORD"] = builder.Password ?? "";
 
-        await using var connection = new SqlConnection(connectionString);
-        await connection.OpenAsync(ct);
+        using var process = Process.Start(psi)
+            ?? throw new InvalidOperationException("Impossible de démarrer pg_dump.");
 
-        await using var command = new SqlCommand(sql, connection);
-        command.CommandTimeout = 600;
-        await command.ExecuteNonQueryAsync(ct);
+        var stderr = await process.StandardError.ReadToEndAsync(ct);
+        await process.WaitForExitAsync(ct);
+
+        if (process.ExitCode != 0)
+            throw new InvalidOperationException($"pg_dump a échoué (code {process.ExitCode}) : {stderr}");
     }
 
-    private async Task RestoreDatabaseAsync(string backupPath, CancellationToken ct)
+    private async Task RestoreDatabaseAsync(string dumpPath, CancellationToken ct)
     {
         var connectionString = _configuration.GetConnectionString("DefaultConnection")!;
-        var builder = new SqlConnectionStringBuilder(connectionString);
-        var databaseName = builder.InitialCatalog;
+        var builder = new NpgsqlConnectionStringBuilder(connectionString);
 
-        var masterConnectionString = new SqlConnectionStringBuilder(connectionString)
+        var psi = new ProcessStartInfo
         {
-            InitialCatalog = "master"
-        }.ConnectionString;
+            FileName = "pg_restore",
+            ArgumentList =
+            {
+                "-h", builder.Host ?? "localhost",
+                "-p", (builder.Port > 0 ? builder.Port : 5432).ToString(),
+                "-U", builder.Username ?? "postgres",
+                "-d", builder.Database ?? "expressiondansebeauport",
+                "--clean",
+                "--if-exists",
+                "--no-owner",
+                "--single-transaction",
+                dumpPath
+            },
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+        psi.Environment["PGPASSWORD"] = builder.Password ?? "";
 
-        await using var connection = new SqlConnection(masterConnectionString);
-        await connection.OpenAsync(ct);
+        using var process = Process.Start(psi)
+            ?? throw new InvalidOperationException("Impossible de démarrer pg_restore.");
 
-        var setSingleUser = $"ALTER DATABASE [{databaseName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;";
-        await using (var cmd = new SqlCommand(setSingleUser, connection) { CommandTimeout = 60 })
-            await cmd.ExecuteNonQueryAsync(ct);
+        var stderr = await process.StandardError.ReadToEndAsync(ct);
+        await process.WaitForExitAsync(ct);
 
-        try
-        {
-            var restoreSql = $"""
-                RESTORE DATABASE [{databaseName}]
-                FROM DISK = N'{backupPath}'
-                WITH REPLACE, STATS = 10;
-                """;
-            await using var cmd = new SqlCommand(restoreSql, connection) { CommandTimeout = 900 };
-            await cmd.ExecuteNonQueryAsync(ct);
-        }
-        finally
-        {
-            var setMultiUser = $"ALTER DATABASE [{databaseName}] SET MULTI_USER;";
-            await using var cmd = new SqlCommand(setMultiUser, connection) { CommandTimeout = 60 };
-            await cmd.ExecuteNonQueryAsync(CancellationToken.None);
-        }
+        if (process.ExitCode != 0)
+            _logger.LogWarning("pg_restore terminé avec code {ExitCode} : {Stderr}", process.ExitCode, stderr);
     }
 
-    private async Task CreateArchiveAsync(string archivePath, string bakPath, CancellationToken ct)
+    private async Task CreateArchiveAsync(string archivePath, string dumpPath, CancellationToken ct)
     {
         await using var fileStream = File.Create(archivePath);
         await using var zstdStream = new CompressionStream(fileStream, 3);
         await using var tarWriter = new TarWriter(zstdStream);
 
-        if (File.Exists(bakPath))
+        if (File.Exists(dumpPath))
         {
-            await tarWriter.WriteEntryAsync(bakPath, "database.bak", ct);
+            await tarWriter.WriteEntryAsync(dumpPath, "database.dump", ct);
         }
 
         if (Directory.Exists(_uploadsPath))
