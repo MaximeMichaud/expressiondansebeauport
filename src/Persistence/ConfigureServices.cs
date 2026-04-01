@@ -36,7 +36,7 @@ public static class ConfigureServices
     {
         services.AddDbContext<GarneauTemplateDbContext>(options =>
         {
-            options.UseSqlServer(
+            options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection")!,
                 optionsBuilder => optionsBuilder
                     .UseNodaTime()
