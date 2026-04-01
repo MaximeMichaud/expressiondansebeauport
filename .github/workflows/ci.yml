@@ -33,18 +33,19 @@ jobs:
     name: Backend
     runs-on: ubuntu-latest
     services:
-      sqlserver:
-        image: mcr.microsoft.com/mssql/server:2022-latest
+      postgres:
+        image: postgres:18-alpine
         env:
-          ACCEPT_EULA: Y
-          SA_PASSWORD: Password12!
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: Password12!
+          POSTGRES_DB: expressiondansebeauport_tests
         ports:
-          - 1433:1433
+          - 5432:5432
         options: >-
-          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'Password12!' -C -Q 'SELECT 1'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-cmd "pg_isready -U postgres -d expressiondansebeauport_tests"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v6
 
