@@ -81,29 +81,15 @@ public static class ConfigureServices
         services.AddScoped<IConversationRepository, ConversationRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
 
-        var backupProvider = configuration["Backup:Provider"] ?? "Local";
-        if (backupProvider.Equals("Azure", StringComparison.OrdinalIgnoreCase))
+        services.AddScoped<IBackupService>(sp =>
         {
-            services.AddScoped<IBackupService>(sp =>
-            {
-                var context = sp.GetRequiredService<GarneauTemplateDbContext>();
-                var config = sp.GetRequiredService<IConfiguration>();
-                var logger = sp.GetRequiredService<ILogger<Services.AzureBackupService>>();
-                return new Services.AzureBackupService(context, config, logger);
-            });
-        }
-        else
-        {
-            services.AddScoped<IBackupService>(sp =>
-            {
-                var context = sp.GetRequiredService<GarneauTemplateDbContext>();
-                var config = sp.GetRequiredService<IConfiguration>();
-                var logger = sp.GetRequiredService<ILogger<Services.BackupService>>();
-                var env = sp.GetRequiredService<Microsoft.Extensions.Hosting.IHostEnvironment>();
-                var webRootPath = Path.Combine(env.ContentRootPath, "wwwroot");
-                return new Services.BackupService(context, config, logger, webRootPath);
-            });
-        }
+            var context = sp.GetRequiredService<GarneauTemplateDbContext>();
+            var config = sp.GetRequiredService<IConfiguration>();
+            var logger = sp.GetRequiredService<ILogger<Services.BackupService>>();
+            var env = sp.GetRequiredService<Microsoft.Extensions.Hosting.IHostEnvironment>();
+            var webRootPath = Path.Combine(env.ContentRootPath, "wwwroot");
+            return new Services.BackupService(context, config, logger, webRootPath);
+        });
     }
 
     private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)
