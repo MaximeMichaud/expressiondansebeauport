@@ -22,6 +22,18 @@ src/Web/wwwroot/js/
 
 appsettings.local.json
 docker-compose.yml
+docker-compose*.yml
 Dockerfile
 .dockerignore
 appveyor.yml
+
+deploy/
+/*.png
+/*.jpg
+wp-admin/
+wp-content/
+wp-includes/
+*.php
+.playwright-mcp/
+Caddyfile
+sprint3.txt
