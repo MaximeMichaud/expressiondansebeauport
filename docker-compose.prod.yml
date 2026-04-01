@@ -1,0 +1,97 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: edb-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - web
+    networks:
+      - frontend
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+
+  db:
+    image: postgres:18-alpine
+    container_name: edb-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: expressiondansebeauport
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - backups:/backups
+    healthcheck:
+      test: pg_isready -U postgres -d expressiondansebeauport
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 10s
+    networks:
+      - backend
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: edb-web
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=expressiondansebeauport;Username=postgres;Password=${DB_PASSWORD};"
+      JwtToken__SecretKey: "${JWT_SECRET}"
+      JwtToken__Issuer: "https://expression.mich.sh"
+      JwtToken__Audience: "https://expression.mich.sh"
+      JwtToken__TokenExpiry: "720"
+      SendGrid__ApiKey: "${SENDGRID_API_KEY:-SG.placeholder}"
+      Mailing__FromName: "Expression Danse Beauport"
+      Mailing__FromAddress: "mailing@expressiondansebeauport.com"
+      Mailing__ToAddressForDevelopment: ""
+      Application__BaseUrl: "https://expression.mich.sh"
+      Application__RedirectUrl: "https://expression.mich.sh"
+      Cookies__Domain: "expression.mich.sh"
+      Cookies__Secure: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - app-logs:/app/logs
+      - backups:/app/backups
+      - uploads:/app/wwwroot/uploads
+    networks:
+      - frontend
+      - backend
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+
+networks:
+  frontend:
+  backend:
+    internal: true
+
+volumes:
+  caddy-data:
+  caddy-config:
+  pgdata:
+  backups:
+  app-logs:
+  uploads:
