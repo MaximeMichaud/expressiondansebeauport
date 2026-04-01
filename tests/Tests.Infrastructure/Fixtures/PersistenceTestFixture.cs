@@ -41,7 +41,7 @@ public class PersistenceTestFixture : TestFixture, IDisposable
 
         serviceCollection.AddDbContext<GarneauTemplateDbContext>(options =>
         {
-            options.UseSqlServer(
+            options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection")!,
                 optionsBuilder => optionsBuilder
                     .UseNodaTime()
