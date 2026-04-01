@@ -1,7 +1,7 @@
 # ============================================
 # Stage 1: Build Vue.js frontend
 # ============================================
-FROM node:22-alpine AS vue-build
+FROM node:24-alpine AS vue-build
 
 WORKDIR /app/vue-app
 
@@ -36,11 +36,19 @@ RUN dotnet publish src/Web/Web.csproj -c Release -o /app/publish --no-restore
 # ============================================
 # Stage 3: Final runtime image
 # ============================================
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
+
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+RUN apk add --no-cache icu-data-full icu-libs
 
 WORKDIR /app
 
 COPY --from=dotnet-build /app/publish .
+
+RUN mkdir -p /app/logs /app/backups /app/wwwroot/uploads && chown -R $APP_UID:$APP_UID /app/logs /app/backups /app/wwwroot/uploads
+
+USER $APP_UID
 
 ENV ASPNETCORE_URLS=http://+:8080
 

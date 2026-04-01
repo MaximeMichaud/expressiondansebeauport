@@ -22,6 +22,6 @@ src/Web/wwwroot/js/
 
 appsettings.local.json
 docker-compose.yml
+docker-compose*.yml
 Dockerfile
 .dockerignore
-appveyor.yml
