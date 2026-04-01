@@ -51,6 +51,14 @@ L'application permet la gestion administrative de l'école de danse : gestion de
 - **CI/CD** : GitHub Actions
 - **Conteneurisation** : Docker / Docker Compose
 
+## BRANCHES
+
+- **main** - Production uniquement. Protégée, aucun push direct. Reçoit les merges depuis `dev` lors des releases.
+- **dev** - Branche d'intégration. Cible de toutes les PRs (`feat/*`, `fix/*`, `chore/*`).
+- **feat/\*, fix/\*, chore/\*** - Branches de travail, créées depuis `dev`.
+
+Quand `dev` est stable, une PR `dev → main` est créée pour déployer en production.
+
 ## PRÉREQUIS
 
 - .NET SDK 10
