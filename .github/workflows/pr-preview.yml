@@ -191,7 +191,7 @@ jobs:
             | **Status** | Deployed |
             | **Commit** | `${{ github.sha }}` |
 
-            > First request may take ~30s (cold start). Credentials: `admin@gmail.com` / `Qwerty123!`
+            > The first request may return a **502 error** — this is expected, the environment starts on demand (cold start). Refresh after ~30 seconds. Credentials: `admin@gmail.com` / `Qwerty123!`
 
   destroy-preview:
     if: github.event.action == 'closed' && github.actor != 'dependabot[bot]'
