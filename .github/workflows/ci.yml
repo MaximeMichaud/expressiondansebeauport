@@ -2,8 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [main, staging]
+    branches: [main, dev]
   pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   frontend:
