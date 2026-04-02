@@ -76,7 +76,7 @@ L'application comprend un CMS sur mesure pour gérer le site public (pages, menu
 ### Infrastructure
 
 - **Hébergement :** VPS Vultr + Docker Compose + Caddy (HTTPS automatique)
-- **CI/CD :** GitHub Actions (lint, build, tests, PR previews sur Azure Container Apps)
+- **CI/CD :** GitHub Actions (lint, build, tests, déploiement VPS, PR previews sur Azure Container Apps)
 - **Conteneurisation :** Docker (multi-stage build)
 
 ## BRANCHES
