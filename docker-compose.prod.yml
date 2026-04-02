@@ -30,7 +30,6 @@ services:
       POSTGRES_DB: expressiondansebeauport
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - backups:/backups
     healthcheck:
       test: pg_isready -U postgres -d expressiondansebeauport
       interval: 10s

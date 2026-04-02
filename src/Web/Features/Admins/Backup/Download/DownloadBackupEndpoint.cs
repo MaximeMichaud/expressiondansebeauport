@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using Application.Interfaces.Services;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -35,9 +36,9 @@ public class DownloadBackupEndpoint : Endpoint<DownloadBackupRequest>
             return;
         }
 
-        var contentType = "application/octet-stream";
-        HttpContext.Response.ContentType = contentType;
-        HttpContext.Response.Headers.Append("Content-Disposition", $"attachment; filename=\"{req.FileName}\"");
+        HttpContext.Response.ContentType = "application/octet-stream";
+        var disposition = new ContentDisposition { FileName = req.FileName, DispositionType = "attachment" };
+        HttpContext.Response.Headers.Append("Content-Disposition", disposition.ToString());
         await stream.CopyToAsync(HttpContext.Response.Body, ct);
     }
 }
