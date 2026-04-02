@@ -26,7 +26,7 @@ services:
     container_name: edb-db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD requis dans .env.prod}"
       POSTGRES_DB: expressiondansebeauport
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -53,8 +53,8 @@ services:
     container_name: edb-web
     environment:
       ASPNETCORE_ENVIRONMENT: "Production"
-      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=expressiondansebeauport;Username=postgres;Password=${DB_PASSWORD};"
-      JwtToken__SecretKey: "${JWT_SECRET}"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=expressiondansebeauport;Username=postgres;Password=${DB_PASSWORD:?DB_PASSWORD requis dans .env.prod};"
+      JwtToken__SecretKey: "${JWT_SECRET:?JWT_SECRET requis dans .env.prod}"
       JwtToken__Issuer: "https://expression.mich.sh"
       JwtToken__Audience: "https://expression.mich.sh"
       JwtToken__TokenExpiry: "720"
@@ -73,6 +73,7 @@ services:
       - app-logs:/app/logs
       - backups:/app/backups
       - uploads:/app/wwwroot/uploads
+      - dataprotection-keys:/home/app/.aspnet/DataProtection-Keys
     networks:
       - frontend
       - backend
@@ -95,3 +96,4 @@ volumes:
   backups:
   app-logs:
   uploads:
+  dataprotection-keys:
