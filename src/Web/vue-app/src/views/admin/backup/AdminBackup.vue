@@ -113,17 +113,12 @@ async function onCreateBackup() {
 
 async function onDownload(backup: BackupRecord) {
   const blob = await backupService.download(backup.fileName)
-  const url = URL.createObjectURL(blob)
+  const url = URL.createObjectURL(new Blob([blob], { type: 'application/octet-stream' }))
   const a = document.createElement('a')
   a.href = url
   a.download = backup.fileName
-  a.style.display = 'none'
-  document.body.appendChild(a)
   a.click()
-  setTimeout(() => {
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }, 1000)
+  URL.revokeObjectURL(url)
 }
 
 async function onRestore(backup: BackupRecord) {
