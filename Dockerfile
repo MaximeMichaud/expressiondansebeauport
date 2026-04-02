@@ -48,8 +48,8 @@ COPY --from=dotnet-build /app/publish .
 COPY docker-entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
-    && mkdir -p /app/logs /app/backups /app/wwwroot/uploads \
-    && chown -R $APP_UID:$APP_UID /app/logs /app/backups /app/wwwroot/uploads
+    && mkdir -p /app/logs /app/backups /app/wwwroot/uploads /home/app/.aspnet/DataProtection-Keys \
+    && chown -R $APP_UID:$APP_UID /app/logs /app/backups /app/wwwroot/uploads /home/app/.aspnet/DataProtection-Keys
 
 ENV ASPNETCORE_URLS=http://+:8080
 

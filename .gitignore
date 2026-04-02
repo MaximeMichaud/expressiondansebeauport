@@ -710,3 +710,10 @@ xmlrpc.php
 .DS_Store
 .superpowers/
 docs/
+
+# Backup artifacts (dev)
+backups/
+*.tar.zst
+
+# Secrets
+.env.prod
