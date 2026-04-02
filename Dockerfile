@@ -40,7 +40,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
 
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
-RUN apk add --no-cache icu-data-full icu-libs
+RUN apk add --no-cache icu-data-full icu-libs krb5-libs
 
 WORKDIR /app
 
