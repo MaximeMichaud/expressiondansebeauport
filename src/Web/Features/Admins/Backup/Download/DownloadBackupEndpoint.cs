@@ -35,9 +35,7 @@ public class DownloadBackupEndpoint : Endpoint<DownloadBackupRequest>
             return;
         }
 
-        var contentType = req.FileName.EndsWith(".bacpac", StringComparison.OrdinalIgnoreCase)
-            ? "application/octet-stream"
-            : "application/zstd";
+        var contentType = "application/octet-stream";
         HttpContext.Response.ContentType = contentType;
         HttpContext.Response.Headers.Append("Content-Disposition", $"attachment; filename=\"{req.FileName}\"");
         await stream.CopyToAsync(HttpContext.Response.Body, ct);
