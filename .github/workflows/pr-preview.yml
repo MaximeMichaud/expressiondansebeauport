@@ -58,105 +58,116 @@ jobs:
             --query properties.defaultDomain -o tsv)
           echo "preview=${{ env.CONTAINER_APP_NAME }}.${DOMAIN}" >> "$GITHUB_OUTPUT"
 
-      - name: Generate Container App YAML
+      - name: Deploy to Azure Container Apps
+        env:
+          IMAGE: ${{ secrets.ACR_LOGIN_SERVER }}/expressiondansebeauport:pr-${{ github.event.pull_request.number }}-${{ github.sha }}
+          PREVIEW_FQDN: ${{ steps.fqdn.outputs.preview }}
+          ACR_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+          ACR_USER: ${{ secrets.ACR_USERNAME }}
+          ACR_PASS: ${{ secrets.ACR_PASSWORD }}
+          JWT_KEY: ${{ secrets.JWT_SECRET_KEY }}
         run: |
-          cat > /tmp/containerapp.yaml <<'ENDOFYAML'
-          type: Microsoft.App/containerApps
+          APP="${{ env.CONTAINER_APP_NAME }}"
+          RG="${{ env.RESOURCE_GROUP }}"
+
+          EXISTS=$(az containerapp show --name ${APP} --resource-group ${RG} \
+            --query name -o tsv 2>/dev/null || echo "")
+
+          if [ -z "$EXISTS" ]; then
+            # Create with minimal YAML (az create --yaml crashes with ingress config)
+            cat > /tmp/create.yaml <<EOF
+          properties:
+            template:
+              containers:
+              - image: ${IMAGE}
+                name: web
+                resources:
+                  cpu: 0.25
+                  memory: 0.5Gi
+              - image: docker.io/library/postgres:18-alpine
+                name: postgres
+                resources:
+                  cpu: 0.25
+                  memory: 0.5Gi
+          EOF
+            sed -i 's/^          //' /tmp/create.yaml
+
+            az containerapp create \
+              --name ${APP} \
+              --resource-group ${RG} \
+              --environment ${{ env.CAE_NAME }} \
+              --registry-server ${ACR_SERVER} \
+              --registry-username ${ACR_USER} \
+              --registry-password ${ACR_PASS} \
+              --yaml /tmp/create.yaml
+          fi
+
+          # Update with full config (ingress, env vars, scale)
+          cat > /tmp/update.yaml <<EOF
           properties:
             configuration:
-              activeRevisionsMode: Single
               ingress:
                 external: true
                 targetPort: 8080
-                transport: http
               registries:
-                - server: ACR_SERVER_PLACEHOLDER
-                  username: ACR_USERNAME_PLACEHOLDER
-                  passwordSecretRef: acr-password
+              - server: ${ACR_SERVER}
+                username: ${ACR_USER}
+                passwordSecretRef: acr-password
               secrets:
-                - name: acr-password
-                  value: ACR_PASSWORD_PLACEHOLDER
+              - name: acr-password
+                value: "${ACR_PASS}"
             template:
               scale:
                 minReplicas: 0
                 maxReplicas: 1
               containers:
-                - name: web
-                  image: IMAGE_PLACEHOLDER
-                  resources:
-                    cpu: 0.25
-                    memory: 0.5Gi
-                  env:
-                    - name: ASPNETCORE_ENVIRONMENT
-                      value: Development
-                    - name: ConnectionStrings__DefaultConnection
-                      value: Host=localhost;Port=5432;Database=expressiondansebeauport;Username=postgres;Password=PreviewPg2026;
-                    - name: JwtToken__SecretKey
-                      value: JWT_SECRET_PLACEHOLDER
-                    - name: JwtToken__Issuer
-                      value: ISSUER_PLACEHOLDER
-                    - name: JwtToken__Audience
-                      value: AUDIENCE_PLACEHOLDER
-                    - name: JwtToken__TokenExpiry
-                      value: "720"
-                    - name: Application__BaseUrl
-                      value: BASEURL_PLACEHOLDER
-                    - name: Application__RedirectUrl
-                      value: REDIRECT_PLACEHOLDER
-                    - name: Cookies__Domain
-                      value: DOMAIN_PLACEHOLDER
-                    - name: Cookies__Secure
-                      value: "true"
-                    - name: SendGrid__ApiKey
-                      value: SG.preview-placeholder
-                - name: postgres
-                  image: docker.io/library/postgres:18-alpine
-                  resources:
-                    cpu: 0.25
-                    memory: 0.5Gi
-                  env:
-                    - name: POSTGRES_USER
-                      value: postgres
-                    - name: POSTGRES_PASSWORD
-                      value: PreviewPg2026
-                    - name: POSTGRES_DB
-                      value: expressiondansebeauport
-          ENDOFYAML
+              - image: ${IMAGE}
+                name: web
+                resources:
+                  cpu: 0.25
+                  memory: 0.5Gi
+                env:
+                - name: ASPNETCORE_ENVIRONMENT
+                  value: Development
+                - name: ConnectionStrings__DefaultConnection
+                  value: "Host=localhost;Port=5432;Database=expressiondansebeauport;Username=postgres;Password=PreviewPg2026;"
+                - name: JwtToken__SecretKey
+                  value: "${JWT_KEY}"
+                - name: JwtToken__Issuer
+                  value: "https://${PREVIEW_FQDN}"
+                - name: JwtToken__Audience
+                  value: "https://${PREVIEW_FQDN}"
+                - name: JwtToken__TokenExpiry
+                  value: "720"
+                - name: Application__BaseUrl
+                  value: "https://${PREVIEW_FQDN}"
+                - name: Application__RedirectUrl
+                  value: "https://${PREVIEW_FQDN}"
+                - name: Cookies__Domain
+                  value: "${PREVIEW_FQDN}"
+                - name: Cookies__Secure
+                  value: "true"
+                - name: SendGrid__ApiKey
+                  value: SG.preview-placeholder
+              - image: docker.io/library/postgres:18-alpine
+                name: postgres
+                resources:
+                  cpu: 0.25
+                  memory: 0.5Gi
+                env:
+                - name: POSTGRES_USER
+                  value: postgres
+                - name: POSTGRES_PASSWORD
+                  value: PreviewPg2026
+                - name: POSTGRES_DB
+                  value: expressiondansebeauport
+          EOF
+          sed -i 's/^          //' /tmp/update.yaml
 
-          # Strip heredoc indentation
-          sed -i 's/^          //' /tmp/containerapp.yaml
-
-          # Replace placeholders with actual values (avoids shell expansion issues in YAML)
-          sed -i "s|IMAGE_PLACEHOLDER|${{ secrets.ACR_LOGIN_SERVER }}/expressiondansebeauport:pr-${{ github.event.pull_request.number }}-${{ github.sha }}|" /tmp/containerapp.yaml
-          sed -i "s|ACR_SERVER_PLACEHOLDER|${{ secrets.ACR_LOGIN_SERVER }}|" /tmp/containerapp.yaml
-          sed -i "s|ACR_USERNAME_PLACEHOLDER|${{ secrets.ACR_USERNAME }}|" /tmp/containerapp.yaml
-          sed -i "s|ACR_PASSWORD_PLACEHOLDER|${{ secrets.ACR_PASSWORD }}|" /tmp/containerapp.yaml
-          sed -i "s|JWT_SECRET_PLACEHOLDER|${{ secrets.JWT_SECRET_KEY }}|" /tmp/containerapp.yaml
-          sed -i "s|ISSUER_PLACEHOLDER|https://${{ steps.fqdn.outputs.preview }}|" /tmp/containerapp.yaml
-          sed -i "s|AUDIENCE_PLACEHOLDER|https://${{ steps.fqdn.outputs.preview }}|" /tmp/containerapp.yaml
-          sed -i "s|BASEURL_PLACEHOLDER|https://${{ steps.fqdn.outputs.preview }}|" /tmp/containerapp.yaml
-          sed -i "s|REDIRECT_PLACEHOLDER|https://${{ steps.fqdn.outputs.preview }}|" /tmp/containerapp.yaml
-          sed -i "s|DOMAIN_PLACEHOLDER|${{ steps.fqdn.outputs.preview }}|" /tmp/containerapp.yaml
-
-      - name: Deploy to Azure Container Apps
-        run: |
-          EXISTS=$(az containerapp show \
-            --name ${{ env.CONTAINER_APP_NAME }} \
-            --resource-group ${{ env.RESOURCE_GROUP }} \
-            --query name -o tsv 2>/dev/null || echo "")
-
-          if [ -z "$EXISTS" ]; then
-            az containerapp create \
-              --name ${{ env.CONTAINER_APP_NAME }} \
-              --resource-group ${{ env.RESOURCE_GROUP }} \
-              --environment ${{ env.CAE_NAME }} \
-              --yaml /tmp/containerapp.yaml
-          else
-            az containerapp update \
-              --name ${{ env.CONTAINER_APP_NAME }} \
-              --resource-group ${{ env.RESOURCE_GROUP }} \
-              --yaml /tmp/containerapp.yaml
-          fi
+          az containerapp update \
+            --name ${APP} \
+            --resource-group ${RG} \
+            --yaml /tmp/update.yaml
 
       - name: Get preview URL
         id: preview-url
