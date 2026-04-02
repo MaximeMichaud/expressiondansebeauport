@@ -198,11 +198,19 @@ public class BackupService : IBackupService
         using var process = Process.Start(psi)
             ?? throw new InvalidOperationException("Impossible de démarrer pg_dump.");
 
-        var stderr = await process.StandardError.ReadToEndAsync(ct);
-        await process.WaitForExitAsync(ct);
+        try
+        {
+            var stderr = await process.StandardError.ReadToEndAsync(ct);
+            await process.WaitForExitAsync(ct);
 
-        if (process.ExitCode != 0)
-            throw new InvalidOperationException($"pg_dump a échoué (code {process.ExitCode}) : {stderr}");
+            if (process.ExitCode != 0)
+                throw new InvalidOperationException($"pg_dump a échoué (code {process.ExitCode}) : {stderr}");
+        }
+        catch (OperationCanceledException)
+        {
+            if (!process.HasExited) process.Kill(true);
+            throw;
+        }
     }
 
     private async Task RestoreDatabaseAsync(string dumpPath, CancellationToken ct)
@@ -234,11 +242,19 @@ public class BackupService : IBackupService
         using var process = Process.Start(psi)
             ?? throw new InvalidOperationException("Impossible de démarrer pg_restore.");
 
-        var stderr = await process.StandardError.ReadToEndAsync(ct);
-        await process.WaitForExitAsync(ct);
+        try
+        {
+            var stderr = await process.StandardError.ReadToEndAsync(ct);
+            await process.WaitForExitAsync(ct);
 
-        if (process.ExitCode != 0)
-            _logger.LogWarning("pg_restore terminé avec code {ExitCode} : {Stderr}", process.ExitCode, stderr);
+            if (process.ExitCode != 0)
+                throw new InvalidOperationException($"pg_restore a échoué (code {process.ExitCode}) : {stderr}");
+        }
+        catch (OperationCanceledException)
+        {
+            if (!process.HasExited) process.Kill(true);
+            throw;
+        }
     }
 
     private async Task CreateArchiveAsync(string archivePath, string dumpPath, CancellationToken ct)
