@@ -40,18 +40,20 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
 
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
-RUN apk add --no-cache icu-data-full icu-libs krb5-libs
+RUN apk add --no-cache icu-data-full icu-libs krb5-libs postgresql18-client su-exec
 
 WORKDIR /app
 
 COPY --from=dotnet-build /app/publish .
+COPY docker-entrypoint.sh /usr/local/bin/
 
-RUN mkdir -p /app/logs /app/backups /app/wwwroot/uploads && chown -R $APP_UID:$APP_UID /app/logs /app/backups /app/wwwroot/uploads
-
-USER $APP_UID
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
+    && mkdir -p /app/logs /app/backups /app/wwwroot/uploads \
+    && chown -R $APP_UID:$APP_UID /app/logs /app/backups /app/wwwroot/uploads
 
 ENV ASPNETCORE_URLS=http://+:8080
 
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "Web.dll"]
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["dotnet", "Web.dll"]
