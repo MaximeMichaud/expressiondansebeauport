@@ -118,7 +118,7 @@ async function onDownload(backup: BackupRecord) {
   a.href = url
   a.download = backup.fileName
   a.click()
-  URL.revokeObjectURL(url)
+  setTimeout(() => URL.revokeObjectURL(url), 5000)
 }
 
 async function onRestore(backup: BackupRecord) {

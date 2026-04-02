@@ -41,7 +41,6 @@ jobs:
             if [ "$STATE" != "OPEN" ]; then
               echo "Cleaning up $APP (PR #$PR_NUM is $STATE)"
               az containerapp delete --name "$APP" --resource-group ${{ env.RESOURCE_GROUP }} --yes
-              az sql db delete --server edb-preview-sql --resource-group ${{ env.RESOURCE_GROUP }} --name "edb_pr_${PR_NUM}" --yes 2>/dev/null || true
             else
               echo "Keeping $APP (PR #$PR_NUM is OPEN)"
             fi
