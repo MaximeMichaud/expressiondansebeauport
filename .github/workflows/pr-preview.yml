@@ -70,40 +70,18 @@ jobs:
           APP="${{ env.CONTAINER_APP_NAME }}"
           RG="${{ env.RESOURCE_GROUP }}"
 
-          EXISTS=$(az containerapp show --name ${APP} --resource-group ${RG} \
-            --query name -o tsv 2>/dev/null || echo "")
+          # Wait for any in-flight operation (from a cancelled previous run)
+          for i in $(seq 1 30); do
+            STATE=$(az containerapp show --name ${APP} --resource-group ${RG} \
+              --query "properties.provisioningState" -o tsv 2>/dev/null || echo "NotFound")
+            case "$STATE" in
+              Succeeded|Failed|NotFound) break ;;
+              *) echo "Waiting for in-flight operation (state: ${STATE}, attempt ${i}/30)..."; sleep 10 ;;
+            esac
+          done
 
-          if [ -z "$EXISTS" ]; then
-            # Create with minimal YAML (az create --yaml crashes with ingress config)
-            cat > /tmp/create.yaml <<EOF
-          properties:
-            template:
-              containers:
-              - image: ${IMAGE}
-                name: web
-                resources:
-                  cpu: 0.25
-                  memory: 0.5Gi
-              - image: docker.io/library/postgres:18-alpine
-                name: postgres
-                resources:
-                  cpu: 0.25
-                  memory: 0.5Gi
-          EOF
-            sed -i 's/^          //' /tmp/create.yaml
-
-            az containerapp create \
-              --name ${APP} \
-              --resource-group ${RG} \
-              --environment ${{ env.CAE_NAME }} \
-              --registry-server ${ACR_SERVER} \
-              --registry-username ${ACR_USER} \
-              --registry-password ${ACR_PASS} \
-              --yaml /tmp/create.yaml
-          fi
-
-          # Update with full config (ingress, env vars, scale)
-          cat > /tmp/update.yaml <<EOF
+          # Full desired-state YAML (single source of truth)
+          cat > /tmp/app.yaml <<EOF
           properties:
             configuration:
               ingress:
@@ -162,12 +140,21 @@ jobs:
                 - name: POSTGRES_DB
                   value: expressiondansebeauport
           EOF
-          sed -i 's/^          //' /tmp/update.yaml
+          sed -i 's/^          //' /tmp/app.yaml
 
-          az containerapp update \
-            --name ${APP} \
-            --resource-group ${RG} \
-            --yaml /tmp/update.yaml
+          # Create or update with the same full YAML
+          if [ "$STATE" = "NotFound" ]; then
+            az containerapp create \
+              --name ${APP} \
+              --resource-group ${RG} \
+              --environment ${{ env.CAE_NAME }} \
+              --yaml /tmp/app.yaml
+          else
+            az containerapp update \
+              --name ${APP} \
+              --resource-group ${RG} \
+              --yaml /tmp/app.yaml
+          fi
 
       - name: Get preview URL
         id: preview-url
