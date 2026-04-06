@@ -4,7 +4,7 @@ import {injectable} from "inversify"
 import {ApiService} from "@/services/apiService"
 import {IPageService} from "@/injection/interfaces"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
-import {Page} from "@/types/entities"
+import {Page, PageRevision, PageRevisionListItem} from "@/types/entities"
 
 @injectable()
 export class PageService extends ApiService implements IPageService {
@@ -80,6 +80,74 @@ export class PageService extends ApiService implements IPageService {
       })
     if (response.status >= 200 && response.status < 300) {
       return response.data as Page
+    }
+    return null
+  }
+
+  public async getRevisions(pageId: string): Promise<PageRevisionListItem[]> {
+    const response = await this
+      ._httpClient
+      .get<any, AxiosResponse<PageRevisionListItem[]>>(`${import.meta.env.VITE_API_BASE_URL}/admin/pages/${pageId}/revisions`)
+      .catch(function (error: AxiosError): AxiosResponse<PageRevisionListItem[]> {
+        return error.response as AxiosResponse<PageRevisionListItem[]>
+      })
+    return response.data as PageRevisionListItem[] ?? []
+  }
+
+  public async getRevision(pageId: string, revisionId: string): Promise<PageRevision> {
+    const response = await this
+      ._httpClient
+      .get<any, AxiosResponse<PageRevision>>(`${import.meta.env.VITE_API_BASE_URL}/admin/pages/${pageId}/revisions/${revisionId}`)
+      .catch(function (error: AxiosError): AxiosResponse<PageRevision> {
+        return error.response as AxiosResponse<PageRevision>
+      })
+    return response.data as PageRevision
+  }
+
+  public async restoreRevision(pageId: string, revisionId: string): Promise<Page | null> {
+    const response = await this
+      ._httpClient
+      .post<any, AxiosResponse<Page>>(
+        `${import.meta.env.VITE_API_BASE_URL}/admin/pages/${pageId}/revisions/${revisionId}/restore`,
+        {},
+        this.headersWithJsonContentType())
+      .catch(function (error: AxiosError): AxiosResponse<Page> {
+        return error.response as AxiosResponse<Page>
+      })
+    if (response.status >= 200 && response.status < 300) {
+      return response.data as Page
+    }
+    return null
+  }
+
+  public async autosave(pageId: string, data: Partial<Page>): Promise<{ savedAt: string } | null> {
+    const response = await this
+      ._httpClient
+      .post<any, AxiosResponse<{ savedAt: string }>>(
+        `${import.meta.env.VITE_API_BASE_URL}/admin/pages/${pageId}/autosave`,
+        data,
+        this.headersWithJsonContentType())
+      .catch(function (error: AxiosError): AxiosResponse<{ savedAt: string }> {
+        return error.response as AxiosResponse<{ savedAt: string }>
+      })
+    if (response.status >= 200 && response.status < 300) {
+      return response.data
+    }
+    return null
+  }
+
+  public async createPreview(pageId: string): Promise<{ token: string; previewUrl: string } | null> {
+    const response = await this
+      ._httpClient
+      .post<any, AxiosResponse<{ token: string; previewUrl: string }>>(
+        `${import.meta.env.VITE_API_BASE_URL}/admin/pages/${pageId}/preview`,
+        {},
+        this.headersWithJsonContentType())
+      .catch(function (error: AxiosError): AxiosResponse<{ token: string; previewUrl: string }> {
+        return error.response as AxiosResponse<{ token: string; previewUrl: string }>
+      })
+    if (response.status >= 200 && response.status < 300) {
+      return response.data
     }
     return null
   }
