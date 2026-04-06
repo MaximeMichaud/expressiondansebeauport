@@ -6,6 +6,14 @@
         {{ isEditing ? t('pages.pages.update.title') : t('pages.pages.create.title') }}
       </h1>
     </div>
+
+    <!-- Bandeau de récupération de brouillon -->
+    <div v-if="localDraft" class="autosave-recovery">
+      <span>Un brouillon non sauvegardé a été détecté.</span>
+      <button class="btn btn--sm" @click="restoreDraft">Restaurer</button>
+      <button class="btn btn--outline btn--sm" @click="dismissDraft">Ignorer</button>
+    </div>
+
     <Loader v-if="isLoading" />
     <div v-else class="page-editor">
       <div class="page-editor__main">
@@ -55,10 +63,30 @@
               <option value="blocks">Blocs visuels</option>
             </select>
           </div>
-          <button class="btn" :disabled="preventMultipleSubmit" @click="onSubmit">
-            {{ t('global.save') }}
-          </button>
+
+          <!-- Indicateur autosave -->
+          <div v-if="isEditing && autosaveAgo" class="autosave-indicator">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Sauvegardé {{ autosaveAgo }}
+          </div>
+
+          <div class="page-editor__actions">
+            <button class="btn" :disabled="preventMultipleSubmit" @click="onSubmit">
+              {{ t('global.save') }}
+            </button>
+            <button v-if="isEditing" class="btn btn--outline" :disabled="previewing" @click="onPreview">
+              {{ previewing ? 'Chargement...' : 'Aperçu' }}
+            </button>
+          </div>
         </div>
+
+        <!-- Historique des révisions -->
+        <PageRevisionHistory
+          v-if="isEditing && page.id"
+          :page-id="page.id"
+          :current-page="page"
+          @restored="onRevisionRestored"
+        />
       </div>
     </div>
   </div>
@@ -74,6 +102,8 @@ import Loader from "@/components/layouts/items/Loader.vue"
 import BackLink from "@/components/layouts/items/BackLink.vue"
 import FormTextEditor from "@/components/forms/FormTextEditor.vue"
 import PageBlocksEditor from "@/components/blocks/PageBlocksEditor.vue"
+import PageRevisionHistory from "@/components/admin/PageRevisionHistory.vue"
+import {useAutosave} from "@/composables/useAutosave"
 import type {PageBlock} from "@/types/entities/pageBlock"
 
 const {t} = useI18n()
@@ -85,6 +115,17 @@ const isLoading = ref(false)
 const preventMultipleSubmit = ref(false)
 const isEditing = ref(false)
 const page = ref<Page>(new Page())
+const previewing = ref(false)
+const localDraft = ref<Record<string, any> | null>(null)
+
+const {
+  lastSavedAgo: autosaveAgo,
+  start: startAutosave,
+  checkLocalDraft,
+  restoreLocalDraft,
+  dismissLocalDraft,
+  onManualSave
+} = useAutosave({page, pageService})
 
 const parsedBlocks = computed({
   get(): PageBlock[] {
@@ -103,12 +144,30 @@ onMounted(async () => {
     isLoading.value = true
     page.value = await pageService.get(id)
     isLoading.value = false
+
+    // Vérifier les brouillons locaux
+    localDraft.value = checkLocalDraft()
+
+    // Démarrer l'autosave
+    startAutosave()
   } else {
     page.value.status = "Draft"
     page.value.sortOrder = 0
     page.value.contentMode = "html"
   }
 })
+
+function restoreDraft() {
+  if (localDraft.value) {
+    restoreLocalDraft(localDraft.value)
+    localDraft.value = null
+  }
+}
+
+function dismissDraft() {
+  dismissLocalDraft()
+  localDraft.value = null
+}
 
 async function onSubmit() {
   if (preventMultipleSubmit.value) return
@@ -120,11 +179,34 @@ async function onSubmit() {
       : await pageService.create(page.value)
 
     if (response && response.succeeded) {
+      onManualSave()
       router.back()
     }
   } finally {
     preventMultipleSubmit.value = false
   }
+}
+
+async function onPreview() {
+  if (!page.value.id || previewing.value) return
+  previewing.value = true
+
+  try {
+    // D'abord sauvegarder l'état actuel en autosave
+    await pageService.autosave(page.value.id!, page.value)
+
+    // Ensuite créer le token de preview
+    const result = await pageService.createPreview(page.value.id!)
+    if (result) {
+      window.open(result.previewUrl, '_blank')
+    }
+  } finally {
+    previewing.value = false
+  }
+}
+
+function onRevisionRestored(restoredPage: Page) {
+  page.value = restoredPage
 }
 </script>
 
@@ -165,6 +247,16 @@ async function onSubmit() {
   font-size: 1rem;
 }
 
+.page-editor__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.page-editor__actions .btn {
+  flex: 1;
+}
+
 .form-group {
   margin-bottom: 1rem;
 }
@@ -192,5 +284,43 @@ async function onSubmit() {
   font-family: monospace;
   font-size: 13px;
   tab-size: 2;
+}
+
+.btn--sm {
+  font-size: 0.8125rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.autosave-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--color-gray-500, #6b7280);
+  margin-bottom: 1rem;
+}
+
+.autosave-recovery {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #fffbeb;
+  border: 1px solid #fbbf24;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+</style>
+
+<style>
+.page-editor .btn.btn--outline {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.page-editor .btn.btn--outline:hover {
+  background: #f9fafb;
 }
 </style>

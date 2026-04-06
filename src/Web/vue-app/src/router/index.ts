@@ -4,6 +4,7 @@ import {createRouter, createWebHistory} from "vue-router";
 
 import Home from "@/views/public/Home.vue";
 import PublicPage from "@/views/public/PublicPage.vue";
+import PreviewPage from "@/views/public/PreviewPage.vue";
 import NotFound from "@/views/public/NotFound.vue";
 import InternalError from "@/views/public/InternalError.vue";
 import Login from "@/views/Login.vue";
@@ -233,6 +234,15 @@ const mainRoutes = [
     name: "internalError",
     component: InternalError,
     meta: { public: true, title: "routes.internalError.name" }
+  },
+  {
+    path: "/preview/:slug",
+    name: "previewPage",
+    component: PreviewPage,
+    meta: {
+      title: "Aperçu",
+      public: true
+    }
   },
   {
     path: "/:slug",

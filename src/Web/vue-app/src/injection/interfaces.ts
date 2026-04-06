@@ -7,7 +7,7 @@ import {
   ITwoFactorRequest
 } from "@/types/requests"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
-import {Administrator, BackupRecord, FooterPartner, MediaFile, NavigationMenu, NavigationMenuItem, Page, SiteHealth, SiteSettings, SocialLink, User, Group, GroupMember, Post, Comment, Conversation, Message} from "@/types/entities"
+import {Administrator, BackupRecord, FooterPartner, MediaFile, NavigationMenu, NavigationMenuItem, Page, PageRevision, PageRevisionListItem, SiteHealth, SiteSettings, SocialLink, User, Group, GroupMember, Post, Comment, Conversation, Message} from "@/types/entities"
 export interface IApiService {
   headersWithJsonContentType(): any
 
@@ -64,6 +64,16 @@ export interface IPageService {
   delete(id: string): Promise<SucceededOrNotResponse>
 
   duplicate(id: string): Promise<Page | null>
+
+  getRevisions(pageId: string): Promise<PageRevisionListItem[]>
+
+  getRevision(pageId: string, revisionId: string): Promise<PageRevision>
+
+  restoreRevision(pageId: string, revisionId: string): Promise<Page | null>
+
+  autosave(pageId: string, data: Partial<Page>): Promise<{ savedAt: string } | null>
+
+  createPreview(pageId: string): Promise<{ token: string; previewUrl: string } | null>
 }
 
 export interface IMenuService {
