@@ -70,8 +70,9 @@ async function loadPreview(slug: string, token: string) {
 }
 
 watch(() => [route.params.slug, route.query.token], ([slug, token]) => {
-  if (slug && token) {
-    loadPreview(slug as string, token as string)
+  const tokenStr = typeof token === 'string' ? token : Array.isArray(token) ? token[0] : undefined
+  if (slug && tokenStr) {
+    loadPreview(slug as string, tokenStr)
   } else {
     isLoading.value = false
     errorMessage.value = "Paramètre de prévisualisation manquant."
