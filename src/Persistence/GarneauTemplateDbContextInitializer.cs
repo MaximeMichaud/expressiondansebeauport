@@ -34,14 +34,27 @@ public class GarneauTemplateDbContextInitializer
 
     public async Task InitialiseAsync()
     {
-        try
+        const int maxRetries = 10;
+        const int delayMs = 2000;
+
+        for (var attempt = 1; attempt <= maxRetries; attempt++)
         {
-            await _context.Database.MigrateAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while initialising the database.");
-            throw;
+            try
+            {
+                await _context.Database.MigrateAsync();
+                return;
+            }
+            catch (Exception ex) when (attempt < maxRetries)
+            {
+                _logger.LogWarning(ex, "Database not ready (attempt {Attempt}/{MaxRetries}), retrying in {Delay}ms...",
+                    attempt, maxRetries, delayMs);
+                await Task.Delay(delayMs);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while initialising the database.");
+                throw;
+            }
         }
     }
 
