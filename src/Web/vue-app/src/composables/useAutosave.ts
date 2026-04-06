@@ -1,4 +1,5 @@
 import {ref, onUnmounted, type Ref} from 'vue'
+import Cookies from 'universal-cookie'
 import type {Page} from '@/types/entities'
 import type {IPageService} from '@/injection/interfaces'
 
@@ -143,7 +144,7 @@ export function useAutosave(options: AutosaveOptions) {
     const id = page.value.id
     if (id && getSnapshot() !== lastServerSnapshot) {
       const url = `${import.meta.env.VITE_API_BASE_URL}/admin/pages/${id}/autosave`
-      const token = document.cookie.split('accessToken=')[1]?.split(';')[0]
+      const token = new Cookies().get('accessToken')
       if (token) {
         fetch(url, {
           method: 'POST',

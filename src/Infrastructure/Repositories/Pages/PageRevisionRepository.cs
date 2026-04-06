@@ -43,7 +43,7 @@ public class PageRevisionRepository : IPageRevisionRepository
     public int GetNextRevisionNumber(Guid pageId)
     {
         var max = _context.PageRevisions
-            .Where(r => r.PageId == pageId)
+            .Where(r => r.PageId == pageId && r.RevisionType == RevisionType.Manual)
             .Max(r => (int?)r.RevisionNumber) ?? 0;
         return max + 1;
     }
