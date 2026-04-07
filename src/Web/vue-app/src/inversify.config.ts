@@ -8,6 +8,7 @@ import {
   IApiService,
   IAuthenticationService,
   IBackupService,
+  IErrorLogsService,
   IImportExportService,
   IMediaService,
   IMenuService,
@@ -20,6 +21,7 @@ import {
 import {
   ApiService,
   AuthenticationService,
+  ErrorLogsService,
   ImportExportService,
   MediaService,
   MenuService,
@@ -45,6 +47,7 @@ dependencyInjection.bind<ISiteSettingsService>(TYPES.ISiteSettingsService).to(Si
 dependencyInjection.bind<ISiteHealthService>(TYPES.ISiteHealthService).to(SiteHealthService).inSingletonScope()
 dependencyInjection.bind<IImportExportService>(TYPES.IImportExportService).to(ImportExportService).inSingletonScope()
 dependencyInjection.bind<ISocialService>(TYPES.ISocialService).to(SocialService).inSingletonScope()
+dependencyInjection.bind<IErrorLogsService>(TYPES.IErrorLogsService).to(ErrorLogsService).inSingletonScope()
 dependencyInjection.bind<IBackupService>(TYPES.IBackupService).to(BackupService).inSingletonScope()
 
 function useAdministratorService() {
@@ -87,6 +90,10 @@ function useSocialService() {
   return dependencyInjection.get<ISocialService>(TYPES.ISocialService);
 }
 
+function useErrorLogsService() {
+  return dependencyInjection.get<IErrorLogsService>(TYPES.IErrorLogsService);
+}
+
 function useBackupService() {
   return dependencyInjection.get<IBackupService>(TYPES.IBackupService);
 }
@@ -101,6 +108,7 @@ export {
   useMenuService,
   useSiteSettingsService,
   useSiteHealthService,
+  useErrorLogsService,
   useImportExportService,
   useSocialService,
   useBackupService
