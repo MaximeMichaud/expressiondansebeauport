@@ -70,17 +70,10 @@ jobs:
           APP="${{ env.CONTAINER_APP_NAME }}"
           RG="${{ env.RESOURCE_GROUP }}"
 
-          # Wait for any in-flight operation (from a cancelled previous run)
-          for i in $(seq 1 30); do
-            STATE=$(az containerapp show --name ${APP} --resource-group ${RG} \
-              --query "properties.provisioningState" -o tsv 2>/dev/null || echo "NotFound")
-            case "$STATE" in
-              Succeeded|Failed|NotFound) break ;;
-              *) echo "Waiting for in-flight operation (state: ${STATE}, attempt ${i}/30)..."; sleep 10 ;;
-            esac
-          done
+          # Delete existing app to avoid az containerapp update --yaml PATCH bug
+          # (PATCH chokes on YAML booleans like ingress.external: true)
+          az containerapp delete --name ${APP} --resource-group ${RG} --yes 2>/dev/null || true
 
-          # Full desired-state YAML (single source of truth)
           cat > /tmp/app.yaml <<EOF
           properties:
             configuration:
@@ -142,7 +135,6 @@ jobs:
           EOF
           sed -i 's/^          //' /tmp/app.yaml
 
-          # create acts as upsert (update uses PATCH which chokes on booleans like ingress.external)
           az containerapp create \
             --name ${APP} \
             --resource-group ${RG} \
