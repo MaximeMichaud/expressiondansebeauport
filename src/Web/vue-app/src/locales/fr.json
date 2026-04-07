@@ -100,6 +100,11 @@
           "path": "sessions",
           "fullPath": "/admin/sessions",
           "name": "Sessions"
+        },
+        "errorLogs": {
+          "path": "logs-erreurs",
+          "fullPath": "/admin/logs-erreurs",
+          "name": "Logs d'erreurs"
         }
       }
     }
@@ -424,6 +429,15 @@
         "warning": "Avertissement",
         "critical": "Critique"
       }
+    },
+    "errorLogs": {
+      "refresh": "Rafraîchir",
+      "allLevels": "Tous les niveaux",
+      "date": "Date",
+      "level": "Niveau",
+      "message": "Message",
+      "source": "Source",
+      "noLogs": "Aucune erreur récente."
     },
     "backup": {
       "createBackup": "Créer un backup",
