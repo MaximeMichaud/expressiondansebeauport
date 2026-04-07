@@ -31,7 +31,7 @@
           </thead>
           <tbody>
             <template v-for="(log, index) in filteredLogs" :key="index">
-              <tr @click="toggleExpand(index)">
+              <tr tabindex="0" role="button" :aria-expanded="expandedIndex === index" @click="toggleExpand(index)" @keydown.enter="toggleExpand(index)" @keydown.space.prevent="toggleExpand(index)">
                 <td class="error-logs__cell--date">{{ formatDate(log.timestamp) }}</td>
                 <td>
                   <span class="error-logs__pill" :class="`error-logs__pill--${log.level?.toLowerCase()}`">
@@ -60,7 +60,7 @@
 
 <script lang="ts" setup>
 import {useI18n} from "vue-i18n"
-import {computed, onMounted, ref} from "vue"
+import {computed, onMounted, ref, watch} from "vue"
 import {useErrorLogsService} from "@/inversify.config"
 import {ErrorLog} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
@@ -77,6 +77,10 @@ const expandedIndex = ref<number | null>(null)
 const filteredLogs = computed(() => {
   if (!selectedLevel.value) return logs.value
   return logs.value.filter(l => l.level === selectedLevel.value)
+})
+
+watch(selectedLevel, () => {
+  expandedIndex.value = null
 })
 
 onMounted(async () => {
@@ -100,19 +104,16 @@ function toggleExpand(index: number) {
 
 function formatDate(timestamp?: string): string {
   if (!timestamp) return '-'
-  try {
-    const date = new Date(timestamp)
-    return date.toLocaleString('fr-CA', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    })
-  } catch {
-    return timestamp
-  }
+  const date = new Date(timestamp)
+  if (isNaN(date.getTime())) return timestamp
+  return date.toLocaleString('fr-CA', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  })
 }
 </script>
 
