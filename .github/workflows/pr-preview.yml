@@ -82,6 +82,8 @@ jobs:
 
           # Full desired-state YAML (single source of truth)
           cat > /tmp/app.yaml <<EOF
+          name: ${APP}
+          resourceGroup: ${RG}
           properties:
             configuration:
               ingress:
