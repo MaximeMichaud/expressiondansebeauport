@@ -82,8 +82,6 @@ jobs:
 
           # Full desired-state YAML (single source of truth)
           cat > /tmp/app.yaml <<EOF
-          name: ${APP}
-          resourceGroup: ${RG}
           properties:
             configuration:
               ingress:
@@ -144,19 +142,12 @@ jobs:
           EOF
           sed -i 's/^          //' /tmp/app.yaml
 
-          # Create or update with the same full YAML
-          if [ "$STATE" = "NotFound" ]; then
-            az containerapp create \
-              --name ${APP} \
-              --resource-group ${RG} \
-              --environment ${{ env.CAE_NAME }} \
-              --yaml /tmp/app.yaml
-          else
-            az containerapp update \
-              --name ${APP} \
-              --resource-group ${RG} \
-              --yaml /tmp/app.yaml
-          fi
+          # create acts as upsert (update uses PATCH which chokes on booleans like ingress.external)
+          az containerapp create \
+            --name ${APP} \
+            --resource-group ${RG} \
+            --environment ${{ env.CAE_NAME }} \
+            --yaml /tmp/app.yaml
 
       - name: Get preview URL
         id: preview-url
