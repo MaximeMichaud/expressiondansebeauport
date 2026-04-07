@@ -141,6 +141,21 @@ jobs:
             --url "https://management.azure.com/subscriptions/${SUBSCRIPTION}/resourceGroups/${RG}/providers/Microsoft.App/containerApps/${APP}?api-version=2024-03-01" \
             --body @/tmp/app.json
 
+      - name: Wait for provisioning
+        run: |
+          for i in $(seq 1 30); do
+            STATE=$(az containerapp show \
+              --name ${{ env.CONTAINER_APP_NAME }} \
+              --resource-group ${{ env.RESOURCE_GROUP }} \
+              --query properties.provisioningState -o tsv 2>/dev/null || echo "NotFound")
+            echo "Provisioning state: ${STATE} (attempt ${i}/30)"
+            case "$STATE" in
+              Succeeded) break ;;
+              Failed) echo "Provisioning failed"; exit 1 ;;
+              *) sleep 10 ;;
+            esac
+          done
+
       - name: Get preview URL
         id: preview-url
         run: |
