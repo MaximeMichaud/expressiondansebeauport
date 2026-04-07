@@ -69,77 +69,77 @@ jobs:
         run: |
           APP="${{ env.CONTAINER_APP_NAME }}"
           RG="${{ env.RESOURCE_GROUP }}"
+          ENV="${{ env.CAE_NAME }}"
 
-          # Delete existing app to avoid az containerapp update --yaml PATCH bug
-          # (PATCH chokes on YAML booleans like ingress.external: true)
           az containerapp delete --name ${APP} --resource-group ${RG} --yes 2>/dev/null || true
 
-          cat > /tmp/app.yaml <<EOF
-          properties:
-            configuration:
-              ingress:
-                external: true
-                targetPort: 8080
-              registries:
-              - server: ${ACR_SERVER}
-                username: ${ACR_USER}
-                passwordSecretRef: acr-password
-              secrets:
-              - name: acr-password
-                value: "${ACR_PASS}"
-            template:
-              scale:
-                minReplicas: 0
-                maxReplicas: 1
-              containers:
-              - image: ${IMAGE}
-                name: web
-                resources:
-                  cpu: 0.25
-                  memory: 0.5Gi
-                env:
-                - name: ASPNETCORE_ENVIRONMENT
-                  value: Development
-                - name: ConnectionStrings__DefaultConnection
-                  value: "Host=localhost;Port=5432;Database=expressiondansebeauport;Username=postgres;Password=PreviewPg2026;"
-                - name: JwtToken__SecretKey
-                  value: "${JWT_KEY}"
-                - name: JwtToken__Issuer
-                  value: "https://${PREVIEW_FQDN}"
-                - name: JwtToken__Audience
-                  value: "https://${PREVIEW_FQDN}"
-                - name: JwtToken__TokenExpiry
-                  value: "720"
-                - name: Application__BaseUrl
-                  value: "https://${PREVIEW_FQDN}"
-                - name: Application__RedirectUrl
-                  value: "https://${PREVIEW_FQDN}"
-                - name: Cookies__Domain
-                  value: "${PREVIEW_FQDN}"
-                - name: Cookies__Secure
-                  value: "true"
-                - name: SendGrid__ApiKey
-                  value: SG.preview-placeholder
-              - image: docker.io/library/postgres:18-alpine
-                name: postgres
-                resources:
-                  cpu: 0.25
-                  memory: 0.5Gi
-                env:
-                - name: POSTGRES_USER
-                  value: postgres
-                - name: POSTGRES_PASSWORD
-                  value: PreviewPg2026
-                - name: POSTGRES_DB
-                  value: expressiondansebeauport
-          EOF
-          sed -i 's/^          //' /tmp/app.yaml
+          ENV_ID=$(az containerapp env show --name ${ENV} --resource-group ${RG} --query id -o tsv)
+          LOCATION=$(az containerapp env show --name ${ENV} --resource-group ${RG} --query location -o tsv)
 
-          az containerapp create \
-            --name ${APP} \
-            --resource-group ${RG} \
-            --environment ${{ env.CAE_NAME }} \
-            --yaml /tmp/app.yaml
+          cat > /tmp/app.json <<EOJSON
+          {
+            "location": "${LOCATION}",
+            "properties": {
+              "managedEnvironmentId": "${ENV_ID}",
+              "configuration": {
+                "ingress": {
+                  "external": true,
+                  "targetPort": 8080
+                },
+                "registries": [{
+                  "server": "${ACR_SERVER}",
+                  "username": "${ACR_USER}",
+                  "passwordSecretRef": "acr-password"
+                }],
+                "secrets": [{
+                  "name": "acr-password",
+                  "value": "${ACR_PASS}"
+                }]
+              },
+              "template": {
+                "scale": {
+                  "minReplicas": 0,
+                  "maxReplicas": 1
+                },
+                "containers": [
+                  {
+                    "image": "${IMAGE}",
+                    "name": "web",
+                    "resources": { "cpu": 0.25, "memory": "0.5Gi" },
+                    "env": [
+                      { "name": "ASPNETCORE_ENVIRONMENT", "value": "Development" },
+                      { "name": "ConnectionStrings__DefaultConnection", "value": "Host=localhost;Port=5432;Database=expressiondansebeauport;Username=postgres;Password=PreviewPg2026;" },
+                      { "name": "JwtToken__SecretKey", "value": "${JWT_KEY}" },
+                      { "name": "JwtToken__Issuer", "value": "https://${PREVIEW_FQDN}" },
+                      { "name": "JwtToken__Audience", "value": "https://${PREVIEW_FQDN}" },
+                      { "name": "JwtToken__TokenExpiry", "value": "720" },
+                      { "name": "Application__BaseUrl", "value": "https://${PREVIEW_FQDN}" },
+                      { "name": "Application__RedirectUrl", "value": "https://${PREVIEW_FQDN}" },
+                      { "name": "Cookies__Domain", "value": "${PREVIEW_FQDN}" },
+                      { "name": "Cookies__Secure", "value": "true" },
+                      { "name": "SendGrid__ApiKey", "value": "SG.preview-placeholder" }
+                    ]
+                  },
+                  {
+                    "image": "docker.io/library/postgres:18-alpine",
+                    "name": "postgres",
+                    "resources": { "cpu": 0.25, "memory": "0.5Gi" },
+                    "env": [
+                      { "name": "POSTGRES_USER", "value": "postgres" },
+                      { "name": "POSTGRES_PASSWORD", "value": "PreviewPg2026" },
+                      { "name": "POSTGRES_DB", "value": "expressiondansebeauport" }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+          EOJSON
+
+          SUBSCRIPTION=$(az account show --query id -o tsv)
+          az rest --method PUT \
+            --url "https://management.azure.com/subscriptions/${SUBSCRIPTION}/resourceGroups/${RG}/providers/Microsoft.App/containerApps/${APP}?api-version=2024-03-01" \
+            --body @/tmp/app.json
 
       - name: Get preview URL
         id: preview-url
