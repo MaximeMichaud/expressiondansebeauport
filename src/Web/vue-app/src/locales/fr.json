@@ -433,6 +433,8 @@
     "errorLogs": {
       "refresh": "Rafraîchir",
       "allLevels": "Tous les niveaux",
+      "allSources": "Toutes les sources",
+      "search": "Rechercher...",
       "date": "Date",
       "level": "Niveau",
       "message": "Message",

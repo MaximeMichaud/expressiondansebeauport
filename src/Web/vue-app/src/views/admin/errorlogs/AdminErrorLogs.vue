@@ -3,11 +3,16 @@
     <div class="content-grid__header">
       <h1>{{ t('routes.admin.children.errorLogs.name') }}</h1>
       <div class="error-logs__actions">
+        <input v-model="searchQuery" type="text" class="error-logs__search" :placeholder="t('pages.errorLogs.search')" />
         <select v-model="selectedLevel" class="error-logs__filter">
           <option value="">{{ t('pages.errorLogs.allLevels') }}</option>
           <option value="Warning">Warning</option>
           <option value="Error">Error</option>
           <option value="Fatal">Fatal</option>
+        </select>
+        <select v-model="selectedSource" class="error-logs__filter">
+          <option value="">{{ t('pages.errorLogs.allSources') }}</option>
+          <option v-for="source in availableSources" :key="source" :value="source">{{ source }}</option>
         </select>
         <button class="btn" @click="loadLogs">
           <RefreshCw :size="15" />
@@ -72,14 +77,35 @@ const errorLogsService = useErrorLogsService()
 const isLoading = ref(false)
 const logs = ref<ErrorLog[]>([])
 const selectedLevel = ref("")
+const selectedSource = ref("")
+const searchQuery = ref("")
 const expandedIndex = ref<number | null>(null)
 
-const filteredLogs = computed(() => {
-  if (!selectedLevel.value) return logs.value
-  return logs.value.filter(l => l.level === selectedLevel.value)
+const availableSources = computed(() => {
+  const sources = new Set(logs.value.map(l => l.sourceContext).filter(Boolean))
+  return [...sources].sort()
 })
 
-watch(selectedLevel, () => {
+const filteredLogs = computed(() => {
+  let result = logs.value
+  if (selectedLevel.value) {
+    result = result.filter(l => l.level === selectedLevel.value)
+  }
+  if (selectedSource.value) {
+    result = result.filter(l => l.sourceContext === selectedSource.value)
+  }
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase()
+    result = result.filter(l =>
+      l.message?.toLowerCase().includes(q) ||
+      l.exception?.toLowerCase().includes(q) ||
+      l.sourceContext?.toLowerCase().includes(q)
+    )
+  }
+  return result
+})
+
+watch([selectedLevel, selectedSource, searchQuery], () => {
   expandedIndex.value = null
 })
 
@@ -122,6 +148,14 @@ function formatDate(timestamp?: string): string {
   display: flex;
   gap: 8px;
   align-items: center;
+}
+
+.error-logs__search {
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  min-width: 200px;
 }
 
 .error-logs__filter {
@@ -170,19 +204,15 @@ function formatDate(timestamp?: string): string {
 }
 
 .error-logs__cell--message {
-  max-width: 500px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: break-word;
+  white-space: normal;
 }
 
 .error-logs__cell--source {
   color: #9ca3af;
   font-size: 0.8rem;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: break-word;
+  white-space: normal;
 }
 
 .error-logs__pill {
