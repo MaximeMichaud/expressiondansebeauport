@@ -184,15 +184,20 @@ public class PostService : IPostService
         var option = await _pollRepository.FindOptionById(pollOptionId);
         if (option == null) throw new InvalidOperationException("Poll option not found.");
 
-        var hasVoted = await _pollRepository.HasVotedOnPoll(option.PollId, memberId);
-        if (hasVoted && !option.Poll.AllowMultipleAnswers)
-            throw new InvalidOperationException("Already voted on this poll.");
-
-        var alreadyVotedThisOption = await _pollRepository.HasVoted(pollOptionId, memberId);
-        if (alreadyVotedThisOption) throw new InvalidOperationException("Already voted on this option.");
-
         var member = _memberRepository.FindById(memberId, asNoTracking: false);
         if (member == null) throw new InvalidOperationException("Member not found.");
+
+        var alreadyVotedThisOption = await _pollRepository.HasVoted(pollOptionId, memberId);
+        if (alreadyVotedThisOption)
+        {
+            await _pollRepository.RemoveVote(pollOptionId, memberId);
+            return;
+        }
+
+        if (!option.Poll.AllowMultipleAnswers)
+        {
+            await _pollRepository.RemoveVotesForPoll(option.PollId, memberId);
+        }
 
         var vote = new PollVote();
         vote.SetPollOption(option);
