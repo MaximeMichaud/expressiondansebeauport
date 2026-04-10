@@ -24,6 +24,7 @@ import AdminImportExport from "@/views/admin/importexport/AdminImportExport.vue"
 import AdminBackup from "@/views/admin/backup/AdminBackup.vue";
 
 import {useUserStore} from "@/stores/userStore";
+import {useUserService} from "@/inversify.config";
 
 const socialRoutes = [
   {
@@ -274,6 +275,10 @@ export function isSocialRoute(route: { meta?: Record<string, any> }): boolean {
   return route.meta?.social === true || route.meta?.socialAuth === true
 }
 
+// Ensures we only hit /users/me once per page load. Subsequent navigations
+// rely on the populated store (or the first attempt's failure).
+let rehydrationAttempted = false;
+
 // eslint-disable-next-line
 router.beforeEach(async (to, from) => {
   const userStore = useUserStore()
@@ -281,6 +286,17 @@ router.beforeEach(async (to, from) => {
   const requiredRole = to.matched.find(r => r.meta.requiredRole)?.meta.requiredRole;
   if (!requiredRole)
     return;
+
+  // On a hard reload the Pinia store is empty, but the auth cookie may still
+  // be valid server-side. Try to rehydrate from /users/me before deciding to
+  // bounce the user to login.
+  if (!rehydrationAttempted && !userStore.user.email) {
+    rehydrationAttempted = true;
+    const user = await useUserService().getCurrentUser();
+    if (user) {
+      userStore.setUser(user);
+    }
+  }
 
   const isRoleArray = Array.isArray(requiredRole)
   const doesNotHaveGivenRole = !isRoleArray && !userStore.hasRole(requiredRole as Role);
