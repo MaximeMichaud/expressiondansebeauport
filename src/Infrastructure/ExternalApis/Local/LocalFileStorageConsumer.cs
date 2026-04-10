@@ -48,6 +48,13 @@ public class LocalFileStorageConsumer : IFileStorageApiConsumer
 
     public async Task<string> UploadStreamAsync(Stream content, string fileName, string contentType, string? subDirectory = null)
     {
+        fileName = Path.GetFileName(fileName);
+        if (string.IsNullOrEmpty(fileName))
+            throw new ArgumentException("fileName cannot be empty after sanitization.", nameof(fileName));
+
+        if (!string.IsNullOrWhiteSpace(subDirectory) && (subDirectory.Contains("..") || subDirectory.Contains('/') || subDirectory.Contains('\\')))
+            throw new ArgumentException("subDirectory cannot contain path separators or '..'", nameof(subDirectory));
+
         var folder = string.IsNullOrWhiteSpace(subDirectory)
             ? UploadFolder
             : Path.Combine(UploadFolder, subDirectory);
