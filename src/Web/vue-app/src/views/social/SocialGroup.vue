@@ -157,10 +157,7 @@
                 v-for="media in post.media"
                 :key="media.id"
                 :src="media.thumbnailUrl || media.mediaUrl"
-                :class="[
-                  'w-full rounded-lg cursor-pointer',
-                  post.media.length > 1 ? 'aspect-square object-cover' : 'max-h-[60vh] object-contain bg-gray-50'
-                ]"
+                class="w-full aspect-square rounded-lg object-cover cursor-pointer"
                 @click="openLightbox(media.mediaUrl, media.originalUrl)"
               />
             </div>
