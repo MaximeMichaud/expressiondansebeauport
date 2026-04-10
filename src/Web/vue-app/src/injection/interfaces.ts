@@ -138,7 +138,12 @@ export interface ISocialService {
   joinGroup(inviteCode: string): Promise<SucceededOrNotResponse>
   getGroupFeed(groupId: string, page?: number): Promise<Post[]>
   getPost(id: string): Promise<Post>
-  createPost(groupId: string, content: string, type?: string): Promise<SucceededOrNotResponse>
+  createPost(
+    groupId: string,
+    content: string,
+    type?: 'Text' | 'Photo' | 'Poll' | 'File',
+    media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>
+  ): Promise<SucceededOrNotResponse>
   deletePost(id: string): Promise<SucceededOrNotResponse>
   toggleLike(postId: string): Promise<SucceededOrNotResponse>
   recordView(postId: string): Promise<void>
@@ -152,7 +157,11 @@ export interface ISocialService {
   createAnnouncement(content: string): Promise<SucceededOrNotResponse>
   getConversations(page?: number): Promise<Conversation[]>
   getMessages(conversationId: string, page?: number): Promise<Message[]>
-  sendMessage(conversationId: string, content: string): Promise<SucceededOrNotResponse>
+  sendMessage(
+    conversationId: string,
+    content: string,
+    media?: { displayUrl: string; thumbnailUrl: string; originalUrl: string }
+  ): Promise<SucceededOrNotResponse>
   deleteMessage(messageId: string): Promise<SucceededOrNotResponse>
   startConversation(otherMemberId: string): Promise<any>
   markAsRead(conversationId: string): Promise<void>
@@ -164,7 +173,19 @@ export interface ISocialService {
   deleteMember(id: string): Promise<SucceededOrNotResponse>
   promoteMember(id: string): Promise<SucceededOrNotResponse>
   demoteMember(id: string): Promise<SucceededOrNotResponse>
-  uploadFile(file: File): Promise<{ succeeded: boolean; url: string; fileName: string; contentType: string; size: number }>
+  uploadFile(file: File): Promise<{
+    succeeded: boolean
+    displayUrl?: string
+    thumbnailUrl?: string
+    originalUrl?: string
+    width?: number
+    height?: number
+    url?: string
+    fileName?: string
+    contentType?: string
+    size?: number
+    errors?: Array<{ errorType: string; errorMessage: string }>
+  }>
 }
 
 export interface IBackupService {
