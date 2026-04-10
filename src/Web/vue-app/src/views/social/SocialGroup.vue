@@ -289,6 +289,9 @@ async function confirmDelete() {
 async function loadGroup() {
   try {
     group.value = await socialService.getGroupDetails(groupId.value)
+    if (group.value?.name) {
+      document.title = `EDB Social - ${group.value.name}`
+    }
   } catch { /* */ }
 }
 
