@@ -152,12 +152,12 @@
             />
 
             <!-- Media -->
-            <div v-if="post.media && post.media.length" class="mb-3 grid grid-cols-4 gap-1">
+            <div v-if="post.media && post.media.length" class="mb-3 flex flex-wrap justify-center gap-1">
               <img
                 v-for="media in post.media"
                 :key="media.id"
                 :src="media.thumbnailUrl || media.mediaUrl"
-                class="w-full aspect-square rounded-lg object-cover cursor-pointer"
+                class="w-[calc(25%-3px)] aspect-square rounded-lg object-cover cursor-pointer"
                 @click="openLightbox(media.mediaUrl, media.originalUrl)"
               />
             </div>
