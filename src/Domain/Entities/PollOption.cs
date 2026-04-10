@@ -19,4 +19,13 @@ public class PollOption : Entity
 
     public void SetText(string text) => Text = text;
     public void SetSortOrder(int order) => SortOrder = order;
+
+    public static PollOption Create(Poll poll, string text, int sortOrder)
+    {
+        var option = new PollOption();
+        option.SetPoll(poll);
+        option.SetText(text);
+        option.SetSortOrder(sortOrder);
+        return option;
+    }
 }
