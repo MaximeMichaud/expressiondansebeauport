@@ -96,7 +96,7 @@
               v-if="post.type === 'Poll' && post.poll"
               :post-id="post.id"
               :poll="post.poll"
-              @voted="loadPosts"
+              @voted="refreshPostsSilent"
             />
 
             <!-- Media -->
@@ -298,6 +298,12 @@ async function loadPosts() {
     posts.value = await socialService.getGroupFeed(groupId.value)
   } catch { /* */ }
   loadingPosts.value = false
+}
+
+async function refreshPostsSilent() {
+  try {
+    posts.value = await socialService.getGroupFeed(groupId.value)
+  } catch { /* */ }
 }
 
 async function submitPost() {
