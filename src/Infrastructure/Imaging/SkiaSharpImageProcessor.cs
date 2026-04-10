@@ -38,13 +38,15 @@ public class SkiaSharpImageProcessor : IImageProcessor
             throw new InvalidImageException("Image could not be decoded.");
         }
 
+        MemoryStream? displayStream = null;
+        MemoryStream? thumbnailStream = null;
         try
         {
             var width = bitmap.Width;
             var height = bitmap.Height;
 
-            var displayStream = EncodeResized(bitmap, DisplayMaxLongSide, DisplayQuality);
-            var thumbnailStream = EncodeResized(bitmap, ThumbnailMaxLongSide, ThumbnailQuality);
+            displayStream = EncodeResized(bitmap, DisplayMaxLongSide, DisplayQuality);
+            thumbnailStream = EncodeResized(bitmap, ThumbnailMaxLongSide, ThumbnailQuality);
 
             originalBuffer.Position = 0;
 
@@ -58,6 +60,13 @@ public class SkiaSharpImageProcessor : IImageProcessor
                 ThumbnailStream: thumbnailStream,
                 Width: width,
                 Height: height);
+        }
+        catch
+        {
+            originalBuffer.Dispose();
+            displayStream?.Dispose();
+            thumbnailStream?.Dispose();
+            throw;
         }
         finally
         {
@@ -115,7 +124,9 @@ public class SkiaSharpImageProcessor : IImageProcessor
             "image/png" => ("image/png", "png"),
             "image/webp" => ("image/webp", "webp"),
             "image/gif" => ("image/gif", "gif"),
-            _ => ($"image/{ext}", ext)
+            _ => string.IsNullOrEmpty(ext)
+                ? ("application/octet-stream", "bin")
+                : ($"image/{ext}", ext)
         };
     }
 }
