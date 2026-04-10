@@ -127,27 +127,25 @@
     </div>
 
     <!-- Delete confirmation modal -->
-    <Teleport to="body">
-      <Transition name="convo-modal">
-        <div v-if="deleteTarget" class="convo-modal__overlay" @click.self="deleteTarget = null">
-          <div class="convo-modal__card">
-            <div class="convo-modal__icon-ring">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-              </svg>
-            </div>
-            <h3 class="convo-modal__title">Supprimer ce message?</h3>
-            <p class="convo-modal__text">Le message sera remplacé par « Ce message a été supprimé ».</p>
-            <div class="convo-modal__actions">
-              <button @click="deleteTarget = null" class="convo-modal__btn convo-modal__btn--cancel">Annuler</button>
-              <button @click="confirmDelete" :disabled="deleting" class="convo-modal__btn convo-modal__btn--danger">
-                {{ deleting ? 'Suppression...' : 'Supprimer' }}
-              </button>
-            </div>
+    <Transition name="convo-modal">
+      <div v-if="deleteTarget" class="convo-modal__overlay" @click.self="deleteTarget = null">
+        <div class="convo-modal__card">
+          <div class="convo-modal__icon-ring">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+            </svg>
+          </div>
+          <h3 class="convo-modal__title">Supprimer ce message?</h3>
+          <p class="convo-modal__text">Le message sera remplacé par « Ce message a été supprimé ».</p>
+          <div class="convo-modal__actions">
+            <button @click="deleteTarget = null" class="convo-modal__btn convo-modal__btn--cancel">Annuler</button>
+            <button @click="confirmDelete" :disabled="deleting" class="convo-modal__btn convo-modal__btn--danger">
+              {{ deleting ? 'Suppression...' : 'Supprimer' }}
+            </button>
           </div>
         </div>
-      </Transition>
-    </Teleport>
+      </div>
+    </Transition>
     <ImageLightbox
       v-model:open="lightboxOpen"
       :display-url="lightboxDisplayUrl"
