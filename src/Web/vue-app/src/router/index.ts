@@ -22,6 +22,7 @@ import AdminCustomizer from "@/views/admin/customizer/AdminCustomizer.vue";
 import AdminSiteHealth from "@/views/admin/health/AdminSiteHealth.vue";
 import AdminImportExport from "@/views/admin/importexport/AdminImportExport.vue";
 import AdminBackup from "@/views/admin/backup/AdminBackup.vue";
+import AdminErrorLogs from "@/views/admin/errorlogs/AdminErrorLogs.vue";
 
 import {useUserStore} from "@/stores/userStore";
 
@@ -226,6 +227,11 @@ const mainRoutes = [
         path: i18n.global.t("routes.admin.children.backup.path"),
         name: "admin.children.backup",
         component: AdminBackup,
+      },
+      {
+        path: i18n.global.t("routes.admin.children.errorLogs.path"),
+        name: "admin.children.errorLogs",
+        component: AdminErrorLogs,
       },
     ]
   },
