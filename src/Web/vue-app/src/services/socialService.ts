@@ -125,6 +125,20 @@ export class SocialService extends ApiService {
     return response.data
   }
 
+  async createPoll(
+    groupId: string,
+    question: string,
+    options: string[],
+    allowMultipleAnswers: boolean
+  ): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.post<SucceededOrNotResponse>(
+      `${API}/social/groups/${groupId}/polls`,
+      { groupId, question, options, allowMultipleAnswers },
+      this.headersWithJsonContentType()
+    )
+    return response.data
+  }
+
   // === Announcements ===
   async createAnnouncement(content: string): Promise<SucceededOrNotResponse> {
     const response = await this._httpClient.post<SucceededOrNotResponse>(`${API}/social/announcements`, { content }, this.headersWithJsonContentType())
