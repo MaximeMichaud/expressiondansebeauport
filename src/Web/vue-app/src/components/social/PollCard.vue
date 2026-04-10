@@ -1,6 +1,14 @@
 <template>
-  <div class="mb-3 rounded-lg bg-gray-50 p-3">
-    <h3 class="mb-3 text-sm font-semibold text-gray-900">{{ poll.question }}</h3>
+  <div
+    class="mb-3 rounded-lg p-3 border"
+    :style="{
+      background: 'var(--soc-input-bg)',
+      borderColor: 'var(--soc-border)'
+    }"
+  >
+    <h3 class="mb-3 text-sm font-semibold" :style="{ color: 'var(--soc-text)' }">
+      {{ poll.question }}
+    </h3>
 
     <div class="space-y-2">
       <button
@@ -8,23 +16,23 @@
         :key="option.id"
         type="button"
         :disabled="!isClickable(option) || voting"
-        class="relative block w-full overflow-hidden rounded-lg border border-gray-200 bg-white text-left transition disabled:cursor-default"
-        :class="{ 'hover:border-[#1a1a1a] cursor-pointer': isClickable(option) }"
+        class="poll-option relative block w-full overflow-hidden rounded-lg border text-left transition disabled:cursor-default"
+        :class="{ 'is-clickable': isClickable(option), 'is-voted': option.hasVoted }"
         @click="vote(option)"
       >
         <div
-          class="absolute inset-0 bg-gray-100 transition-all"
+          class="poll-option__fill absolute inset-0 transition-all"
           :style="{ width: `${option.percentage}%` }"
         ></div>
         <div class="relative flex items-center justify-between px-3 py-2 text-xs">
-          <span class="flex items-center gap-2 font-medium text-gray-800">
+          <span class="flex items-center gap-2 font-medium" :style="{ color: 'var(--soc-text)' }">
             <svg
               v-if="option.hasVoted"
               width="14"
               height="14"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#1a1a1a"
+              stroke="currentColor"
               stroke-width="3"
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -33,12 +41,14 @@
             </svg>
             {{ option.text }}
           </span>
-          <span class="text-gray-500">{{ option.voteCount }} · {{ Math.round(option.percentage) }}%</span>
+          <span :style="{ color: 'var(--soc-text-muted)' }">
+            {{ option.voteCount }} · {{ Math.round(option.percentage) }}%
+          </span>
         </div>
       </button>
     </div>
 
-    <div class="mt-2 flex items-center justify-between text-[11px] text-gray-400">
+    <div class="mt-2 flex items-center justify-between text-[11px]" :style="{ color: 'var(--soc-text-muted)' }">
       <span>{{ totalVotes }} {{ totalVotes === 1 ? 'vote' : 'votes' }}</span>
       <span v-if="poll.allowMultipleAnswers">Plusieurs réponses possibles</span>
     </div>
@@ -77,3 +87,25 @@ async function vote(option: PollOption) {
   }
 }
 </script>
+
+<style scoped>
+.poll-option {
+  background: var(--soc-content-bg);
+  border-color: var(--soc-border);
+}
+.poll-option.is-clickable {
+  cursor: pointer;
+}
+.poll-option.is-clickable:hover {
+  border-color: var(--soc-text);
+}
+.poll-option.is-voted {
+  border-color: var(--soc-text);
+}
+.poll-option__fill {
+  background: var(--soc-bar-hover);
+}
+.poll-option.is-voted .poll-option__fill {
+  background: var(--soc-bar-active);
+}
+</style>

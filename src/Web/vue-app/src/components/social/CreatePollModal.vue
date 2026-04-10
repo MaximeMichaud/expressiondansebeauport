@@ -1,34 +1,54 @@
 <template>
-  <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="handleCancel">
-    <div class="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
-      <h2 class="mb-4 text-lg font-bold text-gray-900">Créer un sondage</h2>
+  <div
+    v-if="open"
+    class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+    @click.self="handleCancel"
+  >
+    <div
+      class="w-full max-w-lg rounded-2xl p-6 shadow-2xl border"
+      :style="{
+        background: 'var(--soc-content-bg)',
+        borderColor: 'var(--soc-card-border)',
+        color: 'var(--soc-text)'
+      }"
+    >
+      <h2 class="mb-4 text-lg font-bold" :style="{ color: 'var(--soc-text)' }">
+        Créer un sondage
+      </h2>
 
       <div class="mb-4">
-        <label class="mb-1 block text-sm font-medium text-gray-700">Question</label>
+        <label class="mb-1 block text-sm font-medium" :style="{ color: 'var(--soc-text)' }">
+          Question
+        </label>
         <textarea
           v-model="question"
           rows="2"
           maxlength="500"
           placeholder="Posez votre question..."
-          class="w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
+          class="soc-input w-full resize-none rounded-lg px-3 py-2 text-sm focus:outline-none"
         ></textarea>
-        <div class="mt-1 text-right text-xs text-gray-400">{{ question.length }} / 500</div>
+        <div class="mt-1 text-right text-xs" :style="{ color: 'var(--soc-text-muted)' }">
+          {{ question.length }} / 500
+        </div>
       </div>
 
       <div class="mb-4">
-        <label class="mb-1 block text-sm font-medium text-gray-700">Options</label>
+        <label class="mb-2 block text-sm font-medium" :style="{ color: 'var(--soc-text)' }">
+          Options
+        </label>
         <div v-for="(_, i) in options" :key="i" class="mb-2 flex items-center gap-2">
           <input
             v-model="options[i]"
             maxlength="200"
             :placeholder="`Option ${i + 1}`"
-            class="flex-1 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
+            class="soc-input flex-1 rounded-lg px-3 py-2 text-sm focus:outline-none"
           />
           <button
             v-if="options.length > 2"
             type="button"
-            class="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-red-600"
+            class="soc-icon-btn flex h-8 w-8 items-center justify-center rounded-lg"
             @click="removeOption(i)"
+            aria-label="Retirer l'option"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -38,22 +58,25 @@
         <button
           v-if="options.length < 10"
           type="button"
-          class="mt-2 text-sm font-medium text-[#1a1a1a] hover:underline"
+          class="soc-link-btn mt-2 text-sm font-medium"
           @click="addOption"
         >
           + Ajouter une option
         </button>
       </div>
 
-      <label class="mb-4 flex items-center gap-2 text-sm text-gray-700">
-        <input v-model="allowMultipleAnswers" type="checkbox" class="rounded border-gray-300" />
+      <label
+        class="mb-5 flex cursor-pointer items-center gap-2 text-sm"
+        :style="{ color: 'var(--soc-text)' }"
+      >
+        <input v-model="allowMultipleAnswers" type="checkbox" class="soc-checkbox" />
         Permettre plusieurs réponses
       </label>
 
       <div class="flex justify-end gap-2">
         <button
           type="button"
-          class="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
+          class="soc-btn-secondary rounded-lg px-4 py-2 text-sm font-semibold cursor-pointer"
           @click="handleCancel"
         >
           Annuler
@@ -61,7 +84,7 @@
         <button
           type="button"
           :disabled="!canSubmit || submitting"
-          class="rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white hover:bg-black disabled:opacity-50"
+          class="soc-btn-primary rounded-lg px-4 py-2 text-sm font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           @click="handleSubmit"
         >
           Publier le sondage
@@ -138,3 +161,66 @@ function reset() {
 
 watch(() => props.open, (val) => { if (val) reset() })
 </script>
+
+<style scoped>
+.soc-input {
+  background: var(--soc-input-bg);
+  border: 1px solid var(--soc-input-border);
+  color: var(--soc-text);
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.soc-input::placeholder {
+  color: var(--soc-text-muted);
+  opacity: 0.7;
+}
+.soc-input:focus {
+  border-color: var(--soc-text);
+  box-shadow: 0 0 0 1px var(--soc-text);
+}
+
+.soc-icon-btn {
+  color: var(--soc-text-muted);
+  transition: color 0.15s, background 0.15s;
+}
+.soc-icon-btn:hover {
+  color: #ef4444;
+  background: var(--soc-bar-hover);
+}
+
+.soc-link-btn {
+  color: var(--soc-text);
+  transition: opacity 0.15s;
+}
+.soc-link-btn:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
+.soc-checkbox {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--soc-input-border);
+  background: var(--soc-input-bg);
+  cursor: pointer;
+  accent-color: var(--soc-text);
+}
+
+.soc-btn-secondary {
+  background: var(--soc-bar-hover);
+  color: var(--soc-text);
+  transition: background 0.15s, opacity 0.15s;
+}
+.soc-btn-secondary:hover {
+  background: var(--soc-bar-active);
+}
+
+.soc-btn-primary {
+  background: var(--soc-text);
+  color: var(--soc-content-bg);
+  transition: opacity 0.15s;
+}
+.soc-btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
+}
+</style>
