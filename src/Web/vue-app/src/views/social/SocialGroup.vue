@@ -423,7 +423,9 @@ async function submitPost() {
     newPostContent.value = ''
     attachment.clear()
     await loadPosts()
-  } catch { /* */ }
+  } catch {
+    toast.error("Impossible de publier. Veuillez réessayer.")
+  }
   submittingPost.value = false
 }
 
