@@ -42,7 +42,26 @@ public class CreatePostEndpoint : Endpoint<CreatePostRequest, SucceededOrNotResp
         }
 
         var type = Enum.Parse<Domain.Enums.PostType>(req.Type, true);
-        await _postService.CreatePost(req.GroupId, member.Id, req.Content, type);
+
+        var media = req.Media.Select(m => new PostMediaItem
+        {
+            DisplayUrl = m.DisplayUrl,
+            ThumbnailUrl = m.ThumbnailUrl,
+            OriginalUrl = m.OriginalUrl,
+            ContentType = m.ContentType,
+            Size = m.Size
+        }).ToList();
+
+        try
+        {
+            await _postService.CreatePost(req.GroupId, member.Id, req.Content, type, media);
+        }
+        catch (InvalidOperationException ex)
+        {
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("InvalidPost", ex.Message)), ct);
+            return;
+        }
+
         await Send.OkAsync(new SucceededOrNotResponse(true), ct);
     }
 }
