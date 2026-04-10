@@ -49,6 +49,15 @@ public class SendMessageEndpoint : Endpoint<SendMessageRequest, SucceededOrNotRe
             return;
         }
 
+        var hasMediaUrl = !string.IsNullOrWhiteSpace(req.MediaUrl);
+        var hasThumb = !string.IsNullOrWhiteSpace(req.MediaThumbnailUrl);
+        var hasOriginal = !string.IsNullOrWhiteSpace(req.MediaOriginalUrl);
+        if (hasMediaUrl != hasThumb || hasMediaUrl != hasOriginal)
+        {
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("InvalidMessage", "Media fields must all be present or all absent.")), ct);
+            return;
+        }
+
         Domain.Entities.Message message;
         try
         {
