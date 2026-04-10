@@ -77,6 +77,10 @@ async function handleLogin() {
     const result = await authService.login({ username: email.value, password: password.value })
     if (result.succeeded) {
       const user = await userService.getCurrentUser()
+      if (!user) {
+        toast.error('Une erreur est survenue. Veuillez réessayer.')
+        return
+      }
       userStore.setUser(user)
       await router.push({ name: 'socialImportant' })
     } else {

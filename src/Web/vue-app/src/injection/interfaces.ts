@@ -37,7 +37,7 @@ export interface IAuthenticationService {
 }
 
 export interface IUserService {
-  getCurrentUser(): Promise<User>
+  getCurrentUser(): Promise<User | null>
 }
 
 export interface IMediaService {
