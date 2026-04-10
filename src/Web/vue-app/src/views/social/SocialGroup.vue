@@ -71,7 +71,8 @@
                     type="button"
                     @click="triggerFilePicker"
                     :disabled="attachment.files.value.length >= 10"
-                    class="flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-default"
+                    class="soc-composer-icon flex h-9 w-9 items-center justify-center rounded-lg transition cursor-pointer disabled:opacity-40 disabled:cursor-default"
+                    title="Joindre des images"
                     aria-label="Joindre des images"
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
@@ -152,7 +153,10 @@
                 v-for="media in post.media"
                 :key="media.id"
                 :src="media.thumbnailUrl || media.mediaUrl"
-                class="w-full rounded-lg object-cover cursor-pointer"
+                :class="[
+                  'w-full rounded-lg cursor-pointer',
+                  post.media.length > 1 ? 'aspect-square object-cover' : 'max-h-[60vh] object-contain bg-gray-50'
+                ]"
                 @click="openLightbox(media.mediaUrl, media.originalUrl)"
               />
             </div>
