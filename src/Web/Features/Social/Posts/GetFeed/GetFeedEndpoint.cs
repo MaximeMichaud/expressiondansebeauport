@@ -81,6 +81,7 @@ public class GetFeedEndpoint : Endpoint<GetFeedRequest>
                 m.Id,
                 m.MediaUrl,
                 m.ThumbnailUrl,
+                m.OriginalUrl,
                 m.ContentType,
                 m.Size,
                 m.SortOrder
