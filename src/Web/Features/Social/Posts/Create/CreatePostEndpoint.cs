@@ -43,6 +43,12 @@ public class CreatePostEndpoint : Endpoint<CreatePostRequest, SucceededOrNotResp
 
         var type = Enum.Parse<Domain.Enums.PostType>(req.Type, true);
 
+        if (type == Domain.Enums.PostType.Photo && req.Media.Count == 0)
+        {
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("InvalidPost", "A photo post must include at least one image.")), ct);
+            return;
+        }
+
         var media = req.Media.Select(m => new PostMediaItem
         {
             DisplayUrl = m.DisplayUrl,
