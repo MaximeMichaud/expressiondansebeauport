@@ -79,8 +79,28 @@ export class SocialService extends ApiService {
     return toCamel(response.data)
   }
 
-  async createPost(groupId: string, content: string, type: string = 'Text'): Promise<SucceededOrNotResponse> {
-    const response = await this._httpClient.post<SucceededOrNotResponse>(`${API}/social/posts`, { groupId, content, type }, this.headersWithJsonContentType())
+  async createPost(
+    groupId: string,
+    content: string,
+    type: 'Text' | 'Photo' | 'Poll' | 'File' = 'Text',
+    media?: Array<{
+      displayUrl: string
+      thumbnailUrl: string
+      originalUrl: string
+      contentType: string
+      size: number
+    }>
+  ): Promise<SucceededOrNotResponse> {
+    const body: Record<string, unknown> = {
+      groupId,
+      content,
+      type,
+      media: media ?? []
+    }
+    const response = await this._httpClient.post<SucceededOrNotResponse>(
+      `${API}/social/posts`,
+      body,
+      this.headersWithJsonContentType())
     return response.data
   }
 
@@ -161,8 +181,24 @@ export class SocialService extends ApiService {
     return toCamel(response.data)
   }
 
-  async sendMessage(conversationId: string, content: string): Promise<SucceededOrNotResponse> {
-    const response = await this._httpClient.post<SucceededOrNotResponse>(`${API}/social/conversations/${conversationId}/messages`, { content }, this.headersWithJsonContentType())
+  async sendMessage(
+    conversationId: string,
+    content: string,
+    media?: { displayUrl: string; thumbnailUrl: string; originalUrl: string }
+  ): Promise<SucceededOrNotResponse> {
+    const body: Record<string, unknown> = {
+      conversationId,
+      content
+    }
+    if (media) {
+      body.mediaUrl = media.displayUrl
+      body.mediaThumbnailUrl = media.thumbnailUrl
+      body.mediaOriginalUrl = media.originalUrl
+    }
+    const response = await this._httpClient.post<SucceededOrNotResponse>(
+      `${API}/social/conversations/${conversationId}/messages`,
+      body,
+      this.headersWithJsonContentType())
     return response.data
   }
 
@@ -223,7 +259,22 @@ export class SocialService extends ApiService {
   }
 
   // === Upload ===
-  async uploadFile(file: File): Promise<{ succeeded: boolean; url: string; fileName: string; contentType: string; size: number }> {
+  async uploadFile(file: File): Promise<{
+    succeeded: boolean
+    // image fields:
+    displayUrl?: string
+    thumbnailUrl?: string
+    originalUrl?: string
+    width?: number
+    height?: number
+    // pdf rétro-compat:
+    url?: string
+    fileName?: string
+    // common:
+    contentType?: string
+    size?: number
+    errors?: Array<{ errorType: string; errorMessage: string }>
+  }> {
     const formData = new FormData()
     formData.append('file', file)
     const response = await this._httpClient.post(`${API}/social/upload`, formData, this.headersWithFormDataContentType())
