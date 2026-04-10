@@ -152,7 +152,7 @@
             />
 
             <!-- Media -->
-            <div v-if="post.media && post.media.length" class="mb-3 grid gap-1" :class="post.media.length > 1 ? 'grid-cols-2' : ''">
+            <div v-if="post.media && post.media.length" class="mb-3 grid grid-cols-2 gap-1">
               <img
                 v-for="media in post.media"
                 :key="media.id"
