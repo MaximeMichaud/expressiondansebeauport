@@ -691,12 +691,13 @@ $convo-font-body: 'Karla', sans-serif;
     justify-content: center;
     width: 36px;
     height: 36px;
-    border-radius: 50%;
+    border-radius: 10px;
+    background: var(--soc-bar-hover, #f5f3f0);
     color: var(--soc-text-muted, #78716c);
     cursor: pointer;
     flex-shrink: 0;
     transition: color 0.15s, background 0.15s;
-    &:hover { color: var(--soc-bar-text-strong, #1a1a1a); background: var(--soc-bar-hover, #f5f3f0); }
+    &:hover { color: var(--soc-bar-text-strong, #1a1a1a); background: var(--soc-bar-active, #eae8e4); }
     &:disabled { opacity: 0.35; cursor: default; }
   }
 
