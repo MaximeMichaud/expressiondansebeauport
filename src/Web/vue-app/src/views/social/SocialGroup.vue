@@ -33,7 +33,7 @@
                 <button
                   v-if="canCreatePolls"
                   type="button"
-                  class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 hover:text-[#1a1a1a] cursor-pointer"
+                  class="soc-composer-icon flex h-9 w-9 items-center justify-center rounded-lg transition cursor-pointer"
                   title="Créer un sondage"
                   @click="showPollModal = true"
                 >
@@ -382,3 +382,13 @@ onUnmounted(() => {
   if (pollInterval) clearInterval(pollInterval)
 })
 </script>
+
+<style scoped>
+.soc-composer-icon {
+  color: var(--soc-text-muted);
+}
+.soc-composer-icon:hover {
+  background: var(--soc-bar-hover);
+  color: var(--soc-text);
+}
+</style>
