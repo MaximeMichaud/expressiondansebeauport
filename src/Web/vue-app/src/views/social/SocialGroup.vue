@@ -31,7 +31,7 @@
             <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: myAvatarColor }">
               {{ userInitials }}
             </div>
-            <div class="flex-1">
+            <div class="flex-1 min-w-0">
               <textarea
                 v-model="newPostContent"
                 rows="2"
