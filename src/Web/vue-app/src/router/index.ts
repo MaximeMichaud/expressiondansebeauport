@@ -315,7 +315,7 @@ router.afterEach((to) => {
   const social = isSocialRoute(to)
   if (social) {
     const titleKey = [...to.matched].reverse().find(r => r.meta.title)?.meta.title as string | undefined;
-    document.title = titleKey ? `${titleKey} - EDB Social` : 'EDB Social';
+    document.title = titleKey ? `EDB Social - ${titleKey}` : 'EDB Social';
   }
 });
 
