@@ -48,23 +48,35 @@
             :class="[
               'soc-convo__bubble',
               msg.isMine ? (msg.pending ? 'soc-convo__bubble--pending' : 'soc-convo__bubble--mine') : 'soc-convo__bubble--other',
-              (msg.mediaUrl || msg.pendingPreviewUrl) && 'soc-convo__bubble--has-media'
+              ((msg.media && msg.media.length) || (msg.pendingPreviewUrls && msg.pendingPreviewUrls.length)) && 'soc-convo__bubble--has-media'
             ]"
             @contextmenu.prevent="msg.isMine && !msg.pending ? openDeleteMenu(msg) : null"
           >
-            <img
-              v-if="msg.pendingPreviewUrl"
-              :src="msg.pendingPreviewUrl"
-              class="soc-convo__bubble-img soc-convo__bubble-img--pending"
-              alt=""
-            />
-            <img
-              v-else-if="msg.mediaUrl"
-              :src="msg.mediaThumbnailUrl || msg.mediaUrl"
-              class="soc-convo__bubble-img"
-              alt=""
-              @click="openLightbox(msg.mediaUrl!, msg.mediaOriginalUrl)"
-            />
+            <div
+              v-if="msg.pendingPreviewUrls && msg.pendingPreviewUrls.length"
+              :class="['soc-convo__media-grid', msg.pendingPreviewUrls.length > 1 && 'soc-convo__media-grid--multi']"
+            >
+              <img
+                v-for="(url, idx) in msg.pendingPreviewUrls"
+                :key="idx"
+                :src="url"
+                class="soc-convo__bubble-img soc-convo__bubble-img--pending"
+                alt=""
+              />
+            </div>
+            <div
+              v-else-if="msg.media && msg.media.length"
+              :class="['soc-convo__media-grid', msg.media.length > 1 && 'soc-convo__media-grid--multi']"
+            >
+              <img
+                v-for="m in msg.media"
+                :key="m.id"
+                :src="m.thumbnailUrl || m.mediaUrl"
+                class="soc-convo__bubble-img"
+                alt=""
+                @click="openLightbox(m.mediaUrl, m.originalUrl)"
+              />
+            </div>
             <span v-if="msg.content" class="soc-convo__bubble-text">{{ msg.content }}</span>
             <button
               v-if="msg.isMine && !msg.pending"
@@ -84,30 +96,48 @@
       </template>
     </div>
 
+    <!-- Preview strip (above input bar, only when attachments) -->
+    <div v-if="attachment.previews.value.length" class="soc-convo__preview-strip">
+      <div
+        v-for="(p, i) in attachment.previews.value"
+        :key="p.url"
+        class="soc-convo__preview-item"
+      >
+        <img :src="p.url" class="soc-convo__preview-img" alt="" />
+        <button
+          type="button"
+          class="soc-convo__preview-remove"
+          @click="attachment.removeFile(i)"
+          aria-label="Retirer"
+        >
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
     <!-- Input -->
     <div class="soc-convo__input-bar">
       <input
         ref="fileInputRef"
         type="file"
         accept="image/*"
+        multiple
         hidden
         @change="attachment.handleFileInput"
       />
       <button
         type="button"
         class="soc-convo__attach"
-        :disabled="uploading || attachment.files.value.length >= 1"
+        :disabled="uploading || attachment.files.value.length >= 10"
         @click="triggerFilePicker"
-        aria-label="Joindre une image"
+        aria-label="Joindre des images"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
         </svg>
       </button>
-      <div v-if="attachment.previews.value.length" class="soc-convo__preview">
-        <img :src="attachment.previews.value[0].url" alt="" class="soc-convo__preview-img" />
-        <button class="soc-convo__preview-remove" @click="attachment.removeFile(0)" aria-label="Retirer">×</button>
-      </div>
       <input
         v-model="newMessage"
         type="text"
@@ -165,6 +195,14 @@ import { useMemberStore } from '@/stores/memberStore'
 import ImageLightbox from '@/components/social/ImageLightbox.vue'
 import { useImageAttachment } from '@/composables/useImageAttachment'
 
+interface ChatMessageMedia {
+  id: string
+  mediaUrl: string
+  thumbnailUrl?: string
+  originalUrl?: string
+  sortOrder: number
+}
+
 interface ChatMessage {
   id: string
   content: string
@@ -174,10 +212,8 @@ interface ChatMessage {
   pending?: boolean
   isRead?: boolean
   isDeleted?: boolean
-  mediaUrl?: string
-  mediaThumbnailUrl?: string
-  mediaOriginalUrl?: string
-  pendingPreviewUrl?: string
+  media?: ChatMessageMedia[]
+  pendingPreviewUrls?: string[]
 }
 
 const route = useRoute()
@@ -189,7 +225,7 @@ const serverMessages = ref<ChatMessage[]>([])
 const pendingMessages = ref<ChatMessage[]>([])
 const loading = ref(true)
 const newMessage = ref('')
-const attachment = useImageAttachment({ mode: 'single' })
+const attachment = useImageAttachment({ mode: 'multi', maxFiles: 10 })
 const uploading = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
@@ -287,9 +323,7 @@ async function loadMessages(smooth = false) {
       isMine: m.senderMemberId === currentMemberId.value,
       isRead: m.isRead ?? false,
       isDeleted: m.isDeleted ?? false,
-      mediaUrl: m.mediaUrl ?? undefined,
-      mediaThumbnailUrl: m.mediaThumbnailUrl ?? undefined,
-      mediaOriginalUrl: m.mediaOriginalUrl ?? undefined,
+      media: Array.isArray(m.media) ? m.media : undefined,
     }))
     pendingMessages.value = pendingMessages.value.filter(
       pm => !serverMessages.value.some(sm => sm.content === pm.content)
@@ -306,13 +340,15 @@ async function loadMessages(smooth = false) {
 
 async function sendMessage() {
   const text = newMessage.value.trim()
-  const file = attachment.files.value[0]
+  const files = attachment.files.value
 
-  if (!text && !file) return
+  if (!text && files.length === 0) return
 
-  // Optimistic pending message
+  // Optimistic pending message with preview URLs
   const tempId = 'pending-' + Date.now()
-  const pendingPreviewUrl = file ? attachment.previews.value[0]?.url : undefined
+  const pendingPreviewUrls = files.length > 0
+    ? attachment.previews.value.map(p => p.url)
+    : undefined
   pendingMessages.value.push({
     id: tempId,
     content: text,
@@ -320,25 +356,35 @@ async function sendMessage() {
     created: new Date().toISOString(),
     isMine: true,
     pending: true,
-    pendingPreviewUrl,
+    pendingPreviewUrls,
   })
   newMessage.value = ''
   scrollToBottom(true)
 
-  let media: { displayUrl: string; thumbnailUrl: string; originalUrl: string } | undefined
+  let media: Array<{
+    displayUrl: string
+    thumbnailUrl: string
+    originalUrl: string
+    contentType: string
+    size: number
+  }> = []
 
-  if (file) {
+  if (files.length > 0) {
     uploading.value = true
     try {
-      const result = await socialService.uploadFile(file)
-      if (!result.succeeded || !result.displayUrl || !result.thumbnailUrl || !result.originalUrl) {
-        throw new Error('upload-failed')
+      const uploads = await Promise.all(files.map(f => socialService.uploadFile(f)))
+      for (const u of uploads) {
+        if (!u.succeeded || !u.displayUrl || !u.thumbnailUrl || !u.originalUrl || !u.contentType || u.size == null) {
+          throw new Error('upload-failed')
+        }
       }
-      media = {
-        displayUrl: result.displayUrl,
-        thumbnailUrl: result.thumbnailUrl,
-        originalUrl: result.originalUrl,
-      }
+      media = uploads.map(u => ({
+        displayUrl: u.displayUrl!,
+        thumbnailUrl: u.thumbnailUrl!,
+        originalUrl: u.originalUrl!,
+        contentType: u.contentType!,
+        size: u.size!,
+      }))
     } catch {
       pendingMessages.value = pendingMessages.value.filter(m => m.id !== tempId)
       uploading.value = false
@@ -348,7 +394,7 @@ async function sendMessage() {
   }
 
   try {
-    await socialService.sendMessage(conversationId.value, text, media)
+    await socialService.sendMessage(conversationId.value, text, media.length > 0 ? media : undefined)
     attachment.clear()
     await loadMessages(true)
   } catch {
@@ -390,9 +436,7 @@ async function pollMessages() {
       isMine: m.senderMemberId === currentMemberId.value,
       isRead: m.isRead ?? false,
       isDeleted: m.isDeleted ?? false,
-      mediaUrl: m.mediaUrl ?? undefined,
-      mediaThumbnailUrl: m.mediaThumbnailUrl ?? undefined,
-      mediaOriginalUrl: m.mediaOriginalUrl ?? undefined,
+      media: Array.isArray(m.media) ? m.media : undefined,
     }))
     pendingMessages.value = pendingMessages.value.filter(
       pm => !serverMessages.value.some(sm => sm.content === pm.content)
@@ -680,6 +724,24 @@ $convo-font-body: 'Karla', sans-serif;
 
   &__bubble-img--pending { opacity: 0.6; }
 
+  &__media-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    border-radius: 14px;
+    overflow: hidden;
+
+    &--multi {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    &--multi .soc-convo__bubble-img {
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 0;
+    }
+  }
+
   &__bubble-text {
     display: block;
     padding: 6px 10px 4px;
@@ -701,14 +763,26 @@ $convo-font-body: 'Karla', sans-serif;
     &:disabled { opacity: 0.35; cursor: default; }
   }
 
-  &__preview {
-    position: relative;
+  &__preview-strip {
+    display: flex;
+    gap: 8px;
+    padding: 8px 16px 0;
+    overflow-x: auto;
     flex-shrink: 0;
   }
 
+  &__preview-item {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    margin-top: 6px;
+    margin-right: 6px;
+  }
+
   &__preview-img {
-    width: 44px;
-    height: 44px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     border-radius: 8px;
     border: 1px solid var(--soc-input-border, #e7e0da);
@@ -718,17 +792,16 @@ $convo-font-body: 'Karla', sans-serif;
     position: absolute;
     top: -6px;
     right: -6px;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: #1a1a1a;
     color: white;
-    font-size: 12px;
-    line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   }
 
   &__error {

@@ -33,6 +33,7 @@ public class MessageRepository : IMessageRepository
             .IgnoreQueryFilters()
             .Where(m => m.ConversationId == conversationId)
             .Include(m => m.SenderMember).ThenInclude(s => s.User)
+            .Include(m => m.Media.OrderBy(x => x.SortOrder))
             .OrderByDescending(m => m.Created)
             .Skip(skip).Take(take)
             .ToListAsync();

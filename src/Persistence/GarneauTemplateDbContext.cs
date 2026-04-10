@@ -64,6 +64,7 @@ public class GarneauTemplateDbContext : IdentityDbContext<User, Role, Guid,
     public DbSet<Conversation> Conversations { get; set; } = null!;
     public DbSet<ConversationParticipant> ConversationParticipants { get; set; } = null!;
     public DbSet<Message> Messages { get; set; } = null!;
+    public DbSet<MessageMedia> MessageMedia { get; set; } = null!;
     public DbSet<EmailConfirmationCode> EmailConfirmationCodes { get; set; } = null!;
 
     public GarneauTemplateDbContext()

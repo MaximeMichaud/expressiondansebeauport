@@ -28,10 +28,11 @@ public class ConversationService : IConversationService
         Guid conversationId,
         Guid senderMemberId,
         string? content,
-        string? mediaUrl,
-        string? mediaThumbnailUrl,
-        string? mediaOriginalUrl)
+        IReadOnlyList<MessageMediaItem> media)
     {
+        if (media.Count > 10)
+            throw new InvalidOperationException("A message cannot have more than 10 media items.");
+
         var conversation = await _conversationRepository.FindById(conversationId, asNoTracking: false);
         if (conversation == null) throw new InvalidOperationException("Conversation not found.");
 
@@ -43,7 +44,7 @@ public class ConversationService : IConversationService
         if (!isParticipant) throw new InvalidOperationException("Not a participant in this conversation.");
 
         var hasContent = !string.IsNullOrWhiteSpace(content);
-        var hasMedia = !string.IsNullOrWhiteSpace(mediaUrl);
+        var hasMedia = media.Count > 0;
         if (!hasContent && !hasMedia)
             throw new InvalidOperationException("Message must have content or media.");
 
@@ -51,9 +52,20 @@ public class ConversationService : IConversationService
         message.SetConversation(conversation);
         message.SetSender(sender);
         message.SetContent(content ?? string.Empty);
-        message.SetMediaUrl(mediaUrl);
-        message.SetMediaThumbnailUrl(mediaThumbnailUrl);
-        message.SetMediaOriginalUrl(mediaOriginalUrl);
+
+        for (var i = 0; i < media.Count; i++)
+        {
+            var item = media[i];
+            var mm = new MessageMedia();
+            mm.SetMessage(message);
+            mm.SetMediaUrl(item.DisplayUrl);
+            mm.SetThumbnailUrl(item.ThumbnailUrl);
+            mm.SetOriginalUrl(item.OriginalUrl);
+            mm.SetContentType(item.ContentType);
+            mm.SetSize(item.Size);
+            mm.SetSortOrder(i);
+            message.Media.Add(mm);
+        }
 
         await _messageRepository.Add(message);
 

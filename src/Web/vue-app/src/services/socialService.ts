@@ -184,16 +184,18 @@ export class SocialService extends ApiService {
   async sendMessage(
     conversationId: string,
     content: string,
-    media?: { displayUrl: string; thumbnailUrl: string; originalUrl: string }
+    media?: Array<{
+      displayUrl: string
+      thumbnailUrl: string
+      originalUrl: string
+      contentType: string
+      size: number
+    }>
   ): Promise<SucceededOrNotResponse> {
     const body: Record<string, unknown> = {
       conversationId,
-      content
-    }
-    if (media) {
-      body.mediaUrl = media.displayUrl
-      body.mediaThumbnailUrl = media.thumbnailUrl
-      body.mediaOriginalUrl = media.originalUrl
+      content,
+      media: media ?? []
     }
     const response = await this._httpClient.post<SucceededOrNotResponse>(
       `${API}/social/conversations/${conversationId}/messages`,
