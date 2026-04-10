@@ -11,6 +11,7 @@ public class PostMediaConfiguration : IEntityTypeConfiguration<PostMedia>
         builder.HasKey(pm => pm.Id);
         builder.Property(pm => pm.MediaUrl).HasMaxLength(500).IsRequired();
         builder.Property(pm => pm.ThumbnailUrl).HasMaxLength(500);
+        builder.Property(pm => pm.OriginalUrl).HasMaxLength(500);
         builder.Property(pm => pm.ContentType).HasMaxLength(100).IsRequired();
     }
 }
