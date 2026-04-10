@@ -1,7 +1,9 @@
 ﻿using System.Text;
+using Application.Interfaces.Imaging;
 using Application.Interfaces.Services;
 using Domain.Entities.Identity;
 using Domain.Repositories;
+using Infrastructure.Imaging;
 using Infrastructure.Mailing;
 using Infrastructure.Repositories.Admins;
 using Infrastructure.Repositories.Authentication;
@@ -62,6 +64,8 @@ public static class ConfigureServices
     private static void ConfigureInfrastructureServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<IHttpContextUserService, HttpContextUserService>();
+
+        services.AddScoped<IImageProcessor, SkiaSharpImageProcessor>();
 
         services.AddScoped<IAdministratorRepository, AdministratorRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
