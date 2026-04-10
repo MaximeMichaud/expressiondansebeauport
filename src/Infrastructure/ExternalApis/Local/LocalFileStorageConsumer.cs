@@ -45,4 +45,29 @@ public class LocalFileStorageConsumer : IFileStorageApiConsumer
 
         return Task.CompletedTask;
     }
+
+    public async Task<string> UploadStreamAsync(Stream content, string fileName, string contentType, string? subDirectory = null)
+    {
+        var folder = string.IsNullOrWhiteSpace(subDirectory)
+            ? UploadFolder
+            : Path.Combine(UploadFolder, subDirectory);
+
+        var folderAbs = Path.Combine(_webRootPath, folder);
+        if (!Directory.Exists(folderAbs))
+            Directory.CreateDirectory(folderAbs);
+
+        var uniqueFileName = $"{DateTime.Now.Ticks}-{fileName}";
+        var filePath = Path.Combine(folderAbs, uniqueFileName);
+
+        if (content.CanSeek) content.Position = 0;
+
+        await using var stream = new FileStream(filePath, FileMode.Create);
+        await content.CopyToAsync(stream);
+
+        var urlPath = string.IsNullOrWhiteSpace(subDirectory)
+            ? $"/{UploadFolder}/{uniqueFileName}"
+            : $"/{UploadFolder}/{subDirectory.Replace('\\', '/')}/{uniqueFileName}";
+
+        return urlPath;
+    }
 }
