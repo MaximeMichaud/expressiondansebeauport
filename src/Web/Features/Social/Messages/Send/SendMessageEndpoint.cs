@@ -49,7 +49,22 @@ public class SendMessageEndpoint : Endpoint<SendMessageRequest, SucceededOrNotRe
             return;
         }
 
-        var message = await _conversationService.SendMessage(req.ConversationId, member.Id, req.Content);
+        Domain.Entities.Message message;
+        try
+        {
+            message = await _conversationService.SendMessage(
+                req.ConversationId,
+                member.Id,
+                req.Content,
+                req.MediaUrl,
+                req.MediaThumbnailUrl,
+                req.MediaOriginalUrl);
+        }
+        catch (InvalidOperationException ex)
+        {
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("InvalidMessage", ex.Message)), ct);
+            return;
+        }
 
         var conversation = await _conversationRepository.FindById(req.ConversationId);
         var recipientMemberId = conversation?.ParticipantAMemberId == member.Id
@@ -60,7 +75,16 @@ public class SendMessageEndpoint : Endpoint<SendMessageRequest, SucceededOrNotRe
         {
             var connectionId = ChatHub.GetConnectionId(recipientUser.UserId.ToString());
             if (connectionId != null)
-                await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveMessage", new { message.Id, message.Content, SenderName = member.FullName, message.ConversationId }, ct);
+                await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveMessage", new
+                {
+                    message.Id,
+                    message.Content,
+                    SenderName = member.FullName,
+                    message.ConversationId,
+                    message.MediaUrl,
+                    message.MediaThumbnailUrl,
+                    message.MediaOriginalUrl
+                }, ct);
         }
 
         await Send.OkAsync(new SucceededOrNotResponse(true), ct);
