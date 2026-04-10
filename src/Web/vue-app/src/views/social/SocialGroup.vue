@@ -17,7 +17,16 @@
     <!-- Feed -->
     <div class="flex-1">
         <!-- Post composer -->
-        <div class="border-b-[6px] border-[var(--soc-page-bg,#f0f0f0)] px-4 py-3">
+        <div
+          class="border-b-[6px] border-[var(--soc-page-bg,#f0f0f0)] px-4 py-3 relative"
+          @dragenter="attachment.handleDragEnter"
+          @dragleave="attachment.handleDragLeave"
+          @dragover="attachment.handleDragOver"
+          @drop="attachment.handleDrop"
+        >
+          <div v-if="attachment.isDraggingOver.value" class="absolute inset-0 z-20 flex items-center justify-center bg-black/85 text-white font-semibold border-4 border-dashed border-white/40 rounded-lg pointer-events-none">
+            Déposer les images ici
+          </div>
           <div class="flex items-start gap-3">
             <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: myAvatarColor }">
               {{ userInitials }}
@@ -29,23 +38,61 @@
                 class="w-full resize-none rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#1a1a1a]"
                 placeholder="Partager quelque chose..."
               ></textarea>
-              <div class="mt-2 flex items-center justify-end gap-2">
-                <button
-                  v-if="canCreatePolls"
-                  type="button"
-                  class="soc-composer-icon flex h-9 w-9 items-center justify-center rounded-lg transition cursor-pointer"
-                  title="Créer un sondage"
-                  @click="showPollModal = true"
+
+              <div v-if="attachment.previews.value.length" class="mt-2 flex gap-2 overflow-x-auto">
+                <div
+                  v-for="(p, i) in attachment.previews.value"
+                  :key="p.url"
+                  class="relative h-20 w-20 flex-shrink-0"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="20" x2="12" y2="10"/>
-                    <line x1="18" y1="20" x2="18" y2="4"/>
-                    <line x1="6" y1="20" x2="6" y2="16"/>
-                  </svg>
-                </button>
+                  <img :src="p.url" class="h-full w-full rounded-lg object-cover" alt="" />
+                  <button
+                    type="button"
+                    @click="attachment.removeFile(i)"
+                    class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#1a1a1a] text-xs text-white"
+                    aria-label="Retirer"
+                  >×</button>
+                </div>
+              </div>
+
+              <p v-if="attachment.error.value" class="mt-2 text-xs text-red-600">{{ attachment.error.value }}</p>
+
+              <div class="mt-2 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <input
+                    ref="fileInputRef"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    hidden
+                    @change="attachment.handleFileInput"
+                  />
+                  <button
+                    type="button"
+                    @click="triggerFilePicker"
+                    :disabled="attachment.files.value.length >= 10"
+                    class="flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-default"
+                    aria-label="Joindre des images"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                  </button>
+                  <button
+                    v-if="canCreatePolls"
+                    type="button"
+                    class="soc-composer-icon flex h-9 w-9 items-center justify-center rounded-lg transition cursor-pointer"
+                    title="Créer un sondage"
+                    @click="showPollModal = true"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="12" y1="20" x2="12" y2="10"/>
+                      <line x1="18" y1="20" x2="18" y2="4"/>
+                      <line x1="6" y1="20" x2="6" y2="16"/>
+                    </svg>
+                  </button>
+                </div>
                 <button
                   @click="submitPost"
-                  :disabled="!newPostContent.trim() || submittingPost"
+                  :disabled="(!newPostContent.trim() && !attachment.files.value.length) || submittingPost"
                   class="btn-publish rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#000] disabled:opacity-50 cursor-pointer"
                 >
                   Publier
@@ -101,7 +148,13 @@
 
             <!-- Media -->
             <div v-if="post.media && post.media.length" class="mb-3 grid gap-1" :class="post.media.length > 1 ? 'grid-cols-2' : ''">
-              <img v-for="media in post.media" :key="media.id" :src="media.thumbnailUrl || media.mediaUrl" class="w-full rounded-lg object-cover" />
+              <img
+                v-for="media in post.media"
+                :key="media.id"
+                :src="media.thumbnailUrl || media.mediaUrl"
+                class="w-full rounded-lg object-cover cursor-pointer"
+                @click="openLightbox(media.mediaUrl, media.originalUrl)"
+              />
             </div>
 
             <!-- Actions -->
@@ -199,6 +252,12 @@
       @close="showPollModal = false"
       @created="loadPosts"
     />
+
+    <ImageLightbox
+      v-model:open="lightboxOpen"
+      :display-url="lightboxDisplayUrl"
+      :original-url="lightboxOriginalUrl"
+    />
   </div>
 </template>
 
@@ -213,6 +272,8 @@ import { Role } from '@/types/enums'
 import type { Post } from '@/types/entities'
 import CreatePollModal from '@/components/social/CreatePollModal.vue'
 import PollCard from '@/components/social/PollCard.vue'
+import ImageLightbox from '@/components/social/ImageLightbox.vue'
+import { useImageAttachment } from '@/composables/useImageAttachment'
 
 const route = useRoute()
 const socialService = useSocialService()
@@ -231,6 +292,23 @@ const posts = ref<Post[]>([])
 const loadingPosts = ref(true)
 const newPostContent = ref('')
 const submittingPost = ref(false)
+
+const attachment = useImageAttachment({ mode: 'multi', maxFiles: 10 })
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
+const lightboxOpen = ref(false)
+const lightboxDisplayUrl = ref('')
+const lightboxOriginalUrl = ref<string | undefined>(undefined)
+
+function openLightbox(displayUrl: string, originalUrl?: string) {
+  lightboxDisplayUrl.value = displayUrl
+  lightboxOriginalUrl.value = originalUrl
+  lightboxOpen.value = true
+}
+
+function triggerFilePicker() {
+  fileInputRef.value?.click()
+}
 
 // Delete state
 const deleteTarget = ref<Post | null>(null)
@@ -310,11 +388,40 @@ async function refreshPostsSilent() {
 }
 
 async function submitPost() {
-  if (!newPostContent.value.trim()) return
+  const text = newPostContent.value.trim()
+  const files = attachment.files.value
+  if (!text && files.length === 0) return
+
   submittingPost.value = true
   try {
-    await socialService.createPost(groupId.value, newPostContent.value)
+    let media: Array<{
+      displayUrl: string
+      thumbnailUrl: string
+      originalUrl: string
+      contentType: string
+      size: number
+    }> = []
+
+    if (files.length > 0) {
+      const uploads = await Promise.all(files.map(f => socialService.uploadFile(f)))
+      for (const u of uploads) {
+        if (!u.succeeded || !u.displayUrl || !u.thumbnailUrl || !u.originalUrl || !u.contentType || u.size == null) {
+          throw new Error('upload-failed')
+        }
+      }
+      media = uploads.map(u => ({
+        displayUrl: u.displayUrl!,
+        thumbnailUrl: u.thumbnailUrl!,
+        originalUrl: u.originalUrl!,
+        contentType: u.contentType!,
+        size: u.size!,
+      }))
+    }
+
+    const type = media.length > 0 ? 'Photo' : 'Text'
+    await socialService.createPost(groupId.value, text, type, media.length > 0 ? media : undefined)
     newPostContent.value = ''
+    attachment.clear()
     await loadPosts()
   } catch { /* */ }
   submittingPost.value = false
