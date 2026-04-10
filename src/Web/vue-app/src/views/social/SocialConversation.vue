@@ -68,14 +68,24 @@
               v-else-if="msg.media && msg.media.length"
               :class="['soc-convo__media-grid', msg.media.length > 1 && 'soc-convo__media-grid--multi']"
             >
-              <img
-                v-for="m in msg.media"
-                :key="m.id"
-                :src="m.thumbnailUrl || m.mediaUrl"
-                class="soc-convo__bubble-img"
-                alt=""
-                @click="openLightbox(m.mediaUrl, m.originalUrl)"
-              />
+              <template v-for="m in msg.media" :key="m.id">
+                <video
+                  v-if="m.contentType && m.contentType.startsWith('video/')"
+                  :src="m.mediaUrl"
+                  controls
+                  playsinline
+                  preload="metadata"
+                  class="soc-convo__bubble-img"
+                  style="background: #000;"
+                />
+                <img
+                  v-else
+                  :src="m.thumbnailUrl || m.mediaUrl"
+                  class="soc-convo__bubble-img"
+                  alt=""
+                  @click="openLightbox(m.mediaUrl, m.originalUrl, m.contentType)"
+                />
+              </template>
             </div>
             <span v-if="msg.content" class="soc-convo__bubble-text">{{ msg.content }}</span>
             <button
@@ -103,7 +113,16 @@
         :key="p.url"
         class="soc-convo__preview-item"
       >
-        <img :src="p.url" class="soc-convo__preview-img" alt="" />
+        <video
+          v-if="p.file.type.startsWith('video/')"
+          :src="p.url"
+          muted
+          playsinline
+          preload="metadata"
+          class="soc-convo__preview-img"
+          style="background: #000;"
+        />
+        <img v-else :src="p.url" class="soc-convo__preview-img" alt="" />
         <button
           type="button"
           class="soc-convo__preview-remove"
@@ -127,7 +146,7 @@
       <input
         ref="fileInputRef"
         type="file"
-        accept="image/*"
+        accept="image/*,video/*"
         multiple
         hidden
         @change="attachment.handleFileInput"
@@ -137,7 +156,7 @@
         class="soc-convo__attach"
         :disabled="uploading || attachment.files.value.length >= 10"
         @click="triggerFilePicker"
-        aria-label="Joindre des images"
+        aria-label="Joindre un fichier"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
@@ -185,6 +204,7 @@
       v-model:open="lightboxOpen"
       :display-url="lightboxDisplayUrl"
       :original-url="lightboxOriginalUrl"
+      :content-type="lightboxContentType"
     />
   </div>
 </template>
@@ -202,6 +222,7 @@ interface ChatMessageMedia {
   mediaUrl: string
   thumbnailUrl?: string
   originalUrl?: string
+  contentType?: string
   sortOrder: number
 }
 
@@ -234,10 +255,12 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
 const lightboxOpen = ref(false)
 const lightboxDisplayUrl = ref('')
 const lightboxOriginalUrl = ref<string | undefined>(undefined)
+const lightboxContentType = ref<string | undefined>(undefined)
 
-function openLightbox(displayUrl: string, originalUrl?: string) {
+function openLightbox(displayUrl: string, originalUrl?: string, contentType?: string) {
   lightboxDisplayUrl.value = displayUrl
   lightboxOriginalUrl.value = originalUrl
+  lightboxContentType.value = contentType
   lightboxOpen.value = true
 }
 

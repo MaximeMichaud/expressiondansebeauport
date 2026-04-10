@@ -45,7 +45,15 @@
                   :key="p.url"
                   class="relative h-20 w-20 flex-shrink-0"
                 >
-                  <img :src="p.url" class="h-full w-full rounded-lg object-cover" alt="" />
+                  <video
+                    v-if="p.file.type.startsWith('video/')"
+                    :src="p.url"
+                    muted
+                    playsinline
+                    preload="metadata"
+                    class="h-full w-full rounded-lg object-cover bg-black"
+                  />
+                  <img v-else :src="p.url" class="h-full w-full rounded-lg object-cover" alt="" />
                   <button
                     type="button"
                     @click="attachment.removeFile(i)"
@@ -66,7 +74,7 @@
                   <input
                     ref="fileInputRef"
                     type="file"
-                    accept="image/*"
+                    accept="image/*,video/*"
                     multiple
                     hidden
                     @change="attachment.handleFileInput"
@@ -76,8 +84,8 @@
                     @click="triggerFilePicker"
                     :disabled="attachment.files.value.length >= 10"
                     class="soc-composer-icon flex h-9 w-9 items-center justify-center rounded-lg transition cursor-pointer disabled:opacity-40 disabled:cursor-default"
-                    title="Joindre des images"
-                    aria-label="Joindre des images"
+                    title="Joindre un fichier"
+                    aria-label="Joindre un fichier"
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
                   </button>
@@ -153,13 +161,22 @@
 
             <!-- Media -->
             <div v-if="post.media && post.media.length" class="mb-3 flex flex-wrap justify-center gap-1">
-              <img
-                v-for="media in post.media"
-                :key="media.id"
-                :src="media.thumbnailUrl || media.mediaUrl"
-                class="w-[calc(25%-3px)] aspect-square rounded-lg object-cover cursor-pointer"
-                @click="openLightbox(media.mediaUrl, media.originalUrl)"
-              />
+              <template v-for="media in post.media" :key="media.id">
+                <video
+                  v-if="media.contentType && media.contentType.startsWith('video/')"
+                  :src="media.mediaUrl"
+                  controls
+                  playsinline
+                  preload="metadata"
+                  class="w-[calc(25%-3px)] aspect-square rounded-lg object-cover bg-black"
+                />
+                <img
+                  v-else
+                  :src="media.thumbnailUrl || media.mediaUrl"
+                  class="w-[calc(25%-3px)] aspect-square rounded-lg object-cover cursor-pointer"
+                  @click="openLightbox(media.mediaUrl, media.originalUrl, media.contentType)"
+                />
+              </template>
             </div>
 
             <!-- Actions -->
@@ -260,6 +277,7 @@
       v-model:open="lightboxOpen"
       :display-url="lightboxDisplayUrl"
       :original-url="lightboxOriginalUrl"
+      :content-type="lightboxContentType"
     />
   </div>
 </template>
@@ -302,10 +320,12 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
 const lightboxOpen = ref(false)
 const lightboxDisplayUrl = ref('')
 const lightboxOriginalUrl = ref<string | undefined>(undefined)
+const lightboxContentType = ref<string | undefined>(undefined)
 
-function openLightbox(displayUrl: string, originalUrl?: string) {
+function openLightbox(displayUrl: string, originalUrl?: string, contentType?: string) {
   lightboxDisplayUrl.value = displayUrl
   lightboxOriginalUrl.value = originalUrl
+  lightboxContentType.value = contentType
   lightboxOpen.value = true
 }
 

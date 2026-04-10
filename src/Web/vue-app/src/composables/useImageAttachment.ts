@@ -26,12 +26,20 @@ export interface UseImageAttachmentReturn {
   clear: () => void
 }
 
-const DEFAULT_ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
-const DEFAULT_MAX_SIZE = 10 * 1024 * 1024
+const DEFAULT_ALLOWED = [
+  'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+  'video/mp4', 'video/quicktime', 'video/webm'
+]
+const IMAGE_MAX_SIZE = 10 * 1024 * 1024
+const VIDEO_MAX_SIZE = 50 * 1024 * 1024
+
+function isVideoType(type: string): boolean {
+  return type.startsWith('video/')
+}
 
 export function useImageAttachment(options: UseImageAttachmentOptions): UseImageAttachmentReturn {
   const maxFiles = options.maxFiles ?? (options.mode === 'single' ? 1 : 10)
-  const maxSize = options.maxSizeBytes ?? DEFAULT_MAX_SIZE
+  const explicitMaxSize = options.maxSizeBytes
   const allowed = options.allowedTypes ?? DEFAULT_ALLOWED
 
   const files = ref<File[]>([])
@@ -44,15 +52,18 @@ export function useImageAttachment(options: UseImageAttachmentOptions): UseImage
     error.value = null
     for (const file of incoming) {
       if (files.value.length >= maxFiles) {
-        error.value = `Maximum ${maxFiles} image${maxFiles > 1 ? 's' : ''} atteint.`
+        error.value = `Maximum ${maxFiles} fichier${maxFiles > 1 ? 's' : ''} atteint.`
         break
       }
       if (!allowed.includes(file.type)) {
         error.value = `Format non supporté : ${file.name}`
         continue
       }
+      const isVideo = isVideoType(file.type)
+      const maxSize = explicitMaxSize ?? (isVideo ? VIDEO_MAX_SIZE : IMAGE_MAX_SIZE)
       if (file.size > maxSize) {
-        error.value = `Image trop volumineuse (max ${Math.round(maxSize / 1024 / 1024)} MB) : ${file.name}`
+        const label = isVideo ? 'Vidéo' : 'Image'
+        error.value = `${label} trop volumineuse (max ${Math.round(maxSize / 1024 / 1024)} MB) : ${file.name}`
         continue
       }
       const url = URL.createObjectURL(file)
