@@ -7,6 +7,12 @@ public interface IPostService
 {
     Task<Post> CreatePost(Guid? groupId, Guid authorMemberId, string content, PostType type);
     Task<Post> CreateAnnouncement(Guid authorMemberId, string content);
+    Task<Post> CreatePollPost(
+        Guid groupId,
+        Guid authorMemberId,
+        string question,
+        IReadOnlyList<string> options,
+        bool allowMultipleAnswers);
     Task DeletePost(Guid postId);
     Task PinPost(Guid postId, Guid groupId);
     Task<bool> ToggleLike(Guid postId, Guid memberId);
