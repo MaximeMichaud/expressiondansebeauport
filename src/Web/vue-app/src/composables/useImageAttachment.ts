@@ -44,7 +44,7 @@ export function useImageAttachment(options: UseImageAttachmentOptions): UseImage
     error.value = null
     for (const file of incoming) {
       if (files.value.length >= maxFiles) {
-        error.value = `Maximum ${maxFiles} image${maxFiles > 1 ? 's' : ''}.`
+        error.value = `Maximum ${maxFiles} image${maxFiles > 1 ? 's' : ''} atteint.`
         break
       }
       if (!allowed.includes(file.type)) {
