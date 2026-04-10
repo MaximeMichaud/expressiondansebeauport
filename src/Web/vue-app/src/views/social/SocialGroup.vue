@@ -232,23 +232,21 @@
     </div>
 
     <!-- Delete confirmation modal -->
-    <Teleport to="body">
-      <div v-if="deleteTarget" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-5" @click.self="deleteTarget = null">
-        <div class="w-full max-w-[380px] rounded-2xl bg-white p-8 pt-7 text-center shadow-2xl">
-          <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-          </div>
-          <h3 class="mb-1 text-base font-bold text-gray-900">Supprimer cette publication?</h3>
-          <p class="mb-5 text-sm text-gray-500">Cette publication sera définitivement supprimée.</p>
-          <div class="flex gap-3">
-            <button @click="deleteTarget = null" class="flex-1 rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 cursor-pointer">Annuler</button>
-            <button @click="confirmDelete" :disabled="deleting" class="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-50 cursor-pointer">
-              {{ deleting ? 'Suppression...' : 'Supprimer' }}
-            </button>
-          </div>
+    <div v-if="deleteTarget" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-5" @click.self="deleteTarget = null">
+      <div class="w-full max-w-[380px] rounded-2xl bg-white p-8 pt-7 text-center shadow-2xl">
+        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+        </div>
+        <h3 class="mb-1 text-base font-bold text-gray-900">Supprimer cette publication?</h3>
+        <p class="mb-5 text-sm text-gray-500">Cette publication sera définitivement supprimée.</p>
+        <div class="flex gap-3">
+          <button @click="deleteTarget = null" class="flex-1 rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 cursor-pointer">Annuler</button>
+          <button @click="confirmDelete" :disabled="deleting" class="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-50 cursor-pointer">
+            {{ deleting ? 'Suppression...' : 'Supprimer' }}
+          </button>
         </div>
       </div>
-    </Teleport>
+    </div>
 
     <CreatePollModal
       :group-id="groupId"
