@@ -12,17 +12,20 @@ public class PostService : IPostService
     private readonly ICommentRepository _commentRepository;
     private readonly IPollRepository _pollRepository;
     private readonly IMemberRepository _memberRepository;
+    private readonly IGroupMemberRepository _groupMemberRepository;
 
     public PostService(
         IPostRepository postRepository,
         ICommentRepository commentRepository,
         IPollRepository pollRepository,
-        IMemberRepository memberRepository)
+        IMemberRepository memberRepository,
+        IGroupMemberRepository groupMemberRepository)
     {
         _postRepository = postRepository;
         _commentRepository = commentRepository;
         _pollRepository = pollRepository;
         _memberRepository = memberRepository;
+        _groupMemberRepository = groupMemberRepository;
     }
 
     public async Task<Post> CreatePost(Guid? groupId, Guid authorMemberId, string content, PostType type)
@@ -43,6 +46,39 @@ public class PostService : IPostService
     public async Task<Post> CreateAnnouncement(Guid authorMemberId, string content)
     {
         return await CreatePost(null, authorMemberId, content, PostType.Text);
+    }
+
+    public async Task<Post> CreatePollPost(
+        Guid groupId,
+        Guid authorMemberId,
+        string question,
+        IReadOnlyList<string> options,
+        bool allowMultipleAnswers)
+    {
+        var member = _memberRepository.FindById(authorMemberId, asNoTracking: false);
+        if (member == null) throw new InvalidOperationException("Member not found.");
+
+        var isMember = await _groupMemberRepository.IsMember(groupId, authorMemberId);
+        if (!isMember) throw new InvalidOperationException("Not a member of this group.");
+
+        var post = new Post();
+        post.SetGroupId(groupId);
+        post.SetAuthor(member);
+        post.SetContent(string.Empty);
+        post.SetType(PostType.Poll);
+
+        await _postRepository.Add(post);
+
+        var poll = Poll.Create(post, question, allowMultipleAnswers);
+        for (var i = 0; i < options.Count; i++)
+        {
+            var option = PollOption.Create(poll, options[i], i);
+            poll.Options.Add(option);
+        }
+
+        await _pollRepository.Add(poll);
+
+        return post;
     }
 
     public async Task DeletePost(Guid postId)
