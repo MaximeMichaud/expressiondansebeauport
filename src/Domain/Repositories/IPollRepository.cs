@@ -9,5 +9,7 @@ public interface IPollRepository
     Task<bool> HasVoted(Guid pollOptionId, Guid memberId);
     Task<bool> HasVotedOnPoll(Guid pollId, Guid memberId);
     Task AddVote(PollVote vote);
+    Task RemoveVote(Guid pollOptionId, Guid memberId);
+    Task RemoveVotesForPoll(Guid pollId, Guid memberId);
     Task<PollOption?> FindOptionById(Guid optionId);
 }
