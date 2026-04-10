@@ -15,9 +15,9 @@
         v-for="option in poll.options"
         :key="option.id"
         type="button"
-        :disabled="!isClickable(option) || voting"
-        class="poll-option relative block w-full overflow-hidden rounded-lg border text-left transition disabled:cursor-default"
-        :class="{ 'is-clickable': isClickable(option), 'is-voted': option.hasVoted }"
+        :disabled="voting"
+        class="poll-option relative block w-full overflow-hidden rounded-lg border text-left transition disabled:cursor-default disabled:opacity-70"
+        :class="{ 'is-voted': option.hasVoted }"
         @click="vote(option)"
       >
         <div
@@ -70,14 +70,8 @@ const totalVotes = computed(() =>
   props.poll.options.reduce((sum, o) => sum + o.voteCount, 0)
 )
 
-function isClickable(option: PollOption): boolean {
-  if (option.hasVoted) return false
-  if (props.poll.hasVoted && !props.poll.allowMultipleAnswers) return false
-  return true
-}
-
 async function vote(option: PollOption) {
-  if (!isClickable(option) || voting.value) return
+  if (voting.value) return
   voting.value = true
   try {
     const result = await socialService.votePoll(props.postId, option.id)
@@ -92,11 +86,10 @@ async function vote(option: PollOption) {
 .poll-option {
   background: var(--soc-content-bg);
   border-color: var(--soc-border);
-}
-.poll-option.is-clickable {
   cursor: pointer;
+  isolation: isolate;
 }
-.poll-option.is-clickable:hover {
+.poll-option:hover:not(:disabled) {
   border-color: var(--soc-text);
 }
 .poll-option.is-voted {
@@ -104,6 +97,7 @@ async function vote(option: PollOption) {
 }
 .poll-option__fill {
   background: var(--soc-bar-hover);
+  border-radius: inherit;
 }
 .poll-option.is-voted .poll-option__fill {
   background: var(--soc-bar-active);
