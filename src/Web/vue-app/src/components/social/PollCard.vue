@@ -97,7 +97,8 @@ async function vote(option: PollOption) {
 }
 .poll-option__fill {
   background: var(--soc-bar-hover);
-  border-radius: inherit;
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
 }
 .poll-option.is-voted .poll-option__fill {
   background: var(--soc-bar-active);
