@@ -30,11 +30,13 @@ public class SkiaSharpImageProcessor : IImageProcessor
         }
         catch (Exception ex)
         {
+            originalBuffer.Dispose();
             throw new InvalidImageException("Image could not be decoded.", ex);
         }
 
         if (bitmap == null)
         {
+            originalBuffer.Dispose();
             throw new InvalidImageException("Image could not be decoded.");
         }
 
