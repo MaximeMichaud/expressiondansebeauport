@@ -24,7 +24,13 @@ public class ConversationService : IConversationService
         return await _conversationRepository.FindOrCreate(memberAId, memberBId);
     }
 
-    public async Task<Message> SendMessage(Guid conversationId, Guid senderMemberId, string content)
+    public async Task<Message> SendMessage(
+        Guid conversationId,
+        Guid senderMemberId,
+        string? content,
+        string? mediaUrl,
+        string? mediaThumbnailUrl,
+        string? mediaOriginalUrl)
     {
         var conversation = await _conversationRepository.FindById(conversationId, asNoTracking: false);
         if (conversation == null) throw new InvalidOperationException("Conversation not found.");
@@ -36,10 +42,18 @@ public class ConversationService : IConversationService
                            conversation.ParticipantBMemberId == senderMemberId;
         if (!isParticipant) throw new InvalidOperationException("Not a participant in this conversation.");
 
+        var hasContent = !string.IsNullOrWhiteSpace(content);
+        var hasMedia = !string.IsNullOrWhiteSpace(mediaUrl);
+        if (!hasContent && !hasMedia)
+            throw new InvalidOperationException("Message must have content or media.");
+
         var message = new Message();
         message.SetConversation(conversation);
         message.SetSender(sender);
-        message.SetContent(content);
+        message.SetContent(content ?? string.Empty);
+        message.SetMediaUrl(mediaUrl);
+        message.SetMediaThumbnailUrl(mediaThumbnailUrl);
+        message.SetMediaOriginalUrl(mediaOriginalUrl);
 
         await _messageRepository.Add(message);
 
