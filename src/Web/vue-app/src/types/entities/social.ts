@@ -55,6 +55,7 @@ export interface PostMedia {
   id: string
   mediaUrl: string
   thumbnailUrl?: string
+  originalUrl?: string
   contentType: string
   size: number
   sortOrder: number
@@ -110,5 +111,8 @@ export interface Message {
   senderMemberId: string
   senderName: string
   content: string
+  mediaUrl?: string
+  mediaThumbnailUrl?: string
+  mediaOriginalUrl?: string
   created: string
 }
