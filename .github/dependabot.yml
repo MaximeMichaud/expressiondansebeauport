@@ -30,7 +30,7 @@ updates:
       - MaximeMichaud
     labels:
       - dependencies
-      - dotnet
+      - .NET
     cooldown:
       default-days: 3
       semver-major-days: 14
