@@ -545,7 +545,7 @@ $convo-font-body: 'Karla', sans-serif;
   &__messages {
     flex: 1;
     overflow-y: auto;
-    padding: 16px;
+    padding: 16px 24px;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -711,7 +711,7 @@ $convo-font-body: 'Karla', sans-serif;
 
   &__bubble--has-media {
     padding: 4px;
-    overflow: hidden;
+    overflow: visible;
   }
 
   &__bubble-img {
