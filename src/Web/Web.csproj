@@ -30,7 +30,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="FastEndpoints" Version="8.1.0" />
-		<PackageReference Include="FastEndpoints.Security" Version="8.0.1" />
+		<PackageReference Include="FastEndpoints.Security" Version="8.1.0" />
 		<PackageReference Include="FastEndpoints.Swagger" Version="8.1.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
 			<PrivateAssets>all</PrivateAssets>
