@@ -28,16 +28,40 @@ public class PostService : IPostService
         _groupMemberRepository = groupMemberRepository;
     }
 
-    public async Task<Post> CreatePost(Guid? groupId, Guid authorMemberId, string content, PostType type)
+    public async Task<Post> CreatePost(
+        Guid? groupId,
+        Guid authorMemberId,
+        string content,
+        PostType type,
+        IReadOnlyList<PostMediaItem> media)
     {
+        if (media.Count > 10)
+            throw new InvalidOperationException("A post cannot have more than 10 media items.");
+
         var member = _memberRepository.FindById(authorMemberId, asNoTracking: false);
         if (member == null) throw new InvalidOperationException("Member not found.");
+
+        var effectiveType = media.Count > 0 ? PostType.Photo : type;
 
         var post = new Post();
         post.SetGroupId(groupId);
         post.SetAuthor(member);
         post.SetContent(content);
-        post.SetType(type);
+        post.SetType(effectiveType);
+
+        for (var i = 0; i < media.Count; i++)
+        {
+            var item = media[i];
+            var pm = new PostMedia();
+            pm.SetPost(post);
+            pm.SetMediaUrl(item.DisplayUrl);
+            pm.SetThumbnailUrl(item.ThumbnailUrl);
+            pm.SetOriginalUrl(item.OriginalUrl);
+            pm.SetContentType(item.ContentType);
+            pm.SetSize(item.Size);
+            pm.SetSortOrder(i);
+            post.Media.Add(pm);
+        }
 
         await _postRepository.Add(post);
         return post;
@@ -45,7 +69,7 @@ public class PostService : IPostService
 
     public async Task<Post> CreateAnnouncement(Guid authorMemberId, string content)
     {
-        return await CreatePost(null, authorMemberId, content, PostType.Text);
+        return await CreatePost(null, authorMemberId, content, PostType.Text, Array.Empty<PostMediaItem>());
     }
 
     public async Task<Post> CreatePollPost(

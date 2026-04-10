@@ -3,9 +3,18 @@ using Domain.Enums;
 
 namespace Application.Services.Posts;
 
+public class PostMediaItem
+{
+    public string DisplayUrl { get; set; } = null!;
+    public string ThumbnailUrl { get; set; } = null!;
+    public string OriginalUrl { get; set; } = null!;
+    public string ContentType { get; set; } = null!;
+    public long Size { get; set; }
+}
+
 public interface IPostService
 {
-    Task<Post> CreatePost(Guid? groupId, Guid authorMemberId, string content, PostType type);
+    Task<Post> CreatePost(Guid? groupId, Guid authorMemberId, string content, PostType type, IReadOnlyList<PostMediaItem> media);
     Task<Post> CreateAnnouncement(Guid authorMemberId, string content);
     Task<Post> CreatePollPost(
         Guid groupId,
