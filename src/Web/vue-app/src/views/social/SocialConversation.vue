@@ -117,6 +117,11 @@
       </div>
     </div>
 
+    <!-- Inline error under preview strip / above input -->
+    <p v-if="attachment.error.value" class="soc-convo__error-inline">
+      {{ attachment.error.value }}
+    </p>
+
     <!-- Input -->
     <div class="soc-convo__input-bar">
       <input
@@ -181,9 +186,6 @@
       :display-url="lightboxDisplayUrl"
       :original-url="lightboxOriginalUrl"
     />
-    <div v-if="attachment.error.value" class="soc-convo__error" @click="attachment.error.value = null">
-      {{ attachment.error.value }}
-    </div>
   </div>
 </template>
 
@@ -804,19 +806,12 @@ $convo-font-body: 'Karla', sans-serif;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   }
 
-  &__error {
-    position: absolute;
-    bottom: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 10px 16px;
-    background: #dc2626;
-    color: white;
-    border-radius: 10px;
-    font-size: 0.82rem;
+  &__error-inline {
+    padding: 6px 20px 0;
+    color: #dc2626;
+    font-size: 0.78rem;
     font-weight: 500;
-    cursor: pointer;
-    z-index: 50;
+    flex-shrink: 0;
   }
 }
 
