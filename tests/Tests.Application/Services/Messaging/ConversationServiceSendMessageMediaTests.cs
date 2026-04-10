@@ -24,7 +24,6 @@ public class ConversationServiceSendMessageMediaTests
 
     private static Conversation CreateConversation(Guid id, Guid participantAId, Guid participantBId)
     {
-        // SetParticipants(Member a, Member b) assigns based on Guid comparison order
         var a = CreateMember(participantAId);
         var b = CreateMember(participantBId);
         var c = new Conversation();
@@ -33,8 +32,17 @@ public class ConversationServiceSendMessageMediaTests
         return c;
     }
 
+    private static MessageMediaItem MakeMedia(int n) => new MessageMediaItem
+    {
+        DisplayUrl = $"/uploads/social/{n}.display.webp",
+        ThumbnailUrl = $"/uploads/social/{n}.thumb.webp",
+        OriginalUrl = $"/uploads/social/{n}.original.jpg",
+        ContentType = "image/jpeg",
+        Size = 12345
+    };
+
     [Fact]
-    public async Task GivenContentAndMedia_WhenSendMessage_ThenPersistsAllFields()
+    public async Task GivenContentAnd3Media_WhenSendMessage_ThenPersistsOrderedMessageMedia()
     {
         var conversationId = Guid.NewGuid();
         var senderId = Guid.NewGuid();
@@ -48,23 +56,21 @@ public class ConversationServiceSendMessageMediaTests
         _messageRepository.Setup(r => r.MarkAsRead(conversationId, senderId)).Returns(Task.CompletedTask);
 
         var service = CreateService();
+        var media = new[] { MakeMedia(1), MakeMedia(2), MakeMedia(3) };
 
-        var msg = await service.SendMessage(
-            conversationId,
-            senderId,
-            "Salut!",
-            "/uploads/social/foo.display.webp",
-            "/uploads/social/foo.thumb.webp",
-            "/uploads/social/foo.original.jpg");
+        var msg = await service.SendMessage(conversationId, senderId, "Salut!", media);
 
         msg.Content.ShouldBe("Salut!");
-        msg.MediaUrl.ShouldBe("/uploads/social/foo.display.webp");
-        msg.MediaThumbnailUrl.ShouldBe("/uploads/social/foo.thumb.webp");
-        msg.MediaOriginalUrl.ShouldBe("/uploads/social/foo.original.jpg");
+        msg.Media.Count.ShouldBe(3);
+        msg.Media.ElementAt(0).MediaUrl.ShouldBe("/uploads/social/1.display.webp");
+        msg.Media.ElementAt(0).ThumbnailUrl.ShouldBe("/uploads/social/1.thumb.webp");
+        msg.Media.ElementAt(0).OriginalUrl.ShouldBe("/uploads/social/1.original.jpg");
+        msg.Media.ElementAt(0).SortOrder.ShouldBe(0);
+        msg.Media.ElementAt(2).SortOrder.ShouldBe(2);
     }
 
     [Fact]
-    public async Task GivenMediaOnly_WhenSendMessage_ThenContentIsEmptyAndMediaPersisted()
+    public async Task GivenMediaOnly_WhenSendMessage_ThenContentIsEmpty()
     {
         var conversationId = Guid.NewGuid();
         var senderId = Guid.NewGuid();
@@ -78,20 +84,14 @@ public class ConversationServiceSendMessageMediaTests
 
         var service = CreateService();
 
-        var msg = await service.SendMessage(
-            conversationId,
-            senderId,
-            null,
-            "/uploads/social/img.display.webp",
-            "/uploads/social/img.thumb.webp",
-            "/uploads/social/img.original.png");
+        var msg = await service.SendMessage(conversationId, senderId, null, new[] { MakeMedia(1) });
 
         msg.Content.ShouldBe(string.Empty);
-        msg.MediaUrl.ShouldBe("/uploads/social/img.display.webp");
+        msg.Media.Count.ShouldBe(1);
     }
 
     [Fact]
-    public async Task GivenContentOnly_WhenSendMessage_ThenMediaUrlsAreNull()
+    public async Task GivenContentOnly_WhenSendMessage_ThenMediaIsEmpty()
     {
         var conversationId = Guid.NewGuid();
         var senderId = Guid.NewGuid();
@@ -105,12 +105,10 @@ public class ConversationServiceSendMessageMediaTests
 
         var service = CreateService();
 
-        var msg = await service.SendMessage(conversationId, senderId, "Hi", null, null, null);
+        var msg = await service.SendMessage(conversationId, senderId, "Hi", Array.Empty<MessageMediaItem>());
 
         msg.Content.ShouldBe("Hi");
-        msg.MediaUrl.ShouldBeNull();
-        msg.MediaThumbnailUrl.ShouldBeNull();
-        msg.MediaOriginalUrl.ShouldBeNull();
+        msg.Media.Count.ShouldBe(0);
     }
 
     [Fact]
@@ -128,6 +126,25 @@ public class ConversationServiceSendMessageMediaTests
         var service = CreateService();
 
         await Should.ThrowAsync<InvalidOperationException>(
-            () => service.SendMessage(conversationId, senderId, null, null, null, null));
+            () => service.SendMessage(conversationId, senderId, null, Array.Empty<MessageMediaItem>()));
+    }
+
+    [Fact]
+    public async Task GivenMoreThanTenMedia_WhenSendMessage_ThenThrows()
+    {
+        var conversationId = Guid.NewGuid();
+        var senderId = Guid.NewGuid();
+        var otherId = Guid.NewGuid();
+        var conversation = CreateConversation(conversationId, senderId, otherId);
+        var sender = CreateMember(senderId);
+
+        _conversationRepository.Setup(r => r.FindById(conversationId, false)).ReturnsAsync(conversation);
+        _memberRepository.Setup(r => r.FindById(senderId, false)).Returns(sender);
+
+        var service = CreateService();
+        var tooMany = Enumerable.Range(0, 11).Select(MakeMedia).ToArray();
+
+        await Should.ThrowAsync<InvalidOperationException>(
+            () => service.SendMessage(conversationId, senderId, "x", tooMany));
     }
 }

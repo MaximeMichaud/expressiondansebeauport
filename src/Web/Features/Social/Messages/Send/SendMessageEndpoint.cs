@@ -49,14 +49,14 @@ public class SendMessageEndpoint : Endpoint<SendMessageRequest, SucceededOrNotRe
             return;
         }
 
-        var hasMediaUrl = !string.IsNullOrWhiteSpace(req.MediaUrl);
-        var hasThumb = !string.IsNullOrWhiteSpace(req.MediaThumbnailUrl);
-        var hasOriginal = !string.IsNullOrWhiteSpace(req.MediaOriginalUrl);
-        if (hasMediaUrl != hasThumb || hasMediaUrl != hasOriginal)
+        var media = req.Media.Select(m => new MessageMediaItem
         {
-            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("InvalidMessage", "Media fields must all be present or all absent.")), ct);
-            return;
-        }
+            DisplayUrl = m.DisplayUrl,
+            ThumbnailUrl = m.ThumbnailUrl,
+            OriginalUrl = m.OriginalUrl,
+            ContentType = m.ContentType,
+            Size = m.Size
+        }).ToList();
 
         Domain.Entities.Message message;
         try
@@ -65,9 +65,7 @@ public class SendMessageEndpoint : Endpoint<SendMessageRequest, SucceededOrNotRe
                 req.ConversationId,
                 member.Id,
                 req.Content,
-                req.MediaUrl,
-                req.MediaThumbnailUrl,
-                req.MediaOriginalUrl);
+                media);
         }
         catch (InvalidOperationException ex)
         {
@@ -84,16 +82,30 @@ public class SendMessageEndpoint : Endpoint<SendMessageRequest, SucceededOrNotRe
         {
             var connectionId = ChatHub.GetConnectionId(recipientUser.UserId.ToString());
             if (connectionId != null)
+            {
+                var mediaPayload = message.Media
+                    .OrderBy(m => m.SortOrder)
+                    .Select(m => new
+                    {
+                        m.Id,
+                        m.MediaUrl,
+                        m.ThumbnailUrl,
+                        m.OriginalUrl,
+                        m.ContentType,
+                        m.Size,
+                        m.SortOrder
+                    })
+                    .ToList();
+
                 await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveMessage", new
                 {
                     message.Id,
                     message.Content,
                     SenderName = member.FullName,
                     message.ConversationId,
-                    message.MediaUrl,
-                    message.MediaThumbnailUrl,
-                    message.MediaOriginalUrl
+                    Media = mediaPayload
                 }, ct);
+            }
         }
 
         await Send.OkAsync(new SucceededOrNotResponse(true), ct);

@@ -12,6 +12,7 @@ public class Message : AuditableAndSoftDeletableEntity
     public string? MediaUrl { get; private set; }
     public string? MediaThumbnailUrl { get; private set; }
     public string? MediaOriginalUrl { get; private set; }
+    public ICollection<MessageMedia> Media { get; private set; } = new List<MessageMedia>();
 
     public void SetConversation(Conversation conversation)
     {

@@ -160,7 +160,7 @@ export interface ISocialService {
   sendMessage(
     conversationId: string,
     content: string,
-    media?: { displayUrl: string; thumbnailUrl: string; originalUrl: string }
+    media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>
   ): Promise<SucceededOrNotResponse>
   deleteMessage(messageId: string): Promise<SucceededOrNotResponse>
   startConversation(otherMemberId: string): Promise<any>

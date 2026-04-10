@@ -105,14 +105,22 @@ export interface Conversation {
   unreadCount: number
 }
 
+export interface MessageMedia {
+  id: string
+  mediaUrl: string
+  thumbnailUrl?: string
+  originalUrl?: string
+  contentType: string
+  size: number
+  sortOrder: number
+}
+
 export interface Message {
   id: string
   conversationId: string
   senderMemberId: string
   senderName: string
   content: string
-  mediaUrl?: string
-  mediaThumbnailUrl?: string
-  mediaOriginalUrl?: string
+  media?: MessageMedia[]
   created: string
 }

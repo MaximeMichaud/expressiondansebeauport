@@ -4,7 +4,14 @@ public class SendMessageRequest
 {
     public Guid ConversationId { get; set; }
     public string? Content { get; set; }
-    public string? MediaUrl { get; set; }
-    public string? MediaThumbnailUrl { get; set; }
-    public string? MediaOriginalUrl { get; set; }
+    public List<SendMessageMediaItem> Media { get; set; } = new();
+}
+
+public class SendMessageMediaItem
+{
+    public string DisplayUrl { get; set; } = null!;
+    public string ThumbnailUrl { get; set; } = null!;
+    public string OriginalUrl { get; set; } = null!;
+    public string ContentType { get; set; } = null!;
+    public long Size { get; set; }
 }
