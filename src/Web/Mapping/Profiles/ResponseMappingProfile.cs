@@ -32,6 +32,15 @@ public class ResponseMappingProfile : Profile
             .ForMember(x => x.Status, opt => opt.MapFrom(x => x.Status.ToString()))
             .ForMember(x => x.FeaturedImageUrl, opt => opt.MapFrom(x => x.FeaturedImage != null ? x.FeaturedImage.BlobUrl : null));
 
+        CreateMap<PageRevision, PageRevisionDto>()
+            .ForMember(x => x.Status, opt => opt.MapFrom(x => x.Status.ToString()))
+            .ForMember(x => x.RevisionType, opt => opt.MapFrom(x => x.RevisionType.ToString()))
+            .ForMember(x => x.CreatedAt, opt => opt.MapFrom(x => x.CreatedAt.ToString()));
+
+        CreateMap<PageRevision, PageRevisionListItemDto>()
+            .ForMember(x => x.RevisionType, opt => opt.MapFrom(x => x.RevisionType.ToString()))
+            .ForMember(x => x.CreatedAt, opt => opt.MapFrom(x => x.CreatedAt.ToString()));
+
         CreateMap<NavigationMenu, NavigationMenuDto>()
             .ForMember(x => x.Location, opt => opt.MapFrom(x => x.Location.ToString()));
 

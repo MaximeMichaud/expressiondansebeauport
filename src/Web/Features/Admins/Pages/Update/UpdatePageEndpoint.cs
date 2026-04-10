@@ -1,4 +1,6 @@
+using Application.Interfaces.Services;
 using Domain.Entities;
+using Domain.Helpers;
 using Domain.Repositories;
 using FastEndpoints;
 using FluentValidation;
@@ -50,11 +52,15 @@ public class UpdatePageValidator : Validator<UpdatePageRequest>
 public class UpdatePageEndpoint : Endpoint<UpdatePageRequest, PageDto>
 {
     private readonly IPageRepository _pageRepository;
+    private readonly IPageRevisionRepository _revisionRepository;
+    private readonly IHttpContextUserService _userService;
     private readonly IMapper _mapper;
 
-    public UpdatePageEndpoint(IPageRepository pageRepository, IMapper mapper)
+    public UpdatePageEndpoint(IPageRepository pageRepository, IPageRevisionRepository revisionRepository, IHttpContextUserService userService, IMapper mapper)
     {
         _pageRepository = pageRepository;
+        _revisionRepository = revisionRepository;
+        _userService = userService;
         _mapper = mapper;
     }
 
@@ -98,6 +104,20 @@ public class UpdatePageEndpoint : Endpoint<UpdatePageRequest, PageDto>
         }
 
         await _pageRepository.Update(page);
+
+        // Créer une révision manuelle si le contenu a changé
+        var latest = _revisionRepository.GetLatestByPageId(page.Id, RevisionType.Manual);
+        if (latest is null || !latest.HasSameContentAs(page))
+        {
+            var revisionNumber = _revisionRepository.GetNextRevisionNumber(page.Id);
+            var revision = PageRevision.CreateFromPage(page, revisionNumber, RevisionType.Manual, _userService.Username, InstantHelper.GetLocalNow());
+            await _revisionRepository.Create(revision);
+            await _revisionRepository.DeleteOldRevisions(page.Id, 25);
+        }
+
+        // Supprimer l'autosave quand on sauvegarde manuellement
+        await _revisionRepository.DeleteAutosave(page.Id);
+
         await Send.OkAsync(_mapper.Map<PageDto>(page), cancellation: ct);
     }
 }
