@@ -1,5 +1,14 @@
 <template>
-  <div class="soc-convo">
+  <div
+    class="soc-convo"
+    @dragenter="attachment.handleDragEnter"
+    @dragleave="attachment.handleDragLeave"
+    @dragover="attachment.handleDragOver"
+    @drop="attachment.handleDrop"
+  >
+    <div v-if="attachment.isDraggingOver.value" class="soc-convo__drag-overlay">
+      <span>Déposer l'image ici</span>
+    </div>
     <!-- Header -->
     <div class="soc-convo__header">
       <button @click="$router.push({ name: 'socialMessages' })" class="soc-convo__back">
@@ -38,12 +47,25 @@
             v-else
             :class="[
               'soc-convo__bubble',
-              msg.isMine ? (msg.pending ? 'soc-convo__bubble--pending' : 'soc-convo__bubble--mine') : 'soc-convo__bubble--other'
+              msg.isMine ? (msg.pending ? 'soc-convo__bubble--pending' : 'soc-convo__bubble--mine') : 'soc-convo__bubble--other',
+              (msg.mediaUrl || msg.pendingPreviewUrl) && 'soc-convo__bubble--has-media'
             ]"
             @contextmenu.prevent="msg.isMine && !msg.pending ? openDeleteMenu(msg) : null"
-            @click.self="msg.isMine && !msg.pending ? openDeleteMenu(msg) : null"
           >
-            {{ msg.content }}
+            <img
+              v-if="msg.pendingPreviewUrl"
+              :src="msg.pendingPreviewUrl"
+              class="soc-convo__bubble-img soc-convo__bubble-img--pending"
+              alt=""
+            />
+            <img
+              v-else-if="msg.mediaUrl"
+              :src="msg.mediaThumbnailUrl || msg.mediaUrl"
+              class="soc-convo__bubble-img"
+              alt=""
+              @click="openLightbox(msg.mediaUrl!, msg.mediaOriginalUrl)"
+            />
+            <span v-if="msg.content" class="soc-convo__bubble-text">{{ msg.content }}</span>
             <button
               v-if="msg.isMine && !msg.pending"
               @click.stop="openDeleteMenu(msg)"
@@ -65,7 +87,28 @@
     <!-- Input -->
     <div class="soc-convo__input-bar">
       <input
-        ref="messageInput"
+        ref="fileInputRef"
+        type="file"
+        accept="image/*"
+        hidden
+        @change="attachment.handleFileInput"
+      />
+      <button
+        type="button"
+        class="soc-convo__attach"
+        :disabled="uploading || attachment.files.value.length >= 1"
+        @click="triggerFilePicker"
+        aria-label="Joindre une image"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+        </svg>
+      </button>
+      <div v-if="attachment.previews.value.length" class="soc-convo__preview">
+        <img :src="attachment.previews.value[0].url" alt="" class="soc-convo__preview-img" />
+        <button class="soc-convo__preview-remove" @click="attachment.removeFile(0)" aria-label="Retirer">×</button>
+      </div>
+      <input
         v-model="newMessage"
         type="text"
         class="soc-convo__input"
@@ -74,7 +117,7 @@
       />
       <button
         @click="sendMessage"
-        :disabled="!newMessage.trim()"
+        :disabled="(!newMessage.trim() && !attachment.files.value.length) || uploading"
         class="soc-convo__send"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -105,6 +148,14 @@
         </div>
       </Transition>
     </Teleport>
+    <ImageLightbox
+      v-model:open="lightboxOpen"
+      :display-url="lightboxDisplayUrl"
+      :original-url="lightboxOriginalUrl"
+    />
+    <div v-if="attachment.error.value" class="soc-convo__error" @click="attachment.error.value = null">
+      {{ attachment.error.value }}
+    </div>
   </div>
 </template>
 
@@ -113,6 +164,8 @@ import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useMemberStore } from '@/stores/memberStore'
+import ImageLightbox from '@/components/social/ImageLightbox.vue'
+import { useImageAttachment } from '@/composables/useImageAttachment'
 
 interface ChatMessage {
   id: string
@@ -123,6 +176,10 @@ interface ChatMessage {
   pending?: boolean
   isRead?: boolean
   isDeleted?: boolean
+  mediaUrl?: string
+  mediaThumbnailUrl?: string
+  mediaOriginalUrl?: string
+  pendingPreviewUrl?: string
 }
 
 const route = useRoute()
@@ -134,6 +191,24 @@ const serverMessages = ref<ChatMessage[]>([])
 const pendingMessages = ref<ChatMessage[]>([])
 const loading = ref(true)
 const newMessage = ref('')
+const attachment = useImageAttachment({ mode: 'single' })
+const uploading = ref(false)
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
+const lightboxOpen = ref(false)
+const lightboxDisplayUrl = ref('')
+const lightboxOriginalUrl = ref<string | undefined>(undefined)
+
+function openLightbox(displayUrl: string, originalUrl?: string) {
+  lightboxDisplayUrl.value = displayUrl
+  lightboxOriginalUrl.value = originalUrl
+  lightboxOpen.value = true
+}
+
+function triggerFilePicker() {
+  fileInputRef.value?.click()
+}
+
 const otherMemberName = ref('Conversation')
 const otherMemberId = ref('')
 const otherMemberPfp = ref('')
@@ -214,6 +289,9 @@ async function loadMessages(smooth = false) {
       isMine: m.senderMemberId === currentMemberId.value,
       isRead: m.isRead ?? false,
       isDeleted: m.isDeleted ?? false,
+      mediaUrl: m.mediaUrl ?? undefined,
+      mediaThumbnailUrl: m.mediaThumbnailUrl ?? undefined,
+      mediaOriginalUrl: m.mediaOriginalUrl ?? undefined,
     }))
     pendingMessages.value = pendingMessages.value.filter(
       pm => !serverMessages.value.some(sm => sm.content === pm.content)
@@ -230,10 +308,13 @@ async function loadMessages(smooth = false) {
 
 async function sendMessage() {
   const text = newMessage.value.trim()
-  if (!text) return
+  const file = attachment.files.value[0]
 
-  // Add optimistic pending message
+  if (!text && !file) return
+
+  // Optimistic pending message
   const tempId = 'pending-' + Date.now()
+  const pendingPreviewUrl = file ? attachment.previews.value[0]?.url : undefined
   pendingMessages.value.push({
     id: tempId,
     content: text,
@@ -241,15 +322,38 @@ async function sendMessage() {
     created: new Date().toISOString(),
     isMine: true,
     pending: true,
+    pendingPreviewUrl,
   })
   newMessage.value = ''
   scrollToBottom(true)
 
+  let media: { displayUrl: string; thumbnailUrl: string; originalUrl: string } | undefined
+
+  if (file) {
+    uploading.value = true
+    try {
+      const result = await socialService.uploadFile(file)
+      if (!result.succeeded || !result.displayUrl || !result.thumbnailUrl || !result.originalUrl) {
+        throw new Error('upload-failed')
+      }
+      media = {
+        displayUrl: result.displayUrl,
+        thumbnailUrl: result.thumbnailUrl,
+        originalUrl: result.originalUrl,
+      }
+    } catch {
+      pendingMessages.value = pendingMessages.value.filter(m => m.id !== tempId)
+      uploading.value = false
+      return
+    }
+    uploading.value = false
+  }
+
   try {
-    await socialService.sendMessage(conversationId.value, text)
+    await socialService.sendMessage(conversationId.value, text, media)
+    attachment.clear()
     await loadMessages(true)
   } catch {
-    // Remove failed pending message
     pendingMessages.value = pendingMessages.value.filter(m => m.id !== tempId)
   }
 }
@@ -288,6 +392,9 @@ async function pollMessages() {
       isMine: m.senderMemberId === currentMemberId.value,
       isRead: m.isRead ?? false,
       isDeleted: m.isDeleted ?? false,
+      mediaUrl: m.mediaUrl ?? undefined,
+      mediaThumbnailUrl: m.mediaThumbnailUrl ?? undefined,
+      mediaOriginalUrl: m.mediaOriginalUrl ?? undefined,
     }))
     pendingMessages.value = pendingMessages.value.filter(
       pm => !serverMessages.value.some(sm => sm.content === pm.content)
@@ -324,6 +431,7 @@ $convo-font-body: 'Karla', sans-serif;
   display: flex;
   flex-direction: column;
   height: 100%;
+  position: relative;
 
   &__header {
     display: flex;
@@ -541,6 +649,102 @@ $convo-font-body: 'Karla', sans-serif;
     transition: opacity 0.15s;
     &:hover { opacity: 0.85; }
     &:disabled { opacity: 0.35; }
+  }
+
+  &__drag-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(26, 26, 26, 0.85);
+    color: white;
+    font-family: $convo-font-display;
+    font-weight: 600;
+    font-size: 1rem;
+    pointer-events: none;
+    border: 3px dashed rgba(255, 255, 255, 0.4);
+  }
+
+  &__bubble--has-media {
+    padding: 4px;
+    overflow: hidden;
+  }
+
+  &__bubble-img {
+    display: block;
+    max-width: 280px;
+    width: 100%;
+    border-radius: 14px;
+    cursor: pointer;
+  }
+
+  &__bubble-img--pending { opacity: 0.6; }
+
+  &__bubble-text {
+    display: block;
+    padding: 6px 10px 4px;
+  }
+
+  &__attach {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: var(--soc-text-muted, #78716c);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: color 0.15s, background 0.15s;
+    &:hover { color: var(--soc-bar-text-strong, #1a1a1a); background: var(--soc-bar-hover, #f5f3f0); }
+    &:disabled { opacity: 0.35; cursor: default; }
+  }
+
+  &__preview {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  &__preview-img {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--soc-input-border, #e7e0da);
+  }
+
+  &__preview-remove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    color: white;
+    font-size: 12px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  &__error {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 16px;
+    background: #dc2626;
+    color: white;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    z-index: 50;
   }
 }
 
