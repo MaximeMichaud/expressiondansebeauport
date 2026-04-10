@@ -775,8 +775,8 @@ $convo-font-body: 'Karla', sans-serif;
 
   &__preview-item {
     position: relative;
-    width: 64px;
-    height: 64px;
+    width: 80px;
+    height: 80px;
     flex-shrink: 0;
     margin-top: 6px;
     margin-right: 6px;
