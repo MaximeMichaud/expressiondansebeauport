@@ -29,7 +29,20 @@
                 class="w-full resize-none rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#1a1a1a]"
                 placeholder="Partager quelque chose..."
               ></textarea>
-              <div class="mt-2 flex justify-end">
+              <div class="mt-2 flex items-center justify-end gap-2">
+                <button
+                  v-if="canCreatePolls"
+                  type="button"
+                  class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 hover:text-[#1a1a1a] cursor-pointer"
+                  title="Créer un sondage"
+                  @click="showPollModal = true"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="20" x2="12" y2="10"/>
+                    <line x1="18" y1="20" x2="18" y2="4"/>
+                    <line x1="6" y1="20" x2="6" y2="16"/>
+                  </svg>
+                </button>
                 <button
                   @click="submitPost"
                   :disabled="!newPostContent.trim() || submittingPost"
@@ -76,7 +89,15 @@
             </div>
 
             <!-- Content -->
-            <p class="mb-3 whitespace-pre-wrap text-sm leading-relaxed text-gray-800">{{ post.content }}</p>
+            <p v-if="post.content" class="mb-3 whitespace-pre-wrap text-sm leading-relaxed text-gray-800">{{ post.content }}</p>
+
+            <!-- Poll -->
+            <PollCard
+              v-if="post.type === 'Poll' && post.poll"
+              :post-id="post.id"
+              :poll="post.poll"
+              @voted="loadPosts"
+            />
 
             <!-- Media -->
             <div v-if="post.media && post.media.length" class="mb-3 grid gap-1" :class="post.media.length > 1 ? 'grid-cols-2' : ''">
@@ -171,6 +192,13 @@
         </div>
       </div>
     </Teleport>
+
+    <CreatePollModal
+      :group-id="groupId"
+      :open="showPollModal"
+      @close="showPollModal = false"
+      @created="loadPosts"
+    />
   </div>
 </template>
 
@@ -183,6 +211,8 @@ import { useMemberStore } from '@/stores/memberStore'
 import { useSocialToast } from '@/composables/useSocialToast'
 import { Role } from '@/types/enums'
 import type { Post } from '@/types/entities'
+import CreatePollModal from '@/components/social/CreatePollModal.vue'
+import PollCard from '@/components/social/PollCard.vue'
 
 const route = useRoute()
 const socialService = useSocialService()
@@ -191,8 +221,10 @@ const userStore = useUserStore()
 const memberStore = useMemberStore()
 
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
+const canCreatePolls = computed(() => userStore.hasOneOfTheseRoles([Role.Professor, Role.Admin]))
 const myMemberId = computed(() => memberStore.member?.id || '')
 const groupId = computed(() => route.params.id as string)
+const showPollModal = ref(false)
 
 const group = ref<any>(null)
 const posts = ref<Post[]>([])
