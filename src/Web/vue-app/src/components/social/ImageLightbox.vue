@@ -42,7 +42,12 @@ function onKey(e: KeyboardEvent) {
 }
 
 onMounted(() => window.addEventListener('keydown', onKey))
-onUnmounted(() => window.removeEventListener('keydown', onKey))
+onUnmounted(() => {
+  window.removeEventListener('keydown', onKey)
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = ''
+  }
+})
 
 watch(() => props.open, (v) => {
   if (typeof document !== 'undefined') {
