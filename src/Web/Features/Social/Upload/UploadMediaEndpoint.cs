@@ -12,10 +12,16 @@ public class UploadMediaEndpoint : EndpointWithoutRequest
     private const string SocialSubDirectory = "social";
     private const long MaxImageSize = 10 * 1024 * 1024; // 10 MB
     private const long MaxPdfSize = 50 * 1024 * 1024; // 50 MB
+    private const long MaxVideoSize = 50 * 1024 * 1024; // 50 MB
 
     private static readonly string[] AllowedImageTypes =
     {
         "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"
+    };
+
+    private static readonly string[] AllowedVideoTypes =
+    {
+        "video/mp4", "video/quicktime", "video/webm"
     };
 
     private readonly IFileStorageApiConsumer _fileStorage;
@@ -70,6 +76,50 @@ public class UploadMediaEndpoint : EndpointWithoutRequest
                 Url = url,
                 FileName = file.FileName,
                 ContentType = file.ContentType,
+                Size = file.Length
+            }, ct);
+            return;
+        }
+
+        if (AllowedVideoTypes.Contains(contentType))
+        {
+            if (file.Length > MaxVideoSize)
+            {
+                await Send.OkAsync(new SucceededOrNotResponse(false, new Error("TooLarge", "Video too large. Max 50MB.")), ct);
+                return;
+            }
+
+            var videoTicks = DateTime.Now.Ticks;
+            var videoBaseName = Path.GetFileNameWithoutExtension(file.FileName);
+            var videoSafeBase = string.Concat(videoBaseName.Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_'));
+            if (string.IsNullOrEmpty(videoSafeBase)) videoSafeBase = "video";
+
+            var videoExt = Path.GetExtension(file.FileName).TrimStart('.').ToLowerInvariant();
+            if (string.IsNullOrEmpty(videoExt))
+            {
+                videoExt = contentType switch
+                {
+                    "video/mp4" => "mp4",
+                    "video/quicktime" => "mov",
+                    "video/webm" => "webm",
+                    _ => "mp4"
+                };
+            }
+
+            await using var videoStream = file.OpenReadStream();
+            var videoUrl = await _fileStorage.UploadStreamAsync(
+                videoStream,
+                $"{videoSafeBase}-{videoTicks}.{videoExt}",
+                contentType,
+                SocialSubDirectory);
+
+            await Send.OkAsync(new
+            {
+                Succeeded = true,
+                OriginalUrl = videoUrl,
+                DisplayUrl = videoUrl,
+                ThumbnailUrl = videoUrl,
+                ContentType = contentType,
                 Size = file.Length
             }, ct);
             return;

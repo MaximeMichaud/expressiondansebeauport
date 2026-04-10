@@ -7,7 +7,15 @@
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>
-        <img :src="displayUrl" :alt="alt || ''" class="lightbox__img" />
+        <video
+          v-if="isVideo"
+          :src="displayUrl"
+          controls
+          autoplay
+          playsinline
+          class="lightbox__img"
+        />
+        <img v-else :src="displayUrl" :alt="alt || ''" class="lightbox__img" />
         <button
           v-if="originalUrl"
           type="button"
@@ -33,6 +41,7 @@ interface Props {
   open: boolean
   displayUrl: string
   originalUrl?: string
+  contentType?: string
   alt?: string
 }
 
@@ -40,7 +49,11 @@ const props = defineProps<Props>()
 const emit = defineEmits<{ (e: 'update:open', value: boolean): void }>()
 
 const isMobile = typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)
-const saveLabel = computed(() => isMobile ? 'Enregistrer la photo' : 'Télécharger')
+const isVideo = computed(() => !!props.contentType && props.contentType.startsWith('video/'))
+const saveLabel = computed(() => {
+  if (isVideo.value) return isMobile ? 'Enregistrer la vidéo' : 'Télécharger'
+  return isMobile ? 'Enregistrer la photo' : 'Télécharger'
+})
 
 function close() {
   emit('update:open', false)
@@ -54,9 +67,9 @@ function filenameFromUrl(url: string): string {
   try {
     const u = new URL(url, window.location.href)
     const parts = u.pathname.split('/')
-    return parts[parts.length - 1] || 'photo'
+    return parts[parts.length - 1] || (isVideo.value ? 'video' : 'photo')
   } catch {
-    return 'photo'
+    return isVideo.value ? 'video' : 'photo'
   }
 }
 
@@ -71,7 +84,8 @@ async function handleSave() {
       if (response.ok) {
         const blob = await response.blob()
         const filename = filenameFromUrl(props.originalUrl)
-        const file = new File([blob], filename, { type: blob.type || 'image/jpeg' })
+        const fallbackType = isVideo.value ? 'video/mp4' : 'image/jpeg'
+        const file = new File([blob], filename, { type: blob.type || fallbackType })
         if (navigator.canShare({ files: [file] })) {
           await navigator.share({ files: [file] })
           return
