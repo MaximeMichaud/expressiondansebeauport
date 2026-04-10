@@ -71,6 +71,8 @@ public static class ConfigureServices
         services.AddScoped<ISiteSettingsRepository, Infrastructure.Repositories.SiteSettings.SiteSettingsRepository>();
         services.AddScoped<INavigationMenuRepository, NavigationMenuRepository>();
         services.AddScoped<IPageRepository, PageRepository>();
+        services.AddScoped<IPageRevisionRepository, PageRevisionRepository>();
+        services.AddScoped<IPreviewTokenRepository, PreviewTokenRepository>();
         services.AddScoped<IMemberRepository, MemberRepository>();
         services.AddScoped<IEmailConfirmationCodeRepository, EmailConfirmationCodeRepository>();
         services.AddScoped<IGroupRepository, GroupRepository>();
