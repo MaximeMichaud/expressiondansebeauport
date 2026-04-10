@@ -5,40 +5,69 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: monday
+    open-pull-requests-limit: 10
+    reviewers:
+      - MaximeMichaud
+    labels:
+      - dependencies
+      - ci
     commit-message:
       prefix: "ci(deps)"
     groups:
-      actions:
-        patterns: ["*"]
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
 
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
       interval: "weekly"
-    commit-message:
-      prefix: "build(deps)"
+      day: monday
+    open-pull-requests-limit: 10
+    reviewers:
+      - MaximeMichaud
+    labels:
+      - dependencies
+      - dotnet
     cooldown:
       default-days: 3
       semver-major-days: 14
+    commit-message:
+      prefix: "build(deps)"
     groups:
-      nuget-minor-patch:
-        update-types: ["minor", "patch"]
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
 
   - package-ecosystem: "npm"
     directory: "/src/Web/vue-app"
     schedule:
       interval: "weekly"
+      day: monday
+    open-pull-requests-limit: 10
+    reviewers:
+      - MaximeMichaud
+    labels:
+      - dependencies
+      - frontend
     versioning-strategy: increase-if-necessary
-    commit-message:
-      prefix: "build(deps)"
-      prefix-development: "build(deps-dev)"
     cooldown:
       default-days: 3
       semver-major-days: 14
+    commit-message:
+      prefix: "build(deps)"
+      prefix-development: "build(deps-dev)"
     groups:
       npm-prod-minor-patch:
         dependency-type: "production"
-        update-types: ["minor", "patch"]
+        update-types:
+          - minor
+          - patch
       npm-dev-minor-patch:
         dependency-type: "development"
-        update-types: ["minor", "patch"]
+        update-types:
+          - minor
+          - patch
