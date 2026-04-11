@@ -772,7 +772,7 @@ $convo-font-body: 'Karla', sans-serif;
 
   &__bubble-img {
     display: block;
-    max-width: 280px;
+    max-width: 180px;
     width: 100%;
     border-radius: 14px;
     cursor: pointer;
