@@ -47,7 +47,7 @@
       :style="{
         width: removeBtnSize + 'px',
         height: removeBtnSize + 'px',
-        transform: 'translate(35%, -35%)'
+        transform: shape === 'square' ? 'translate(35%, -35%)' : 'none'
       }"
       title="Retirer la photo"
       @click.stop="emit('remove')"
