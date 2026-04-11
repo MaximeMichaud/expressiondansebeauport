@@ -707,3 +707,6 @@ backups/
 
 # Secrets
 .env.prod
+
+# MSBuild StaticWebAssets bug on .NET 10 creates literal backslash dirs on macOS
+**/bin\Debug/
