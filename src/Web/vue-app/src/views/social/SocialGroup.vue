@@ -12,6 +12,7 @@
         :fallback-initials="'EDB'"
         :fallback-color="'#1a1a1a'"
         :size="32"
+        shape="square"
         :can-edit="canEditGroupImage"
         :uploading="uploadingGroupImage"
         @upload="handleGroupImageUpload"

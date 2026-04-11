@@ -4,7 +4,8 @@
     :style="{ width: size + 'px', height: size + 'px' }"
   >
     <div
-      class="flex h-full w-full items-center justify-center overflow-hidden rounded-full font-bold text-white select-none"
+      class="flex h-full w-full items-center justify-center overflow-hidden font-bold text-white select-none"
+      :class="shape === 'square' ? 'rounded-lg' : 'rounded-full'"
       :style="{ background: fallbackColor, fontSize: Math.max(10, Math.round(size / 3)) + 'px' }"
     >
       <img
@@ -20,7 +21,8 @@
       v-if="canEdit"
       type="button"
       :class="[
-        'absolute inset-0 flex items-center justify-center rounded-full transition cursor-pointer focus:outline-none',
+        'absolute inset-0 flex items-center justify-center transition cursor-pointer focus:outline-none',
+        shape === 'square' ? 'rounded-lg' : 'rounded-full',
         uploading
           ? 'bg-black/50 opacity-100'
           : 'opacity-0 group-hover:opacity-100 group-hover:bg-black/45'
@@ -72,10 +74,12 @@ const props = withDefaults(defineProps<{
   size?: number
   canEdit: boolean
   uploading?: boolean
+  shape?: 'circle' | 'square'
 }>(), {
   size: 80,
   imageUrl: null,
-  uploading: false
+  uploading: false,
+  shape: 'circle'
 })
 
 const emit = defineEmits<{
