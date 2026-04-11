@@ -159,6 +159,40 @@ export class SocialService extends ApiService {
     return response.data
   }
 
+  // === Member profile image ===
+  async setMyProfileImage(imageUrl: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.put<SucceededOrNotResponse>(
+      `${API}/social/members/me/profile-image`,
+      { imageUrl },
+      this.headersWithJsonContentType()
+    )
+    return response.data
+  }
+
+  async removeMyProfileImage(): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.delete<SucceededOrNotResponse>(
+      `${API}/social/members/me/profile-image`
+    )
+    return response.data
+  }
+
+  // === Group image ===
+  async setGroupImage(groupId: string, imageUrl: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.put<SucceededOrNotResponse>(
+      `${API}/social/groups/${groupId}/image`,
+      { groupId, imageUrl },
+      this.headersWithJsonContentType()
+    )
+    return response.data
+  }
+
+  async removeGroupImage(groupId: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.delete<SucceededOrNotResponse>(
+      `${API}/social/groups/${groupId}/image`
+    )
+    return response.data
+  }
+
   // === Announcements ===
   async createAnnouncement(content: string): Promise<SucceededOrNotResponse> {
     const response = await this._httpClient.post<SucceededOrNotResponse>(`${API}/social/announcements`, { content }, this.headersWithJsonContentType())

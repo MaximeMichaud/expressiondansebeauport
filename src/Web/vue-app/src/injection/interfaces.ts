@@ -153,6 +153,10 @@ export interface ISocialService {
   deleteComment(id: string): Promise<SucceededOrNotResponse>
   votePoll(postId: string, pollOptionId: string): Promise<SucceededOrNotResponse>
   createPoll(groupId: string, question: string, options: string[], allowMultipleAnswers: boolean): Promise<SucceededOrNotResponse>
+  setMyProfileImage(imageUrl: string): Promise<SucceededOrNotResponse>
+  removeMyProfileImage(): Promise<SucceededOrNotResponse>
+  setGroupImage(groupId: string, imageUrl: string): Promise<SucceededOrNotResponse>
+  removeGroupImage(groupId: string): Promise<SucceededOrNotResponse>
   getAnnouncements(page?: number): Promise<Post[]>
   createAnnouncement(content: string): Promise<SucceededOrNotResponse>
   getConversations(page?: number): Promise<Conversation[]>
