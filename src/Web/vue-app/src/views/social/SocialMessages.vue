@@ -75,7 +75,7 @@
             {{ conv.otherMember.fullName }}
           </span>
           <p :class="['truncate text-xs', conv.unreadCount > 0 ? 'font-semibold text-gray-700' : 'text-gray-500']">
-            <span v-if="conv.lastMessage?.isMine" class="font-semibold">Vous: </span>{{ conv.lastMessage?.content || 'Aucun message' }}
+            <span v-if="conv.lastMessage?.isMine" class="font-semibold">Vous: </span>{{ lastMessagePreview(conv.lastMessage) }}
           </p>
         </div>
         <div class="flex flex-col items-end gap-1 flex-shrink-0">
@@ -115,6 +115,23 @@ let searchTimeout: ReturnType<typeof setTimeout> | null = null
 function getInitials(name: string) {
   if (!name || !name.trim()) return '??'
   return name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase().slice(0, 2)
+}
+
+function lastMessagePreview(lastMessage: any): string {
+  if (!lastMessage) return 'Aucun message'
+  if (lastMessage.content && lastMessage.content.trim()) return lastMessage.content
+  const mediaCount = lastMessage.mediaCount ?? 0
+  const hasLegacy = lastMessage.hasLegacyMedia === true
+  if (mediaCount === 0 && !hasLegacy) return 'Aucun message'
+
+  const hasVideo = lastMessage.hasVideo === true
+  const hasImage = lastMessage.hasImage === true || hasLegacy
+  const count = Math.max(mediaCount, hasLegacy ? 1 : 0)
+
+  if (hasVideo && hasImage) return count > 1 ? `📎 ${count} fichiers` : '📎 Fichier'
+  if (hasVideo) return count > 1 ? `🎥 ${count} vidéos` : '🎥 Vidéo'
+  if (hasImage) return count > 1 ? `📷 ${count} photos` : '📷 Photo'
+  return 'Aucun message'
 }
 
 const avatarColors = ['#e53e3e', '#dd6b20', '#d69e2e', '#38a169', '#319795', '#3182ce', '#5a67d8', '#805ad5', '#d53f8c', '#e53e3e']
