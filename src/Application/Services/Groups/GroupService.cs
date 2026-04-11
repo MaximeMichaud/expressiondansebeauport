@@ -142,6 +142,30 @@ public class GroupService : IGroupService
         return await _groupRepository.GetDistinctSeasons();
     }
 
+    public async Task SetImageForMember(Guid groupId, Guid memberId, string imageUrl)
+    {
+        var isMember = await _groupMemberRepository.IsMember(groupId, memberId);
+        if (!isMember) throw new InvalidOperationException("Not a member of this group.");
+
+        var group = await _groupRepository.FindById(groupId, asNoTracking: false);
+        if (group == null) throw new InvalidOperationException("Group not found.");
+
+        group.SetImageUrl(imageUrl);
+        await _groupRepository.Update(group);
+    }
+
+    public async Task ClearImageForMember(Guid groupId, Guid memberId)
+    {
+        var isMember = await _groupMemberRepository.IsMember(groupId, memberId);
+        if (!isMember) throw new InvalidOperationException("Not a member of this group.");
+
+        var group = await _groupRepository.FindById(groupId, asNoTracking: false);
+        if (group == null) throw new InvalidOperationException("Group not found.");
+
+        group.SetImageUrl(null);
+        await _groupRepository.Update(group);
+    }
+
     private static string GenerateInviteCode()
     {
         const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
