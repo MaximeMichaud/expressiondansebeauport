@@ -74,7 +74,7 @@
           <span :class="['text-sm', conv.unreadCount > 0 ? 'font-bold text-gray-900' : 'font-medium text-gray-700']">
             {{ conv.otherMember.fullName }}
           </span>
-          <p :class="['truncate text-xs', conv.unreadCount > 0 ? 'font-semibold text-gray-700' : 'text-gray-500']">
+          <p :class="['truncate text-xs', conv.unreadCount > 0 ? 'font-semibold text-gray-700' : 'text-gray-500', isMediaOnlyPreview(conv.lastMessage) && 'italic']">
             {{ lastMessagePreview(conv.lastMessage) }}
           </p>
         </div>
@@ -117,6 +117,12 @@ function getInitials(name: string) {
   return name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
+function isMediaOnlyPreview(lastMessage: any): boolean {
+  if (!lastMessage) return false
+  if (lastMessage.content && lastMessage.content.trim()) return false
+  return (lastMessage.mediaCount ?? 0) > 0 || lastMessage.hasLegacyMedia === true
+}
+
 function lastMessagePreview(lastMessage: any): string {
   if (!lastMessage) return 'Aucun message'
   const isMine = lastMessage.isMine === true
@@ -133,13 +139,22 @@ function lastMessagePreview(lastMessage: any): string {
   const hasImage = lastMessage.hasImage === true || hasLegacy
   const count = Math.max(mediaCount, hasLegacy ? 1 : 0)
 
+  if (isMine) {
+    let short: string
+    if (hasVideo && hasImage) short = count > 1 ? `${count} fichiers` : 'Fichier'
+    else if (hasVideo) short = count > 1 ? `${count} vidéos` : 'Vidéo'
+    else if (hasImage) short = count > 1 ? `${count} photos` : 'Photo'
+    else return 'Aucun message'
+    return `Vous: ${short}`
+  }
+
   let label: string
   if (hasVideo && hasImage) label = count > 1 ? `${count} fichiers` : 'un fichier'
   else if (hasVideo) label = count > 1 ? `${count} vidéos` : 'une vidéo'
   else if (hasImage) label = count > 1 ? `${count} photos` : 'une photo'
   else return 'Aucun message'
 
-  return isMine ? `Vous avez envoyé ${label}` : `Vous a envoyé ${label}`
+  return `Vous a envoyé ${label}`
 }
 
 const avatarColors = ['#e53e3e', '#dd6b20', '#d69e2e', '#38a169', '#319795', '#3182ce', '#5a67d8', '#805ad5', '#d53f8c', '#e53e3e']
