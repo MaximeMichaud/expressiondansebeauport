@@ -16,7 +16,7 @@
       </button>
       <router-link v-if="otherMemberId" :to="{ name: 'socialMemberProfile', params: { id: otherMemberId } }" class="soc-convo__profile-link">
         <div class="soc-convo__avatar" :style="{ background: otherMemberColor || getAvatarColor(otherMemberName) }">
-          <img v-if="otherMemberPfp" :src="otherMemberPfp" :alt="otherMemberName" class="soc-convo__avatar-img" />
+          <img v-if="effectiveOtherMemberPfp" :src="effectiveOtherMemberPfp" :alt="otherMemberName" class="soc-convo__avatar-img" />
           <span v-else class="soc-convo__avatar-initials">{{ getInitials(otherMemberName) }}</span>
         </div>
         <h2 class="soc-convo__name">{{ otherMemberName }}</h2>
@@ -226,6 +226,7 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useMemberStore } from '@/stores/memberStore'
+import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
 import ImageLightbox from '@/components/social/ImageLightbox.vue'
 import { useImageAttachment } from '@/composables/useImageAttachment'
 
@@ -254,6 +255,7 @@ interface ChatMessage {
 const route = useRoute()
 const socialService = useSocialService()
 const memberStore = useMemberStore()
+const avatarRegistry = useAvatarRegistryStore()
 
 const conversationId = computed(() => route.params.conversationId as string)
 const serverMessages = ref<ChatMessage[]>([])
@@ -284,6 +286,10 @@ const otherMemberName = ref('Conversation')
 const otherMemberId = ref('')
 const otherMemberPfp = ref('')
 const otherMemberColor = ref('')
+
+const effectiveOtherMemberPfp = computed(() => {
+  return avatarRegistry.getAvatar(otherMemberId.value, otherMemberPfp.value) || ''
+})
 const currentMemberId = ref('')
 
 const avatarColors = ['#e53e3e', '#dd6b20', '#d69e2e', '#38a169', '#319795', '#3182ce', '#5a67d8', '#805ad5', '#d53f8c', '#e53e3e']
@@ -356,6 +362,7 @@ async function loadConversationInfo() {
       otherMemberId.value = convo.otherMember.id || ''
       otherMemberPfp.value = convo.otherMember.profileImageUrl || ''
       otherMemberColor.value = convo.otherMember.avatarColor || ''
+      avatarRegistry.setAvatar(convo.otherMember.id, convo.otherMember.profileImageUrl ?? null)
     }
   } catch { /* */ }
 }
