@@ -35,8 +35,14 @@
             Déposer les images ici
           </div>
           <div class="flex items-start gap-3">
-            <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: myAvatarColor }">
-              {{ userInitials }}
+            <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-xs font-bold text-white" :style="{ background: myAvatarColor }">
+              <img
+                v-if="avatarRegistry.getAvatar(myMemberId, memberStore.member?.profileImageUrl)"
+                :src="avatarRegistry.getAvatar(myMemberId, memberStore.member?.profileImageUrl)!"
+                :alt="userInitials"
+                class="h-full w-full object-cover"
+              />
+              <span v-else>{{ userInitials }}</span>
             </div>
             <div class="flex-1 min-w-0">
               <textarea
