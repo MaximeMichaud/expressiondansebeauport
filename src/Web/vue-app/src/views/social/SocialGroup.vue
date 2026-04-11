@@ -162,14 +162,24 @@
             <!-- Media -->
             <div v-if="post.media && post.media.length" class="mb-3 flex flex-wrap justify-center gap-1">
               <template v-for="media in post.media" :key="media.id">
-                <video
+                <div
                   v-if="media.contentType && media.contentType.startsWith('video/')"
-                  :src="media.mediaUrl"
-                  controls
-                  playsinline
-                  preload="metadata"
-                  class="w-[calc(25%-3px)] aspect-square rounded-lg object-cover bg-black"
-                />
+                  class="relative w-[calc(25%-3px)] aspect-square rounded-lg overflow-hidden bg-black cursor-pointer"
+                  @click="openLightbox(media.mediaUrl, media.originalUrl, media.contentType)"
+                >
+                  <video
+                    :src="media.mediaUrl"
+                    muted
+                    playsinline
+                    preload="metadata"
+                    class="w-full h-full object-cover pointer-events-none"
+                  />
+                  <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-black/50 backdrop-blur-sm">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                  </div>
+                </div>
                 <img
                   v-else
                   :src="media.thumbnailUrl || media.mediaUrl"

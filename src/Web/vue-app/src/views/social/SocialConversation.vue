@@ -69,15 +69,23 @@
               :class="['soc-convo__media-grid', msg.media.length > 1 && 'soc-convo__media-grid--multi']"
             >
               <template v-for="m in msg.media" :key="m.id">
-                <video
+                <div
                   v-if="m.contentType && m.contentType.startsWith('video/')"
-                  :src="m.mediaUrl"
-                  controls
-                  playsinline
-                  preload="metadata"
-                  class="soc-convo__bubble-img"
-                  style="background: #000;"
-                />
+                  class="soc-convo__video-thumb"
+                  @click="openLightbox(m.mediaUrl, m.originalUrl, m.contentType)"
+                >
+                  <video
+                    :src="m.mediaUrl"
+                    muted
+                    playsinline
+                    preload="metadata"
+                    class="soc-convo__bubble-img"
+                    style="background: #000; pointer-events: none;"
+                  />
+                  <div class="soc-convo__video-play">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                  </div>
+                </div>
                 <img
                   v-else
                   :src="m.thumbnailUrl || m.mediaUrl"
@@ -764,6 +772,34 @@ $convo-font-body: 'Karla', sans-serif;
       aspect-ratio: 1 / 1;
       object-fit: cover;
       border-radius: 0;
+    }
+
+    &--multi .soc-convo__video-thumb {
+      aspect-ratio: 1 / 1;
+    }
+  }
+
+  &__video-thumb {
+    position: relative;
+    display: block;
+    cursor: pointer;
+    line-height: 0;
+  }
+
+  &__video-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    svg {
+      width: 48px;
+      height: 48px;
+      padding: 12px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
     }
   }
 
