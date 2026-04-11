@@ -64,8 +64,14 @@
         </div>
         <div v-else>
           <div v-for="comment in comments" :key="comment.id" class="mb-3 flex gap-2">
-            <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white" :style="{ background: comment.authorAvatarColor || '#1a1a1a' }">
-              {{ getInitials(comment.authorName) }}
+            <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-[10px] font-bold text-white" :style="{ background: comment.authorAvatarColor || '#1a1a1a' }">
+              <img
+                v-if="avatarRegistry.getAvatar(comment.authorMemberId, comment.authorProfileImageUrl)"
+                :src="avatarRegistry.getAvatar(comment.authorMemberId, comment.authorProfileImageUrl)!"
+                :alt="comment.authorName"
+                class="h-full w-full object-cover"
+              />
+              <span v-else>{{ getInitials(comment.authorName) }}</span>
             </div>
             <div class="flex-1">
               <div class="rounded-lg bg-gray-50 px-3 py-2">
@@ -140,6 +146,7 @@ import { useSocialService } from '@/inversify.config'
 import { useSocialToast } from '@/composables/useSocialToast'
 import { useUserStore } from '@/stores/userStore'
 import { useMemberStore } from '@/stores/memberStore'
+import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
 import { Role } from '@/types/enums'
 import type { Post } from '@/types/entities'
 
@@ -149,6 +156,7 @@ const socialService = useSocialService()
 const toast = useSocialToast()
 const userStore = useUserStore()
 const memberStore = useMemberStore()
+const avatarRegistry = useAvatarRegistryStore()
 
 const postId = computed(() => route.params.id as string)
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
@@ -200,6 +208,7 @@ async function loadComments() {
   loadingComments.value = true
   try {
     comments.value = await socialService.getComments(postId.value)
+    avatarRegistry.populateFromList(comments.value, 'authorMemberId', 'authorProfileImageUrl')
   } catch { comments.value = [] }
   loadingComments.value = false
 }
@@ -247,6 +256,7 @@ let likeDebounce = 0
 onMounted(async () => {
   try {
     post.value = await socialService.getPost(postId.value)
+    if (post.value) avatarRegistry.populateOne(post.value as any, 'authorMemberId', 'authorProfileImageUrl')
   } catch { /* */ }
   loading.value = false
   await loadComments()
@@ -260,7 +270,9 @@ onMounted(async () => {
         data.hasLiked = post.value.hasLiked
       }
       post.value = data
+      avatarRegistry.populateOne(data as any, 'authorMemberId', 'authorProfileImageUrl')
       comments.value = await socialService.getComments(postId.value)
+      avatarRegistry.populateFromList(comments.value, 'authorMemberId', 'authorProfileImageUrl')
     } catch { /* */ }
   }, 30000)
 })
