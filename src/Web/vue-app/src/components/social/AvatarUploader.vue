@@ -44,7 +44,11 @@
       v-if="canEdit && imageUrl && !uploading"
       type="button"
       class="avatar-uploader__remove absolute top-0 right-0 flex items-center justify-center rounded-full opacity-0 transition cursor-pointer group-hover:opacity-100 focus:outline-none"
-      :style="{ width: removeBtnSize + 'px', height: removeBtnSize + 'px' }"
+      :style="{
+        width: removeBtnSize + 'px',
+        height: removeBtnSize + 'px',
+        transform: 'translate(35%, -35%)'
+      }"
       title="Retirer la photo"
       @click.stop="emit('remove')"
     >
