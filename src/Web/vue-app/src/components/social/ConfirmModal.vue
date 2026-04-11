@@ -2,11 +2,11 @@
   <Teleport to="body">
     <div
       v-if="open"
-      class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      class="confirm-modal__backdrop"
       @click.self="$emit('cancel')"
     >
       <div
-        class="w-full max-w-[380px] rounded-2xl p-6 text-center shadow-2xl border"
+        class="confirm-modal__card"
         :style="{
           background: 'var(--soc-content-bg)',
           borderColor: 'var(--soc-card-border)',
@@ -57,6 +57,30 @@ defineEmits<{
 </script>
 
 <style scoped>
+.confirm-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.confirm-modal__card {
+  width: 100%;
+  max-width: 380px;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+  border-width: 1px;
+  border-style: solid;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
 .soc-btn-cancel {
   background: var(--soc-bar-hover);
   color: var(--soc-text);
