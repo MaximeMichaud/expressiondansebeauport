@@ -95,8 +95,14 @@
           </div>
           <div v-else>
             <div v-for="comment in postComments" :key="comment.id" class="mb-3 flex gap-2">
-              <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-[9px] font-bold text-white" :style="{ background: comment.authorAvatarColor || '#1a1a1a' }">
-                {{ getInitials(comment.authorName) }}
+              <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-[9px] font-bold text-white" :style="{ background: comment.authorAvatarColor || '#1a1a1a' }">
+                <img
+                  v-if="avatarRegistry.getAvatar(comment.authorMemberId, comment.authorProfileImageUrl)"
+                  :src="avatarRegistry.getAvatar(comment.authorMemberId, comment.authorProfileImageUrl)!"
+                  :alt="comment.authorName"
+                  class="h-full w-full object-cover"
+                />
+                <span v-else>{{ getInitials(comment.authorName) }}</span>
               </div>
               <div class="flex-1">
                 <div class="rounded-lg bg-white px-3 py-2">
@@ -170,6 +176,7 @@ import { useSocialService } from '@/inversify.config'
 import { useSocialToast } from '@/composables/useSocialToast'
 import { useUserStore } from '@/stores/userStore'
 import { useMemberStore } from '@/stores/memberStore'
+import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
 import { Role } from '@/types/enums'
 import type { Post } from '@/types/entities'
 
@@ -177,6 +184,7 @@ const socialService = useSocialService()
 const toast = useSocialToast()
 const userStore = useUserStore()
 const memberStore = useMemberStore()
+const avatarRegistry = useAvatarRegistryStore()
 
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
 const myMemberId = computed(() => memberStore.member?.id || '')
@@ -240,6 +248,7 @@ async function toggleComments(post: Post) {
   loadingComments.value = true
   try {
     postComments.value = await socialService.getComments(post.id)
+    avatarRegistry.populateFromList(postComments.value, 'authorMemberId', 'authorProfileImageUrl')
   } catch { postComments.value = [] }
   loadingComments.value = false
   await nextTick()
@@ -272,6 +281,7 @@ async function deleteComment(commentId: string, post: Post) {
 async function loadAnnouncements() {
   try {
     announcements.value = await socialService.getAnnouncements()
+    avatarRegistry.populateFromList(announcements.value as any[], 'authorMemberId', 'authorProfileImageUrl')
   } catch { /* */ }
   loading.value = false
 }
