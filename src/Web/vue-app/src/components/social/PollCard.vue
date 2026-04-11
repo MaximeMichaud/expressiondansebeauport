@@ -93,24 +93,24 @@ async function vote(option: PollOption) {
 
 /* Light-mode defaults — applied to any .poll-option, scoped or not */
 .poll-option {
-  --poll-fill: rgba(124, 58, 237, 0.22);
+  --poll-fill: rgba(131, 83, 246, 0.22);
   --poll-content-bg: white;
   --poll-outline: #d4d1cb;
   --poll-outline-voted: #1a1a1a;
 }
 .poll-option.is-voted {
-  --poll-fill: rgba(124, 58, 237, 0.38);
+  --poll-fill: rgba(131, 83, 246, 0.38);
 }
 
 /* Dark mode (driven by .soc--dark on body via SocialLayout) */
 body.soc--dark .poll-option {
-  --poll-fill: rgba(167, 139, 250, 0.25);
+  --poll-fill: rgba(131, 83, 246, 0.3);
   --poll-content-bg: #181716;
   --poll-outline: #3a3836;
   --poll-outline-voted: #e7e5e4;
 }
 body.soc--dark .poll-option.is-voted {
-  --poll-fill: rgba(167, 139, 250, 0.42);
+  --poll-fill: rgba(131, 83, 246, 0.5);
 }
 </style>
 
