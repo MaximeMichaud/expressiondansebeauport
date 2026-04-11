@@ -79,6 +79,19 @@ async function vote(option: PollOption) {
 }
 </script>
 
+<style>
+@property --poll-percent {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+@property --poll-fill {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: rgba(0, 0, 0, 0);
+}
+</style>
+
 <style scoped>
 .poll-option {
   --poll-fill: rgba(124, 58, 237, 0.22);
@@ -92,7 +105,10 @@ async function vote(option: PollOption) {
     var(--poll-content-bg) 100%
   );
   box-shadow: inset 0 0 0 1px var(--soc-border);
-  transition: box-shadow 0.15s, background 0.3s;
+  transition:
+    --poll-percent 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    --poll-fill 0.3s ease,
+    box-shadow 0.15s;
 }
 .poll-option:hover:not(:disabled) {
   box-shadow: inset 0 0 0 1px var(--soc-text);

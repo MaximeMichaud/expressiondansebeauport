@@ -611,7 +611,7 @@ onMounted(async () => {
       posts.value = fresh
       avatarRegistry.populateFromList(posts.value as any[], 'authorMemberId', 'authorProfileImageUrl')
     } catch { /* */ }
-  }, 5000)
+  }, 2000)
 })
 
 onUnmounted(() => {
