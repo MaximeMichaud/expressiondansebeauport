@@ -74,8 +74,8 @@
           <span :class="['text-sm', conv.unreadCount > 0 ? 'font-bold text-gray-900' : 'font-medium text-gray-700']">
             {{ conv.otherMember.fullName }}
           </span>
-          <p :class="['truncate text-xs', conv.unreadCount > 0 ? 'font-semibold text-gray-700' : 'text-gray-500', isMediaOnlyPreview(conv.lastMessage) && 'italic']">
-            {{ lastMessagePreview(conv.lastMessage) }}
+          <p :class="['truncate text-xs', conv.unreadCount > 0 ? 'font-semibold text-gray-700' : 'text-gray-500']">
+            <span>{{ lastMessagePrefix(conv.lastMessage) }}</span><span :class="isMediaOnlyPreview(conv.lastMessage) && 'italic'">{{ lastMessageBody(conv.lastMessage) }}</span>
           </p>
         </div>
         <div class="flex flex-col items-end gap-1 flex-shrink-0">
@@ -123,12 +123,17 @@ function isMediaOnlyPreview(lastMessage: any): boolean {
   return (lastMessage.mediaCount ?? 0) > 0 || lastMessage.hasLegacyMedia === true
 }
 
-function lastMessagePreview(lastMessage: any): string {
+function lastMessagePrefix(lastMessage: any): string {
+  if (!lastMessage) return ''
+  return lastMessage.isMine === true ? 'Vous: ' : ''
+}
+
+function lastMessageBody(lastMessage: any): string {
   if (!lastMessage) return 'Aucun message'
   const isMine = lastMessage.isMine === true
 
   if (lastMessage.content && lastMessage.content.trim()) {
-    return isMine ? `Vous: ${lastMessage.content}` : lastMessage.content
+    return lastMessage.content
   }
 
   const mediaCount = lastMessage.mediaCount ?? 0
@@ -140,12 +145,10 @@ function lastMessagePreview(lastMessage: any): string {
   const count = Math.max(mediaCount, hasLegacy ? 1 : 0)
 
   if (isMine) {
-    let short: string
-    if (hasVideo && hasImage) short = count > 1 ? `${count} fichiers` : 'Fichier'
-    else if (hasVideo) short = count > 1 ? `${count} vidéos` : 'Vidéo'
-    else if (hasImage) short = count > 1 ? `${count} photos` : 'Photo'
-    else return 'Aucun message'
-    return `Vous: ${short}`
+    if (hasVideo && hasImage) return count > 1 ? `${count} fichiers` : 'Fichier'
+    if (hasVideo) return count > 1 ? `${count} vidéos` : 'Vidéo'
+    if (hasImage) return count > 1 ? `${count} photos` : 'Photo'
+    return 'Aucun message'
   }
 
   let label: string
