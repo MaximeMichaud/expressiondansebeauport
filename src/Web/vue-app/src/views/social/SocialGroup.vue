@@ -7,10 +7,16 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
       </button>
-      <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#1a1a1a] group-logo">
-        <img v-if="group?.imageUrl" :src="group.imageUrl" :alt="group?.name" class="h-full w-full rounded-lg object-cover" />
-        <span v-else class="text-[8px] font-bold text-white">EDB</span>
-      </div>
+      <AvatarUploader
+        :image-url="group?.imageUrl"
+        :fallback-initials="'EDB'"
+        :fallback-color="'#1a1a1a'"
+        :size="32"
+        :can-edit="canEditGroupImage"
+        :uploading="uploadingGroupImage"
+        @upload="handleGroupImageUpload"
+        @remove="confirmGroupImageRemove = true"
+      />
       <h1 class="text-base font-semibold text-gray-900">{{ group?.name || 'Groupe' }}</h1>
     </div>
 
@@ -284,6 +290,16 @@
       @created="loadPosts"
     />
 
+    <ConfirmModal
+      :open="confirmGroupImageRemove"
+      title="Retirer l'image du groupe?"
+      message="L'image sera remplacée par le logo par défaut."
+      confirm-label="Retirer"
+      :danger="true"
+      @confirm="handleGroupImageRemove"
+      @cancel="confirmGroupImageRemove = false"
+    />
+
     <ImageLightbox
       v-model:open="lightboxOpen"
       :display-url="lightboxDisplayUrl"
@@ -304,6 +320,8 @@ import { Role } from '@/types/enums'
 import type { Post } from '@/types/entities'
 import CreatePollModal from '@/components/social/CreatePollModal.vue'
 import PollCard from '@/components/social/PollCard.vue'
+import AvatarUploader from '@/components/social/AvatarUploader.vue'
+import ConfirmModal from '@/components/social/ConfirmModal.vue'
 import ImageLightbox from '@/components/social/ImageLightbox.vue'
 import { useImageAttachment } from '@/composables/useImageAttachment'
 
@@ -315,9 +333,12 @@ const memberStore = useMemberStore()
 
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
 const canCreatePolls = computed(() => userStore.hasOneOfTheseRoles([Role.Professor, Role.Admin]))
+const canEditGroupImage = computed(() => userStore.hasOneOfTheseRoles([Role.Professor, Role.Admin]))
 const myMemberId = computed(() => memberStore.member?.id || '')
 const groupId = computed(() => route.params.id as string)
 const showPollModal = ref(false)
+const uploadingGroupImage = ref(false)
+const confirmGroupImageRemove = ref(false)
 
 const group = ref<any>(null)
 const posts = ref<Post[]>([])
@@ -405,6 +426,44 @@ async function loadGroup() {
       document.title = `EDB Social - ${group.value.name}`
     }
   } catch { /* */ }
+}
+
+async function handleGroupImageUpload(file: File) {
+  if (uploadingGroupImage.value) return
+  uploadingGroupImage.value = true
+  try {
+    const uploaded = await socialService.uploadFile(file)
+    if (!uploaded.succeeded || !uploaded.displayUrl) {
+      toast.error("Échec du téléversement de l'image.")
+      return
+    }
+    const result = await socialService.setGroupImage(groupId.value, uploaded.displayUrl)
+    if (result.succeeded) {
+      await loadGroup()
+      toast.success('Image du groupe mise à jour.')
+    } else {
+      toast.error("Impossible d'enregistrer l'image.")
+    }
+  } catch {
+    toast.error('Erreur lors du téléversement.')
+  } finally {
+    uploadingGroupImage.value = false
+  }
+}
+
+async function handleGroupImageRemove() {
+  confirmGroupImageRemove.value = false
+  try {
+    const result = await socialService.removeGroupImage(groupId.value)
+    if (result.succeeded) {
+      await loadGroup()
+      toast.success('Image du groupe retirée.')
+    } else {
+      toast.error("Impossible de retirer l'image.")
+    }
+  } catch {
+    toast.error('Erreur lors du retrait.')
+  }
 }
 
 async function loadPosts() {
