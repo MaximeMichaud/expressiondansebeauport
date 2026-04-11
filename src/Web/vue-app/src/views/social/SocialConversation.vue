@@ -222,7 +222,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useMemberStore } from '@/stores/memberStore'
@@ -502,6 +502,12 @@ async function pollMessages() {
     }
   } catch { /* */ }
 }
+
+// When the preview strip appears or grows, the messages pane shrinks; keep
+// the latest messages visible by snapping back to the bottom.
+watch(() => attachment.previews.value.length, () => {
+  nextTick(() => scrollToBottom(true))
+})
 
 onMounted(async () => {
   await loadConversationInfo()
