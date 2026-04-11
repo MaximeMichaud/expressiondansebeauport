@@ -128,9 +128,9 @@ function lastMessagePreview(lastMessage: any): string {
   const hasImage = lastMessage.hasImage === true || hasLegacy
   const count = Math.max(mediaCount, hasLegacy ? 1 : 0)
 
-  if (hasVideo && hasImage) return count > 1 ? `📎 ${count} fichiers` : '📎 Fichier'
-  if (hasVideo) return count > 1 ? `🎥 ${count} vidéos` : '🎥 Vidéo'
-  if (hasImage) return count > 1 ? `📷 ${count} photos` : '📷 Photo'
+  if (hasVideo && hasImage) return count > 1 ? `${count} fichiers` : 'Fichier'
+  if (hasVideo) return count > 1 ? `${count} vidéos` : 'Vidéo'
+  if (hasImage) return count > 1 ? `${count} photos` : 'Photo'
   return 'Aucun message'
 }
 
