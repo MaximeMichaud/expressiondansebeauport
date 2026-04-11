@@ -39,7 +39,7 @@
                 placeholder="Partager quelque chose..."
               ></textarea>
 
-              <div v-if="attachment.previews.value.length" class="mt-2 flex gap-2 overflow-x-auto pt-2 pr-2">
+              <div v-if="attachment.previews.value.length" class="mt-2 mb-4 flex gap-2 overflow-x-auto pt-2 pr-2">
                 <div
                   v-for="(p, i) in attachment.previews.value"
                   :key="p.url"
@@ -57,10 +57,10 @@
                   <button
                     type="button"
                     @click="attachment.removeFile(i)"
-                    class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#1a1a1a] text-white shadow"
+                    class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#1a1a1a] shadow"
                     aria-label="Retirer"
                   >
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                       <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>
                   </button>

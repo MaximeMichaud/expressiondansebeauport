@@ -140,7 +140,7 @@
           @click="attachment.removeFile(i)"
           aria-label="Retirer"
         >
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>
@@ -843,7 +843,7 @@ $convo-font-body: 'Karla', sans-serif;
   &__preview-strip {
     display: flex;
     gap: 8px;
-    padding: 8px 16px 0;
+    padding: 8px 16px 16px;
     overflow-x: auto;
     flex-shrink: 0;
   }
