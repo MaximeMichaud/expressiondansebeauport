@@ -16,14 +16,11 @@
         :key="option.id"
         type="button"
         :disabled="voting"
-        class="poll-option relative block w-full overflow-hidden rounded-lg text-left transition disabled:cursor-default disabled:opacity-70"
+        class="poll-option relative block w-full rounded-lg text-left transition disabled:cursor-default disabled:opacity-70"
         :class="{ 'is-voted': option.hasVoted }"
+        :style="{ '--poll-percent': option.percentage + '%' } as any"
         @click="vote(option)"
       >
-        <div
-          class="poll-option__fill absolute inset-0 transition-all"
-          :style="{ width: `${option.percentage}%` }"
-        ></div>
         <div class="relative flex items-center justify-between px-3 py-2 text-xs">
           <span class="flex items-center gap-2 font-medium" :style="{ color: 'var(--soc-text)' }">
             <svg
@@ -84,28 +81,31 @@ async function vote(option: PollOption) {
 
 <style scoped>
 .poll-option {
-  background: var(--soc-content-bg);
+  --poll-fill: rgba(124, 58, 237, 0.22);
+  --poll-content-bg: var(--soc-content-bg);
   cursor: pointer;
-  isolation: isolate;
+  background: linear-gradient(
+    to right,
+    var(--poll-fill) 0%,
+    var(--poll-fill) var(--poll-percent, 0%),
+    var(--poll-content-bg) var(--poll-percent, 0%),
+    var(--poll-content-bg) 100%
+  );
   box-shadow: inset 0 0 0 1px var(--soc-border);
+  transition: box-shadow 0.15s, background 0.3s;
 }
 .poll-option:hover:not(:disabled) {
   box-shadow: inset 0 0 0 1px var(--soc-text);
 }
 .poll-option.is-voted {
+  --poll-fill: rgba(124, 58, 237, 0.38);
   box-shadow: inset 0 0 0 1px var(--soc-text);
 }
-.poll-option__fill {
-  background: rgba(124, 58, 237, 0.22);
-}
-.poll-option.is-voted .poll-option__fill {
-  background: rgba(124, 58, 237, 0.38);
-}
 
-:global(body.soc--dark) .poll-option__fill {
-  background: rgba(167, 139, 250, 0.25);
+:global(body.soc--dark) .poll-option {
+  --poll-fill: rgba(167, 139, 250, 0.25);
 }
-:global(body.soc--dark) .poll-option.is-voted .poll-option__fill {
-  background: rgba(167, 139, 250, 0.42);
+:global(body.soc--dark) .poll-option.is-voted {
+  --poll-fill: rgba(167, 139, 250, 0.42);
 }
 </style>
