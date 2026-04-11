@@ -123,6 +123,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useAuthenticationService, useSocialService } from '@/inversify.config'
 import { useMemberStore } from '@/stores/memberStore'
+import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
 import { useSocialToast } from '@/composables/useSocialToast'
 import AvatarUploader from '@/components/social/AvatarUploader.vue'
 import ConfirmModal from '@/components/social/ConfirmModal.vue'
@@ -130,6 +131,7 @@ import ConfirmModal from '@/components/social/ConfirmModal.vue'
 const authService = useAuthenticationService()
 const socialService = useSocialService()
 const memberStore = useMemberStore()
+const avatarRegistry = useAvatarRegistryStore()
 const toast = useSocialToast()
 
 const firstName = ref('')
@@ -222,6 +224,7 @@ async function handleAvatarUpload(file: File) {
     if (result.succeeded) {
       const profile = await socialService.getMyProfile()
       memberStore.setMember(profile)
+      if (profile?.id) avatarRegistry.setAvatar(profile.id, uploaded.displayUrl)
       toast.success('Photo de profil mise à jour.')
     } else {
       toast.error("Impossible d'enregistrer la photo.")
@@ -240,6 +243,7 @@ async function handleAvatarRemove() {
     if (result.succeeded) {
       const profile = await socialService.getMyProfile()
       memberStore.setMember(profile)
+      if (profile?.id) avatarRegistry.clearAvatar(profile.id)
       toast.success('Photo de profil retirée.')
     } else {
       toast.error('Impossible de retirer la photo.')

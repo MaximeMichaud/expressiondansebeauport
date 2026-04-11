@@ -67,8 +67,14 @@
         class="flex items-center gap-3 border-b px-4 py-3 transition hover:bg-gray-50"
         style="border-color: var(--soc-divider, #f0f0f0);"
       >
-        <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" :style="{ background: conv.otherMember.avatarColor || getAvatarColor(conv.otherMember.fullName) }">
-          {{ getInitials(conv.otherMember.fullName) }}
+        <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-sm font-bold text-white" :style="{ background: conv.otherMember.avatarColor || getAvatarColor(conv.otherMember.fullName) }">
+          <img
+            v-if="avatarRegistry.getAvatar(conv.otherMember.id, conv.otherMember.profileImageUrl)"
+            :src="avatarRegistry.getAvatar(conv.otherMember.id, conv.otherMember.profileImageUrl)!"
+            :alt="conv.otherMember.fullName"
+            class="h-full w-full object-cover"
+          />
+          <span v-else>{{ getInitials(conv.otherMember.fullName) }}</span>
         </div>
         <div class="min-w-0 flex-1">
           <span :class="['text-sm', conv.unreadCount > 0 ? 'font-bold text-gray-900' : 'font-medium text-gray-700']">
@@ -95,12 +101,14 @@ import { useRouter } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useSignalR } from '@/composables/useSignalR'
 import { useMemberStore } from '@/stores/memberStore'
+import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
 import type { Conversation } from '@/types/entities'
 
 const router = useRouter()
 const socialService = useSocialService()
 const { onMessage, offMessage } = useSignalR()
 const memberStore = useMemberStore()
+const avatarRegistry = useAvatarRegistryStore()
 const conversations = ref<Conversation[]>([])
 const loading = ref(true)
 
@@ -210,10 +218,19 @@ watch(showNewConvo, (val) => {
   }
 })
 
+function populateRegistryFromConvos(list: Conversation[]) {
+  for (const c of list) {
+    if (c.otherMember?.id) {
+      avatarRegistry.setAvatar(c.otherMember.id, c.otherMember.profileImageUrl ?? null)
+    }
+  }
+}
+
 async function loadConversations() {
   try {
     const all = await socialService.getConversations()
     conversations.value = all.filter((c: any) => c.lastMessage)
+    populateRegistryFromConvos(conversations.value)
   } catch { /* */ }
   loading.value = false
 }
@@ -233,6 +250,7 @@ onMounted(() => {
     try {
       const all = await socialService.getConversations()
       conversations.value = all.filter((c: any) => c.lastMessage)
+      populateRegistryFromConvos(conversations.value)
     } catch { /* */ }
   }, 3000)
 })
