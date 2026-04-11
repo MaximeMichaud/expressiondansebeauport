@@ -844,9 +844,10 @@ $convo-font-body: 'Karla', sans-serif;
   &__preview-strip {
     display: flex;
     gap: 8px;
-    padding: 8px 16px 16px;
+    padding: 12px 16px 16px;
     overflow-x: auto;
     flex-shrink: 0;
+    border-top: 1px solid var(--soc-divider, #f0f0f0);
   }
 
   &__preview-item {
