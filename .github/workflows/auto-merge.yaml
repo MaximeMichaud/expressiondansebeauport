@@ -45,24 +45,25 @@ jobs:
           echo "update_type=$UPDATE_TYPE" >> "$GITHUB_OUTPUT"
           echo "Detected update type: $UPDATE_TYPE"
 
-      - name: Approve PR
+      - name: Wait for CI checks
+        if: steps.update-type.outputs.update_type != 'version-update:semver-major'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh pr review "${{ github.event.pull_request.number }}" \
+          gh pr checks "${{ github.event.pull_request.number }}" \
             --repo "${{ github.repository }}" \
-            --approve \
-            --body "Auto-approved: dependency update from ${{ github.event.pull_request.user.login }}." || true
+            --watch \
+            --fail-fast
 
-      - name: Enable auto-merge for minor/patch updates
+      - name: Merge minor/patch updates
         if: steps.update-type.outputs.update_type != 'version-update:semver-major'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh pr merge "${{ github.event.pull_request.number }}" \
             --repo "${{ github.repository }}" \
-            --auto \
-            --squash
+            --squash \
+            --admin
 
       - name: Skip auto-merge for major updates
         if: steps.update-type.outputs.update_type == 'version-update:semver-major'
