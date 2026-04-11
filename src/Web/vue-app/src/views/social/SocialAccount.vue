@@ -10,10 +10,19 @@
 
     <!-- Avatar + Name -->
     <div class="soc-account__identity">
-      <div class="soc-account__avatar" :style="{ background: userAvatarColor }">{{ userInitials }}</div>
+      <AvatarUploader
+        :image-url="memberStore.member?.profileImageUrl"
+        :fallback-initials="userInitials"
+        :fallback-color="userAvatarColor"
+        :size="80"
+        :can-edit="true"
+        :uploading="uploadingAvatar"
+        @upload="handleAvatarUpload"
+        @remove="confirmAvatarRemove = true"
+      />
       <div>
-        <p class="text-sm font-semibold text-gray-900">{{ firstName || 'Prénom' }} {{ lastName || 'Nom' }}</p>
-        <p class="text-xs text-gray-500">{{ email || 'courriel@exemple.com' }}</p>
+        <p class="text-sm font-semibold" :style="{ color: 'var(--soc-text)' }">{{ firstName || 'Prénom' }} {{ lastName || 'Nom' }}</p>
+        <p class="text-xs" :style="{ color: 'var(--soc-text-muted)' }">{{ email || 'courriel@exemple.com' }}</p>
       </div>
     </div>
 
@@ -98,6 +107,15 @@
       </form>
     </section>
 
+    <ConfirmModal
+      :open="confirmAvatarRemove"
+      title="Retirer la photo?"
+      message="Votre photo de profil sera remplacée par vos initiales."
+      confirm-label="Retirer"
+      :danger="true"
+      @confirm="handleAvatarRemove"
+      @cancel="confirmAvatarRemove = false"
+    />
   </div>
 </template>
 
@@ -106,6 +124,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useAuthenticationService, useSocialService } from '@/inversify.config'
 import { useMemberStore } from '@/stores/memberStore'
 import { useSocialToast } from '@/composables/useSocialToast'
+import AvatarUploader from '@/components/social/AvatarUploader.vue'
+import ConfirmModal from '@/components/social/ConfirmModal.vue'
 
 const authService = useAuthenticationService()
 const socialService = useSocialService()
@@ -120,6 +140,8 @@ const newPassword = ref('')
 const confirmNewPassword = ref('')
 const savingProfile = ref(false)
 const savingPassword = ref(false)
+const uploadingAvatar = ref(false)
+const confirmAvatarRemove = ref(false)
 
 const userInitials = computed(() => {
   const f = firstName.value?.[0] || ''
@@ -185,6 +207,46 @@ async function updateProfile() {
     toast.error('Erreur lors de la sauvegarde.')
   }
   savingProfile.value = false
+}
+
+async function handleAvatarUpload(file: File) {
+  if (uploadingAvatar.value) return
+  uploadingAvatar.value = true
+  try {
+    const uploaded = await socialService.uploadFile(file)
+    if (!uploaded.succeeded || !uploaded.displayUrl) {
+      toast.error("Échec du téléversement de l'image.")
+      return
+    }
+    const result = await socialService.setMyProfileImage(uploaded.displayUrl)
+    if (result.succeeded) {
+      const profile = await socialService.getMyProfile()
+      memberStore.setMember(profile)
+      toast.success('Photo de profil mise à jour.')
+    } else {
+      toast.error("Impossible d'enregistrer la photo.")
+    }
+  } catch {
+    toast.error('Erreur lors du téléversement.')
+  } finally {
+    uploadingAvatar.value = false
+  }
+}
+
+async function handleAvatarRemove() {
+  confirmAvatarRemove.value = false
+  try {
+    const result = await socialService.removeMyProfileImage()
+    if (result.succeeded) {
+      const profile = await socialService.getMyProfile()
+      memberStore.setMember(profile)
+      toast.success('Photo de profil retirée.')
+    } else {
+      toast.error('Impossible de retirer la photo.')
+    }
+  } catch {
+    toast.error('Erreur lors du retrait.')
+  }
 }
 
 async function changePassword() {
