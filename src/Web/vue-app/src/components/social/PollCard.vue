@@ -96,6 +96,8 @@ async function vote(option: PollOption) {
 .poll-option {
   --poll-fill: rgba(124, 58, 237, 0.22);
   --poll-content-bg: var(--soc-content-bg);
+  --poll-outline: #d4d1cb;
+  --poll-outline-active: #1a1a1a;
   cursor: pointer;
   background: linear-gradient(
     to right,
@@ -104,22 +106,24 @@ async function vote(option: PollOption) {
     var(--poll-content-bg) var(--poll-percent, 0%),
     var(--poll-content-bg) 100%
   );
-  box-shadow: inset 0 0 0 1px var(--soc-border);
+  box-shadow: inset 0 0 0 1px var(--poll-outline);
   transition:
     --poll-percent 0.6s cubic-bezier(0.22, 1, 0.36, 1),
     --poll-fill 0.3s ease,
     box-shadow 0.15s;
 }
 .poll-option:hover:not(:disabled) {
-  box-shadow: inset 0 0 0 1px var(--soc-text);
+  box-shadow: inset 0 0 0 1px var(--poll-outline-active);
 }
 .poll-option.is-voted {
   --poll-fill: rgba(124, 58, 237, 0.38);
-  box-shadow: inset 0 0 0 1px var(--soc-text);
+  box-shadow: inset 0 0 0 1px var(--poll-outline-active);
 }
 
 :global(body.soc--dark) .poll-option {
   --poll-fill: rgba(167, 139, 250, 0.25);
+  --poll-outline: #3a3836;
+  --poll-outline-active: #e7e5e4;
 }
 :global(body.soc--dark) .poll-option.is-voted {
   --poll-fill: rgba(167, 139, 250, 0.42);
