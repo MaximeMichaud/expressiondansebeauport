@@ -39,6 +39,9 @@ const pageTitle = computed(() => {
 useHead({
   title: pageTitle,
   titleTemplate: (title) => {
+    if (isSocialRoute(router.currentRoute.value)) {
+      return title ? `EDB Social - ${title}` : 'EDB Social'
+    }
     const siteName = siteSettingsStore.siteTitle
     if (!title) return siteName || ''
     return siteName ? `${title} | ${siteName}` : title
