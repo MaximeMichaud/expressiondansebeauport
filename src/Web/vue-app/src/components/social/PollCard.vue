@@ -96,18 +96,21 @@ async function vote(option: PollOption) {
   border-color: var(--soc-text);
 }
 .poll-option__fill {
-  background: rgba(124, 58, 237, 0.18);
-  border-top-left-radius: inherit;
-  border-bottom-left-radius: inherit;
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  bottom: -1px;
+  right: auto;
+  background: rgba(21, 128, 61, 0.2);
 }
 .poll-option.is-voted .poll-option__fill {
-  background: rgba(124, 58, 237, 0.32);
+  background: rgba(21, 128, 61, 0.35);
 }
 
 :global(body.soc--dark) .poll-option__fill {
-  background: rgba(167, 139, 250, 0.22);
+  background: rgba(74, 222, 128, 0.22);
 }
 :global(body.soc--dark) .poll-option.is-voted .poll-option__fill {
-  background: rgba(167, 139, 250, 0.4);
+  background: rgba(74, 222, 128, 0.4);
 }
 </style>
