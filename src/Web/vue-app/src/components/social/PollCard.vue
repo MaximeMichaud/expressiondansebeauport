@@ -90,13 +90,32 @@ async function vote(option: PollOption) {
   inherits: false;
   initial-value: rgba(0, 0, 0, 0);
 }
+
+/* Light-mode defaults — applied to any .poll-option, scoped or not */
+.poll-option {
+  --poll-fill: rgba(124, 58, 237, 0.22);
+  --poll-content-bg: white;
+  --poll-outline: #d4d1cb;
+  --poll-outline-voted: #1a1a1a;
+}
+.poll-option.is-voted {
+  --poll-fill: rgba(124, 58, 237, 0.38);
+}
+
+/* Dark mode (driven by .soc--dark on body via SocialLayout) */
+body.soc--dark .poll-option {
+  --poll-fill: rgba(167, 139, 250, 0.25);
+  --poll-content-bg: #181716;
+  --poll-outline: #3a3836;
+  --poll-outline-voted: #e7e5e4;
+}
+body.soc--dark .poll-option.is-voted {
+  --poll-fill: rgba(167, 139, 250, 0.42);
+}
 </style>
 
 <style scoped>
 .poll-option {
-  --poll-fill: rgba(124, 58, 237, 0.22);
-  --poll-content-bg: var(--soc-content-bg);
-  --poll-outline: #d4d1cb;
   cursor: pointer;
   background: linear-gradient(
     to right,
@@ -108,17 +127,10 @@ async function vote(option: PollOption) {
   box-shadow: inset 0 0 0 1px var(--poll-outline);
   transition:
     --poll-percent 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-    --poll-fill 0.3s ease;
+    --poll-fill 0.3s ease,
+    box-shadow 0.2s ease;
 }
 .poll-option.is-voted {
-  --poll-fill: rgba(124, 58, 237, 0.38);
-}
-
-:global(body.soc--dark) .poll-option {
-  --poll-fill: rgba(167, 139, 250, 0.25);
-  --poll-outline: #3a3836;
-}
-:global(body.soc--dark) .poll-option.is-voted {
-  --poll-fill: rgba(167, 139, 250, 0.42);
+  box-shadow: inset 0 0 0 1.5px var(--poll-outline-voted);
 }
 </style>
