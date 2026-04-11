@@ -74,7 +74,11 @@ public class GetConversationsEndpoint : Endpoint<GetConversationsRequest>
                     Content = lastMsg.Content,
                     SenderName = lastMsg.SenderMember?.FullName ?? "",
                     IsMine = lastMsg.SenderMemberId == member.Id,
-                    Created = lastMsg.Created.ToDateTimeUtc().ToString("yyyy-MM-ddTHH:mm:ssZ")
+                    Created = lastMsg.Created.ToDateTimeUtc().ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                    MediaCount = lastMsg.Media?.Count ?? 0,
+                    HasVideo = lastMsg.Media != null && lastMsg.Media.Any(m => m.ContentType != null && m.ContentType.StartsWith("video/")),
+                    HasImage = lastMsg.Media != null && lastMsg.Media.Any(m => m.ContentType != null && m.ContentType.StartsWith("image/")),
+                    HasLegacyMedia = !string.IsNullOrEmpty(lastMsg.MediaUrl)
                 } : null,
                 UnreadCount = unread
             };

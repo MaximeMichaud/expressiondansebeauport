@@ -81,6 +81,8 @@ public class ConversationRepository : IConversationRepository
             .Include(c => c.Participants).ThenInclude(p => p.Member)
             .Include(c => c.Messages.OrderByDescending(m => m.Created).Take(1))
                 .ThenInclude(m => m.SenderMember)
+            .Include(c => c.Messages.OrderByDescending(m => m.Created).Take(1))
+                .ThenInclude(m => m.Media)
             .OrderByDescending(c => c.Messages.Max(m => (Instant?)m.Created))
             .Skip(skip).Take(take)
             .ToListAsync();
