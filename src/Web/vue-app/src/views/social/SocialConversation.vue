@@ -772,7 +772,7 @@ $convo-font-body: 'Karla', sans-serif;
 
   &__bubble-img {
     display: block;
-    max-width: 180px;
+    max-width: 280px;
     width: 100%;
     border-radius: 14px;
     cursor: pointer;
@@ -789,12 +789,14 @@ $convo-font-body: 'Karla', sans-serif;
 
     &--multi {
       grid-template-columns: 1fr 1fr;
+      max-width: 240px;
     }
 
     &--multi .soc-convo__bubble-img {
       aspect-ratio: 1 / 1;
       object-fit: cover;
       border-radius: 0;
+      max-width: none;
     }
 
     &--multi .soc-convo__video-thumb {
