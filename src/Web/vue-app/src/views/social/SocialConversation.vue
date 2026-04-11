@@ -597,7 +597,7 @@ $convo-font-body: 'Karla', sans-serif;
     padding: 16px 24px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 12px;
     min-height: 0;
 
     &--hidden { visibility: hidden; }
