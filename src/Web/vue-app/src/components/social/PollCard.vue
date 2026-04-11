@@ -16,7 +16,7 @@
         :key="option.id"
         type="button"
         :disabled="voting"
-        class="poll-option relative block w-full overflow-hidden rounded-lg border text-left transition disabled:cursor-default disabled:opacity-70"
+        class="poll-option relative block w-full overflow-hidden rounded-lg text-left transition disabled:cursor-default disabled:opacity-70"
         :class="{ 'is-voted': option.hasVoted }"
         @click="vote(option)"
       >
@@ -85,32 +85,27 @@ async function vote(option: PollOption) {
 <style scoped>
 .poll-option {
   background: var(--soc-content-bg);
-  border-color: var(--soc-border);
   cursor: pointer;
   isolation: isolate;
+  box-shadow: inset 0 0 0 1px var(--soc-border);
 }
 .poll-option:hover:not(:disabled) {
-  border-color: var(--soc-text);
+  box-shadow: inset 0 0 0 1px var(--soc-text);
 }
 .poll-option.is-voted {
-  border-color: var(--soc-text);
+  box-shadow: inset 0 0 0 1px var(--soc-text);
 }
 .poll-option__fill {
-  position: absolute;
-  top: -1px;
-  left: -1px;
-  bottom: -1px;
-  right: auto;
-  background: rgba(21, 128, 61, 0.2);
+  background: rgba(124, 58, 237, 0.22);
 }
 .poll-option.is-voted .poll-option__fill {
-  background: rgba(21, 128, 61, 0.35);
+  background: rgba(124, 58, 237, 0.38);
 }
 
 :global(body.soc--dark) .poll-option__fill {
-  background: rgba(74, 222, 128, 0.22);
+  background: rgba(167, 139, 250, 0.25);
 }
 :global(body.soc--dark) .poll-option.is-voted .poll-option__fill {
-  background: rgba(74, 222, 128, 0.4);
+  background: rgba(167, 139, 250, 0.42);
 }
 </style>
