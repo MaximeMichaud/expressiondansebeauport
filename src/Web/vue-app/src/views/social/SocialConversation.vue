@@ -62,6 +62,7 @@
                 :src="url"
                 class="soc-convo__bubble-img soc-convo__bubble-img--pending"
                 alt=""
+                @load="handleMediaLoad"
               />
             </div>
             <div
@@ -81,6 +82,7 @@
                     preload="metadata"
                     class="soc-convo__bubble-img"
                     style="background: #000; pointer-events: none;"
+                    @loadedmetadata="handleMediaLoad"
                   />
                   <div class="soc-convo__video-play">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
@@ -91,6 +93,7 @@
                   :src="m.thumbnailUrl || m.mediaUrl"
                   class="soc-convo__bubble-img"
                   alt=""
+                  @load="handleMediaLoad"
                   @click="openLightbox(m.mediaUrl, m.originalUrl, m.contentType)"
                 />
               </template>
@@ -317,6 +320,19 @@ function scrollToBottom(smooth = false) {
       }
     })
   })
+}
+
+// Called by @load on <img> and @loadedmetadata on <video>. We only re-pin to
+// the bottom if the user is already near the bottom, so it doesn't yank them
+// up when they're reading older messages while new media loads.
+function handleMediaLoad() {
+  const el = messagesContainer.value
+  if (!el) return
+  const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight
+  const nearBottom = distanceFromBottom < 200
+  if (nearBottom || !ready.value) {
+    el.scrollTo({ top: el.scrollHeight, behavior: 'instant' })
+  }
 }
 
 async function loadConversationInfo() {
