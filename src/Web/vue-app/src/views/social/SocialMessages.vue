@@ -194,7 +194,7 @@
       </div>
 
       <!-- Admin viewing banner -->
-      <div v-if="adminSelectedMember" class="soc-admin-viewing-banner">
+      <div v-if="adminSelectedMember" class="soc-admin-viewing-banner" style="margin-top: auto;">
         <button @click="clearAdminMember" class="soc-admin-viewing-banner__back">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
         </button>
