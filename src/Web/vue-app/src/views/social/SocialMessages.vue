@@ -269,7 +269,8 @@ function onAdminMemberSearch() {
 }
 
 async function searchAdminMembers(query: string) {
-  adminLoadingMembers.value = true
+  const showSpinner = adminSearchResults.value.length === 0
+  if (showSpinner) adminLoadingMembers.value = true
   try {
     adminSearchResults.value = await socialService.searchMembers(query)
   } catch { adminSearchResults.value = [] }
