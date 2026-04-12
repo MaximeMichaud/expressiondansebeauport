@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, watch } from 'vue'
 import LogoEdb from '@/assets/icons/logo__edb.svg'
 import { useSocialToast } from '@/composables/useSocialToast'
 
@@ -57,14 +57,12 @@ function syncBodyDark(dark: boolean) {
   document.body.classList.toggle('soc--dark', dark)
 }
 syncBodyDark(isDarkMode.value)
+watch(isDarkMode, syncBodyDark)
 
 function toggleTheme() {
   isDarkMode.value = !isDarkMode.value
   localStorage.setItem('soc-theme', isDarkMode.value ? 'dark' : 'light')
-  syncBodyDark(isDarkMode.value)
 }
-
-onUnmounted(() => { document.body.classList.remove('soc--dark') })
 </script>
 
 <style lang="scss">

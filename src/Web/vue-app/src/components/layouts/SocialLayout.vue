@@ -158,11 +158,11 @@ function syncBodyDark(dark: boolean) {
   document.body.classList.toggle('soc--dark', dark)
 }
 syncBodyDark(isDarkMode.value)
+watch(isDarkMode, syncBodyDark)
 
 function toggleTheme() {
   isDarkMode.value = !isDarkMode.value
   localStorage.setItem('soc-theme', isDarkMode.value ? 'dark' : 'light')
-  syncBodyDark(isDarkMode.value)
 }
 const unreadCount = computed(() => memberStore.unreadMessageCount)
 const userName = computed(() => {
@@ -253,7 +253,6 @@ watch(isAuthenticated, (val) => {
 }, { immediate: true })
 onUnmounted(() => {
   if (unreadPoll) clearInterval(unreadPoll)
-  document.body.classList.remove('soc--dark')
 })
 
 const isActive = (name: string) => router.currentRoute.value.name === name
