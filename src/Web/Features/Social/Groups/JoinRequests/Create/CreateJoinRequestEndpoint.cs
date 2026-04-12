@@ -62,13 +62,13 @@ public class CreateJoinRequestEndpoint : Endpoint<CreateJoinRequestRequest>
         }
 
         var group = await _groupRepository.FindById(req.GroupId);
-        var professors = await _joinRequestService.GetProfessorsForGroup(req.GroupId);
+        var recipientIds = await _joinRequestService.GetRecipientMemberIds(req.GroupId);
 
-        foreach (var prof in professors)
+        foreach (var recipientId in recipientIds)
         {
-            var profMember = _memberRepository.FindById(prof.MemberId);
-            if (profMember == null) continue;
-            var connectionId = ChatHub.GetConnectionId(profMember.UserId.ToString());
+            var recipientMember = _memberRepository.FindById(recipientId);
+            if (recipientMember == null) continue;
+            var connectionId = ChatHub.GetConnectionId(recipientMember.UserId.ToString());
             if (connectionId != null)
             {
                 await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveMessage", new

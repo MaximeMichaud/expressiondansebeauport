@@ -10,4 +10,5 @@ public interface IJoinRequestService
     Task<JoinRequest?> GetPendingRequest(Guid groupId, Guid memberId);
     Task<JoinRequest?> GetJoinRequestById(Guid id);
     Task<List<GroupMember>> GetProfessorsForGroup(Guid groupId);
+    Task<List<Guid>> GetRecipientMemberIds(Guid groupId);
 }

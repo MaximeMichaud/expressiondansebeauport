@@ -72,13 +72,13 @@ public class AcceptJoinRequestEndpoint : Endpoint<AcceptJoinRequestRequest>
                 }
             }
 
-            var professors = await _joinRequestService.GetProfessorsForGroup(joinRequest.GroupId);
-            foreach (var prof in professors)
+            var recipientIds = await _joinRequestService.GetRecipientMemberIds(joinRequest.GroupId);
+            foreach (var recipientId in recipientIds)
             {
-                if (prof.MemberId == member.Id) continue;
-                var profMember = _memberRepository.FindById(prof.MemberId);
-                if (profMember == null) continue;
-                var connId = ChatHub.GetConnectionId(profMember.UserId.ToString());
+                if (recipientId == member.Id) continue;
+                var recipientMember = _memberRepository.FindById(recipientId);
+                if (recipientMember == null) continue;
+                var connId = ChatHub.GetConnectionId(recipientMember.UserId.ToString());
                 if (connId != null)
                 {
                     await _hubContext.Clients.Client(connId).SendAsync("JoinRequestResolved", new

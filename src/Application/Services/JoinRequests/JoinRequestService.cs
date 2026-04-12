@@ -47,8 +47,18 @@ public class JoinRequestService : IJoinRequestService
             throw new InvalidOperationException("Member not found.");
 
         var professors = await _groupMemberRepository.GetProfessorsOfGroup(groupId);
-        if (professors.Count == 0)
-            throw new InvalidOperationException("No professors in this group.");
+
+        // Collect recipient member IDs — professors first, fallback to admins
+        var recipientMemberIds = professors.Select(p => p.MemberId).ToList();
+
+        if (recipientMemberIds.Count == 0)
+        {
+            var admins = await _memberRepository.GetAdminMembers();
+            recipientMemberIds = admins.Select(a => a.Id).ToList();
+        }
+
+        if (recipientMemberIds.Count == 0)
+            throw new InvalidOperationException("No professors or admins available.");
 
         var joinRequest = new JoinRequest();
         joinRequest.SetId(Guid.NewGuid());
@@ -61,9 +71,9 @@ public class JoinRequestService : IJoinRequestService
 
         var content = $"{requester.FullName} souhaite rejoindre le groupe {group.Name}";
 
-        foreach (var prof in professors)
+        foreach (var recipientId in recipientMemberIds)
         {
-            var conversation = await _conversationService.GetOrCreateConversation(requesterMemberId, prof.MemberId);
+            var conversation = await _conversationService.GetOrCreateConversation(requesterMemberId, recipientId);
             if (conversation == null) continue;
 
             await _conversationService.SendMessage(
@@ -87,9 +97,14 @@ public class JoinRequestService : IJoinRequestService
         if (joinRequest.Status != JoinRequestStatus.Pending)
             throw new InvalidOperationException("Join request already resolved.");
 
+        // Allow professors of the group OR global admins
         var profGm = await _groupMemberRepository.FindProfessorInGroup(joinRequest.GroupId, professorMemberId);
         if (profGm == null)
-            throw new InvalidOperationException("Not a professor in this group.");
+        {
+            var actingMember = _memberRepository.FindById(professorMemberId);
+            if (actingMember == null || !actingMember.User.HasRole(Domain.Constants.User.Roles.ADMINISTRATOR))
+                throw new InvalidOperationException("Not authorized to accept this request.");
+        }
 
         var professor = _memberRepository.FindById(professorMemberId, asNoTracking: false);
         if (professor == null)
@@ -129,9 +144,14 @@ public class JoinRequestService : IJoinRequestService
         if (joinRequest.Status != JoinRequestStatus.Pending)
             throw new InvalidOperationException("Join request already resolved.");
 
+        // Allow professors of the group OR global admins
         var profGm = await _groupMemberRepository.FindProfessorInGroup(joinRequest.GroupId, professorMemberId);
         if (profGm == null)
-            throw new InvalidOperationException("Not a professor in this group.");
+        {
+            var actingMember = _memberRepository.FindById(professorMemberId);
+            if (actingMember == null || !actingMember.User.HasRole(Domain.Constants.User.Roles.ADMINISTRATOR))
+                throw new InvalidOperationException("Not authorized to reject this request.");
+        }
 
         var professor = _memberRepository.FindById(professorMemberId, asNoTracking: false);
         if (professor == null)
@@ -166,6 +186,17 @@ public class JoinRequestService : IJoinRequestService
 
     public async Task<List<GroupMember>> GetProfessorsForGroup(Guid groupId)
     {
-        return await _groupMemberRepository.GetProfessorsOfGroup(groupId);
+        var professors = await _groupMemberRepository.GetProfessorsOfGroup(groupId);
+        return professors;
+    }
+
+    public async Task<List<Guid>> GetRecipientMemberIds(Guid groupId)
+    {
+        var professors = await _groupMemberRepository.GetProfessorsOfGroup(groupId);
+        if (professors.Count > 0)
+            return professors.Select(p => p.MemberId).ToList();
+
+        var admins = await _memberRepository.GetAdminMembers();
+        return admins.Select(a => a.Id).ToList();
     }
 }
