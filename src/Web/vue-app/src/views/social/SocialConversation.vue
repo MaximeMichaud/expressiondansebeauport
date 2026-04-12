@@ -793,11 +793,12 @@ $convo-font-body: 'Karla', sans-serif;
     justify-content: center;
     gap: 8px;
     padding: 12px 16px;
-    border-top: 1px solid var(--soc-border, #e7e0da);
+    border-top: 1px solid var(--soc-border, #d6cfc9);
+    border-bottom: 1px solid var(--soc-border, #d6cfc9);
     flex-shrink: 0;
     font-size: 0.8rem;
-    color: var(--soc-text-muted, #78716c);
-    background: var(--soc-bar-active, #eae8e4);
+    color: var(--soc-text, #292524);
+    background: var(--soc-input-bg, #faf9f7);
   }
 
   &__admin-banner-link {
@@ -805,7 +806,7 @@ $convo-font-body: 'Karla', sans-serif;
     color: var(--soc-bar-text-strong, #1a1a1a);
     text-decoration: underline;
     text-underline-offset: 2px;
-    &:hover { text-decoration: none; }
+    &:hover { opacity: 0.7; }
   }
 
   &__input-bar {
