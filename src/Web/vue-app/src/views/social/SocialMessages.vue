@@ -150,7 +150,7 @@
 
       <!-- Admin conversation list header -->
       <div v-if="adminSelectedMember" class="flex items-center gap-3 border-b px-4 py-3" style="border-color: var(--soc-divider, #f0f0f0);">
-        <button @click="clearAdminMember" style="color: var(--soc-text-muted, #78716c);" class="flex items-center justify-center w-8 h-8 rounded-lg transition hover:opacity-70 cursor-pointer">
+        <button @click="clearAdminMember" class="soc-admin-back-btn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
         </button>
         <h2 class="text-lg font-bold" style="color: var(--soc-bar-text-strong, #1a1a1a);">Messages</h2>
@@ -463,6 +463,19 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss">
+.soc-admin-back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: var(--soc-text-muted, #78716c);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  &:hover { color: var(--soc-bar-text-strong, #1a1a1a); background: var(--soc-bar-hover, #f5f3f0); }
+}
+
 .soc-admin-member-link {
   display: flex;
   align-items: center;
