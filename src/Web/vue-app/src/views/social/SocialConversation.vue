@@ -794,7 +794,6 @@ $convo-font-body: 'Karla', sans-serif;
     gap: 8px;
     padding: 12px 16px;
     border-top: 1px solid var(--soc-border, #d6cfc9);
-    border-bottom: 1px solid var(--soc-border, #d6cfc9);
     flex-shrink: 0;
     font-size: 0.8rem;
     color: var(--soc-text, #292524);
