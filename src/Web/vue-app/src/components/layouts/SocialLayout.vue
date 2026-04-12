@@ -227,15 +227,6 @@ watch(isAuthenticated, (val) => {
       try {
         const result = await socialService.getUnreadCount()
         memberStore.setUnreadCount(result.count)
-        if (result.joinRequestNotifications?.length) {
-          for (const notif of result.joinRequestNotifications) {
-            if (notif.status === 'Accepted') {
-              toast.success(`Votre demande pour ${notif.groupName} a été acceptée!`)
-            } else if (notif.status === 'Rejected') {
-              toast.error(`Votre demande pour ${notif.groupName} a été refusée.`)
-            }
-          }
-        }
       } catch { /* */ }
     }, 3000)
   } else if (unreadPoll) {

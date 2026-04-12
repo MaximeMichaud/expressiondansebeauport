@@ -122,6 +122,17 @@ public class JoinRequestService : IJoinRequestService
         gm.SetRole(GroupMemberRole.Member);
         gm.SetJoinedAt(InstantHelper.GetLocalNow());
         await _groupMemberRepository.Add(gm);
+
+        var group = await _groupRepository.FindById(joinRequest.GroupId);
+        var conversation = await _conversationService.GetOrCreateConversation(joinRequest.RequesterMemberId, professorMemberId);
+        if (conversation != null)
+        {
+            await _conversationService.SendMessage(
+                conversation.Id,
+                professorMemberId,
+                $"{professor.FullName} a accepté votre demande pour {group?.Name ?? "le groupe"}",
+                new List<MessageMediaItem>());
+        }
     }
 
     public async Task RejectRequest(Guid joinRequestId, Guid professorMemberId)
@@ -150,6 +161,17 @@ public class JoinRequestService : IJoinRequestService
         joinRequest.SetResolvedByMember(professor);
         joinRequest.SetResolvedAt(InstantHelper.GetLocalNow());
         await _joinRequestRepository.Update(joinRequest);
+
+        var group = await _groupRepository.FindById(joinRequest.GroupId);
+        var conversation = await _conversationService.GetOrCreateConversation(joinRequest.RequesterMemberId, professorMemberId);
+        if (conversation != null)
+        {
+            await _conversationService.SendMessage(
+                conversation.Id,
+                professorMemberId,
+                $"{professor.FullName} a refusé votre demande pour {group?.Name ?? "le groupe"}",
+                new List<MessageMediaItem>());
+        }
     }
 
     public async Task<JoinRequest?> GetPendingRequest(Guid groupId, Guid memberId)
