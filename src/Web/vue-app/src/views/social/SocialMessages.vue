@@ -7,7 +7,7 @@
         @click="showNewConvo = !showNewConvo"
         class="rounded-lg border border-[rgba(21,128,61,0.15)] bg-[rgba(21,128,61,0.06)] px-3 py-1.5 text-xs font-semibold text-[#15803d] transition hover:bg-[rgba(21,128,61,0.12)] cursor-pointer"
       >
-        {{ showNewConvo ? 'Fermer' : '+ Nouveau' }}
+        {{ showNewConvo ? 'Fermer' : '+ Nouvelle conversation' }}
       </button>
     </div>
 
