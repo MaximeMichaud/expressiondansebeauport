@@ -163,9 +163,7 @@ public class JoinRequestService : IJoinRequestService
             conversationId,
             senderId,
             $"{senderName} a accepté votre demande pour {group?.Name ?? "le groupe"}",
-            new List<MessageMediaItem>(),
-            MessageType.JoinRequest,
-            joinRequest.Id);
+            new List<MessageMediaItem>());
     }
 
     public async Task RejectRequest(Guid joinRequestId, Guid professorMemberId)
@@ -227,9 +225,7 @@ public class JoinRequestService : IJoinRequestService
             conversationId,
             senderId,
             $"{senderName} a refusé votre demande pour {group?.Name ?? "le groupe"}",
-            new List<MessageMediaItem>(),
-            MessageType.JoinRequest,
-            joinRequest.Id);
+            new List<MessageMediaItem>());
     }
 
     public async Task<JoinRequest?> GetPendingRequest(Guid groupId, Guid memberId)
