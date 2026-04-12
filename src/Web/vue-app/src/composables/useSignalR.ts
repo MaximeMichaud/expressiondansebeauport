@@ -4,6 +4,7 @@ import { ref, onUnmounted } from 'vue'
 const connection = ref<signalR.HubConnection | null>(null)
 const isConnected = ref(false)
 const messageCallbacks = new Set<(data: any) => void>()
+const joinRequestCallbacks = new Set<(data: any) => void>()
 
 export function useSignalR() {
   function getAccessToken(): string {
@@ -29,6 +30,10 @@ export function useSignalR() {
       messageCallbacks.forEach(cb => cb(data))
     })
 
+    connection.value.on('JoinRequestResolved', (data: any) => {
+      joinRequestCallbacks.forEach(cb => cb(data))
+    })
+
     connection.value.onreconnected(() => { isConnected.value = true })
     connection.value.onclose(() => { isConnected.value = false })
 
@@ -48,6 +53,14 @@ export function useSignalR() {
     messageCallbacks.delete(callback)
   }
 
+  function onJoinRequestResolved(callback: (data: any) => void) {
+    joinRequestCallbacks.add(callback)
+  }
+
+  function offJoinRequestResolved(callback: (data: any) => void) {
+    joinRequestCallbacks.delete(callback)
+  }
+
   async function stop() {
     if (connection.value) {
       await connection.value.stop()
@@ -59,5 +72,5 @@ export function useSignalR() {
     // Don't stop on unmount — connection is shared
   })
 
-  return { connection, isConnected, start, stop, onMessage, offMessage }
+  return { connection, isConnected, start, stop, onMessage, offMessage, onJoinRequestResolved, offJoinRequestResolved }
 }
