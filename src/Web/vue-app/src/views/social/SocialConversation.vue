@@ -793,11 +793,11 @@ $convo-font-body: 'Karla', sans-serif;
     justify-content: center;
     gap: 8px;
     padding: 12px 16px;
-    border-top: 1px solid var(--soc-border, #d6cfc9);
+    border-top: 2px solid var(--soc-border, #d0c9c3);
     flex-shrink: 0;
     font-size: 0.8rem;
     color: var(--soc-text, #292524);
-    background: #e8e5e1;
+    background: var(--soc-bar-active, #e0ddd9);
   }
 
   &__admin-banner-link {
