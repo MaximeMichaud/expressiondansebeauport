@@ -46,10 +46,9 @@ public class JoinRequestService : IJoinRequestService
         if (requester == null)
             throw new InvalidOperationException("Membre non trouvé.");
 
-        var professors = await _groupMemberRepository.GetProfessorsOfGroup(groupId);
-
-        // Collect recipient member IDs — professors first, fallback to admins
-        var recipientMemberIds = professors.Select(p => p.MemberId).ToList();
+        // Collect recipient member IDs — professors/admins in group first, fallback to global admins
+        var groupStaff = await _groupMemberRepository.GetProfessorsAndAdminsInGroup(groupId);
+        var recipientMemberIds = groupStaff.Select(p => p.MemberId).ToList();
 
         if (recipientMemberIds.Count == 0)
         {
@@ -194,9 +193,9 @@ public class JoinRequestService : IJoinRequestService
 
     public async Task<List<Guid>> GetRecipientMemberIds(Guid groupId)
     {
-        var professors = await _groupMemberRepository.GetProfessorsOfGroup(groupId);
-        if (professors.Count > 0)
-            return professors.Select(p => p.MemberId).ToList();
+        var groupStaff = await _groupMemberRepository.GetProfessorsAndAdminsInGroup(groupId);
+        if (groupStaff.Count > 0)
+            return groupStaff.Select(p => p.MemberId).ToList();
 
         var admins = await _memberRepository.GetAdminMembers();
         return admins.Select(a => a.Id).ToList();
