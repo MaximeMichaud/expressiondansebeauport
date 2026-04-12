@@ -55,24 +55,19 @@ public class RejectJoinRequestEndpoint : Endpoint<RejectJoinRequestRequest>
         var joinRequest = await _joinRequestService.GetJoinRequestById(req.Id);
         if (joinRequest != null)
         {
-            // Notify requester via ReceiveMessage (reliable channel)
             var requesterMember = _memberRepository.FindById(joinRequest.RequesterMemberId);
             if (requesterMember != null)
             {
-                var connectionId = ChatHub.GetConnectionId(requesterMember.UserId.ToString());
-                if (connectionId != null)
+                await _hubContext.Clients.User(requesterMember.UserId.ToString()).SendAsync("ReceiveMessage", new
                 {
-                    await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveMessage", new
-                    {
-                        Id = Guid.NewGuid(),
-                        Content = $"Votre demande pour {joinRequest.Group?.Name ?? "le groupe"} a été refusée.",
-                        SenderName = member.FullName,
-                        ConversationId = Guid.Empty,
-                        JoinRequestNotification = "Rejected",
-                        GroupName = joinRequest.Group?.Name,
-                        Media = Array.Empty<object>()
-                    }, ct);
-                }
+                    Id = Guid.NewGuid(),
+                    Content = $"Votre demande pour {joinRequest.Group?.Name ?? "le groupe"} a été refusée.",
+                    SenderName = member.FullName,
+                    ConversationId = Guid.Empty,
+                    JoinRequestNotification = "Rejected",
+                    GroupName = joinRequest.Group?.Name,
+                    Media = Array.Empty<object>()
+                }, ct);
             }
         }
 
