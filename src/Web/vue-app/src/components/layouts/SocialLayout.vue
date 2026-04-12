@@ -140,7 +140,7 @@ import { useSignalR } from '@/composables/useSignalR'
 import { useSocialToast } from '@/composables/useSocialToast'
 import LogoEdb from '@/assets/icons/logo__edb.svg'
 
-const { toasts, dismiss: dismissToast } = useSocialToast()
+const { toasts, dismiss: dismissToast, success: toastSuccess, error: toastError } = useSocialToast()
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -210,6 +210,15 @@ watch(isAuthenticated, async (val) => {
     try {
       const result = await socialService.getUnreadCount()
       memberStore.setUnreadCount(result.count)
+      if (result.joinRequestNotifications && result.joinRequestNotifications.length > 0) {
+        for (const n of result.joinRequestNotifications) {
+          if (n.status === 'Accepted') {
+            toastSuccess(`Votre demande pour ${n.groupName} a été acceptée!`, 6000)
+          } else if (n.status === 'Rejected') {
+            toastError(`Votre demande pour ${n.groupName} a été refusée.`, 6000)
+          }
+        }
+      }
     } catch { /* */ }
     try {
       await startSignalR()
@@ -226,6 +235,15 @@ watch(isAuthenticated, (val) => {
       try {
         const result = await socialService.getUnreadCount()
         memberStore.setUnreadCount(result.count)
+        if (result.joinRequestNotifications && result.joinRequestNotifications.length > 0) {
+          for (const n of result.joinRequestNotifications) {
+            if (n.status === 'Accepted') {
+              toastSuccess(`Votre demande pour ${n.groupName} a été acceptée!`, 6000)
+            } else if (n.status === 'Rejected') {
+              toastError(`Votre demande pour ${n.groupName} a été refusée.`, 6000)
+            }
+          }
+        }
       } catch { /* */ }
     }, 3000)
   } else if (unreadPoll) {
