@@ -4,8 +4,6 @@ import { ref, onUnmounted } from 'vue'
 const connection = ref<signalR.HubConnection | null>(null)
 const isConnected = ref(false)
 const messageCallbacks = new Set<(data: any) => void>()
-const joinRequestCallbacks = new Set<(data: any) => void>()
-let _hasJoinRequestHandler = false
 
 export function useSignalR() {
   function getAccessToken(): string {
@@ -31,11 +29,6 @@ export function useSignalR() {
       messageCallbacks.forEach(cb => cb(data))
     })
 
-    connection.value.on('JoinRequestResolved', (data: any) => {
-      joinRequestCallbacks.forEach(cb => cb(data))
-    })
-    _hasJoinRequestHandler = true
-
     connection.value.onreconnected(() => { isConnected.value = true })
     connection.value.onclose(() => { isConnected.value = false })
 
@@ -55,22 +48,6 @@ export function useSignalR() {
     messageCallbacks.delete(callback)
   }
 
-  function onJoinRequestResolved(callback: (data: any) => void) {
-    joinRequestCallbacks.add(callback)
-    // If connection already exists but was started before this handler was added,
-    // register the event listener on the existing connection
-    if (connection.value && !(_hasJoinRequestHandler)) {
-      connection.value.on('JoinRequestResolved', (data: any) => {
-        joinRequestCallbacks.forEach(cb => cb(data))
-      })
-      _hasJoinRequestHandler = true
-    }
-  }
-
-  function offJoinRequestResolved(callback: (data: any) => void) {
-    joinRequestCallbacks.delete(callback)
-  }
-
   async function stop() {
     if (connection.value) {
       await connection.value.stop()
@@ -82,5 +59,5 @@ export function useSignalR() {
     // Don't stop on unmount — connection is shared
   })
 
-  return { connection, isConnected, start, stop, onMessage, offMessage, onJoinRequestResolved, offJoinRequestResolved }
+  return { connection, isConnected, start, stop, onMessage, offMessage }
 }

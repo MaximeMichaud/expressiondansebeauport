@@ -146,8 +146,7 @@ const router = useRouter()
 const userStore = useUserStore()
 const memberStore = useMemberStore()
 const socialService = useSocialService()
-const { start: startSignalR, onMessage, onJoinRequestResolved } = useSignalR()
-const toast = useSocialToast()
+const { start: startSignalR, onMessage } = useSignalR()
 
 const authService = useAuthenticationService()
 
