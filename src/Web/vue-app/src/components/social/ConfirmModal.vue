@@ -51,7 +51,7 @@ defineEmits<{
 }>()
 </script>
 
-<style scoped>
+<style>
 .confirm-modal__backdrop {
   position: fixed;
   inset: 0;
@@ -80,7 +80,8 @@ defineEmits<{
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 9999px;
-  background: #fef2f2;
+  background: rgba(220, 38, 38, 0.08);
+  border: 2px solid rgba(220, 38, 38, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -141,37 +142,38 @@ defineEmits<{
 }
 
 /* Dark mode (driven by .soc--dark on body via SocialLayout) */
-:global(body.soc--dark) .confirm-modal__card {
-  background: #181716;
-  color: #e7e5e4;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+body.soc--dark .confirm-modal__card {
+  background: #222120 !important;
+  color: #e7e5e4 !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
 }
 
-:global(body.soc--dark) .confirm-modal__icon {
-  background: rgba(220, 38, 38, 0.15);
+body.soc--dark .confirm-modal__icon {
+  background: rgba(220, 38, 38, 0.15) !important;
+  border-color: rgba(220, 38, 38, 0.3) !important;
 }
 
-:global(body.soc--dark) .confirm-modal__title {
-  color: #e7e5e4;
+body.soc--dark .confirm-modal__title {
+  color: #e7e5e4 !important;
 }
 
-:global(body.soc--dark) .confirm-modal__message {
-  color: #a8a29e;
+body.soc--dark .confirm-modal__message {
+  color: #a8a29e !important;
 }
 
-:global(body.soc--dark) .confirm-modal__btn--cancel {
-  background: rgba(255, 255, 255, 0.08);
-  color: #e7e5e4;
+body.soc--dark .confirm-modal__btn--cancel {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #e7e5e4 !important;
 }
-:global(body.soc--dark) .confirm-modal__btn--cancel:hover {
-  background: rgba(255, 255, 255, 0.14);
+body.soc--dark .confirm-modal__btn--cancel:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
 }
 
-:global(body.soc--dark) .confirm-modal__btn--confirm {
-  background: #e7e5e4;
-  color: #0a0a09;
+body.soc--dark .confirm-modal__btn--confirm {
+  background: #e7e5e4 !important;
+  color: #0a0a09 !important;
 }
-:global(body.soc--dark) .confirm-modal__btn--confirm:hover {
-  background: #fff;
+body.soc--dark .confirm-modal__btn--confirm:hover {
+  background: #fff !important;
 }
 </style>
