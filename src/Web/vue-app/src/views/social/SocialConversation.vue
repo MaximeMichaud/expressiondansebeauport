@@ -15,18 +15,11 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
       </button>
       <template v-if="isAdminView">
-        <router-link v-if="adminParticipantA.id" :to="{ name: 'socialMemberProfile', params: { id: adminParticipantA.id } }" class="soc-convo__profile-link">
-          <div class="soc-convo__avatar" :style="{ background: getAvatarColor(adminParticipantA.name) }">
-            <span class="soc-convo__avatar-initials">{{ getInitials(adminParticipantA.name) }}</span>
+        <router-link v-if="adminOtherMember.id" :to="{ name: 'socialMemberProfile', params: { id: adminOtherMember.id } }" class="soc-convo__profile-link">
+          <div class="soc-convo__avatar" :style="{ background: getAvatarColor(adminOtherMember.name) }">
+            <span class="soc-convo__avatar-initials">{{ getInitials(adminOtherMember.name) }}</span>
           </div>
-          <span class="soc-convo__name">{{ adminParticipantA.name }}</span>
-        </router-link>
-        <span class="text-xs text-gray-400">&amp;</span>
-        <router-link v-if="adminParticipantB.id" :to="{ name: 'socialMemberProfile', params: { id: adminParticipantB.id } }" class="soc-convo__profile-link">
-          <div class="soc-convo__avatar" :style="{ background: getAvatarColor(adminParticipantB.name) }">
-            <span class="soc-convo__avatar-initials">{{ getInitials(adminParticipantB.name) }}</span>
-          </div>
-          <span class="soc-convo__name">{{ adminParticipantB.name }}</span>
+          <h2 class="soc-convo__name">{{ adminOtherMember.name }}</h2>
         </router-link>
       </template>
       <template v-else>
@@ -189,7 +182,7 @@
     <!-- Admin readonly banner -->
     <div v-if="isAdminView" class="soc-convo__admin-banner">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-      <span>Consultation admin, lecture seule</span>
+      <span>Lecture seule, vu par <router-link v-if="adminViewingMember.id" :to="{ name: 'socialMemberProfile', params: { id: adminViewingMember.id } }" class="soc-convo__admin-banner-link">{{ adminViewingMember.name }}</router-link></span>
     </div>
 
     <!-- Input -->
@@ -337,8 +330,8 @@ const otherMemberName = ref('Conversation')
 const otherMemberId = ref('')
 const otherMemberPfp = ref('')
 const otherMemberColor = ref('')
-const adminParticipantA = ref<{ id: string; name: string }>({ id: '', name: '' })
-const adminParticipantB = ref<{ id: string; name: string }>({ id: '', name: '' })
+const adminViewingMember = ref<{ id: string; name: string }>({ id: '', name: '' })
+const adminOtherMember = ref<{ id: string; name: string }>({ id: '', name: '' })
 
 const effectiveOtherMemberPfp = computed(() => {
   return avatarRegistry.getAvatar(otherMemberId.value, otherMemberPfp.value) || ''
@@ -428,8 +421,8 @@ function handleMediaLoad() {
 
 async function loadConversationInfo() {
   if (isAdminView.value) {
-    adminParticipantA.value = { id: (route.query.pA as string) || '', name: (route.query.pAName as string) || '' }
-    adminParticipantB.value = { id: (route.query.pB as string) || '', name: (route.query.pBName as string) || '' }
+    adminViewingMember.value = { id: (route.query.viewingId as string) || '', name: (route.query.viewingName as string) || '' }
+    adminOtherMember.value = { id: (route.query.otherId as string) || '', name: (route.query.otherName as string) || '' }
     return
   }
 
@@ -805,6 +798,14 @@ $convo-font-body: 'Karla', sans-serif;
     font-size: 0.8rem;
     color: var(--soc-text-muted, #78716c);
     background: var(--soc-bar-hover, #f5f3f0);
+  }
+
+  &__admin-banner-link {
+    font-weight: 600;
+    color: var(--soc-bar-text-strong, #1a1a1a);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    &:hover { text-decoration: none; }
   }
 
   &__input-bar {
