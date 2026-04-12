@@ -80,4 +80,14 @@ public class GroupMemberRepository : IGroupMemberRepository
                 gm.MemberId == memberId &&
                 gm.Role == GroupMemberRole.Professor);
     }
+
+    public async Task<List<GroupMember>> GetProfessorsOfGroup(Guid groupId)
+    {
+        return await _context.GroupMembers
+            .AsNoTracking()
+            .Where(gm => gm.GroupId == groupId && gm.Role == GroupMemberRole.Professor)
+            .Include(gm => gm.Member).ThenInclude(m => m.User)
+            .OrderBy(gm => gm.Member.LastName).ThenBy(gm => gm.Member.FirstName)
+            .ToListAsync();
+    }
 }
