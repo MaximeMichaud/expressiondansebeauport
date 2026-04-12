@@ -1,3 +1,4 @@
+using Application.Common;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Repositories;
@@ -80,16 +81,22 @@ public class ConversationService : IConversationService
         return message;
     }
 
-    public async Task<List<Conversation>> GetConversations(Guid memberId, int page)
+    public async Task<PaginatedResult<Conversation>> GetConversations(Guid memberId, int page)
     {
-        var skip = (page - 1) * 20;
-        return await _conversationRepository.GetForMember(memberId, skip, 20);
+        const int pageSize = 20;
+        var skip = (page - 1) * pageSize;
+        var items = await _conversationRepository.GetForMember(memberId, skip, pageSize + 1);
+        var hasMore = items.Count > pageSize;
+        return new PaginatedResult<Conversation>(items.Take(pageSize).ToList(), hasMore);
     }
 
-    public async Task<List<Message>> GetMessages(Guid conversationId, int page)
+    public async Task<PaginatedResult<Message>> GetMessages(Guid conversationId, int page)
     {
-        var skip = (page - 1) * 30;
-        return await _messageRepository.GetByConversation(conversationId, skip, 30);
+        const int pageSize = 30;
+        var skip = (page - 1) * pageSize;
+        var items = await _messageRepository.GetByConversation(conversationId, skip, pageSize + 1);
+        var hasMore = items.Count > pageSize;
+        return new PaginatedResult<Message>(items.Take(pageSize).ToList(), hasMore);
     }
 
     public async Task MarkAsRead(Guid conversationId, Guid memberId)

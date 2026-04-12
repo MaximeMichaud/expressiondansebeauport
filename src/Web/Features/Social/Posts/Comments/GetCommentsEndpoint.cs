@@ -40,7 +40,8 @@ public class GetCommentsEndpoint : Endpoint<GetCommentsRequest>
             return;
         }
 
-        var comments = await _postService.GetComments(req.PostId, req.Page);
+        var commentsResult = await _postService.GetComments(req.PostId, req.Page);
+        var comments = commentsResult.Items;
 
         var result = comments.Select(c => new
         {
@@ -55,6 +56,6 @@ public class GetCommentsEndpoint : Endpoint<GetCommentsRequest>
             Created = c.Created.ToDateTimeUtc().ToString("yyyy-MM-ddTHH:mm:ssZ")
         });
 
-        await Send.OkAsync(result, ct);
+        await Send.OkAsync(new { Items = result, commentsResult.HasMore }, ct);
     }
 }

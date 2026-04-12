@@ -1,3 +1,4 @@
+using Application.Common;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Helpers;
@@ -261,16 +262,22 @@ public class PostService : IPostService
         await _pollRepository.AddVote(vote);
     }
 
-    public async Task<List<Post>> GetGroupFeed(Guid groupId, int page)
+    public async Task<PaginatedResult<Post>> GetGroupFeed(Guid groupId, int page)
     {
-        var skip = (page - 1) * 20;
-        return await _postRepository.GetByGroupId(groupId, skip, 20);
+        const int pageSize = 20;
+        var skip = (page - 1) * pageSize;
+        var items = await _postRepository.GetByGroupId(groupId, skip, pageSize + 1);
+        var hasMore = items.Count > pageSize;
+        return new PaginatedResult<Post>(items.Take(pageSize).ToList(), hasMore);
     }
 
-    public async Task<List<Post>> GetAnnouncements(int page)
+    public async Task<PaginatedResult<Post>> GetAnnouncements(int page)
     {
-        var skip = (page - 1) * 10;
-        return await _postRepository.GetAnnouncements(skip, 10);
+        const int pageSize = 10;
+        var skip = (page - 1) * pageSize;
+        var items = await _postRepository.GetAnnouncements(skip, pageSize + 1);
+        var hasMore = items.Count > pageSize;
+        return new PaginatedResult<Post>(items.Take(pageSize).ToList(), hasMore);
     }
 
     public async Task<Post?> GetPostById(Guid postId)
@@ -278,9 +285,12 @@ public class PostService : IPostService
         return await _postRepository.FindById(postId);
     }
 
-    public async Task<List<Comment>> GetComments(Guid postId, int page)
+    public async Task<PaginatedResult<Comment>> GetComments(Guid postId, int page)
     {
-        var skip = (page - 1) * 10;
-        return await _commentRepository.GetByPostId(postId, skip, 10);
+        const int pageSize = 10;
+        var skip = (page - 1) * pageSize;
+        var items = await _commentRepository.GetByPostId(postId, skip, pageSize + 1);
+        var hasMore = items.Count > pageSize;
+        return new PaginatedResult<Comment>(items.Take(pageSize).ToList(), hasMore);
     }
 }
