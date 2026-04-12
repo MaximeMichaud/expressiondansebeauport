@@ -158,7 +158,8 @@ export interface ISocialService {
   setGroupImage(groupId: string, imageUrl: string): Promise<SucceededOrNotResponse>
   removeGroupImage(groupId: string): Promise<SucceededOrNotResponse>
   getAnnouncements(page?: number): Promise<Post[]>
-  createAnnouncement(content: string): Promise<SucceededOrNotResponse>
+  createAnnouncement(content: string, media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>): Promise<SucceededOrNotResponse>
+  updateAnnouncement(id: string, content: string, media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>): Promise<SucceededOrNotResponse>
   getConversations(page?: number): Promise<Conversation[]>
   getMessages(conversationId: string, page?: number): Promise<Message[]>
   sendMessage(
@@ -177,6 +178,10 @@ export interface ISocialService {
   deleteMember(id: string): Promise<SucceededOrNotResponse>
   promoteMember(id: string): Promise<SucceededOrNotResponse>
   demoteMember(id: string): Promise<SucceededOrNotResponse>
+  requestJoinGroup(groupId: string): Promise<any>
+  acceptJoinRequest(joinRequestId: string): Promise<SucceededOrNotResponse>
+  rejectJoinRequest(joinRequestId: string): Promise<SucceededOrNotResponse>
+  getMyJoinRequest(groupId: string): Promise<any>
   uploadFile(file: File): Promise<{
     succeeded: boolean
     displayUrl?: string
