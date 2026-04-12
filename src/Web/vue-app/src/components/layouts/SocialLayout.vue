@@ -972,11 +972,19 @@ body.soc--dark {
     color: #a8a29e !important;
   }
 
-  .portal-modal__icon-ring,
   .ann-modal__icon-ring,
   .ann-d-modal__icon-ring,
   .convo-modal__icon-ring,
   .mp-modal__icon-ring {
+    background: rgba(220, 38, 38, 0.15) !important;
+  }
+
+  // portal-modal icon-ring: only override when used for destructive actions (has inline red bg)
+  // The join modal icon-ring keeps its neutral var(--soc-bar-hover) color
+  .portal-modal__icon-ring {
+    background: var(--soc-bar-hover) !important;
+  }
+  .portal-modal__icon-ring[style*="rgba(220"] {
     background: rgba(220, 38, 38, 0.15) !important;
   }
 
