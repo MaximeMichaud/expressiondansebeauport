@@ -1,5 +1,5 @@
 <template>
-  <div ref="feedContainer" class="flex min-h-[calc(100vh-120px)] flex-col overflow-y-auto">
+  <div class="flex min-h-[calc(100vh-120px)] flex-col">
     <!-- Group header -->
     <div class="group-banner flex items-center gap-3 border-b border-gray-200 bg-white px-4 py-3">
       <button @click="$router.push({ name: 'socialPortal' })" class="text-gray-600">
@@ -18,7 +18,15 @@
         @upload="handleGroupImageUpload"
         @remove="confirmGroupImageRemove = true"
       />
-      <h1 class="text-base font-semibold text-gray-900">{{ group?.name || 'Groupe' }}</h1>
+      <h1 class="flex-1 text-base font-semibold text-gray-900">{{ group?.name || 'Groupe' }}</h1>
+      <button
+        @click="showLeaveModal = true"
+        class="soc-header__icon-btn soc-header__icon-btn--logout"
+        style="width: 30px; height: 30px;"
+        title="Quitter le groupe"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
     </div>
 
     <!-- Feed -->
@@ -324,6 +332,16 @@
       @cancel="confirmGroupImageRemove = false"
     />
 
+    <ConfirmModal
+      :open="showLeaveModal"
+      title="Quitter ce groupe?"
+      message="Vous ne pourrez plus voir les publications de ce groupe."
+      confirm-label="Quitter"
+      :danger="true"
+      @confirm="handleLeaveGroup"
+      @cancel="showLeaveModal = false"
+    />
+
     <ImageLightbox
       v-model:open="lightboxOpen"
       :display-url="lightboxDisplayUrl"
@@ -335,7 +353,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useUserStore } from '@/stores/userStore'
 import { useMemberStore } from '@/stores/memberStore'
@@ -352,6 +370,7 @@ import { useImageAttachment } from '@/composables/useImageAttachment'
 import { useInfiniteScroll } from '@/composables/useInfiniteScroll'
 
 const route = useRoute()
+const router = useRouter()
 const socialService = useSocialService()
 const toast = useSocialToast()
 const userStore = useUserStore()
@@ -366,6 +385,7 @@ const groupId = computed(() => route.params.id as string)
 const showPollModal = ref(false)
 const uploadingGroupImage = ref(false)
 const confirmGroupImageRemove = ref(false)
+const showLeaveModal = ref(false)
 
 const group = ref<any>(null)
 const feedContainer = ref<HTMLElement | null>(null)
@@ -508,6 +528,21 @@ async function handleGroupImageRemove() {
   }
 }
 
+async function handleLeaveGroup() {
+  showLeaveModal.value = false
+  try {
+    const result = await socialService.leaveGroup(groupId.value)
+    if (result.succeeded) {
+      toast.success('Vous avez quitté le groupe.')
+      await router.push({ name: 'socialPortal' })
+    } else {
+      toast.error(result.errors?.[0]?.errorMessage || 'Erreur.')
+    }
+  } catch {
+    toast.error('Erreur lors de la sortie du groupe.')
+  }
+}
+
 async function submitPost() {
   const text = newPostContent.value.trim()
   const files = attachment.files.value
@@ -605,6 +640,7 @@ onMounted(async () => {
   await loadGroup()
   await loadPosts()
   avatarRegistry.populateFromList(posts.value as any[], 'authorMemberId', 'authorProfileImageUrl')
+  feedContainer.value = document.querySelector('.soc-main') as HTMLElement
   nextTick(() => attachFeedScroll())
   pollInterval = setInterval(async () => {
     if (expandedComments.value || submittingComment.value) return

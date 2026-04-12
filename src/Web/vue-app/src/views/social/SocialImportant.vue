@@ -1,5 +1,5 @@
 <template>
-  <div ref="announcementsContainer" class="p-4 overflow-y-auto max-h-[calc(100vh-120px)]">
+  <div class="p-4">
     <!-- Header -->
     <div class="mb-4 flex items-center justify-between">
       <h2 class="text-lg font-bold text-gray-900">Annonces</h2>
@@ -410,6 +410,7 @@ async function confirmDelete() {
 let pollInterval: ReturnType<typeof setInterval> | null = null
 
 onMounted(() => {
+  announcementsContainer.value = document.querySelector('.soc-main') as HTMLElement
   loadAnnouncements()
   nextTick(() => attachAnnouncementsScroll())
   pollInterval = setInterval(async () => {
