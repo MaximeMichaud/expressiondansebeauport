@@ -59,7 +59,7 @@
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
       <span class="text-sm">Aucune conversation pour le moment.</span>
     </div>
-    <div v-else-if="!showNewConvo" class="flex-1 overflow-y-auto">
+    <div v-else-if="!showNewConvo" ref="convoListContainer" class="flex-1 overflow-y-auto">
       <router-link
         v-for="conv in conversations"
         :key="conv.id"
@@ -91,17 +91,21 @@
           </div>
         </div>
       </router-link>
+      <div v-if="loadingMoreConvos" class="flex justify-center py-3">
+        <div class="h-4 w-4 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, onActivated } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, onActivated, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useSignalR } from '@/composables/useSignalR'
 import { useMemberStore } from '@/stores/memberStore'
 import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
+import { useInfiniteScroll } from '@/composables/useInfiniteScroll'
 import type { Conversation } from '@/types/entities'
 
 const router = useRouter()
@@ -109,8 +113,24 @@ const socialService = useSocialService()
 const { onMessage, offMessage } = useSignalR()
 const memberStore = useMemberStore()
 const avatarRegistry = useAvatarRegistryStore()
-const conversations = ref<Conversation[]>([])
-const loading = ref(true)
+const convoListContainer = ref<HTMLElement | null>(null)
+
+const {
+  items: rawConversations,
+  loading,
+  loadingMore: loadingMoreConvos,
+  hasMore: hasMoreConvos,
+  load: loadRawConversations,
+  refreshFirst: refreshConvosFirst,
+  attachScroll: attachConvosScroll,
+} = useInfiniteScroll<Conversation>({
+  fetchFn: (page) => socialService.getConversations(page),
+  scrollContainer: convoListContainer,
+  direction: 'down',
+  threshold: 300,
+})
+
+const conversations = computed(() => rawConversations.value.filter((c: any) => c.lastMessage))
 
 // New conversation state
 const showNewConvo = ref(false)
@@ -227,12 +247,8 @@ function populateRegistryFromConvos(list: Conversation[]) {
 }
 
 async function loadConversations() {
-  try {
-    const result = await socialService.getConversations()
-    conversations.value = result.items.filter((c: any) => c.lastMessage)
-    populateRegistryFromConvos(conversations.value)
-  } catch { /* */ }
-  loading.value = false
+  await loadRawConversations()
+  populateRegistryFromConvos(conversations.value)
 }
 
 let pollInterval: ReturnType<typeof setInterval> | null = null
@@ -246,10 +262,10 @@ watch(() => memberStore.unreadMessageCount, () => loadConversations())
 onMounted(() => {
   loadConversations()
   onMessage(onNewMessage)
+  nextTick(() => attachConvosScroll())
   pollInterval = setInterval(async () => {
     try {
-      const result = await socialService.getConversations()
-      conversations.value = result.items.filter((c: any) => c.lastMessage)
+      await refreshConvosFirst()
       populateRegistryFromConvos(conversations.value)
     } catch { /* */ }
   }, 3000)
