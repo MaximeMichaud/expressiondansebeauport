@@ -715,7 +715,7 @@ $portal-font-display: 'Montserrat', sans-serif;
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    border: 2px solid transparent;
+    border: 2px solid var(--soc-border, #e7e0da);
     background: var(--soc-bar-hover, #f5f3f0);
     margin-bottom: 16px;
   }
