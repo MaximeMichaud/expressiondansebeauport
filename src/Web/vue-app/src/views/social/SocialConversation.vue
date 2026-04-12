@@ -15,7 +15,19 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
       </button>
       <template v-if="isAdminView">
-        <h2 class="soc-convo__name">{{ adminParticipantNames }}</h2>
+        <router-link v-if="adminParticipantA.id" :to="{ name: 'socialMemberProfile', params: { id: adminParticipantA.id } }" class="soc-convo__profile-link">
+          <div class="soc-convo__avatar" :style="{ background: getAvatarColor(adminParticipantA.name) }">
+            <span class="soc-convo__avatar-initials">{{ getInitials(adminParticipantA.name) }}</span>
+          </div>
+          <span class="soc-convo__name">{{ adminParticipantA.name }}</span>
+        </router-link>
+        <span class="text-xs text-gray-400">&amp;</span>
+        <router-link v-if="adminParticipantB.id" :to="{ name: 'socialMemberProfile', params: { id: adminParticipantB.id } }" class="soc-convo__profile-link">
+          <div class="soc-convo__avatar" :style="{ background: getAvatarColor(adminParticipantB.name) }">
+            <span class="soc-convo__avatar-initials">{{ getInitials(adminParticipantB.name) }}</span>
+          </div>
+          <span class="soc-convo__name">{{ adminParticipantB.name }}</span>
+        </router-link>
       </template>
       <template v-else>
         <router-link v-if="otherMemberId" :to="{ name: 'socialMemberProfile', params: { id: otherMemberId } }" class="soc-convo__profile-link">
@@ -325,7 +337,8 @@ const otherMemberName = ref('Conversation')
 const otherMemberId = ref('')
 const otherMemberPfp = ref('')
 const otherMemberColor = ref('')
-const adminParticipantNames = ref('')
+const adminParticipantA = ref<{ id: string; name: string }>({ id: '', name: '' })
+const adminParticipantB = ref<{ id: string; name: string }>({ id: '', name: '' })
 
 const effectiveOtherMemberPfp = computed(() => {
   return avatarRegistry.getAvatar(otherMemberId.value, otherMemberPfp.value) || ''
@@ -415,7 +428,8 @@ function handleMediaLoad() {
 
 async function loadConversationInfo() {
   if (isAdminView.value) {
-    adminParticipantNames.value = (route.query.names as string) || 'Conversation'
+    adminParticipantA.value = { id: (route.query.pA as string) || '', name: (route.query.pAName as string) || '' }
+    adminParticipantB.value = { id: (route.query.pB as string) || '', name: (route.query.pBName as string) || '' }
     return
   }
 
