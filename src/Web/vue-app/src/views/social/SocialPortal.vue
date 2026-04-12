@@ -30,9 +30,11 @@
           <label class="mb-1 block text-xs font-medium text-gray-500">Description (optionnel)</label>
           <textarea v-model="newGroup.description" rows="2" placeholder="Description du groupe..." class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"></textarea>
         </div>
-        <button @click="createGroup" :disabled="!newGroup.name || !newGroup.season || creatingGroup" class="rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#000] disabled:opacity-50 cursor-pointer">
-          {{ creatingGroup ? 'Création...' : 'Créer le groupe' }}
-        </button>
+        <div class="flex justify-end">
+          <button @click="createGroup" :disabled="!newGroup.name || !newGroup.season || creatingGroup" class="btn-publish rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#000] disabled:opacity-50 cursor-pointer">
+            {{ creatingGroup ? 'Création...' : 'Créer le groupe' }}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -132,7 +134,7 @@
         <div v-if="showJoinModal" class="portal-modal__overlay" @click.self="closeJoinModal">
           <div class="portal-modal__card">
             <div class="portal-modal__icon-ring">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--soc-bar-text-strong, #1a1a1a)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
               </svg>
             </div>
@@ -141,36 +143,52 @@
             <!-- Choice mode -->
             <template v-if="joinModalMode === 'choice'">
               <div v-if="checkingPending" class="flex justify-center py-4">
-                <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
+                <div class="h-5 w-5 animate-spin rounded-full border-2 border-[var(--soc-bar-text-strong,#1a1a1a)] border-t-transparent"></div>
               </div>
               <template v-else>
                 <button
-                  v-if="!pendingJoinRequestId"
+                  v-if="pendingJoinRequestId"
+                  disabled
+                  class="portal-modal__btn portal-modal__btn--primary w-full mb-3 opacity-50 cursor-not-allowed"
+                >
+                  Demande envoyée ✓
+                </button>
+                <button
+                  v-else-if="isAdmin"
+                  disabled
+                  class="portal-modal__btn portal-modal__btn--primary w-full mb-3 opacity-40 cursor-not-allowed"
+                >
+                  Demander à rejoindre
+                </button>
+                <button
+                  v-else
                   @click="requestToJoin"
                   :disabled="requestingJoin"
                   class="portal-modal__btn portal-modal__btn--primary w-full mb-3"
                 >
                   {{ requestingJoin ? 'Envoi...' : 'Demander à rejoindre' }}
                 </button>
-                <button
-                  v-else
-                  disabled
-                  class="portal-modal__btn portal-modal__btn--primary w-full mb-3 opacity-50 cursor-not-allowed"
-                >
-                  Demande envoyée ✓
-                </button>
 
                 <div class="flex items-center gap-3 my-3">
-                  <div class="flex-1 h-px bg-gray-200"></div>
-                  <span class="text-xs text-gray-400">ou</span>
-                  <div class="flex-1 h-px bg-gray-200"></div>
+                  <div class="flex-1 h-px" style="background: var(--soc-border, #e5e3df);"></div>
+                  <span class="text-xs" style="color: var(--soc-text-muted, #a8a29e);">ou</span>
+                  <div class="flex-1 h-px" style="background: var(--soc-border, #e5e3df);"></div>
                 </div>
 
                 <button
                   @click="joinModalMode = 'code'"
-                  class="text-sm text-gray-500 hover:text-gray-800 transition cursor-pointer"
+                  class="portal-modal__link"
                 >
                   J'ai un code d'invitation
+                </button>
+
+                <div v-if="joinModalError" class="portal-modal__error mt-3">{{ joinModalError }}</div>
+
+                <button
+                  @click="closeJoinModal"
+                  class="portal-modal__link portal-modal__link--muted mt-3"
+                >
+                  Annuler
                 </button>
               </template>
             </template>
@@ -193,18 +211,6 @@
                 </button>
               </div>
             </template>
-
-            <!-- Error in choice mode -->
-            <div v-if="joinModalMode === 'choice' && joinModalError" class="portal-modal__error mt-2">{{ joinModalError }}</div>
-
-            <!-- Close button -->
-            <button
-              v-if="joinModalMode === 'choice'"
-              @click="closeJoinModal"
-              class="text-xs text-gray-400 hover:text-gray-600 mt-4 cursor-pointer"
-            >
-              Annuler
-            </button>
           </div>
         </div>
       </Transition>
@@ -480,6 +486,32 @@ $portal-font-display: 'Montserrat', sans-serif;
       background: var(--soc-bar-text-strong, #1a1a1a);
       color: var(--soc-card-bg, white);
       &:hover { opacity: 0.85; }
+    }
+  }
+
+  &__link {
+    display: block;
+    width: 100%;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--soc-text-muted, #78716c);
+    cursor: pointer;
+    transition: color 0.15s;
+    background: none;
+    border: none;
+    padding: 0;
+
+    &:hover {
+      color: var(--soc-bar-text-strong, #1a1a1a);
+    }
+
+    &--muted {
+      font-size: 0.78rem;
+      opacity: 0.7;
+
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 
