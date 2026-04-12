@@ -330,7 +330,7 @@
                   disabled
                   class="portal-modal__btn portal-modal__btn--primary w-full opacity-50 cursor-not-allowed"
                 >
-                  Demande envoyée ✓
+                  Demande envoyée
                 </button>
                 <button
                   v-else-if="isAdmin"
