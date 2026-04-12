@@ -28,6 +28,9 @@
 
     <!-- Messages (scrollable) -->
     <div ref="messagesContainer" :class="['soc-convo__messages', !ready && 'soc-convo__messages--hidden']">
+      <div v-if="loadingMoreMessages" class="flex justify-center py-3">
+        <div class="h-4 w-4 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
+      </div>
       <div v-if="loading" class="soc-convo__loading">
         <div class="soc-convo__spinner" />
       </div>
@@ -237,6 +240,7 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useMemberStore } from '@/stores/memberStore'
+import { useInfiniteScroll } from '@/composables/useInfiniteScroll'
 import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
 import ImageLightbox from '@/components/social/ImageLightbox.vue'
 import JoinRequestCard from '@/components/social/JoinRequestCard.vue'
@@ -280,7 +284,6 @@ const memberStore = useMemberStore()
 const avatarRegistry = useAvatarRegistryStore()
 
 const conversationId = computed(() => route.params.conversationId as string)
-const serverMessages = ref<ChatMessage[]>([])
 const pendingMessages = ref<ChatMessage[]>([])
 const loading = ref(true)
 const newMessage = ref('')
@@ -313,6 +316,37 @@ const effectiveOtherMemberPfp = computed(() => {
   return avatarRegistry.getAvatar(otherMemberId.value, otherMemberPfp.value) || ''
 })
 const currentMemberId = ref('')
+const messagesContainer = ref<HTMLElement | null>(null)
+
+const {
+  items: scrollMessages,
+  loadingMore: loadingMoreMessages,
+  load: loadScrollMessages,
+  refreshFirst: refreshMessagesFirst,
+  attachScroll: attachMessagesScroll,
+} = useInfiniteScroll<ChatMessage>({
+  fetchFn: async (page) => {
+    const raw = await socialService.getMessages(conversationId.value, page)
+    return {
+      items: raw.items.map((m: any) => ({
+        id: m.id,
+        content: m.content,
+        senderMemberId: m.senderMemberId,
+        created: m.created,
+        isMine: m.senderMemberId === currentMemberId.value,
+        isRead: m.isRead ?? false,
+        isDeleted: m.isDeleted ?? false,
+        media: Array.isArray(m.media) ? m.media : undefined,
+        messageType: m.messageType,
+        joinRequest: m.joinRequest,
+      })),
+      hasMore: raw.hasMore,
+    }
+  },
+  scrollContainer: messagesContainer,
+  direction: 'up',
+  threshold: 200,
+})
 
 const avatarColors = ['#e53e3e', '#dd6b20', '#d69e2e', '#38a169', '#319795', '#3182ce', '#5a67d8', '#805ad5', '#d53f8c', '#e53e3e']
 function getAvatarColor(name: string) {
@@ -326,12 +360,10 @@ function getInitials(name: string) {
   return name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 const messageInput = ref<HTMLInputElement | null>(null)
-const messagesContainer = ref<HTMLElement | null>(null)
 const ready = ref(false)
 
 const allMessages = computed(() => {
-  // Server messages (oldest first) + pending at end
-  const sorted = [...serverMessages.value].reverse()
+  const sorted = [...scrollMessages.value].reverse()
   return [...sorted, ...pendingMessages.value]
 })
 
@@ -390,24 +422,12 @@ async function loadConversationInfo() {
 }
 
 async function loadMessages(smooth = false) {
-  const isFirstLoad = serverMessages.value.length === 0
+  const isFirstLoad = scrollMessages.value.length === 0
   if (isFirstLoad) loading.value = true
   try {
-    const result = await socialService.getMessages(conversationId.value)
-    serverMessages.value = result.items.map((m: any) => ({
-      id: m.id,
-      content: m.content,
-      senderMemberId: m.senderMemberId,
-      created: m.created,
-      isMine: m.senderMemberId === currentMemberId.value,
-      isRead: m.isRead ?? false,
-      isDeleted: m.isDeleted ?? false,
-      media: Array.isArray(m.media) ? m.media : undefined,
-      messageType: m.messageType,
-      joinRequest: m.joinRequest,
-    }))
+    await loadScrollMessages()
     pendingMessages.value = pendingMessages.value.filter(
-      pm => !serverMessages.value.some(sm => sm.content === pm.content)
+      pm => !scrollMessages.value.some(sm => sm.content === pm.content)
     )
     await socialService.markAsRead(conversationId.value)
     try {
@@ -506,26 +526,13 @@ async function confirmDelete() {
 let pollInterval: ReturnType<typeof setInterval> | null = null
 
 async function pollMessages() {
-  const prevCount = serverMessages.value.length
+  const prevCount = scrollMessages.value.length
   try {
-    const result = await socialService.getMessages(conversationId.value)
-    serverMessages.value = result.items.map((m: any) => ({
-      id: m.id,
-      content: m.content,
-      senderMemberId: m.senderMemberId,
-      created: m.created,
-      isMine: m.senderMemberId === currentMemberId.value,
-      isRead: m.isRead ?? false,
-      isDeleted: m.isDeleted ?? false,
-      media: Array.isArray(m.media) ? m.media : undefined,
-      messageType: m.messageType,
-      joinRequest: m.joinRequest,
-    }))
+    await refreshMessagesFirst()
     pendingMessages.value = pendingMessages.value.filter(
-      pm => !serverMessages.value.some(sm => sm.content === pm.content)
+      pm => !scrollMessages.value.some(sm => sm.content === pm.content)
     )
-    // New message received — scroll down and update unread count
-    if (serverMessages.value.length > prevCount) {
+    if (scrollMessages.value.length > prevCount) {
       scrollToBottom(true)
       await socialService.markAsRead(conversationId.value)
       try {
@@ -545,7 +552,10 @@ watch(() => attachment.previews.value.length, () => {
 onMounted(async () => {
   await loadConversationInfo()
   await loadMessages()
-  nextTick(() => messageInput.value?.focus())
+  nextTick(() => {
+    messageInput.value?.focus()
+    attachMessagesScroll()
+  })
   pollInterval = setInterval(pollMessages, 1000)
 })
 
