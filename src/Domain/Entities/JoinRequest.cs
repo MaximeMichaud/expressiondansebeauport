@@ -15,7 +15,9 @@ public class JoinRequest : Entity
     public Member? ResolvedByMember { get; private set; }
     public Instant? ResolvedAt { get; private set; }
     public Instant CreatedAt { get; private set; }
+    public bool RequesterNotified { get; private set; }
 
+    public void SetRequesterNotified(bool value) => RequesterNotified = value;
     public void SetGroup(Group group) { Group = group; GroupId = group.Id; }
     public void SetGroupId(Guid groupId) => GroupId = groupId;
     public void SetRequesterMember(Member member) { RequesterMember = member; RequesterMemberId = member.Id; }

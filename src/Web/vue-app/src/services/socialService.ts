@@ -47,9 +47,24 @@ export class SocialService extends ApiService {
     return response.data
   }
 
+  async updateGroup(id: string, name: string, description: string, season: string, imageUrl?: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.put<SucceededOrNotResponse>(`${API}/admin/groups/${id}`, { name, description, season, imageUrl }, this.headersWithJsonContentType())
+    return response.data
+  }
+
+  async deleteGroup(id: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.delete<SucceededOrNotResponse>(`${API}/admin/groups/${id}`)
+    return response.data
+  }
+
   async getActiveGroups(): Promise<Group[]> {
     const response = await this._httpClient.get(`${API}/social/groups/active`)
     return toCamel(response.data)
+  }
+
+  async leaveGroup(groupId: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.delete<SucceededOrNotResponse>(`${API}/social/groups/${groupId}/leave`)
+    return response.data
   }
 
   async getGroupDetails(id: string): Promise<any> {
@@ -262,10 +277,10 @@ export class SocialService extends ApiService {
     await this._httpClient.put(`${API}/social/conversations/${conversationId}/read`, null)
   }
 
-  async getUnreadCount(): Promise<number> {
+  async getUnreadCount(): Promise<{ count: number, joinRequestNotifications?: Array<{ id: string, groupName: string, status: string }> }> {
     const response = await this._httpClient.get(`${API}/social/messages/unread-count`)
     const data = toCamel(response.data)
-    return data.count || 0
+    return { count: data.count || 0, joinRequestNotifications: data.joinRequestNotifications }
   }
 
   // === Members ===

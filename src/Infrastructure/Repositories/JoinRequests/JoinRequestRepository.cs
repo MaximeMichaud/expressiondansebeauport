@@ -45,4 +45,24 @@ public class JoinRequestRepository : IJoinRequestRepository
             _context.JoinRequests.Update(joinRequest);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<List<JoinRequest>> FindUnnotifiedResolved(Guid requesterMemberId)
+    {
+        return await _context.JoinRequests
+            .Include(jr => jr.Group)
+            .Where(jr => jr.RequesterMemberId == requesterMemberId
+                && jr.Status != JoinRequestStatus.Pending
+                && !jr.RequesterNotified)
+            .ToListAsync();
+    }
+
+    public async Task MarkNotified(Guid joinRequestId)
+    {
+        var jr = await _context.JoinRequests.FindAsync(joinRequestId);
+        if (jr != null)
+        {
+            jr.SetRequesterNotified(true);
+            await _context.SaveChangesAsync();
+        }
+    }
 }
