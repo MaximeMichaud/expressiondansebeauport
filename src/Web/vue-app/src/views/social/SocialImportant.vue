@@ -24,8 +24,49 @@
           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
           placeholder="Description (optionnel)"
         ></textarea>
+
+        <!-- Image preview -->
+        <div v-if="attachment.previews.value.length" class="flex flex-wrap gap-2">
+          <div
+            v-for="(p, i) in attachment.previews.value"
+            :key="i"
+            class="relative h-20 w-20"
+          >
+            <img :src="p.url" class="h-full w-full rounded-lg object-cover" alt="" />
+            <button
+              type="button"
+              @click="attachment.removeFile(i)"
+              class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full shadow"
+              style="background: #dc2626;"
+              aria-label="Retirer"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <p v-if="attachment.error.value" class="text-xs text-red-600">{{ attachment.error.value }}</p>
       </div>
-      <div class="mt-3 flex justify-end">
+      <div class="mt-3 flex items-center justify-between">
+        <input
+          ref="fileInputRef"
+          type="file"
+          accept="image/*"
+          hidden
+          @change="attachment.handleFileInput"
+        />
+        <button
+          type="button"
+          @click="triggerFilePicker"
+          :disabled="attachment.files.value.length >= 1"
+          class="soc-composer-icon flex h-9 w-9 items-center justify-center rounded-lg transition cursor-pointer disabled:opacity-40 disabled:cursor-default"
+          title="Joindre une image"
+          aria-label="Joindre une image"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+        </button>
         <button
           @click="createAnnouncement"
           :disabled="!newTitle.trim() || creating"
@@ -55,7 +96,13 @@
         class="rounded-xl border border-gray-200 overflow-hidden"
       >
         <div class="p-4">
-          <router-link :to="{ name: 'socialAnnouncement', params: { id: post.id } }" class="flex items-center justify-between gap-3 cursor-pointer">
+          <router-link :to="{ name: 'socialAnnouncement', params: { id: post.id } }" class="flex items-center gap-3 cursor-pointer">
+            <img
+              v-if="post.media && post.media.length"
+              :src="post.media[0].thumbnailUrl || post.media[0].mediaUrl"
+              class="h-14 w-14 flex-shrink-0 rounded-lg object-cover"
+              alt=""
+            />
             <div class="flex-1 min-w-0">
               <p class="text-sm font-semibold text-gray-900">{{ getTitle(post.content) }}</p>
               <div class="mt-2 flex items-center gap-4 text-[11px] text-gray-400">
@@ -177,6 +224,7 @@ import { useSocialToast } from '@/composables/useSocialToast'
 import { useUserStore } from '@/stores/userStore'
 import { useMemberStore } from '@/stores/memberStore'
 import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
+import { useImageAttachment } from '@/composables/useImageAttachment'
 import { Role } from '@/types/enums'
 import type { Post } from '@/types/entities'
 
@@ -194,6 +242,8 @@ const showCreate = ref(false)
 const newTitle = ref('')
 const newDescription = ref('')
 const creating = ref(false)
+const attachment = useImageAttachment({ mode: 'single', maxFiles: 1, allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] })
+const fileInputRef = ref<HTMLInputElement | null>(null)
 const deleteTarget = ref<Post | null>(null)
 const deleting = ref(false)
 
@@ -247,7 +297,8 @@ async function toggleComments(post: Post) {
   expandedComments.value = post.id
   loadingComments.value = true
   try {
-    postComments.value = await socialService.getComments(post.id)
+    const result = await socialService.getComments(post.id)
+    postComments.value = result.items
     avatarRegistry.populateFromList(postComments.value, 'authorMemberId', 'authorProfileImageUrl')
   } catch { postComments.value = [] }
   loadingComments.value = false
@@ -261,7 +312,8 @@ async function submitComment(post: Post) {
   try {
     await socialService.addComment(post.id, newComment.value)
     newComment.value = ''
-    postComments.value = await socialService.getComments(post.id)
+    const result = await socialService.getComments(post.id)
+    postComments.value = result.items
     post.commentCount = (post.commentCount || 0) + 1
   } catch { /* */ }
   submittingComment.value = false
@@ -280,10 +332,15 @@ async function deleteComment(commentId: string, post: Post) {
 
 async function loadAnnouncements() {
   try {
-    announcements.value = await socialService.getAnnouncements()
+    const result = await socialService.getAnnouncements()
+    announcements.value = result.items
     avatarRegistry.populateFromList(announcements.value as any[], 'authorMemberId', 'authorProfileImageUrl')
   } catch { /* */ }
   loading.value = false
+}
+
+function triggerFilePicker() {
+  fileInputRef.value?.click()
 }
 
 async function createAnnouncement() {
@@ -293,11 +350,24 @@ async function createAnnouncement() {
     ? newTitle.value.trim() + '\n' + newDescription.value.trim()
     : newTitle.value.trim()
   try {
-    const result = await socialService.createAnnouncement(content)
+    let media: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }> | undefined
+
+    if (attachment.files.value.length > 0) {
+      const uploaded = await socialService.uploadFile(attachment.files.value[0])
+      if (!uploaded.succeeded || !uploaded.displayUrl || !uploaded.thumbnailUrl || !uploaded.originalUrl || !uploaded.contentType || uploaded.size == null) {
+        toast.error("Échec du téléversement de l'image.")
+        creating.value = false
+        return
+      }
+      media = [{ displayUrl: uploaded.displayUrl, thumbnailUrl: uploaded.thumbnailUrl, originalUrl: uploaded.originalUrl, contentType: uploaded.contentType, size: uploaded.size }]
+    }
+
+    const result = await socialService.createAnnouncement(content, media)
     if (result.succeeded) {
       toast.success('Annonce publiée!')
       newTitle.value = ''
       newDescription.value = ''
+      attachment.clear()
       showCreate.value = false
       await loadAnnouncements()
     } else {
@@ -329,7 +399,7 @@ onMounted(() => {
   loadAnnouncements()
   pollInterval = setInterval(async () => {
     if (Date.now() - likeDebounce < 3000) return
-    try { announcements.value = await socialService.getAnnouncements() } catch { /* */ }
+    try { const r = await socialService.getAnnouncements(); announcements.value = r.items } catch { /* */ }
   }, 30000)
 })
 
@@ -423,4 +493,12 @@ $ann-font-display: 'Montserrat', sans-serif;
 .ann-modal-leave-active { transition: all 0.15s ease; }
 .ann-modal-enter-from { opacity: 0; }
 .ann-modal-leave-to { opacity: 0; }
+
+.soc-composer-icon {
+  color: var(--soc-text-muted);
+}
+.soc-composer-icon:hover {
+  background: var(--soc-bar-hover);
+  color: var(--soc-text);
+}
 </style>

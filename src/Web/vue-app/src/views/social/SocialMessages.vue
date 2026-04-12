@@ -228,8 +228,8 @@ function populateRegistryFromConvos(list: Conversation[]) {
 
 async function loadConversations() {
   try {
-    const all = await socialService.getConversations()
-    conversations.value = all.filter((c: any) => c.lastMessage)
+    const result = await socialService.getConversations()
+    conversations.value = result.items.filter((c: any) => c.lastMessage)
     populateRegistryFromConvos(conversations.value)
   } catch { /* */ }
   loading.value = false
@@ -248,8 +248,8 @@ onMounted(() => {
   onMessage(onNewMessage)
   pollInterval = setInterval(async () => {
     try {
-      const all = await socialService.getConversations()
-      conversations.value = all.filter((c: any) => c.lastMessage)
+      const result = await socialService.getConversations()
+      conversations.value = result.items.filter((c: any) => c.lastMessage)
       populateRegistryFromConvos(conversations.value)
     } catch { /* */ }
   }, 3000)
