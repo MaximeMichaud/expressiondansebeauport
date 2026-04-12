@@ -28,13 +28,13 @@
       <p class="jr-card__status">En attente...</p>
     </template>
     <template v-else-if="status === 'Accepted'">
-      <p class="jr-card__text jr-card__text--resolved">
-        ✅ Accepté par {{ resolvedByName }}
+      <p class="jr-card__text jr-card__text--accepted">
+        Demande acceptée
       </p>
     </template>
     <template v-else-if="status === 'Rejected'">
-      <p class="jr-card__text jr-card__text--resolved">
-        ❌ Refusé par {{ resolvedByName }}
+      <p class="jr-card__text jr-card__text--rejected">
+        Demande refusée
       </p>
     </template>
   </div>
@@ -119,8 +119,16 @@ async function handleReject() {
       font-weight: 600;
     }
 
-    &--resolved {
+    &--accepted {
       margin-bottom: 0;
+      color: #22c55e;
+      font-weight: 600;
+    }
+
+    &--rejected {
+      margin-bottom: 0;
+      color: #ef4444;
+      font-weight: 600;
     }
   }
 
