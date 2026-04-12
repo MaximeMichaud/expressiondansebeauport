@@ -11,7 +11,7 @@
     </div>
     <!-- Header -->
     <div class="soc-convo__header">
-      <button @click="isAdminView ? $router.back() : $router.push({ name: 'socialMessages' })" class="soc-convo__back">
+      <button @click="isAdminView ? $router.push({ name: 'socialMessages', query: { tab: 'admin', memberId: adminViewingMember.id, memberName: adminViewingMember.name } }) : $router.push({ name: 'socialMessages' })" class="soc-convo__back">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
       </button>
       <template v-if="isAdminView">
