@@ -146,7 +146,8 @@ const router = useRouter()
 const userStore = useUserStore()
 const memberStore = useMemberStore()
 const socialService = useSocialService()
-const { start: startSignalR, onMessage } = useSignalR()
+const { start: startSignalR, onMessage, onJoinRequestResolved } = useSignalR()
+const toast = useSocialToast()
 
 const authService = useAuthenticationService()
 
@@ -214,6 +215,15 @@ watch(isAuthenticated, async (val) => {
     try {
       await startSignalR()
       onMessage(() => { memberStore.incrementUnreadCount() })
+      onJoinRequestResolved((data: any) => {
+        const group = data?.groupName || data?.GroupName || 'le groupe'
+        const status = data?.status || data?.Status
+        if (status === 'Accepted') {
+          toast.success(`Votre demande pour ${group} a été acceptée!`)
+        } else if (status === 'Rejected') {
+          toast.error(`Votre demande pour ${group} a été refusée.`)
+        }
+      })
     } catch { /* */ }
   }
 }, { immediate: true })
