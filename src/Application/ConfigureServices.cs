@@ -4,6 +4,7 @@ using Application.Interfaces.Services.Users;
 using Application.Services.Admins;
 using Application.Services.Groups;
 using Application.Services.Members;
+using Application.Services.JoinRequests;
 using Application.Services.Messaging;
 using Application.Services.Posts;
 using Application.Services.Notifications;
@@ -38,6 +39,7 @@ public static class ConfigureServices
         services.AddScoped<IGroupService, GroupService>();
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IConversationService, ConversationService>();
+        services.AddScoped<IJoinRequestService, JoinRequestService>();
 
         services.AddAutoMapper(cfg => cfg.AddMaps(typeof(ConfigureServices).Assembly));
 

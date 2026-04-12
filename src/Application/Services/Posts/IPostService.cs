@@ -15,7 +15,8 @@ public class PostMediaItem
 public interface IPostService
 {
     Task<Post> CreatePost(Guid? groupId, Guid authorMemberId, string content, PostType type, IReadOnlyList<PostMediaItem> media);
-    Task<Post> CreateAnnouncement(Guid authorMemberId, string content);
+    Task<Post> CreateAnnouncement(Guid authorMemberId, string content, IReadOnlyList<PostMediaItem> media);
+    Task UpdateAnnouncement(Guid postId, string content, IReadOnlyList<PostMediaItem> media);
     Task<Post> CreatePollPost(
         Guid groupId,
         Guid authorMemberId,
