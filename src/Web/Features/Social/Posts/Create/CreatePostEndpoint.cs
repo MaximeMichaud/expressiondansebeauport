@@ -45,7 +45,7 @@ public class CreatePostEndpoint : Endpoint<CreatePostRequest, SucceededOrNotResp
 
         if (type == Domain.Enums.PostType.Photo && req.Media.Count == 0)
         {
-            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("InvalidPost", "A photo post must include at least one image.")), ct);
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("InvalidPost", "Une publication photo doit inclure au moins une image.")), ct);
             return;
         }
 
