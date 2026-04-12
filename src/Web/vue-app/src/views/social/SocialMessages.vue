@@ -116,37 +116,36 @@
     <!-- Admin tab content -->
     <template v-if="isAdmin && activeTab === 'admin'">
       <!-- Member search -->
-      <div v-if="!adminSelectedMember" class="border-b border-gray-200 bg-gray-50 p-4">
-        <template>
-          <h3 class="mb-3 text-sm font-semibold text-gray-700">Choisir un membre</h3>
-          <input
-            v-model="adminMemberSearch"
-            type="text"
-            class="mb-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
-            placeholder="Rechercher un membre..."
-            @input="onAdminMemberSearch"
-          />
-          <div v-if="adminLoadingMembers" class="flex justify-center py-4">
-            <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
-          </div>
-          <div v-else-if="adminSearchResults.length" class="max-h-60 space-y-1 overflow-y-auto">
-            <button
-              v-for="member in adminSearchResults"
-              :key="member.id"
-              @click="selectAdminMember(member)"
-              class="soc-admin-member-link soc-admin-member-link--full"
-            >
-              <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-xs font-bold text-white" :style="{ background: member.avatarColor || getAvatarColor(member.fullName) }">
-                <img v-if="member.profileImageUrl" :src="member.profileImageUrl" :alt="member.fullName" class="h-full w-full object-cover" />
-                <span v-else>{{ getInitials(member.fullName) }}</span>
-              </div>
-              <p class="text-sm font-medium text-gray-900 truncate">{{ member.fullName }}</p>
-            </button>
-          </div>
-          <p v-else class="py-4 text-center text-xs text-gray-500">
-            {{ adminMemberSearch ? 'Aucun membre trouvé.' : 'Aucun membre disponible.' }}
-          </p>
-        </template>
+      <div v-if="!adminSelectedMember" class="border-b p-4" style="border-color: var(--soc-divider, #f0f0f0); background: var(--soc-bar-hover, #f5f3f0);">
+        <h3 class="mb-3 text-sm font-semibold" style="color: var(--soc-text, #292524);">Choisir un membre</h3>
+        <input
+          v-model="adminMemberSearch"
+          type="text"
+          class="mb-3 w-full rounded-lg border px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-1"
+          style="border-color: var(--soc-input-border, #e7e0da); background: var(--soc-input-bg, #faf9f7); color: var(--soc-text, #292524);"
+          placeholder="Rechercher un membre..."
+          @input="onAdminMemberSearch"
+        />
+        <div v-if="adminLoadingMembers" class="flex justify-center py-4">
+          <div class="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" style="border-color: var(--soc-bar-text-strong, #1a1a1a); border-top-color: transparent;"></div>
+        </div>
+        <div v-else-if="adminSearchResults.length" class="max-h-60 space-y-1 overflow-y-auto">
+          <button
+            v-for="member in adminSearchResults"
+            :key="member.id"
+            @click="selectAdminMember(member)"
+            class="soc-admin-member-link soc-admin-member-link--full"
+          >
+            <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-xs font-bold text-white" :style="{ background: member.avatarColor || getAvatarColor(member.fullName) }">
+              <img v-if="member.profileImageUrl" :src="member.profileImageUrl" :alt="member.fullName" class="h-full w-full object-cover" />
+              <span v-else>{{ getInitials(member.fullName) }}</span>
+            </div>
+            <p class="text-sm font-medium truncate" style="color: var(--soc-text, #292524);">{{ member.fullName }}</p>
+          </button>
+        </div>
+        <p v-else class="py-4 text-center text-xs" style="color: var(--soc-text-muted, #78716c);">
+          {{ adminMemberSearch ? 'Aucun membre trouvé.' : 'Aucun membre disponible.' }}
+        </p>
       </div>
 
       <!-- Admin conversation list -->
