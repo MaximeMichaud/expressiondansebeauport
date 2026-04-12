@@ -32,11 +32,11 @@ public class JoinRequestService : IJoinRequestService
     {
         var group = await _groupRepository.FindById(groupId);
         if (group == null)
-            throw new InvalidOperationException("Group not found.");
+            throw new InvalidOperationException("Groupe non trouvé.");
 
         var isMember = await _groupMemberRepository.IsMember(groupId, requesterMemberId);
         if (isMember)
-            throw new InvalidOperationException("Already a member of this group.");
+            throw new InvalidOperationException("Déjà membre de ce groupe.");
 
         var existing = await _joinRequestRepository.FindPendingByGroupAndMember(groupId, requesterMemberId);
         if (existing != null)
@@ -44,7 +44,7 @@ public class JoinRequestService : IJoinRequestService
 
         var requester = _memberRepository.FindById(requesterMemberId);
         if (requester == null)
-            throw new InvalidOperationException("Member not found.");
+            throw new InvalidOperationException("Membre non trouvé.");
 
         var professors = await _groupMemberRepository.GetProfessorsOfGroup(groupId);
 
@@ -58,7 +58,7 @@ public class JoinRequestService : IJoinRequestService
         }
 
         if (recipientMemberIds.Count == 0)
-            throw new InvalidOperationException("No professors or admins available.");
+            throw new InvalidOperationException("Aucun professeur ou administrateur disponible.");
 
         var joinRequest = new JoinRequest();
         joinRequest.SetId(Guid.NewGuid());
@@ -92,10 +92,10 @@ public class JoinRequestService : IJoinRequestService
     {
         var joinRequest = await _joinRequestRepository.FindById(joinRequestId, asNoTracking: false);
         if (joinRequest == null)
-            throw new InvalidOperationException("Join request not found.");
+            throw new InvalidOperationException("Demande d'adhésion non trouvée.");
 
         if (joinRequest.Status != JoinRequestStatus.Pending)
-            throw new InvalidOperationException("Join request already resolved.");
+            throw new InvalidOperationException("Demande d'adhésion déjà traitée.");
 
         // Allow professors of the group OR global admins
         var profGm = await _groupMemberRepository.FindProfessorInGroup(joinRequest.GroupId, professorMemberId);
@@ -103,12 +103,12 @@ public class JoinRequestService : IJoinRequestService
         {
             var actingMember = _memberRepository.FindById(professorMemberId);
             if (actingMember == null || !actingMember.User.HasRole(Domain.Constants.User.Roles.ADMINISTRATOR))
-                throw new InvalidOperationException("Not authorized to accept this request.");
+                throw new InvalidOperationException("Non autorisé à accepter cette demande.");
         }
 
         var professor = _memberRepository.FindById(professorMemberId, asNoTracking: false);
         if (professor == null)
-            throw new InvalidOperationException("Professor not found.");
+            throw new InvalidOperationException("Professeur non trouvé.");
 
         joinRequest.SetStatus(JoinRequestStatus.Accepted);
         joinRequest.SetResolvedByMember(professor);
@@ -139,10 +139,10 @@ public class JoinRequestService : IJoinRequestService
     {
         var joinRequest = await _joinRequestRepository.FindById(joinRequestId, asNoTracking: false);
         if (joinRequest == null)
-            throw new InvalidOperationException("Join request not found.");
+            throw new InvalidOperationException("Demande d'adhésion non trouvée.");
 
         if (joinRequest.Status != JoinRequestStatus.Pending)
-            throw new InvalidOperationException("Join request already resolved.");
+            throw new InvalidOperationException("Demande d'adhésion déjà traitée.");
 
         // Allow professors of the group OR global admins
         var profGm = await _groupMemberRepository.FindProfessorInGroup(joinRequest.GroupId, professorMemberId);
@@ -150,12 +150,12 @@ public class JoinRequestService : IJoinRequestService
         {
             var actingMember = _memberRepository.FindById(professorMemberId);
             if (actingMember == null || !actingMember.User.HasRole(Domain.Constants.User.Roles.ADMINISTRATOR))
-                throw new InvalidOperationException("Not authorized to reject this request.");
+                throw new InvalidOperationException("Non autorisé à rejeter cette demande.");
         }
 
         var professor = _memberRepository.FindById(professorMemberId, asNoTracking: false);
         if (professor == null)
-            throw new InvalidOperationException("Professor not found.");
+            throw new InvalidOperationException("Professeur non trouvé.");
 
         joinRequest.SetStatus(JoinRequestStatus.Rejected);
         joinRequest.SetResolvedByMember(professor);

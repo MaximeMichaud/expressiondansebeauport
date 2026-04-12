@@ -54,7 +54,7 @@ public class UploadMediaEndpoint : EndpointWithoutRequest
 
         if (Files.Count == 0)
         {
-            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("NoFile", "No file uploaded.")), ct);
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("NoFile", "Aucun fichier téléversé.")), ct);
             return;
         }
 
@@ -65,7 +65,7 @@ public class UploadMediaEndpoint : EndpointWithoutRequest
         {
             if (file.Length > MaxPdfSize)
             {
-                await Send.OkAsync(new SucceededOrNotResponse(false, new Error("TooLarge", "File too large. Max 50MB.")), ct);
+                await Send.OkAsync(new SucceededOrNotResponse(false, new Error("TooLarge", "Fichier trop volumineux. Maximum 50 Mo.")), ct);
                 return;
             }
 
@@ -85,7 +85,7 @@ public class UploadMediaEndpoint : EndpointWithoutRequest
         {
             if (file.Length > MaxVideoSize)
             {
-                await Send.OkAsync(new SucceededOrNotResponse(false, new Error("TooLarge", "Video too large. Max 50MB.")), ct);
+                await Send.OkAsync(new SucceededOrNotResponse(false, new Error("TooLarge", "Vidéo trop volumineuse. Maximum 50 Mo.")), ct);
                 return;
             }
 
@@ -127,13 +127,13 @@ public class UploadMediaEndpoint : EndpointWithoutRequest
 
         if (!AllowedImageTypes.Contains(contentType))
         {
-            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("InvalidType", "File type not allowed.")), ct);
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("InvalidType", "Type de fichier non autorisé.")), ct);
             return;
         }
 
         if (file.Length > MaxImageSize)
         {
-            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("TooLarge", "Image too large. Max 10MB.")), ct);
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("TooLarge", "Image trop volumineuse. Maximum 10 Mo.")), ct);
             return;
         }
 
@@ -144,7 +144,7 @@ public class UploadMediaEndpoint : EndpointWithoutRequest
         }
         catch (InvalidImageException)
         {
-            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("InvalidImage", "Image is invalid or corrupted.")), ct);
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("InvalidImage", "L'image est invalide ou corrompue.")), ct);
             return;
         }
 

@@ -529,13 +529,13 @@ $portal-font-display: 'Montserrat', sans-serif;
     &--cancel {
       background: var(--soc-bar-hover, #f5f3f0);
       color: var(--soc-bar-text-strong, #1a1a1a);
-      &:hover { background: var(--soc-bar-active, #eae8e4); }
+      &:hover:not(:disabled) { background: var(--soc-bar-active, #eae8e4); }
     }
 
     &--primary {
       background: var(--soc-bar-text-strong, #1a1a1a);
       color: var(--soc-card-bg, white);
-      &:hover { opacity: 0.85; }
+      &:hover:not(:disabled) { opacity: 0.85; }
     }
   }
 
