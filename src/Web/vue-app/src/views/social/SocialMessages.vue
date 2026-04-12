@@ -439,6 +439,9 @@ watch(() => memberStore.unreadMessageCount, () => loadConversations())
 onMounted(() => {
   if (route.query.tab === 'admin' && isAdmin.value) {
     activeTab.value = 'admin'
+    if (route.query.memberId && route.query.memberName) {
+      selectAdminMember({ id: route.query.memberId, fullName: route.query.memberName })
+    }
   }
   loadConversations()
   onMessage(onNewMessage)
