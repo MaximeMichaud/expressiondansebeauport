@@ -501,15 +501,15 @@ onUnmounted(() => {
   justify-content: center;
   gap: 8px;
   padding: 12px 16px;
-  border-top: 1px solid #f0d77c;
+  border-top: 1px solid #a3d9a5;
   flex-shrink: 0;
   font-size: 0.8rem;
   color: var(--soc-text, #292524);
-  background: #fef3cd;
+  background: #d4edda;
 
   .soc--dark & {
-    border-top-color: rgba(255, 193, 7, 0.3);
-    background: rgba(255, 193, 7, 0.12);
+    border-top-color: rgba(21, 128, 61, 0.3);
+    background: rgba(21, 128, 61, 0.12);
   }
 
   &__back {
