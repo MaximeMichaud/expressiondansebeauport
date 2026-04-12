@@ -179,7 +179,7 @@
                 <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
               </svg>
             </div>
-            <h3 class="portal-modal__title">Rejoindre « {{ joinModalGroup?.name }} »</h3>
+            <h3 class="portal-modal__title" style="margin-bottom: 20px;">Rejoindre « {{ joinModalGroup?.name }} »</h3>
 
             <!-- Choice mode -->
             <template v-if="joinModalMode === 'choice'">
@@ -190,14 +190,14 @@
                 <button
                   v-if="pendingJoinRequestId"
                   disabled
-                  class="portal-modal__btn portal-modal__btn--primary w-full mb-3 opacity-50 cursor-not-allowed"
+                  class="portal-modal__btn portal-modal__btn--primary w-full opacity-50 cursor-not-allowed"
                 >
                   Demande envoyée ✓
                 </button>
                 <button
                   v-else-if="isAdmin"
                   disabled
-                  class="portal-modal__btn portal-modal__btn--primary w-full mb-3 opacity-40 cursor-not-allowed"
+                  class="portal-modal__btn portal-modal__btn--primary w-full opacity-40 cursor-not-allowed"
                 >
                   Demander à rejoindre
                 </button>
@@ -205,14 +205,14 @@
                   v-else
                   @click="requestToJoin"
                   :disabled="requestingJoin"
-                  class="portal-modal__btn portal-modal__btn--primary w-full mb-3"
+                  class="portal-modal__btn portal-modal__btn--primary w-full"
                 >
                   {{ requestingJoin ? 'Envoi...' : 'Demander à rejoindre' }}
                 </button>
 
-                <div v-if="joinModalError" class="portal-modal__error mt-3">{{ joinModalError }}</div>
+                <div v-if="joinModalError" class="portal-modal__error" style="margin-top: 16px;">{{ joinModalError }}</div>
 
-                <div class="portal-modal__actions mt-3">
+                <div class="portal-modal__actions" style="margin-top: 16px;">
                   <button @click="closeJoinModal" class="portal-modal__btn portal-modal__btn--cancel">Annuler</button>
                   <button @click="joinModalMode = 'code'" class="portal-modal__btn portal-modal__btn--cancel">J'ai un code</button>
                 </div>
