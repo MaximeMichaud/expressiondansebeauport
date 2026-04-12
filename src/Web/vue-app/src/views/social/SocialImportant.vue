@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4">
+  <div ref="announcementsContainer" class="p-4 overflow-y-auto max-h-[calc(100vh-120px)]">
     <!-- Header -->
     <div class="mb-4 flex items-center justify-between">
       <h2 class="text-lg font-bold text-gray-900">Annonces</h2>
@@ -89,9 +89,10 @@
     </div>
 
     <!-- List -->
-    <div v-else class="space-y-3">
-      <div
-        v-for="post in announcements"
+    <div v-else>
+      <div class="space-y-3">
+        <div
+          v-for="post in announcements"
         :key="post.id"
         class="rounded-xl border border-gray-200 overflow-hidden"
       >
@@ -190,6 +191,10 @@
           </div>
         </div>
       </div>
+      </div>
+      <div v-if="loadingMore" class="flex justify-center py-4">
+        <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
+      </div>
     </div>
 
     <!-- Delete modal -->
@@ -225,6 +230,7 @@ import { useUserStore } from '@/stores/userStore'
 import { useMemberStore } from '@/stores/memberStore'
 import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
 import { useImageAttachment } from '@/composables/useImageAttachment'
+import { useInfiniteScroll } from '@/composables/useInfiniteScroll'
 import { Role } from '@/types/enums'
 import type { Post } from '@/types/entities'
 
@@ -236,8 +242,25 @@ const avatarRegistry = useAvatarRegistryStore()
 
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
 const myMemberId = computed(() => memberStore.member?.id || '')
-const announcements = ref<Post[]>([])
-const loading = ref(true)
+
+const announcementsContainer = ref<HTMLElement | null>(null)
+
+const {
+  items: announcements,
+  loading,
+  loadingMore,
+  hasMore: hasMoreAnnouncements,
+  load: loadAnnouncements,
+  refreshFirst: refreshAnnouncementsFirst,
+  reset: resetAnnouncements,
+  attachScroll: attachAnnouncementsScroll,
+} = useInfiniteScroll<Post>({
+  fetchFn: (page) => socialService.getAnnouncements(page),
+  scrollContainer: announcementsContainer,
+  direction: 'down',
+  threshold: 300,
+})
+
 const showCreate = ref(false)
 const newTitle = ref('')
 const newDescription = ref('')
@@ -330,15 +353,6 @@ async function deleteComment(commentId: string, post: Post) {
   }
 }
 
-async function loadAnnouncements() {
-  try {
-    const result = await socialService.getAnnouncements()
-    announcements.value = result.items
-    avatarRegistry.populateFromList(announcements.value as any[], 'authorMemberId', 'authorProfileImageUrl')
-  } catch { /* */ }
-  loading.value = false
-}
-
 function triggerFilePicker() {
   fileInputRef.value?.click()
 }
@@ -369,7 +383,7 @@ async function createAnnouncement() {
       newDescription.value = ''
       attachment.clear()
       showCreate.value = false
-      await loadAnnouncements()
+      await resetAnnouncements()
     } else {
       toast.error('Erreur lors de la publication.')
     }
@@ -386,7 +400,7 @@ async function confirmDelete() {
     await socialService.deletePost(deleteTarget.value.id)
     deleteTarget.value = null
     toast.success('Annonce supprimée.')
-    await loadAnnouncements()
+    await resetAnnouncements()
   } catch {
     toast.error('Erreur lors de la suppression.')
   }
@@ -397,9 +411,10 @@ let pollInterval: ReturnType<typeof setInterval> | null = null
 
 onMounted(() => {
   loadAnnouncements()
+  nextTick(() => attachAnnouncementsScroll())
   pollInterval = setInterval(async () => {
     if (Date.now() - likeDebounce < 3000) return
-    try { const r = await socialService.getAnnouncements(); announcements.value = r.items } catch { /* */ }
+    try { await refreshAnnouncementsFirst() } catch { /* */ }
   }, 30000)
 })
 
