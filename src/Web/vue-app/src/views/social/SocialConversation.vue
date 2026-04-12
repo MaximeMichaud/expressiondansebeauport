@@ -16,7 +16,7 @@
       </button>
       <template v-if="isAdminView">
         <router-link v-if="adminOtherMember.id" :to="{ name: 'socialMemberProfile', params: { id: adminOtherMember.id } }" class="soc-convo__profile-link">
-          <div class="soc-convo__avatar" :style="{ background: getAvatarColor(adminOtherMember.name) }">
+          <div class="soc-convo__avatar" :style="{ background: adminOtherMember.color || getAvatarColor(adminOtherMember.name) }">
             <span class="soc-convo__avatar-initials">{{ getInitials(adminOtherMember.name) }}</span>
           </div>
           <h2 class="soc-convo__name">{{ adminOtherMember.name }}</h2>
@@ -331,7 +331,7 @@ const otherMemberId = ref('')
 const otherMemberPfp = ref('')
 const otherMemberColor = ref('')
 const adminViewingMember = ref<{ id: string; name: string }>({ id: '', name: '' })
-const adminOtherMember = ref<{ id: string; name: string }>({ id: '', name: '' })
+const adminOtherMember = ref<{ id: string; name: string; color: string }>({ id: '', name: '', color: '' })
 
 const effectiveOtherMemberPfp = computed(() => {
   return avatarRegistry.getAvatar(otherMemberId.value, otherMemberPfp.value) || ''
@@ -422,7 +422,7 @@ function handleMediaLoad() {
 async function loadConversationInfo() {
   if (isAdminView.value) {
     adminViewingMember.value = { id: (route.query.viewingId as string) || '', name: (route.query.viewingName as string) || '' }
-    adminOtherMember.value = { id: (route.query.otherId as string) || '', name: (route.query.otherName as string) || '' }
+    adminOtherMember.value = { id: (route.query.otherId as string) || '', name: (route.query.otherName as string) || '', color: (route.query.otherColor as string) || '' }
     return
   }
 

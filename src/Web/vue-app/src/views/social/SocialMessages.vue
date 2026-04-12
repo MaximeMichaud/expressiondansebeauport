@@ -172,7 +172,7 @@
         <router-link
           v-for="conv in adminConversations"
           :key="conv.id"
-          :to="{ name: 'socialAdminConversation', params: { conversationId: conv.id }, query: { viewingId: adminSelectedMember.id, viewingName: adminSelectedMember.fullName, otherId: adminOtherMember(conv).id, otherName: adminOtherMember(conv).fullName } }"
+          :to="{ name: 'socialAdminConversation', params: { conversationId: conv.id }, query: { viewingId: adminSelectedMember.id, viewingName: adminSelectedMember.fullName, otherId: adminOtherMember(conv).id, otherName: adminOtherMember(conv).fullName, otherColor: adminOtherMember(conv).avatarColor } }"
           class="flex items-center gap-3 border-b px-4 py-3 transition hover:bg-gray-50"
           style="border-color: var(--soc-divider, #f0f0f0);"
         >
