@@ -135,8 +135,7 @@ public class JoinRequestService : IJoinRequestService
                 professorMemberId,
                 $"{professor.FullName} a accepté votre demande pour {group?.Name ?? "le groupe"}",
                 new List<MessageMediaItem>(),
-                MessageType.JoinRequest,
-                joinRequest.Id);
+                MessageType.JoinRequest);
         }
     }
 
@@ -178,8 +177,7 @@ public class JoinRequestService : IJoinRequestService
                 professorMemberId,
                 $"{professor.FullName} a refusé votre demande pour {group?.Name ?? "le groupe"}",
                 new List<MessageMediaItem>(),
-                MessageType.JoinRequest,
-                joinRequest.Id);
+                MessageType.JoinRequest);
         }
     }
 
