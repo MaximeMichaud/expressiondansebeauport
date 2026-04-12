@@ -40,7 +40,8 @@ public class GetConversationsEndpoint : Endpoint<GetConversationsRequest>
             return;
         }
 
-        var conversations = await _conversationService.GetConversations(member.Id, req.Page);
+        var conversationsResult = await _conversationService.GetConversations(member.Id, req.Page);
+        var conversations = conversationsResult.Items;
 
         var results = conversations.Select(c =>
         {
@@ -84,6 +85,6 @@ public class GetConversationsEndpoint : Endpoint<GetConversationsRequest>
             };
         });
 
-        await Send.OkAsync(results, ct);
+        await Send.OkAsync(new { Items = results, conversationsResult.HasMore }, ct);
     }
 }

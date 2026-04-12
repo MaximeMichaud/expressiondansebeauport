@@ -1,3 +1,4 @@
+using Application.Common;
 using Domain.Entities;
 using Domain.Enums;
 
@@ -22,8 +23,8 @@ public interface IConversationService
         IReadOnlyList<MessageMediaItem> media,
         MessageType messageType = MessageType.Text,
         Guid? joinRequestId = null);
-    Task<List<Conversation>> GetConversations(Guid memberId, int page);
-    Task<List<Message>> GetMessages(Guid conversationId, int page);
+    Task<PaginatedResult<Conversation>> GetConversations(Guid memberId, int page);
+    Task<PaginatedResult<Message>> GetMessages(Guid conversationId, int page);
     Task MarkAsRead(Guid conversationId, Guid memberId);
     Task<int> GetUnreadCount(Guid memberId);
 }

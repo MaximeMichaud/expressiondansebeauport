@@ -46,7 +46,8 @@ public class GetFeedEndpoint : Endpoint<GetFeedRequest>
             return;
         }
 
-        var posts = await _postService.GetGroupFeed(req.GroupId, req.Page);
+        var feedResult = await _postService.GetGroupFeed(req.GroupId, req.Page);
+        var posts = feedResult.Items;
 
         // Build role lookup for authors in this group
         var authorIds = posts.Select(p => p.AuthorMemberId).Where(id => id != Guid.Empty).Distinct().ToList();
@@ -106,6 +107,6 @@ public class GetFeedEndpoint : Endpoint<GetFeedRequest>
             Created = p.Created.ToDateTimeUtc().ToString("yyyy-MM-ddTHH:mm:ssZ")
         });
 
-        await Send.OkAsync(result, ct);
+        await Send.OkAsync(new { Items = result, feedResult.HasMore }, ct);
     }
 }

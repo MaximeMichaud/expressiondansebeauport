@@ -1,3 +1,4 @@
+using Application.Common;
 using Domain.Entities;
 using Domain.Enums;
 
@@ -30,8 +31,8 @@ public interface IPostService
     Task DeleteComment(Guid commentId);
     Task RecordView(Guid postId, Guid memberId);
     Task VoteOnPoll(Guid pollOptionId, Guid memberId);
-    Task<List<Post>> GetGroupFeed(Guid groupId, int page);
-    Task<List<Post>> GetAnnouncements(int page);
+    Task<PaginatedResult<Post>> GetGroupFeed(Guid groupId, int page);
+    Task<PaginatedResult<Post>> GetAnnouncements(int page);
     Task<Post?> GetPostById(Guid postId);
-    Task<List<Comment>> GetComments(Guid postId, int page);
+    Task<PaginatedResult<Comment>> GetComments(Guid postId, int page);
 }

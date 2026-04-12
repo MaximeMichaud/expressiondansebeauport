@@ -43,7 +43,8 @@ public class GetMessagesEndpoint : Endpoint<GetMessagesRequest>
             return;
         }
 
-        var messages = await _conversationService.GetMessages(req.ConversationId, req.Page);
+        var messagesResult = await _conversationService.GetMessages(req.ConversationId, req.Page);
+        var messages = messagesResult.Items;
 
         // Get the other participant's LastReadAt to determine read receipts
         var conversation = await _conversationRepository.FindById(req.ConversationId);
@@ -107,6 +108,6 @@ public class GetMessagesEndpoint : Endpoint<GetMessagesRequest>
             };
         });
 
-        await Send.OkAsync(results, ct);
+        await Send.OkAsync(new { Items = results, messagesResult.HasMore }, ct);
     }
 }
