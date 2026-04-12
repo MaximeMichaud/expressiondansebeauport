@@ -12,7 +12,7 @@
         @click="activeTab = 'admin'"
         :class="['flex-1 py-3 text-center text-sm font-semibold transition', activeTab === 'admin' ? 'border-b-2 border-[#1a1a1a] text-gray-900' : 'text-gray-400 hover:text-gray-600']"
       >
-        Admin
+        Tous les messages
       </button>
     </div>
 
@@ -153,7 +153,7 @@
         <button @click="clearAdminMember" class="soc-admin-back-btn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
         </button>
-        <h2 class="text-lg font-bold" style="color: var(--soc-bar-text-strong, #1a1a1a);">Messages</h2>
+        <h2 class="text-lg font-bold" style="color: var(--soc-bar-text-strong, #1a1a1a);">Messages de {{ adminSelectedMember.fullName }}</h2>
       </div>
 
       <!-- Admin conversation list -->
@@ -501,15 +501,15 @@ onUnmounted(() => {
   justify-content: center;
   gap: 8px;
   padding: 12px 16px;
-  border-top: 1px solid #a3d9a5;
+  border-top: 1px solid #a3c4e9;
   flex-shrink: 0;
   font-size: 0.8rem;
   color: var(--soc-text, #292524);
-  background: #d4edda;
+  background: #d6e8f7;
 
   .soc--dark & {
-    border-top-color: rgba(21, 128, 61, 0.3);
-    background: rgba(21, 128, 61, 0.12);
+    border-top-color: rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.12);
   }
 
   &__back {
