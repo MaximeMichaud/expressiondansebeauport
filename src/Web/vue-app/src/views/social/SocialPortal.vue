@@ -137,21 +137,74 @@
               </svg>
             </div>
             <h3 class="portal-modal__title">Rejoindre « {{ joinModalGroup?.name }} »</h3>
-            <p class="portal-modal__text">Entrez le code d'invitation pour rejoindre ce groupe.</p>
-            <input
-              v-model="joinModalCode"
-              type="text"
-              class="portal-modal__input"
-              placeholder="Code d'invitation"
-              @keyup.enter="joinFromModal"
-            />
-            <div v-if="joinModalError" class="portal-modal__error">{{ joinModalError }}</div>
-            <div class="portal-modal__actions">
-              <button @click="closeJoinModal" class="portal-modal__btn portal-modal__btn--cancel">Annuler</button>
-              <button @click="joinFromModal" :disabled="!joinModalCode.trim() || joiningFromModal" class="portal-modal__btn portal-modal__btn--primary">
-                {{ joiningFromModal ? 'Rejoindre...' : 'Rejoindre' }}
-              </button>
-            </div>
+
+            <!-- Choice mode -->
+            <template v-if="joinModalMode === 'choice'">
+              <div v-if="checkingPending" class="flex justify-center py-4">
+                <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
+              </div>
+              <template v-else>
+                <button
+                  v-if="!pendingJoinRequestId"
+                  @click="requestToJoin"
+                  :disabled="requestingJoin"
+                  class="portal-modal__btn portal-modal__btn--primary w-full mb-3"
+                >
+                  {{ requestingJoin ? 'Envoi...' : 'Demander à rejoindre' }}
+                </button>
+                <button
+                  v-else
+                  disabled
+                  class="portal-modal__btn portal-modal__btn--primary w-full mb-3 opacity-50 cursor-not-allowed"
+                >
+                  Demande envoyée ✓
+                </button>
+
+                <div class="flex items-center gap-3 my-3">
+                  <div class="flex-1 h-px bg-gray-200"></div>
+                  <span class="text-xs text-gray-400">ou</span>
+                  <div class="flex-1 h-px bg-gray-200"></div>
+                </div>
+
+                <button
+                  @click="joinModalMode = 'code'"
+                  class="text-sm text-gray-500 hover:text-gray-800 transition cursor-pointer"
+                >
+                  J'ai un code d'invitation
+                </button>
+              </template>
+            </template>
+
+            <!-- Code mode -->
+            <template v-if="joinModalMode === 'code'">
+              <p class="portal-modal__text">Entrez le code d'invitation pour rejoindre ce groupe.</p>
+              <input
+                v-model="joinModalCode"
+                type="text"
+                class="portal-modal__input"
+                placeholder="Code d'invitation"
+                @keyup.enter="joinFromModal"
+              />
+              <div v-if="joinModalError" class="portal-modal__error">{{ joinModalError }}</div>
+              <div class="portal-modal__actions">
+                <button @click="joinModalMode = 'choice'" class="portal-modal__btn portal-modal__btn--cancel">Retour</button>
+                <button @click="joinFromModal" :disabled="!joinModalCode.trim() || joiningFromModal" class="portal-modal__btn portal-modal__btn--primary">
+                  {{ joiningFromModal ? 'Rejoindre...' : 'Rejoindre' }}
+                </button>
+              </div>
+            </template>
+
+            <!-- Error in choice mode -->
+            <div v-if="joinModalMode === 'choice' && joinModalError" class="portal-modal__error mt-2">{{ joinModalError }}</div>
+
+            <!-- Close button -->
+            <button
+              v-if="joinModalMode === 'choice'"
+              @click="closeJoinModal"
+              class="text-xs text-gray-400 hover:text-gray-600 mt-4 cursor-pointer"
+            >
+              Annuler
+            </button>
           </div>
         </div>
       </Transition>
@@ -245,16 +298,32 @@ const joinModalGroup = ref<Group | null>(null)
 const joinModalCode = ref('')
 const joinModalError = ref('')
 const joiningFromModal = ref(false)
+const joinModalMode = ref<'choice' | 'code'>('choice')
+const requestingJoin = ref(false)
+const pendingJoinRequestId = ref<string | null>(null)
+const checkingPending = ref(false)
 
-function onGroupClick(group: Group) {
+async function onGroupClick(group: Group) {
   if (myGroupIds.value.has(group.id)) {
     router.push({ name: 'socialGroup', params: { id: group.id } })
-  } else {
-    joinModalGroup.value = group
-    joinModalCode.value = ''
-    joinModalError.value = ''
-    showJoinModal.value = true
+    return
   }
+
+  joinModalGroup.value = group
+  joinModalCode.value = ''
+  joinModalError.value = ''
+  joinModalMode.value = 'choice'
+  pendingJoinRequestId.value = null
+  showJoinModal.value = true
+
+  checkingPending.value = true
+  try {
+    const result = await socialService.getMyJoinRequest(group.id)
+    if (result?.found) {
+      pendingJoinRequestId.value = result.joinRequestId
+    }
+  } catch { /* */ }
+  checkingPending.value = false
 }
 
 function closeJoinModal() {
@@ -262,6 +331,8 @@ function closeJoinModal() {
   joinModalGroup.value = null
   joinModalCode.value = ''
   joinModalError.value = ''
+  joinModalMode.value = 'choice'
+  pendingJoinRequestId.value = null
 }
 
 async function joinFromModal() {
@@ -282,6 +353,24 @@ async function joinFromModal() {
     joinModalError.value = 'Code invalide ou erreur de connexion.'
   }
   joiningFromModal.value = false
+}
+
+async function requestToJoin() {
+  if (!joinModalGroup.value) return
+  requestingJoin.value = true
+  joinModalError.value = ''
+  try {
+    const result = await socialService.requestJoinGroup(joinModalGroup.value.id)
+    if (result?.succeeded) {
+      closeJoinModal()
+      toast.success('Demande envoyée!')
+    } else {
+      joinModalError.value = result?.errors?.[0]?.errorMessage || 'Erreur.'
+    }
+  } catch {
+    joinModalError.value = 'Erreur de connexion.'
+  }
+  requestingJoin.value = false
 }
 
 onMounted(loadGroups)
