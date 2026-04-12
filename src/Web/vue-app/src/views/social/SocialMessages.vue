@@ -148,6 +148,14 @@
         </p>
       </div>
 
+      <!-- Admin conversation list header -->
+      <div v-if="adminSelectedMember" class="flex items-center gap-3 border-b px-4 py-3" style="border-color: var(--soc-divider, #f0f0f0);">
+        <button @click="clearAdminMember" style="color: var(--soc-text-muted, #78716c);" class="flex items-center justify-center w-8 h-8 rounded-lg transition hover:opacity-70 cursor-pointer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <h2 class="text-lg font-bold" style="color: var(--soc-bar-text-strong, #1a1a1a);">Messages</h2>
+      </div>
+
       <!-- Admin conversation list -->
       <div v-if="adminSelectedMember && adminLoading" class="flex flex-1 items-center justify-center">
         <div class="h-6 w-6 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
@@ -195,9 +203,6 @@
 
       <!-- Admin viewing banner -->
       <div v-if="adminSelectedMember" class="soc-admin-viewing-banner" style="margin-top: auto;">
-        <button @click="clearAdminMember" class="soc-admin-viewing-banner__back">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
-        </button>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         <span>Vu par <router-link :to="{ name: 'socialMemberProfile', params: { id: adminSelectedMember.id } }" class="soc-admin-viewing-banner__link">{{ adminSelectedMember.fullName }}</router-link></span>
       </div>
