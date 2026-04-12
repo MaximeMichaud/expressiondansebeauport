@@ -52,7 +52,7 @@
           :key="member.id"
           @click="startNewConversation(member)"
           :disabled="startingConvo"
-          class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition hover:bg-white disabled:opacity-50"
+          class="soc-admin-member-link soc-admin-member-link--full disabled:opacity-50"
         >
           <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: member.avatarColor || getAvatarColor(member.fullName) }">
             {{ getInitials(member.fullName) }}
@@ -120,7 +120,7 @@
           <button @click="clearAdminMember" class="text-gray-400 hover:text-gray-600 transition">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
           </button>
-          <router-link :to="{ name: 'socialMemberProfile', params: { id: adminSelectedMember.id } }" class="flex items-center gap-3 rounded-lg px-2 py-1 -mx-2 -my-1 transition hover:bg-gray-200">
+          <router-link :to="{ name: 'socialMemberProfile', params: { id: adminSelectedMember.id } }" class="soc-admin-member-link">
             <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: adminSelectedMember.avatarColor || getAvatarColor(adminSelectedMember.fullName) }">
               {{ getInitials(adminSelectedMember.fullName) }}
             </div>
@@ -144,7 +144,7 @@
               v-for="member in adminSearchResults"
               :key="member.id"
               @click="selectAdminMember(member)"
-              class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition hover:bg-white"
+              class="soc-admin-member-link soc-admin-member-link--full"
             >
               <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: member.avatarColor || getAvatarColor(member.fullName) }">
                 {{ getInitials(member.fullName) }}
@@ -454,3 +454,24 @@ onUnmounted(() => {
   if (pollInterval) clearInterval(pollInterval)
 })
 </script>
+
+<style lang="scss">
+.soc-admin-member-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin: -4px -8px;
+  transition: background 0.15s;
+  text-decoration: none;
+  &:hover { background: var(--soc-bar-active, #eae8e4); }
+
+  &--full {
+    width: 100%;
+    padding: 8px 12px;
+    margin: 0;
+    text-align: left;
+  }
+}
+</style>
