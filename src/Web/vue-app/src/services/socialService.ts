@@ -194,8 +194,13 @@ export class SocialService extends ApiService {
   }
 
   // === Announcements ===
-  async createAnnouncement(content: string): Promise<SucceededOrNotResponse> {
-    const response = await this._httpClient.post<SucceededOrNotResponse>(`${API}/social/announcements`, { content }, this.headersWithJsonContentType())
+  async createAnnouncement(content: string, media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.post<SucceededOrNotResponse>(`${API}/social/announcements`, { content, media: media ?? [] }, this.headersWithJsonContentType())
+    return response.data
+  }
+
+  async updateAnnouncement(id: string, content: string, media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.put<SucceededOrNotResponse>(`${API}/social/announcements/${id}`, { content, media: media ?? [] }, this.headersWithJsonContentType())
     return response.data
   }
 
@@ -292,6 +297,27 @@ export class SocialService extends ApiService {
   async demoteMember(id: string): Promise<SucceededOrNotResponse> {
     const response = await this._httpClient.post<SucceededOrNotResponse>(`${API}/admin/members/${id}/demote`, {}, this.headersWithJsonContentType())
     return response.data
+  }
+
+  // === Join Requests ===
+  async requestJoinGroup(groupId: string): Promise<any> {
+    const response = await this._httpClient.post(`${API}/social/groups/${groupId}/join-requests`, {}, this.headersWithJsonContentType())
+    return toCamel(response.data)
+  }
+
+  async acceptJoinRequest(joinRequestId: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.put<SucceededOrNotResponse>(`${API}/social/join-requests/${joinRequestId}/accept`, {}, this.headersWithJsonContentType())
+    return response.data
+  }
+
+  async rejectJoinRequest(joinRequestId: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.put<SucceededOrNotResponse>(`${API}/social/join-requests/${joinRequestId}/reject`, {}, this.headersWithJsonContentType())
+    return response.data
+  }
+
+  async getMyJoinRequest(groupId: string): Promise<any> {
+    const response = await this._httpClient.get(`${API}/social/groups/${groupId}/join-requests/mine`)
+    return toCamel(response.data)
   }
 
   // === Upload ===

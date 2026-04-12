@@ -115,6 +115,16 @@ export interface MessageMedia {
   sortOrder: number
 }
 
+export interface JoinRequestInfo {
+  id: string
+  groupId: string
+  groupName: string
+  requesterMemberId: string
+  requesterName: string
+  status: 'Pending' | 'Accepted' | 'Rejected'
+  resolvedByName?: string
+}
+
 export interface Message {
   id: string
   conversationId: string
@@ -123,4 +133,6 @@ export interface Message {
   content: string
   media?: MessageMedia[]
   created: string
+  messageType?: string
+  joinRequest?: JoinRequestInfo
 }
