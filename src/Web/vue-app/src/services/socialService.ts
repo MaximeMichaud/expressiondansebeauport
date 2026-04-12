@@ -42,8 +42,8 @@ export class SocialService extends ApiService {
     return toCamel(response.data)
   }
 
-  async createGroup(name: string, description: string, season: string, inviteCode: string): Promise<SucceededOrNotResponse> {
-    const response = await this._httpClient.post<SucceededOrNotResponse>(`${API}/admin/groups`, { name, description, season, inviteCode: inviteCode || undefined }, this.headersWithJsonContentType())
+  async createGroup(name: string, description: string, season: string, inviteCode: string, imageUrl?: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.post<SucceededOrNotResponse>(`${API}/admin/groups`, { name, description, season, inviteCode: inviteCode || undefined, imageUrl }, this.headersWithJsonContentType())
     return response.data
   }
 
@@ -69,9 +69,10 @@ export class SocialService extends ApiService {
   }
 
   // === Posts ===
-  async getGroupFeed(groupId: string, page: number = 1): Promise<Post[]> {
+  async getGroupFeed(groupId: string, page: number = 1): Promise<{ items: Post[]; hasMore: boolean }> {
     const response = await this._httpClient.get(`${API}/social/groups/${groupId}/posts?Page=${page}`)
-    return toCamel(response.data)
+    const data = toCamel(response.data)
+    return { items: data.items, hasMore: data.hasMore }
   }
 
   async getPost(id: string): Promise<Post> {
@@ -124,9 +125,10 @@ export class SocialService extends ApiService {
   }
 
   // === Comments ===
-  async getComments(postId: string, page: number = 1): Promise<Comment[]> {
+  async getComments(postId: string, page: number = 1): Promise<{ items: Comment[]; hasMore: boolean }> {
     const response = await this._httpClient.get(`${API}/social/posts/${postId}/comments?Page=${page}`)
-    return toCamel(response.data)
+    const data = toCamel(response.data)
+    return { items: data.items, hasMore: data.hasMore }
   }
 
   async addComment(postId: string, content: string): Promise<SucceededOrNotResponse> {
@@ -204,20 +206,23 @@ export class SocialService extends ApiService {
     return response.data
   }
 
-  async getAnnouncements(page: number = 1): Promise<Post[]> {
+  async getAnnouncements(page: number = 1): Promise<{ items: Post[]; hasMore: boolean }> {
     const response = await this._httpClient.get(`${API}/social/announcements?Page=${page}`)
-    return toCamel(response.data)
+    const data = toCamel(response.data)
+    return { items: data.items, hasMore: data.hasMore }
   }
 
   // === Conversations ===
-  async getConversations(page: number = 1): Promise<Conversation[]> {
+  async getConversations(page: number = 1): Promise<{ items: Conversation[]; hasMore: boolean }> {
     const response = await this._httpClient.get(`${API}/social/conversations?Page=${page}`)
-    return toCamel(response.data)
+    const data = toCamel(response.data)
+    return { items: data.items, hasMore: data.hasMore }
   }
 
-  async getMessages(conversationId: string, page: number = 1): Promise<Message[]> {
+  async getMessages(conversationId: string, page: number = 1): Promise<{ items: Message[]; hasMore: boolean }> {
     const response = await this._httpClient.get(`${API}/social/conversations/${conversationId}/messages?Page=${page}`)
-    return toCamel(response.data)
+    const data = toCamel(response.data)
+    return { items: data.items, hasMore: data.hasMore }
   }
 
   async sendMessage(
