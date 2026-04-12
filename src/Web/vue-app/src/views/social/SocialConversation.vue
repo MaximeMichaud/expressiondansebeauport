@@ -793,13 +793,14 @@ $convo-font-body: 'Karla', sans-serif;
     justify-content: center;
     gap: 8px;
     padding: 12px 16px;
-    border-top: 2px solid var(--soc-border, #d0c9c3);
+    border-top: 1px solid #c5beb7;
     flex-shrink: 0;
     font-size: 0.8rem;
     color: var(--soc-text, #292524);
     background: #e0dbd6;
 
     .soc--dark & {
+      border-top-color: var(--soc-border);
       background: var(--soc-bar-active);
     }
   }
