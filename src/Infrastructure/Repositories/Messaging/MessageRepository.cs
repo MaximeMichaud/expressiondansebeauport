@@ -65,4 +65,13 @@ public class MessageRepository : IMessageRepository
     }
 
     public async Task SaveChanges() => await _context.SaveChangesAsync();
+
+    public async Task<Message?> FindByJoinRequestId(Guid joinRequestId)
+    {
+        return await _context.Messages
+            .AsNoTracking()
+            .Where(m => m.JoinRequestId == joinRequestId)
+            .OrderBy(m => m.Created)
+            .FirstOrDefaultAsync();
+    }
 }

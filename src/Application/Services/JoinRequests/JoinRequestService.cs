@@ -13,19 +13,25 @@ public class JoinRequestService : IJoinRequestService
     private readonly IGroupRepository _groupRepository;
     private readonly IMemberRepository _memberRepository;
     private readonly IConversationService _conversationService;
+    private readonly IMessageRepository _messageRepository;
+    private readonly IConversationRepository _conversationRepository;
 
     public JoinRequestService(
         IJoinRequestRepository joinRequestRepository,
         IGroupMemberRepository groupMemberRepository,
         IGroupRepository groupRepository,
         IMemberRepository memberRepository,
-        IConversationService conversationService)
+        IConversationService conversationService,
+        IMessageRepository messageRepository,
+        IConversationRepository conversationRepository)
     {
         _joinRequestRepository = joinRequestRepository;
         _groupMemberRepository = groupMemberRepository;
         _groupRepository = groupRepository;
         _memberRepository = memberRepository;
         _conversationService = conversationService;
+        _messageRepository = messageRepository;
+        _conversationRepository = conversationRepository;
     }
 
     public async Task<JoinRequest> CreateRequest(Guid groupId, Guid requesterMemberId)
@@ -127,16 +133,35 @@ public class JoinRequestService : IJoinRequestService
         await _groupMemberRepository.Add(gm);
 
         var group = await _groupRepository.FindById(joinRequest.GroupId);
-        var conversation = await _conversationService.GetOrCreateConversation(joinRequest.RequesterMemberId, professorMemberId);
-        if (conversation != null)
+
+        // Send acceptance in the original conversation where the join request was sent
+        var originalMessage = await _messageRepository.FindByJoinRequestId(joinRequest.Id);
+        Guid conversationId;
+        Guid senderId;
+        if (originalMessage != null)
         {
-            await _conversationService.SendMessage(
-                conversation.Id,
-                professorMemberId,
-                $"{professor.FullName} a accepté votre demande pour {group?.Name ?? "le groupe"}",
-                new List<MessageMediaItem>(),
-                MessageType.JoinRequest);
+            conversationId = originalMessage.ConversationId;
+            // Find the other participant (the professor/recipient) in the original conversation
+            var origConvo = await _conversationRepository.FindById(originalMessage.ConversationId);
+            senderId = origConvo?.ParticipantAMemberId == joinRequest.RequesterMemberId
+                ? origConvo.ParticipantBMemberId
+                : origConvo?.ParticipantAMemberId ?? professorMemberId;
         }
+        else
+        {
+            var conversation = await _conversationService.GetOrCreateConversation(joinRequest.RequesterMemberId, professorMemberId);
+            if (conversation == null) return;
+            conversationId = conversation.Id;
+            senderId = professorMemberId;
+        }
+
+        await _conversationService.SendMessage(
+            conversationId,
+            senderId,
+            $"{professor.FullName} a accepté votre demande pour {group?.Name ?? "le groupe"}",
+            new List<MessageMediaItem>(),
+            MessageType.JoinRequest,
+            joinRequest.Id);
     }
 
     public async Task RejectRequest(Guid joinRequestId, Guid professorMemberId)
@@ -169,16 +194,34 @@ public class JoinRequestService : IJoinRequestService
         await _joinRequestRepository.Update(joinRequest);
 
         var group = await _groupRepository.FindById(joinRequest.GroupId);
-        var conversation = await _conversationService.GetOrCreateConversation(joinRequest.RequesterMemberId, professorMemberId);
-        if (conversation != null)
+
+        // Send rejection in the original conversation where the join request was sent
+        var originalMessage = await _messageRepository.FindByJoinRequestId(joinRequest.Id);
+        Guid conversationId;
+        Guid senderId;
+        if (originalMessage != null)
         {
-            await _conversationService.SendMessage(
-                conversation.Id,
-                professorMemberId,
-                $"{professor.FullName} a refusé votre demande pour {group?.Name ?? "le groupe"}",
-                new List<MessageMediaItem>(),
-                MessageType.JoinRequest);
+            conversationId = originalMessage.ConversationId;
+            var origConvo = await _conversationRepository.FindById(originalMessage.ConversationId);
+            senderId = origConvo?.ParticipantAMemberId == joinRequest.RequesterMemberId
+                ? origConvo.ParticipantBMemberId
+                : origConvo?.ParticipantAMemberId ?? professorMemberId;
         }
+        else
+        {
+            var conversation = await _conversationService.GetOrCreateConversation(joinRequest.RequesterMemberId, professorMemberId);
+            if (conversation == null) return;
+            conversationId = conversation.Id;
+            senderId = professorMemberId;
+        }
+
+        await _conversationService.SendMessage(
+            conversationId,
+            senderId,
+            $"{professor.FullName} a refusé votre demande pour {group?.Name ?? "le groupe"}",
+            new List<MessageMediaItem>(),
+            MessageType.JoinRequest,
+            joinRequest.Id);
     }
 
     public async Task<JoinRequest?> GetPendingRequest(Guid groupId, Guid memberId)
