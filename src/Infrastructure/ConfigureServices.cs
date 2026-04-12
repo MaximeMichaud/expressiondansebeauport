@@ -9,6 +9,7 @@ using Infrastructure.Repositories.Admins;
 using Infrastructure.Repositories.Authentication;
 using Infrastructure.Repositories.Media;
 using Infrastructure.Repositories.Groups;
+using Infrastructure.Repositories.JoinRequests;
 using Infrastructure.Repositories.Messaging;
 using Infrastructure.Repositories.Posts;
 using Infrastructure.Repositories.Members;
@@ -86,6 +87,7 @@ public static class ConfigureServices
         services.AddScoped<IPollRepository, PollRepository>();
         services.AddScoped<IConversationRepository, ConversationRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
+        services.AddScoped<IJoinRequestRepository, JoinRequestRepository>();
 
         services.AddScoped<IBackupService>(sp =>
         {
