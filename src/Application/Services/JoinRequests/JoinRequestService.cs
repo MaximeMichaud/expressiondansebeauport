@@ -131,24 +131,6 @@ public class JoinRequestService : IJoinRequestService
         gm.SetRole(GroupMemberRole.Member);
         gm.SetJoinedAt(InstantHelper.GetLocalNow());
         await _groupMemberRepository.Add(gm);
-
-        // Send a text notification in the original conversation (requester ↔ professor)
-        var group = await _groupRepository.FindById(joinRequest.GroupId);
-        var originalMessage = await _messageRepository.FindByJoinRequestId(joinRequest.Id);
-        if (originalMessage != null)
-        {
-            var origConvo = await _conversationRepository.FindById(originalMessage.ConversationId);
-            var senderId = origConvo?.ParticipantAMemberId == joinRequest.RequesterMemberId
-                ? origConvo.ParticipantBMemberId
-                : origConvo?.ParticipantAMemberId ?? professorMemberId;
-            var senderName = _memberRepository.FindById(senderId)?.FullName ?? professor.FullName;
-
-            await _conversationService.SendMessage(
-                originalMessage.ConversationId,
-                senderId,
-                $"{senderName} a accepté votre demande pour {group?.Name ?? "le groupe"}",
-                new List<MessageMediaItem>());
-        }
     }
 
     public async Task RejectRequest(Guid joinRequestId, Guid professorMemberId)
@@ -179,24 +161,6 @@ public class JoinRequestService : IJoinRequestService
         joinRequest.SetResolvedByMember(professor);
         joinRequest.SetResolvedAt(InstantHelper.GetLocalNow());
         await _joinRequestRepository.Update(joinRequest);
-
-        // Send a text notification in the original conversation (requester ↔ professor)
-        var group = await _groupRepository.FindById(joinRequest.GroupId);
-        var originalMessage = await _messageRepository.FindByJoinRequestId(joinRequest.Id);
-        if (originalMessage != null)
-        {
-            var origConvo = await _conversationRepository.FindById(originalMessage.ConversationId);
-            var senderId = origConvo?.ParticipantAMemberId == joinRequest.RequesterMemberId
-                ? origConvo.ParticipantBMemberId
-                : origConvo?.ParticipantAMemberId ?? professorMemberId;
-            var senderName = _memberRepository.FindById(senderId)?.FullName ?? professor.FullName;
-
-            await _conversationService.SendMessage(
-                originalMessage.ConversationId,
-                senderId,
-                $"{senderName} a refusé votre demande pour {group?.Name ?? "le groupe"}",
-                new List<MessageMediaItem>());
-        }
     }
 
     public async Task<JoinRequest?> GetPendingRequest(Guid groupId, Guid memberId)
