@@ -42,6 +42,17 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
             Ce message a été supprimé
           </div>
+          <!-- Join request message -->
+          <JoinRequestCard
+            v-else-if="msg.messageType === 'JoinRequest' && msg.joinRequest"
+            :join-request-id="msg.joinRequest.id"
+            :group-name="msg.joinRequest.groupName"
+            :requester-name="msg.joinRequest.requesterName"
+            :status="msg.joinRequest.status"
+            :resolved-by-name="msg.joinRequest.resolvedByName"
+            :is-mine="msg.isMine"
+            @resolved="pollMessages"
+          />
           <!-- Normal message -->
           <div
             v-else
@@ -228,6 +239,7 @@ import { useSocialService } from '@/inversify.config'
 import { useMemberStore } from '@/stores/memberStore'
 import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
 import ImageLightbox from '@/components/social/ImageLightbox.vue'
+import JoinRequestCard from '@/components/social/JoinRequestCard.vue'
 import { useImageAttachment } from '@/composables/useImageAttachment'
 
 interface ChatMessageMedia {
@@ -250,6 +262,16 @@ interface ChatMessage {
   isDeleted?: boolean
   media?: ChatMessageMedia[]
   pendingPreviewUrls?: string[]
+  messageType?: string
+  joinRequest?: {
+    id: string
+    groupId: string
+    groupName: string
+    requesterMemberId: string
+    requesterName: string
+    status: 'Pending' | 'Accepted' | 'Rejected'
+    resolvedByName?: string
+  }
 }
 
 const route = useRoute()
@@ -381,6 +403,8 @@ async function loadMessages(smooth = false) {
       isRead: m.isRead ?? false,
       isDeleted: m.isDeleted ?? false,
       media: Array.isArray(m.media) ? m.media : undefined,
+      messageType: m.messageType,
+      joinRequest: m.joinRequest,
     }))
     pendingMessages.value = pendingMessages.value.filter(
       pm => !serverMessages.value.some(sm => sm.content === pm.content)
@@ -494,6 +518,8 @@ async function pollMessages() {
       isRead: m.isRead ?? false,
       isDeleted: m.isDeleted ?? false,
       media: Array.isArray(m.media) ? m.media : undefined,
+      messageType: m.messageType,
+      joinRequest: m.joinRequest,
     }))
     pendingMessages.value = pendingMessages.value.filter(
       pm => !serverMessages.value.some(sm => sm.content === pm.content)
