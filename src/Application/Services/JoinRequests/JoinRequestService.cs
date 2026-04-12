@@ -155,10 +155,14 @@ public class JoinRequestService : IJoinRequestService
             senderId = professorMemberId;
         }
 
+        var senderName = senderId == professorMemberId
+            ? professor.FullName
+            : _memberRepository.FindById(senderId)?.FullName ?? professor.FullName;
+
         await _conversationService.SendMessage(
             conversationId,
             senderId,
-            $"{professor.FullName} a accepté votre demande pour {group?.Name ?? "le groupe"}",
+            $"{senderName} a accepté votre demande pour {group?.Name ?? "le groupe"}",
             new List<MessageMediaItem>(),
             MessageType.JoinRequest,
             joinRequest.Id);
@@ -215,10 +219,14 @@ public class JoinRequestService : IJoinRequestService
             senderId = professorMemberId;
         }
 
+        var senderName = senderId == professorMemberId
+            ? professor.FullName
+            : _memberRepository.FindById(senderId)?.FullName ?? professor.FullName;
+
         await _conversationService.SendMessage(
             conversationId,
             senderId,
-            $"{professor.FullName} a refusé votre demande pour {group?.Name ?? "le groupe"}",
+            $"{senderName} a refusé votre demande pour {group?.Name ?? "le groupe"}",
             new List<MessageMediaItem>(),
             MessageType.JoinRequest,
             joinRequest.Id);
