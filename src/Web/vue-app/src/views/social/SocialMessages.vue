@@ -116,19 +116,8 @@
     <!-- Admin tab content -->
     <template v-if="isAdmin && activeTab === 'admin'">
       <!-- Member search -->
-      <div class="border-b border-gray-200 bg-gray-50 p-4">
-        <div v-if="adminSelectedMember" class="flex items-center gap-3">
-          <button @click="clearAdminMember" class="text-gray-400 hover:text-gray-600 transition">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
-          </button>
-          <router-link :to="{ name: 'socialMemberProfile', params: { id: adminSelectedMember.id } }" class="soc-admin-member-link">
-            <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: adminSelectedMember.avatarColor || getAvatarColor(adminSelectedMember.fullName) }">
-              {{ getInitials(adminSelectedMember.fullName) }}
-            </div>
-            <span class="text-sm font-semibold text-gray-900">{{ adminSelectedMember.fullName }}</span>
-          </router-link>
-        </div>
-        <template v-else>
+      <div v-if="!adminSelectedMember" class="border-b border-gray-200 bg-gray-50 p-4">
+        <template>
           <h3 class="mb-3 text-sm font-semibold text-gray-700">Choisir un membre</h3>
           <input
             v-model="adminMemberSearch"
@@ -203,6 +192,15 @@
         <div v-if="adminLoadingMore" class="flex justify-center py-3">
           <div class="h-4 w-4 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
         </div>
+      </div>
+
+      <!-- Admin viewing banner -->
+      <div v-if="adminSelectedMember" class="soc-admin-viewing-banner">
+        <button @click="clearAdminMember" class="soc-admin-viewing-banner__back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Vu par <router-link :to="{ name: 'socialMemberProfile', params: { id: adminSelectedMember.id } }" class="soc-admin-viewing-banner__link">{{ adminSelectedMember.fullName }}</router-link></span>
       </div>
     </template>
   </div>
@@ -474,6 +472,47 @@ onUnmounted(() => {
     padding: 8px 12px;
     margin: 0;
     text-align: left;
+  }
+}
+
+.soc-admin-viewing-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #c5beb7;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  color: var(--soc-text, #292524);
+  background: #e0dbd6;
+
+  .soc--dark & {
+    border-top-color: var(--soc-border);
+    background: var(--soc-bar-active);
+  }
+
+  &__back {
+    position: absolute;
+    left: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    color: var(--soc-text-muted, #78716c);
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    &:hover { color: var(--soc-bar-text-strong, #1a1a1a); background: var(--soc-bar-hover, #f5f3f0); }
+  }
+
+  &__link {
+    font-weight: 600;
+    color: var(--soc-bar-text-strong, #1a1a1a);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    &:hover { opacity: 0.7; }
   }
 }
 </style>
