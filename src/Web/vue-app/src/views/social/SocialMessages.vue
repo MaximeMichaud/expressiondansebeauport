@@ -168,20 +168,32 @@
         <router-link
           v-for="conv in adminConversations"
           :key="conv.id"
-          :to="{ name: 'socialAdminConversation', params: { conversationId: conv.id }, query: { names: conv.participantA.fullName + ' ↔ ' + conv.participantB.fullName } }"
+          :to="{ name: 'socialAdminConversation', params: { conversationId: conv.id }, query: { names: adminOtherMember(conv).fullName } }"
           class="flex items-center gap-3 border-b px-4 py-3 transition hover:bg-gray-50"
           style="border-color: var(--soc-divider, #f0f0f0);"
         >
+          <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-sm font-bold text-white" :style="{ background: adminOtherMember(conv).avatarColor || getAvatarColor(adminOtherMember(conv).fullName) }">
+            <img
+              v-if="adminOtherMember(conv).profileImageUrl"
+              :src="adminOtherMember(conv).profileImageUrl"
+              :alt="adminOtherMember(conv).fullName"
+              class="h-full w-full object-cover"
+            />
+            <span v-else>{{ getInitials(adminOtherMember(conv).fullName) }}</span>
+          </div>
           <div class="min-w-0 flex-1">
-            <span class="text-sm font-medium text-gray-700">
-              {{ conv.participantA.fullName }} &harr; {{ conv.participantB.fullName }}
+            <span :class="['text-sm', conv.unreadCount > 0 ? 'font-bold text-gray-900' : 'font-medium text-gray-700']">
+              {{ adminOtherMember(conv).fullName }}
             </span>
-            <p class="truncate text-xs text-gray-500">
-              <span v-if="conv.lastMessage">{{ conv.lastMessage.senderName }}: {{ conv.lastMessage.content || 'Fichier' }}</span>
+            <p :class="['truncate text-xs', conv.unreadCount > 0 ? 'font-semibold text-gray-700' : 'text-gray-500']">
+              <span>{{ lastMessagePrefix(conv.lastMessage) }}</span><span :class="isMediaOnlyPreview(conv.lastMessage) && 'italic'">{{ lastMessageBody(conv.lastMessage) }}</span>
             </p>
           </div>
           <div class="flex flex-col items-end gap-1 flex-shrink-0">
             <span class="text-[10px] text-gray-400">{{ formatTime(conv.lastMessage?.created) }}</span>
+            <div v-if="conv.unreadCount > 0" class="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#dc2626] px-1.5 text-[10px] font-bold text-white">
+              {{ conv.unreadCount }}
+            </div>
           </div>
         </router-link>
         <div v-if="adminLoadingMore" class="flex justify-center py-3">
@@ -262,6 +274,11 @@ const {
 })
 
 const adminConversations = computed(() => adminRawConversations.value.filter((c: any) => c.lastMessage))
+
+function adminOtherMember(conv: any) {
+  if (!adminSelectedMember.value) return conv.participantA
+  return conv.participantA.id === adminSelectedMember.value.id ? conv.participantB : conv.participantA
+}
 
 function onAdminMemberSearch() {
   if (adminSearchTimeout) clearTimeout(adminSearchTimeout)
