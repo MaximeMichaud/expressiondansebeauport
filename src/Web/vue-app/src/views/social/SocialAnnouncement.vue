@@ -113,7 +113,7 @@
           <div class="flex items-center gap-2">
             <button
               @click="cancelEditing"
-              class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 cursor-pointer"
+              class="soc-btn-cancel rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition cursor-pointer"
             >
               Annuler
             </button>
@@ -574,5 +574,13 @@ $ann-d-font: 'Montserrat', sans-serif;
 .soc-composer-icon:hover {
   background: var(--soc-bar-hover);
   color: var(--soc-text);
+}
+.soc-btn-cancel {
+  background: var(--soc-bar-hover, #f5f3f0);
+  color: var(--soc-bar-text-strong, #1a1a1a);
+  border-color: var(--soc-divider, #e7e0da);
+}
+.soc-btn-cancel:hover {
+  background: var(--soc-bar-active, #eae8e4);
 }
 </style>

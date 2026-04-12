@@ -536,6 +536,9 @@ namespace Persistence.Migrations
                     b.Property<Guid>("RequesterMemberId")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("RequesterNotified")
+                        .HasColumnType("boolean");
+
                     b.Property<Instant?>("ResolvedAt")
                         .HasColumnType("timestamp with time zone");
 

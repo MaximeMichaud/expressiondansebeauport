@@ -11,6 +11,7 @@
         :image-url="group?.imageUrl"
         :fallback-initials="'EDB'"
         :fallback-color="'#1a1a1a'"
+        class="group-header-avatar"
         :size="32"
         shape="square"
         :can-edit="canEditGroupImage"

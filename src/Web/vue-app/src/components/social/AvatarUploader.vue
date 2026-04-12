@@ -4,9 +4,9 @@
     :style="{ width: size + 'px', height: size + 'px' }"
   >
     <div
-      class="flex h-full w-full items-center justify-center overflow-hidden font-bold text-white select-none"
+      class="flex h-full w-full items-center justify-center overflow-hidden font-bold select-none"
       :class="shape === 'square' ? 'rounded-lg' : 'rounded-full'"
-      :style="{ background: fallbackColor, fontSize: Math.max(10, Math.round(size / 3)) + 'px' }"
+      :style="{ background: fallbackColor, color: fallbackTextColor, fontSize: Math.max(10, Math.round(size / 3)) + 'px' }"
     >
       <img
         v-if="imageUrl"
@@ -75,6 +75,7 @@ const props = withDefaults(defineProps<{
   imageUrl?: string | null
   fallbackInitials: string
   fallbackColor: string
+  fallbackTextColor?: string
   size?: number
   canEdit: boolean
   uploading?: boolean
@@ -83,7 +84,8 @@ const props = withDefaults(defineProps<{
   size: 80,
   imageUrl: null,
   uploading: false,
-  shape: 'circle'
+  shape: 'circle',
+  fallbackTextColor: 'white'
 })
 
 const emit = defineEmits<{
