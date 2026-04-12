@@ -80,7 +80,7 @@
     </div>
 
     <!-- Edit group form (admin only) -->
-    <div v-if="isAdmin && editTarget" class="mb-6 rounded-xl border border-gray-200 bg-gray-50 p-4">
+    <div v-if="canEditGroups && editTarget" class="mb-6 rounded-xl border border-gray-200 bg-gray-50 p-4">
       <h3 class="mb-3 text-sm font-semibold text-gray-700">Modifier le groupe</h3>
       <div class="space-y-3">
         <div>
@@ -228,7 +228,7 @@
               <p class="text-[11px] text-gray-400">{{ group.season }} · {{ group.memberCount }} membres</p>
             </div>
           </router-link>
-          <div v-if="isAdmin" class="absolute top-2 right-2 flex gap-1">
+          <div v-if="canEditGroups" class="absolute top-2 right-2 flex gap-1">
             <button
               @click.stop="openEditGroup(group)"
               class="soc-header__icon-btn"
@@ -238,6 +238,7 @@
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
             <button
+              v-if="isAdmin"
               @click.stop="deleteTarget = group"
               class="soc-header__icon-btn soc-header__icon-btn--logout"
               style="width: 24px; height: 24px;"
@@ -275,9 +276,9 @@
               <p class="text-[11px] text-gray-400">{{ group.season }} · {{ group.memberCount }} membres</p>
             </div>
           </div>
-          <div v-if="isAdmin" class="absolute top-2 right-2 flex gap-1">
+          <div v-if="canEditGroups" class="absolute top-2 right-2 flex gap-1">
             <button
-              v-if="group.inviteCode"
+              v-if="isAdmin && group.inviteCode"
               @click.stop="copyCode(group.inviteCode)"
               class="flex flex-shrink-0 items-center gap-1 rounded px-1.5 py-0.5 font-mono text-[11px] font-semibold text-indigo-600 transition hover:bg-[rgba(99,102,241,0.08)] cursor-pointer"
               :title="'Copier le code'"
@@ -295,6 +296,7 @@
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
             <button
+              v-if="isAdmin"
               @click.stop="deleteTarget = group"
               class="soc-header__icon-btn soc-header__icon-btn--logout"
               style="width: 24px; height: 24px;"
@@ -422,6 +424,7 @@ const toast = useSocialToast()
 const userStore = useUserStore()
 
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
+const canEditGroups = computed(() => userStore.hasOneOfTheseRoles([Role.Professor, Role.Admin]))
 
 const myGroups = ref<Group[]>([])
 const allActiveGroups = ref<Group[]>([])

@@ -279,6 +279,23 @@ export function isSocialRoute(route: { meta?: Record<string, any> }): boolean {
 // rely on the populated store (or the first attempt's failure).
 let rehydrationAttempted = false;
 
+function hasAuthCookie(): boolean {
+  return document.cookie.split(';').some(c => c.trim().startsWith('accessToken='))
+}
+
+async function rehydrateWithRetry() {
+  const maxAttempts = 6
+  const delayMs = 2000
+  for (let i = 0; i < maxAttempts; i++) {
+    const user = await useUserService().getCurrentUser()
+    if (user) return user
+    if (i < maxAttempts - 1 && hasAuthCookie()) {
+      await new Promise(r => setTimeout(r, delayMs))
+    }
+  }
+  return null
+}
+
 // eslint-disable-next-line
 router.beforeEach(async (to, from) => {
   const userStore = useUserStore()
@@ -289,10 +306,11 @@ router.beforeEach(async (to, from) => {
 
   // On a hard reload the Pinia store is empty, but the auth cookie may still
   // be valid server-side. Try to rehydrate from /users/me before deciding to
-  // bounce the user to login.
+  // bounce the user to login. Retries when an auth cookie exists but the
+  // backend hasn't started yet (dev server restart race condition).
   if (!rehydrationAttempted && !userStore.user.email) {
     rehydrationAttempted = true;
-    const user = await useUserService().getCurrentUser();
+    const user = await rehydrateWithRetry();
     if (user) {
       userStore.setUser(user);
     }

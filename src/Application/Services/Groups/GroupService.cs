@@ -92,6 +92,13 @@ public class GroupService : IGroupService
         await _groupMemberRepository.Remove(gm);
     }
 
+    public async Task LeaveGroup(Guid groupId, Guid memberId)
+    {
+        var gm = await _groupMemberRepository.FindByGroupAndMember(groupId, memberId);
+        if (gm == null) throw new InvalidOperationException("Vous n'êtes pas membre de ce groupe.");
+        await _groupMemberRepository.Remove(gm);
+    }
+
     public async Task<Group> JoinByInviteCode(string code, Guid memberId)
     {
         var group = await _groupRepository.FindByInviteCode(code);
