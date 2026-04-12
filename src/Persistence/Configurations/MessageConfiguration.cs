@@ -18,5 +18,15 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
             .WithMany()
             .HasForeignKey(m => m.SenderMemberId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Property(m => m.MessageType)
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .HasDefaultValue(Domain.Enums.MessageType.Text);
+
+        builder.HasOne(m => m.JoinRequest)
+            .WithMany()
+            .HasForeignKey(m => m.JoinRequestId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }
