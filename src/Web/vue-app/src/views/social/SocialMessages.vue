@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-[400px] flex-col">
+  <div class="flex h-full min-h-[400px] flex-col">
     <!-- Tab bar (admin only) -->
     <div v-if="isAdmin" class="flex border-b border-gray-200">
       <button
