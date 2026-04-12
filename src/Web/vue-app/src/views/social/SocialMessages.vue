@@ -120,10 +120,12 @@
           <button @click="clearAdminMember" class="text-gray-400 hover:text-gray-600 transition">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
           </button>
-          <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: adminSelectedMember.avatarColor || getAvatarColor(adminSelectedMember.fullName) }">
-            {{ getInitials(adminSelectedMember.fullName) }}
-          </div>
-          <span class="text-sm font-semibold text-gray-900">{{ adminSelectedMember.fullName }}</span>
+          <router-link :to="{ name: 'socialMemberProfile', params: { id: adminSelectedMember.id } }" class="flex items-center gap-3 rounded-lg px-2 py-1 -mx-2 -my-1 transition hover:bg-white">
+            <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: adminSelectedMember.avatarColor || getAvatarColor(adminSelectedMember.fullName) }">
+              {{ getInitials(adminSelectedMember.fullName) }}
+            </div>
+            <span class="text-sm font-semibold text-gray-900">{{ adminSelectedMember.fullName }}</span>
+          </router-link>
         </div>
         <template v-else>
           <h3 class="mb-3 text-sm font-semibold text-gray-700">Choisir un membre</h3>
