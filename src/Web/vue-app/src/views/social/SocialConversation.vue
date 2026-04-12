@@ -431,8 +431,8 @@ async function loadMessages(smooth = false) {
     )
     await socialService.markAsRead(conversationId.value)
     try {
-      const count = await socialService.getUnreadCount()
-      memberStore.setUnreadCount(count)
+      const result = await socialService.getUnreadCount()
+      memberStore.setUnreadCount(result.count)
     } catch { /* */ }
   } catch { /* */ }
   loading.value = false
@@ -536,8 +536,8 @@ async function pollMessages() {
       scrollToBottom(true)
       await socialService.markAsRead(conversationId.value)
       try {
-        const count = await socialService.getUnreadCount()
-        memberStore.setUnreadCount(count)
+        const r = await socialService.getUnreadCount()
+        memberStore.setUnreadCount(r.count)
       } catch { /* */ }
     }
   } catch { /* */ }

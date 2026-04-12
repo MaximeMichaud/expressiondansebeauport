@@ -209,24 +209,12 @@ watch(isAuthenticated, async (val) => {
       memberStore.setMember(profile)
     } catch { /* */ }
     try {
-      const count = await socialService.getUnreadCount()
-      memberStore.setUnreadCount(count)
+      const result = await socialService.getUnreadCount()
+      memberStore.setUnreadCount(result.count)
     } catch { /* */ }
     try {
       await startSignalR()
-      onMessage((data: any) => {
-        const notif = data?.JoinRequestNotification || data?.joinRequestNotification
-        if (notif) {
-          const group = data?.GroupName || data?.groupName || 'le groupe'
-          if (notif === 'Accepted') {
-            toast.success(`Votre demande pour ${group} a été acceptée!`)
-          } else if (notif === 'Rejected') {
-            toast.error(`Votre demande pour ${group} a été refusée.`)
-          }
-        } else {
-          memberStore.incrementUnreadCount()
-        }
-      })
+      onMessage(() => { memberStore.incrementUnreadCount() })
     } catch { /* */ }
   }
 }, { immediate: true })
@@ -237,8 +225,17 @@ watch(isAuthenticated, (val) => {
   if (val) {
     unreadPoll = setInterval(async () => {
       try {
-        const count = await socialService.getUnreadCount()
-        memberStore.setUnreadCount(count)
+        const result = await socialService.getUnreadCount()
+        memberStore.setUnreadCount(result.count)
+        if (result.joinRequestNotifications?.length) {
+          for (const notif of result.joinRequestNotifications) {
+            if (notif.status === 'Accepted') {
+              toast.success(`Votre demande pour ${notif.groupName} a été acceptée!`)
+            } else if (notif.status === 'Rejected') {
+              toast.error(`Votre demande pour ${notif.groupName} a été refusée.`)
+            }
+          }
+        }
       } catch { /* */ }
     }, 3000)
   } else if (unreadPoll) {
@@ -855,6 +852,7 @@ $soc-font-body: 'Karla', sans-serif;
 
   // Group banner
   .group-banner { background: var(--soc-content-bg) !important; border-color: var(--soc-divider) !important; button:not(.soc-header__icon-btn--logout) { color: rgba(255,255,255,0.6) !important; } .soc-header__icon-btn--logout:hover { color: #dc2626 !important; } h1 { color: white !important; } }
+  .group-header-avatar div { background: white !important; color: #1a1a1a !important; }
 
   // Group logo
   .group-logo.bg-\[\#1a1a1a\] { background-color: white !important; span { color: #1a1a1a !important; } }

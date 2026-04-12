@@ -9,4 +9,6 @@ public interface IJoinRequestRepository
     Task<JoinRequest?> FindById(Guid id, bool asNoTracking = true);
     Task<JoinRequest?> FindPendingByGroupAndMember(Guid groupId, Guid memberId);
     Task Update(JoinRequest joinRequest);
+    Task<List<JoinRequest>> FindUnnotifiedResolved(Guid requesterMemberId);
+    Task MarkNotified(Guid joinRequestId);
 }

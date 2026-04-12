@@ -133,9 +133,12 @@ export interface ISocialService {
   getMyGroups(): Promise<Group[]>
   getActiveGroups(): Promise<Group[]>
   createGroup(name: string, description: string, season: string, inviteCode: string, imageUrl?: string): Promise<SucceededOrNotResponse>
+  updateGroup(id: string, name: string, description: string, season: string, imageUrl?: string): Promise<SucceededOrNotResponse>
+  deleteGroup(id: string): Promise<SucceededOrNotResponse>
   getGroupDetails(id: string): Promise<any>
   getGroupMembers(groupId: string, page?: number): Promise<GroupMember[]>
   joinGroup(inviteCode: string): Promise<SucceededOrNotResponse>
+  leaveGroup(groupId: string): Promise<SucceededOrNotResponse>
   getGroupFeed(groupId: string, page?: number): Promise<{ items: Post[]; hasMore: boolean }>
   getPost(id: string): Promise<Post>
   createPost(
@@ -170,7 +173,7 @@ export interface ISocialService {
   deleteMessage(messageId: string): Promise<SucceededOrNotResponse>
   startConversation(otherMemberId: string): Promise<any>
   markAsRead(conversationId: string): Promise<void>
-  getUnreadCount(): Promise<number>
+  getUnreadCount(): Promise<{ count: number, joinRequestNotifications?: Array<{ id: string, groupName: string, status: string }> }>
   searchMembers(query: string): Promise<any[]>
   getMemberProfile(id: string): Promise<any>
   getMyProfile(): Promise<any>
