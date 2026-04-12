@@ -377,8 +377,8 @@ async function loadConversationInfo() {
   }
 
   try {
-    const conversations = await socialService.getConversations()
-    const convo = conversations.find((c: any) => c.id === conversationId.value)
+    const convResult = await socialService.getConversations()
+    const convo = convResult.items.find((c: any) => c.id === conversationId.value)
     if (convo?.otherMember) {
       otherMemberName.value = convo.otherMember.fullName || 'Conversation'
       otherMemberId.value = convo.otherMember.id || ''
@@ -393,8 +393,8 @@ async function loadMessages(smooth = false) {
   const isFirstLoad = serverMessages.value.length === 0
   if (isFirstLoad) loading.value = true
   try {
-    const raw = await socialService.getMessages(conversationId.value)
-    serverMessages.value = raw.map((m: any) => ({
+    const result = await socialService.getMessages(conversationId.value)
+    serverMessages.value = result.items.map((m: any) => ({
       id: m.id,
       content: m.content,
       senderMemberId: m.senderMemberId,
@@ -508,8 +508,8 @@ let pollInterval: ReturnType<typeof setInterval> | null = null
 async function pollMessages() {
   const prevCount = serverMessages.value.length
   try {
-    const raw = await socialService.getMessages(conversationId.value)
-    serverMessages.value = raw.map((m: any) => ({
+    const result = await socialService.getMessages(conversationId.value)
+    serverMessages.value = result.items.map((m: any) => ({
       id: m.id,
       content: m.content,
       senderMemberId: m.senderMemberId,

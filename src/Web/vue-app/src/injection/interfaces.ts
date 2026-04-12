@@ -132,11 +132,11 @@ export interface ISocialService {
   resendCode(email: string): Promise<SucceededOrNotResponse>
   getMyGroups(): Promise<Group[]>
   getActiveGroups(): Promise<Group[]>
-  createGroup(name: string, description: string, season: string, inviteCode: string): Promise<SucceededOrNotResponse>
+  createGroup(name: string, description: string, season: string, inviteCode: string, imageUrl?: string): Promise<SucceededOrNotResponse>
   getGroupDetails(id: string): Promise<any>
   getGroupMembers(groupId: string, page?: number): Promise<GroupMember[]>
   joinGroup(inviteCode: string): Promise<SucceededOrNotResponse>
-  getGroupFeed(groupId: string, page?: number): Promise<Post[]>
+  getGroupFeed(groupId: string, page?: number): Promise<{ items: Post[]; hasMore: boolean }>
   getPost(id: string): Promise<Post>
   createPost(
     groupId: string,
@@ -148,7 +148,7 @@ export interface ISocialService {
   toggleLike(postId: string): Promise<SucceededOrNotResponse>
   recordView(postId: string): Promise<void>
   pinPost(postId: string, groupId: string): Promise<SucceededOrNotResponse>
-  getComments(postId: string, page?: number): Promise<Comment[]>
+  getComments(postId: string, page?: number): Promise<{ items: Comment[]; hasMore: boolean }>
   addComment(postId: string, content: string): Promise<SucceededOrNotResponse>
   deleteComment(id: string): Promise<SucceededOrNotResponse>
   votePoll(postId: string, pollOptionId: string): Promise<SucceededOrNotResponse>
@@ -157,11 +157,11 @@ export interface ISocialService {
   removeMyProfileImage(): Promise<SucceededOrNotResponse>
   setGroupImage(groupId: string, imageUrl: string): Promise<SucceededOrNotResponse>
   removeGroupImage(groupId: string): Promise<SucceededOrNotResponse>
-  getAnnouncements(page?: number): Promise<Post[]>
+  getAnnouncements(page?: number): Promise<{ items: Post[]; hasMore: boolean }>
   createAnnouncement(content: string, media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>): Promise<SucceededOrNotResponse>
   updateAnnouncement(id: string, content: string, media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>): Promise<SucceededOrNotResponse>
-  getConversations(page?: number): Promise<Conversation[]>
-  getMessages(conversationId: string, page?: number): Promise<Message[]>
+  getConversations(page?: number): Promise<{ items: Conversation[]; hasMore: boolean }>
+  getMessages(conversationId: string, page?: number): Promise<{ items: Message[]; hasMore: boolean }>
   sendMessage(
     conversationId: string,
     content: string,

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-[calc(100vh-120px)] flex-col">
+  <div ref="feedContainer" class="flex min-h-[calc(100vh-120px)] flex-col overflow-y-auto">
     <!-- Group header -->
     <div class="group-banner flex items-center gap-3 border-b border-gray-200 bg-white px-4 py-3">
       <button @click="$router.push({ name: 'socialPortal' })" class="text-gray-600">
@@ -176,7 +176,7 @@
               v-if="post.type === 'Poll' && post.poll"
               :post-id="post.id"
               :poll="post.poll"
-              @voted="refreshPostsSilent"
+              @voted="refreshPostsFirst"
             />
 
             <!-- Media -->
@@ -283,6 +283,11 @@
           </div>
         </div>
 
+        <!-- Load more spinner -->
+        <div v-if="loadingMorePosts" class="flex justify-center py-4">
+          <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
+        </div>
+
     </div>
 
     <!-- Delete confirmation modal -->
@@ -306,7 +311,7 @@
       :group-id="groupId"
       :open="showPollModal"
       @close="showPollModal = false"
-      @created="loadPosts"
+      @created="resetPosts"
     />
 
     <ConfirmModal
@@ -329,7 +334,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useUserStore } from '@/stores/userStore'
@@ -344,6 +349,7 @@ import AvatarUploader from '@/components/social/AvatarUploader.vue'
 import ConfirmModal from '@/components/social/ConfirmModal.vue'
 import ImageLightbox from '@/components/social/ImageLightbox.vue'
 import { useImageAttachment } from '@/composables/useImageAttachment'
+import { useInfiniteScroll } from '@/composables/useInfiniteScroll'
 
 const route = useRoute()
 const socialService = useSocialService()
@@ -362,13 +368,28 @@ const uploadingGroupImage = ref(false)
 const confirmGroupImageRemove = ref(false)
 
 const group = ref<any>(null)
-const posts = ref<Post[]>([])
-const loadingPosts = ref(true)
+const feedContainer = ref<HTMLElement | null>(null)
 const newPostContent = ref('')
 const submittingPost = ref(false)
 
 const attachment = useImageAttachment({ mode: 'multi', maxFiles: 10 })
 const fileInputRef = ref<HTMLInputElement | null>(null)
+
+const {
+  items: posts,
+  loading: loadingPosts,
+  loadingMore: loadingMorePosts,
+  hasMore: hasMorePosts,
+  load: loadPosts,
+  refreshFirst: refreshPostsFirst,
+  reset: resetPosts,
+  attachScroll: attachFeedScroll,
+} = useInfiniteScroll<Post>({
+  fetchFn: (page) => socialService.getGroupFeed(groupId.value, page),
+  scrollContainer: feedContainer,
+  direction: 'down',
+  threshold: 300,
+})
 
 const lightboxOpen = ref(false)
 const lightboxDisplayUrl = ref('')
@@ -433,7 +454,7 @@ async function confirmDelete() {
     await socialService.deletePost(deleteTarget.value.id)
     deleteTarget.value = null
     toast.success('Publication supprimée.')
-    await loadPosts()
+    await resetPosts()
   } catch {
     toast.error('Erreur lors de la suppression.')
   }
@@ -487,22 +508,6 @@ async function handleGroupImageRemove() {
   }
 }
 
-async function loadPosts() {
-  loadingPosts.value = true
-  try {
-    posts.value = await socialService.getGroupFeed(groupId.value)
-    avatarRegistry.populateFromList(posts.value as any[], 'authorMemberId', 'authorProfileImageUrl')
-  } catch { /* */ }
-  loadingPosts.value = false
-}
-
-async function refreshPostsSilent() {
-  try {
-    posts.value = await socialService.getGroupFeed(groupId.value)
-    avatarRegistry.populateFromList(posts.value as any[], 'authorMemberId', 'authorProfileImageUrl')
-  } catch { /* */ }
-}
-
 async function submitPost() {
   const text = newPostContent.value.trim()
   const files = attachment.files.value
@@ -538,7 +543,7 @@ async function submitPost() {
     await socialService.createPost(groupId.value, text, type, media.length > 0 ? media : undefined)
     newPostContent.value = ''
     attachment.clear()
-    await loadPosts()
+    await resetPosts()
   } catch {
     toast.error("Impossible de publier. Veuillez réessayer.")
   }
@@ -562,7 +567,8 @@ async function toggleComments(post: Post) {
   expandedComments.value = post.id
   loadingComments.value = true
   try {
-    postComments.value = await socialService.getComments(post.id)
+    const result = await socialService.getComments(post.id)
+    postComments.value = result.items
     avatarRegistry.populateFromList(postComments.value, 'authorMemberId', 'authorProfileImageUrl')
   } catch { postComments.value = [] }
   loadingComments.value = false
@@ -574,7 +580,8 @@ async function submitComment(post: Post) {
   try {
     await socialService.addComment(post.id, newComment.value)
     newComment.value = ''
-    postComments.value = await socialService.getComments(post.id)
+    const result = await socialService.getComments(post.id)
+    postComments.value = result.items
     post.commentCount = (post.commentCount || 0) + 1
   } catch { /* */ }
   submittingComment.value = false
@@ -597,19 +604,13 @@ let pollInterval: ReturnType<typeof setInterval> | null = null
 onMounted(async () => {
   await loadGroup()
   await loadPosts()
+  avatarRegistry.populateFromList(posts.value as any[], 'authorMemberId', 'authorProfileImageUrl')
+  nextTick(() => attachFeedScroll())
   pollInterval = setInterval(async () => {
     if (expandedComments.value || submittingComment.value) return
     try {
-      const fresh = await socialService.getGroupFeed(groupId.value)
-      const oldCounts = new Map(posts.value.map(p => [p.id, p.commentCount]))
-      for (const p of fresh) {
-        const old = oldCounts.get(p.id)
-        if (old != null && old > (p.commentCount || 0)) {
-          p.commentCount = old
-        }
-      }
-      posts.value = fresh
-      avatarRegistry.populateFromList(posts.value as any[], 'authorMemberId', 'authorProfileImageUrl')
+      const freshPage1 = await refreshPostsFirst()
+      avatarRegistry.populateFromList(freshPage1 as any[], 'authorMemberId', 'authorProfileImageUrl')
     } catch { /* */ }
   }, 2000)
 })
