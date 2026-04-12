@@ -174,6 +174,12 @@
       {{ attachment.error.value }}
     </p>
 
+    <!-- Admin readonly banner -->
+    <div v-if="isAdminView" class="soc-convo__admin-banner">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      <span>Consultation admin — lecture seule</span>
+    </div>
+
     <!-- Input -->
     <div v-if="!isAdminView" class="soc-convo__input-bar">
       <input
@@ -774,6 +780,19 @@ $convo-font-body: 'Karla', sans-serif;
   }
 
   // Input bar
+  &__admin-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--soc-divider, #f0f0f0);
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    color: var(--soc-text-muted, #78716c);
+    background: var(--soc-bar-hover, #f5f3f0);
+  }
+
   &__input-bar {
     display: flex;
     align-items: center;
