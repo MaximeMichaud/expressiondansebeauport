@@ -34,6 +34,9 @@ public class MessageRepository : IMessageRepository
             .Where(m => m.ConversationId == conversationId)
             .Include(m => m.SenderMember).ThenInclude(s => s.User)
             .Include(m => m.Media.OrderBy(x => x.SortOrder))
+            .Include(m => m.JoinRequest).ThenInclude(jr => jr!.Group)
+            .Include(m => m.JoinRequest).ThenInclude(jr => jr!.RequesterMember)
+            .Include(m => m.JoinRequest).ThenInclude(jr => jr!.ResolvedByMember)
             .OrderByDescending(m => m.Created)
             .Skip(skip).Take(take)
             .ToListAsync();

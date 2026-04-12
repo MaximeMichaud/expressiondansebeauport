@@ -92,7 +92,18 @@ public class GetMessagesEndpoint : Endpoint<GetMessagesRequest>
                 Media = m.Deleted.HasValue ? new List<object>() : mediaList,
                 Created = m.Created.ToDateTimeUtc().ToString("yyyy-MM-ddTHH:mm:ssZ"),
                 IsDeleted = m.Deleted.HasValue,
-                IsRead = m.SenderMemberId == member.Id && otherLastReadAt != null && m.Created <= otherLastReadAt
+                IsRead = m.SenderMemberId == member.Id && otherLastReadAt != null && m.Created <= otherLastReadAt,
+                MessageType = m.MessageType.ToString(),
+                JoinRequest = m.JoinRequest != null ? new
+                {
+                    m.JoinRequest.Id,
+                    m.JoinRequest.GroupId,
+                    GroupName = m.JoinRequest.Group?.Name,
+                    RequesterMemberId = m.JoinRequest.RequesterMemberId,
+                    RequesterName = m.JoinRequest.RequesterMember?.FullName ?? "Inconnu",
+                    Status = m.JoinRequest.Status.ToString(),
+                    ResolvedByName = m.JoinRequest.ResolvedByMember?.FullName
+                } : null
             };
         });
 
