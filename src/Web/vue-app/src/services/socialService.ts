@@ -234,6 +234,18 @@ export class SocialService extends ApiService {
     return { items: data.items, hasMore: data.hasMore }
   }
 
+  async getAdminConversations(memberId: string, page: number = 1): Promise<{ items: any[]; hasMore: boolean }> {
+    const response = await this._httpClient.get(`${API}/social/admin/members/${memberId}/conversations?Page=${page}`)
+    const data = toCamel(response.data)
+    return { items: data.items, hasMore: data.hasMore }
+  }
+
+  async getAdminMessages(conversationId: string, page: number = 1): Promise<{ items: any[]; hasMore: boolean }> {
+    const response = await this._httpClient.get(`${API}/social/admin/conversations/${conversationId}/messages?Page=${page}`)
+    const data = toCamel(response.data)
+    return { items: data.items, hasMore: data.hasMore }
+  }
+
   async getMessages(conversationId: string, page: number = 1): Promise<{ items: Message[]; hasMore: boolean }> {
     const response = await this._httpClient.get(`${API}/social/conversations/${conversationId}/messages?Page=${page}`)
     const data = toCamel(response.data)
