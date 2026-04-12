@@ -1,28 +1,33 @@
 <template>
   <div
     class="soc-convo"
-    @dragenter="attachment.handleDragEnter"
-    @dragleave="attachment.handleDragLeave"
-    @dragover="attachment.handleDragOver"
-    @drop="attachment.handleDrop"
+    @dragenter="!isAdminView && attachment.handleDragEnter($event)"
+    @dragleave="!isAdminView && attachment.handleDragLeave($event)"
+    @dragover="!isAdminView && attachment.handleDragOver($event)"
+    @drop="!isAdminView && attachment.handleDrop($event)"
   >
-    <div v-if="attachment.isDraggingOver.value" class="soc-convo__drag-overlay">
+    <div v-if="!isAdminView && attachment.isDraggingOver.value" class="soc-convo__drag-overlay">
       <span>Déposer l'image ici</span>
     </div>
     <!-- Header -->
     <div class="soc-convo__header">
-      <button @click="$router.push({ name: 'socialMessages' })" class="soc-convo__back">
+      <button @click="$router.push(isAdminView ? { name: 'socialMessages', query: { tab: 'admin' } } : { name: 'socialMessages' })" class="soc-convo__back">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
       </button>
-      <router-link v-if="otherMemberId" :to="{ name: 'socialMemberProfile', params: { id: otherMemberId } }" class="soc-convo__profile-link">
-        <div class="soc-convo__avatar" :style="{ background: otherMemberColor || getAvatarColor(otherMemberName) }">
-          <img v-if="effectiveOtherMemberPfp" :src="effectiveOtherMemberPfp" :alt="otherMemberName" class="soc-convo__avatar-img" />
-          <span v-else class="soc-convo__avatar-initials">{{ getInitials(otherMemberName) }}</span>
-        </div>
-        <h2 class="soc-convo__name">{{ otherMemberName }}</h2>
-      </router-link>
+      <template v-if="isAdminView">
+        <h2 class="soc-convo__name">{{ adminParticipantNames }}</h2>
+      </template>
       <template v-else>
-        <span class="soc-convo__name">{{ otherMemberName }}</span>
+        <router-link v-if="otherMemberId" :to="{ name: 'socialMemberProfile', params: { id: otherMemberId } }" class="soc-convo__profile-link">
+          <div class="soc-convo__avatar" :style="{ background: otherMemberColor || getAvatarColor(otherMemberName) }">
+            <img v-if="effectiveOtherMemberPfp" :src="effectiveOtherMemberPfp" :alt="otherMemberName" class="soc-convo__avatar-img" />
+            <span v-else class="soc-convo__avatar-initials">{{ getInitials(otherMemberName) }}</span>
+          </div>
+          <h2 class="soc-convo__name">{{ otherMemberName }}</h2>
+        </router-link>
+        <template v-else>
+          <span class="soc-convo__name">{{ otherMemberName }}</span>
+        </template>
       </template>
     </div>
 
@@ -66,7 +71,7 @@
               msg.isMine ? (msg.pending ? 'soc-convo__bubble--pending' : 'soc-convo__bubble--mine') : 'soc-convo__bubble--other',
               ((msg.media && msg.media.length) || (msg.pendingPreviewUrls && msg.pendingPreviewUrls.length)) && 'soc-convo__bubble--has-media'
             ]"
-            @contextmenu.prevent="msg.isMine && !msg.pending ? openDeleteMenu(msg) : null"
+            @contextmenu.prevent="!isAdminView && msg.isMine && !msg.pending ? openDeleteMenu(msg) : null"
           >
             <div
               v-if="msg.pendingPreviewUrls && msg.pendingPreviewUrls.length"
@@ -116,7 +121,7 @@
             </div>
             <span v-if="msg.content" class="soc-convo__bubble-text">{{ msg.content }}</span>
             <button
-              v-if="msg.isMine && !msg.pending"
+              v-if="!isAdminView && msg.isMine && !msg.pending"
               @click.stop="openDeleteMenu(msg)"
               class="soc-convo__delete-trigger"
             >
@@ -134,7 +139,7 @@
     </div>
 
     <!-- Preview strip (above input bar, only when attachments) -->
-    <div v-if="attachment.previews.value.length" class="soc-convo__preview-strip">
+    <div v-if="!isAdminView && attachment.previews.value.length" class="soc-convo__preview-strip">
       <div
         v-for="(p, i) in attachment.previews.value"
         :key="p.url"
@@ -165,12 +170,12 @@
     </div>
 
     <!-- Inline error under preview strip / above input -->
-    <p v-if="attachment.error.value" class="soc-convo__error-inline">
+    <p v-if="!isAdminView && attachment.error.value" class="soc-convo__error-inline">
       {{ attachment.error.value }}
     </p>
 
     <!-- Input -->
-    <div class="soc-convo__input-bar">
+    <div v-if="!isAdminView" class="soc-convo__input-bar">
       <input
         ref="fileInputRef"
         type="file"
@@ -210,7 +215,7 @@
 
     <!-- Delete confirmation modal -->
     <Transition name="convo-modal">
-      <div v-if="deleteTarget" class="convo-modal__overlay" @click.self="deleteTarget = null">
+      <div v-if="!isAdminView && deleteTarget" class="convo-modal__overlay" @click.self="deleteTarget = null">
         <div class="convo-modal__card">
           <div class="convo-modal__icon-ring">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -281,6 +286,7 @@ interface ChatMessage {
 }
 
 const route = useRoute()
+const isAdminView = computed(() => route.name === 'socialAdminConversation')
 const socialService = useSocialService()
 const memberStore = useMemberStore()
 const avatarRegistry = useAvatarRegistryStore()
@@ -313,6 +319,7 @@ const otherMemberName = ref('Conversation')
 const otherMemberId = ref('')
 const otherMemberPfp = ref('')
 const otherMemberColor = ref('')
+const adminParticipantNames = ref('')
 
 const effectiveOtherMemberPfp = computed(() => {
   return avatarRegistry.getAvatar(otherMemberId.value, otherMemberPfp.value) || ''
@@ -328,14 +335,16 @@ const {
   attachScroll: attachMessagesScroll,
 } = useInfiniteScroll<ChatMessage>({
   fetchFn: async (page) => {
-    const raw = await socialService.getMessages(conversationId.value, page)
+    const raw = isAdminView.value
+      ? await socialService.getAdminMessages(conversationId.value, page)
+      : await socialService.getMessages(conversationId.value, page)
     return {
       items: raw.items.map((m: any) => ({
         id: m.id,
         content: m.content,
         senderMemberId: m.senderMemberId,
         created: m.created,
-        isMine: m.senderMemberId === currentMemberId.value,
+        isMine: isAdminView.value ? false : m.senderMemberId === currentMemberId.value,
         isRead: m.isRead ?? false,
         isDeleted: m.isDeleted ?? false,
         media: Array.isArray(m.media) ? m.media : undefined,
@@ -399,6 +408,11 @@ function handleMediaLoad() {
 }
 
 async function loadConversationInfo() {
+  if (isAdminView.value) {
+    adminParticipantNames.value = (route.query.names as string) || 'Conversation'
+    return
+  }
+
   const m = memberStore.member
   if (m?.id) {
     currentMemberId.value = m.id
@@ -431,11 +445,13 @@ async function loadMessages(smooth = false) {
     pendingMessages.value = pendingMessages.value.filter(
       pm => !scrollMessages.value.some(sm => sm.content === pm.content)
     )
-    await socialService.markAsRead(conversationId.value)
-    try {
-      const result = await socialService.getUnreadCount()
-      memberStore.setUnreadCount(result.count)
-    } catch { /* */ }
+    if (!isAdminView.value) {
+      await socialService.markAsRead(conversationId.value)
+      try {
+        const result = await socialService.getUnreadCount()
+        memberStore.setUnreadCount(result.count)
+      } catch { /* */ }
+    }
   } catch { /* */ }
   loading.value = false
   scrollToBottom(smooth)
@@ -536,11 +552,13 @@ async function pollMessages() {
     )
     if (scrollMessages.value.length > prevCount) {
       scrollToBottom(true)
-      await socialService.markAsRead(conversationId.value)
-      try {
-        const r = await socialService.getUnreadCount()
-        memberStore.setUnreadCount(r.count)
-      } catch { /* */ }
+      if (!isAdminView.value) {
+        await socialService.markAsRead(conversationId.value)
+        try {
+          const r = await socialService.getUnreadCount()
+          memberStore.setUnreadCount(r.count)
+        } catch { /* */ }
+      }
     }
   } catch { /* */ }
 }
