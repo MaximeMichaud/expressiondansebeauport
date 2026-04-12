@@ -69,7 +69,18 @@ public class UploadMediaEndpoint : EndpointWithoutRequest
                 return;
             }
 
-            var url = await _fileStorage.UploadFileAsync(file);
+            await using var pdfStream = file.OpenReadStream();
+            var pdfTicks = DateTime.Now.Ticks;
+            var pdfBaseName = Path.GetFileNameWithoutExtension(file.FileName);
+            var pdfSafeBase = string.Concat(pdfBaseName.Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_'));
+            if (string.IsNullOrEmpty(pdfSafeBase)) pdfSafeBase = "doc";
+
+            var url = await _fileStorage.UploadStreamAsync(
+                pdfStream,
+                $"{pdfSafeBase}-{pdfTicks}.pdf",
+                contentType,
+                SocialSubDirectory);
+
             await Send.OkAsync(new
             {
                 Succeeded = true,

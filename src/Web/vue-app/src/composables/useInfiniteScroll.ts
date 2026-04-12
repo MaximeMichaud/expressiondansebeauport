@@ -22,6 +22,7 @@ export function useInfiniteScroll<T>(options: UseInfiniteScrollOptions<T>) {
   const page = ref(1)
 
   let scrollHandler: (() => void) | null = null
+  let attachedEl: HTMLElement | null = null
 
   async function load() {
     loading.value = true
@@ -84,14 +85,15 @@ export function useInfiniteScroll<T>(options: UseInfiniteScrollOptions<T>) {
     const el = scrollContainer.value
     if (!el || scrollHandler) return
     scrollHandler = onScroll
+    attachedEl = el
     el.addEventListener('scroll', scrollHandler, { passive: true })
   }
 
   function detachScroll() {
-    const el = scrollContainer.value
-    if (el && scrollHandler) {
-      el.removeEventListener('scroll', scrollHandler)
+    if (attachedEl && scrollHandler) {
+      attachedEl.removeEventListener('scroll', scrollHandler)
       scrollHandler = null
+      attachedEl = null
     }
   }
 

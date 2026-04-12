@@ -249,7 +249,6 @@ const {
   items: announcements,
   loading,
   loadingMore,
-  hasMore: hasMoreAnnouncements,
   load: loadAnnouncements,
   refreshFirst: refreshAnnouncementsFirst,
   reset: resetAnnouncements,

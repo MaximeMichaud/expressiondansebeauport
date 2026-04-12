@@ -394,7 +394,6 @@ const {
   items: posts,
   loading: loadingPosts,
   loadingMore: loadingMorePosts,
-  hasMore: hasMorePosts,
   load: loadPosts,
   refreshFirst: refreshPostsFirst,
   reset: resetPosts,

@@ -119,7 +119,6 @@ const {
   items: rawConversations,
   loading,
   loadingMore: loadingMoreConvos,
-  hasMore: hasMoreConvos,
   load: loadRawConversations,
   refreshFirst: refreshConvosFirst,
   attachScroll: attachConvosScroll,
