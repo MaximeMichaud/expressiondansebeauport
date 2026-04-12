@@ -58,16 +58,20 @@ public class AcceptJoinRequestEndpoint : Endpoint<AcceptJoinRequestRequest>
             var requesterMember = _memberRepository.FindById(joinRequest.RequesterMemberId);
             if (requesterMember != null)
             {
-                await _hubContext.Clients.User(requesterMember.UserId.ToString()).SendAsync("ReceiveMessage", new
+                var connectionId = ChatHub.GetConnectionId(requesterMember.UserId.ToString());
+                if (connectionId != null)
                 {
-                    Id = Guid.NewGuid(),
-                    Content = $"Votre demande pour {joinRequest.Group?.Name ?? "le groupe"} a été acceptée!",
-                    SenderName = member.FullName,
-                    ConversationId = Guid.Empty,
-                    JoinRequestNotification = "Accepted",
-                    GroupName = joinRequest.Group?.Name,
-                    Media = Array.Empty<object>()
-                }, ct);
+                    await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveMessage", new
+                    {
+                        Id = Guid.NewGuid(),
+                        Content = $"Votre demande pour {joinRequest.Group?.Name ?? "le groupe"} a été acceptée!",
+                        SenderName = member.FullName,
+                        ConversationId = Guid.Empty,
+                        JoinRequestNotification = "Accepted",
+                        GroupName = joinRequest.Group?.Name,
+                        Media = Array.Empty<object>()
+                    }, ct);
+                }
             }
         }
 
