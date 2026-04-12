@@ -55,39 +55,22 @@ public class AcceptJoinRequestEndpoint : Endpoint<AcceptJoinRequestRequest>
         var joinRequest = await _joinRequestService.GetJoinRequestById(req.Id);
         if (joinRequest != null)
         {
+            // Notify requester via ReceiveMessage (reliable channel)
             var requesterMember = _memberRepository.FindById(joinRequest.RequesterMemberId);
             if (requesterMember != null)
             {
                 var connectionId = ChatHub.GetConnectionId(requesterMember.UserId.ToString());
                 if (connectionId != null)
                 {
-                    await _hubContext.Clients.Client(connectionId).SendAsync("JoinRequestResolved", new
+                    await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveMessage", new
                     {
-                        JoinRequestId = joinRequest.Id,
-                        Status = "Accepted",
-                        ResolvedByName = member.FullName,
-                        joinRequest.GroupId,
-                        GroupName = joinRequest.Group?.Name
-                    }, ct);
-                }
-            }
-
-            var recipientIds = await _joinRequestService.GetRecipientMemberIds(joinRequest.GroupId);
-            foreach (var recipientId in recipientIds)
-            {
-                if (recipientId == member.Id) continue;
-                var recipientMember = _memberRepository.FindById(recipientId);
-                if (recipientMember == null) continue;
-                var connId = ChatHub.GetConnectionId(recipientMember.UserId.ToString());
-                if (connId != null)
-                {
-                    await _hubContext.Clients.Client(connId).SendAsync("JoinRequestResolved", new
-                    {
-                        JoinRequestId = joinRequest.Id,
-                        Status = "Accepted",
-                        ResolvedByName = member.FullName,
-                        joinRequest.GroupId,
-                        GroupName = joinRequest.Group?.Name
+                        Id = Guid.NewGuid(),
+                        Content = $"Votre demande pour {joinRequest.Group?.Name ?? "le groupe"} a été acceptée!",
+                        SenderName = member.FullName,
+                        ConversationId = Guid.Empty,
+                        JoinRequestNotification = "Accepted",
+                        GroupName = joinRequest.Group?.Name,
+                        Media = Array.Empty<object>()
                     }, ct);
                 }
             }
