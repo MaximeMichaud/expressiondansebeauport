@@ -1,5 +1,9 @@
 <template>
   <div class="members-dir">
+    <!-- Header -->
+    <div class="px-4 pt-4 pb-2">
+      <h2 class="text-lg font-bold" style="color: var(--soc-bar-text-strong, #1a1a1a);">Membres</h2>
+    </div>
     <!-- Search -->
     <div class="members-dir__search">
       <div class="members-dir__search-inner">

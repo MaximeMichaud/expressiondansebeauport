@@ -2,7 +2,7 @@
   <div class="p-4">
     <!-- Header -->
     <div class="mb-4 flex items-center justify-between">
-      <h2 class="text-lg font-bold text-gray-900">Portail EDB</h2>
+      <h2 class="text-lg font-bold text-gray-900">Groupes</h2>
       <button v-if="isAdmin" @click="editTarget = null; showCreateGroup = !showCreateGroup" class="rounded-lg border border-[rgba(21,128,61,0.15)] bg-[rgba(21,128,61,0.06)] px-3 py-1.5 text-xs font-semibold text-[#15803d] transition hover:bg-[rgba(21,128,61,0.12)] cursor-pointer">
         {{ showCreateGroup ? 'Fermer' : '+ Créer un groupe' }}
       </button>
