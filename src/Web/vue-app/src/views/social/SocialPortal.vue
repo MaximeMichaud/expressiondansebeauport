@@ -209,35 +209,35 @@
                 <div class="h-5 w-5 animate-spin rounded-full border-2 border-[var(--soc-bar-text-strong,#1a1a1a)] border-t-transparent"></div>
               </div>
               <template v-else>
-                <div class="portal-modal__actions">
-                  <button
-                    v-if="pendingJoinRequestId"
-                    disabled
-                    class="portal-modal__btn portal-modal__btn--primary opacity-50 cursor-not-allowed"
-                  >
-                    Demande envoyée ✓
-                  </button>
-                  <button
-                    v-else-if="isAdmin"
-                    disabled
-                    class="portal-modal__btn portal-modal__btn--primary opacity-40 cursor-not-allowed"
-                  >
-                    Demander à rejoindre
-                  </button>
-                  <button
-                    v-else
-                    @click="requestToJoin"
-                    :disabled="requestingJoin"
-                    class="portal-modal__btn portal-modal__btn--primary"
-                  >
-                    {{ requestingJoin ? 'Envoi...' : 'Demander à rejoindre' }}
-                  </button>
-                  <button @click="joinModalMode = 'code'" class="portal-modal__btn portal-modal__btn--primary">J'ai un code</button>
-                </div>
+                <button
+                  v-if="pendingJoinRequestId"
+                  disabled
+                  class="portal-modal__btn portal-modal__btn--primary w-full opacity-50 cursor-not-allowed"
+                >
+                  Demande envoyée ✓
+                </button>
+                <button
+                  v-else-if="isAdmin"
+                  disabled
+                  class="portal-modal__btn portal-modal__btn--primary w-full opacity-40 cursor-not-allowed"
+                >
+                  Demander à rejoindre
+                </button>
+                <button
+                  v-else
+                  @click="requestToJoin"
+                  :disabled="requestingJoin"
+                  class="portal-modal__btn portal-modal__btn--primary w-full"
+                >
+                  {{ requestingJoin ? 'Envoi...' : 'Demander à rejoindre' }}
+                </button>
 
                 <div v-if="joinModalError" class="portal-modal__error" style="margin-top: 16px;">{{ joinModalError }}</div>
 
-                <button @click="closeJoinModal" class="portal-modal__cancel-link">Annuler</button>
+                <div class="portal-modal__actions" style="margin-top: 16px;">
+                  <button @click="closeJoinModal" class="portal-modal__btn portal-modal__btn--cancel">Annuler</button>
+                  <button @click="joinModalMode = 'code'" class="portal-modal__btn portal-modal__btn--cancel">J'ai un code</button>
+                </div>
               </template>
             </template>
 
@@ -562,6 +562,85 @@ async function requestToJoin() {
     joinModalError.value = 'Erreur de connexion.'
   }
   requestingJoin.value = false
+}
+
+// Delete group
+const deleteTarget = ref<Group | null>(null)
+const deletingGroup = ref(false)
+
+async function confirmDeleteGroup() {
+  if (!deleteTarget.value) return
+  deletingGroup.value = true
+  try {
+    const result = await socialService.deleteGroup(deleteTarget.value.id)
+    if (result.succeeded) {
+      toast.success('Groupe supprimé.')
+      deleteTarget.value = null
+      await loadGroups()
+    } else {
+      toast.error('Erreur lors de la suppression.')
+    }
+  } catch {
+    toast.error('Erreur lors de la suppression.')
+  }
+  deletingGroup.value = false
+}
+
+// Edit group
+const editTarget = ref<Group | null>(null)
+const editForm = ref({ name: '', description: '', season: '', imageUrl: undefined as string | undefined })
+const editRemoveImage = ref(false)
+const editGroupAttachment = useImageAttachment({ mode: 'single', maxFiles: 1, allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] })
+const editGroupFileInputRef = ref<HTMLInputElement | null>(null)
+const savingGroup = ref(false)
+
+function openEditGroup(group: Group) {
+  editTarget.value = group
+  editForm.value = {
+    name: group.name,
+    description: group.description || '',
+    season: group.season || '',
+    imageUrl: group.imageUrl || undefined
+  }
+  editRemoveImage.value = false
+  editGroupAttachment.clear()
+}
+
+async function saveEditGroup() {
+  if (!editTarget.value || !editForm.value.name.trim() || !editForm.value.season.trim()) return
+  savingGroup.value = true
+  try {
+    let imageUrl = editForm.value.imageUrl
+
+    if (editGroupAttachment.files.value.length > 0) {
+      const uploaded = await socialService.uploadFile(editGroupAttachment.files.value[0])
+      if (!uploaded.succeeded || !uploaded.displayUrl) {
+        toast.error("Échec du téléversement de l'image.")
+        savingGroup.value = false
+        return
+      }
+      imageUrl = uploaded.displayUrl
+    }
+
+    const result = await socialService.updateGroup(
+      editTarget.value.id,
+      editForm.value.name.trim(),
+      editForm.value.description.trim() || '',
+      editForm.value.season.trim(),
+      imageUrl
+    )
+    if (result.succeeded) {
+      toast.success('Groupe modifié!')
+      editTarget.value = null
+      editGroupAttachment.clear()
+      await loadGroups()
+    } else {
+      toast.error('Erreur lors de la modification.')
+    }
+  } catch {
+    toast.error('Erreur lors de la modification.')
+  }
+  savingGroup.value = false
 }
 
 onMounted(loadGroups)
