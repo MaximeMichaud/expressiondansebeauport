@@ -54,8 +54,9 @@
           :disabled="startingConvo"
           class="soc-admin-member-link soc-admin-member-link--full disabled:opacity-50"
         >
-          <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: member.avatarColor || getAvatarColor(member.fullName) }">
-            {{ getInitials(member.fullName) }}
+          <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-xs font-bold text-white" :style="{ background: member.avatarColor || getAvatarColor(member.fullName) }">
+            <img v-if="member.profileImageUrl" :src="member.profileImageUrl" :alt="member.fullName" class="h-full w-full object-cover" />
+            <span v-else>{{ getInitials(member.fullName) }}</span>
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-gray-900 truncate">{{ member.fullName }}</p>
@@ -146,8 +147,9 @@
               @click="selectAdminMember(member)"
               class="soc-admin-member-link soc-admin-member-link--full"
             >
-              <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: member.avatarColor || getAvatarColor(member.fullName) }">
-                {{ getInitials(member.fullName) }}
+              <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-xs font-bold text-white" :style="{ background: member.avatarColor || getAvatarColor(member.fullName) }">
+                <img v-if="member.profileImageUrl" :src="member.profileImageUrl" :alt="member.fullName" class="h-full w-full object-cover" />
+                <span v-else>{{ getInitials(member.fullName) }}</span>
               </div>
               <p class="text-sm font-medium text-gray-900 truncate">{{ member.fullName }}</p>
             </button>
