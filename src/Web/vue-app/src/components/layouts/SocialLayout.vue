@@ -214,14 +214,17 @@ watch(isAuthenticated, async (val) => {
     } catch { /* */ }
     try {
       await startSignalR()
-      onMessage(() => { memberStore.incrementUnreadCount() })
-      onJoinRequestResolved((data: any) => {
-        const group = data?.groupName || data?.GroupName || 'le groupe'
-        const status = data?.status || data?.Status
-        if (status === 'Accepted') {
-          toast.success(`Votre demande pour ${group} a été acceptée!`)
-        } else if (status === 'Rejected') {
-          toast.error(`Votre demande pour ${group} a été refusée.`)
+      onMessage((data: any) => {
+        const notif = data?.JoinRequestNotification || data?.joinRequestNotification
+        if (notif) {
+          const group = data?.GroupName || data?.groupName || 'le groupe'
+          if (notif === 'Accepted') {
+            toast.success(`Votre demande pour ${group} a été acceptée!`)
+          } else if (notif === 'Rejected') {
+            toast.error(`Votre demande pour ${group} a été refusée.`)
+          }
+        } else {
+          memberStore.incrementUnreadCount()
         }
       })
     } catch { /* */ }
