@@ -164,7 +164,9 @@ export interface ISocialService {
   createAnnouncement(content: string, media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>): Promise<SucceededOrNotResponse>
   updateAnnouncement(id: string, content: string, media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>): Promise<SucceededOrNotResponse>
   getConversations(page?: number): Promise<{ items: Conversation[]; hasMore: boolean }>
+  getAdminConversations(memberId: string, page?: number): Promise<{ items: any[]; hasMore: boolean }>
   getMessages(conversationId: string, page?: number): Promise<{ items: Message[]; hasMore: boolean }>
+  getAdminMessages(conversationId: string, page?: number): Promise<{ items: any[]; hasMore: boolean }>
   sendMessage(
     conversationId: string,
     content: string,
