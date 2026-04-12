@@ -797,7 +797,11 @@ $convo-font-body: 'Karla', sans-serif;
     flex-shrink: 0;
     font-size: 0.8rem;
     color: var(--soc-text, #292524);
-    background: var(--soc-bar-active, #e0ddd9);
+    background: #e0dbd6;
+
+    .soc--dark & {
+      background: var(--soc-bar-active);
+    }
   }
 
   &__admin-banner-link {
