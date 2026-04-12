@@ -67,9 +67,39 @@ public class PostService : IPostService
         return post;
     }
 
-    public async Task<Post> CreateAnnouncement(Guid authorMemberId, string content)
+    public async Task<Post> CreateAnnouncement(Guid authorMemberId, string content, IReadOnlyList<PostMediaItem> media)
     {
-        return await CreatePost(null, authorMemberId, content, PostType.Text, Array.Empty<PostMediaItem>());
+        return await CreatePost(null, authorMemberId, content, PostType.Text, media);
+    }
+
+    public async Task UpdateAnnouncement(Guid postId, string content, IReadOnlyList<PostMediaItem> media)
+    {
+        if (media.Count > 1)
+            throw new InvalidOperationException("An announcement can have at most one image.");
+
+        var post = await _postRepository.FindById(postId, asNoTracking: false);
+        if (post == null) throw new InvalidOperationException("Post not found.");
+        if (!post.IsAnnouncement) throw new InvalidOperationException("Post is not an announcement.");
+
+        post.SetContent(content);
+        post.Media.Clear();
+
+        for (var i = 0; i < media.Count; i++)
+        {
+            var item = media[i];
+            var pm = new PostMedia();
+            pm.SetPost(post);
+            pm.SetMediaUrl(item.DisplayUrl);
+            pm.SetThumbnailUrl(item.ThumbnailUrl);
+            pm.SetOriginalUrl(item.OriginalUrl);
+            pm.SetContentType(item.ContentType);
+            pm.SetSize(item.Size);
+            pm.SetSortOrder(i);
+            post.Media.Add(pm);
+        }
+
+        post.SetType(media.Count > 0 ? PostType.Photo : PostType.Text);
+        await _postRepository.Update(post);
     }
 
     public async Task<Post> CreatePollPost(

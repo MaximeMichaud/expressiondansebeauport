@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Repositories;
 
 namespace Application.Services.Messaging;
@@ -28,7 +29,9 @@ public class ConversationService : IConversationService
         Guid conversationId,
         Guid senderMemberId,
         string? content,
-        IReadOnlyList<MessageMediaItem> media)
+        IReadOnlyList<MessageMediaItem> media,
+        MessageType messageType = MessageType.Text,
+        Guid? joinRequestId = null)
     {
         if (media.Count > 10)
             throw new InvalidOperationException("A message cannot have more than 10 media items.");
@@ -52,6 +55,8 @@ public class ConversationService : IConversationService
         message.SetConversation(conversation);
         message.SetSender(sender);
         message.SetContent(content ?? string.Empty);
+        message.SetMessageType(messageType);
+        message.SetJoinRequestId(joinRequestId);
 
         for (var i = 0; i < media.Count; i++)
         {
