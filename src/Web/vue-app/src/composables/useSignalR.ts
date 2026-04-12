@@ -5,6 +5,7 @@ const connection = ref<signalR.HubConnection | null>(null)
 const isConnected = ref(false)
 const messageCallbacks = new Set<(data: any) => void>()
 const joinRequestCallbacks = new Set<(data: any) => void>()
+let _hasJoinRequestHandler = false
 
 export function useSignalR() {
   function getAccessToken(): string {
@@ -33,6 +34,7 @@ export function useSignalR() {
     connection.value.on('JoinRequestResolved', (data: any) => {
       joinRequestCallbacks.forEach(cb => cb(data))
     })
+    _hasJoinRequestHandler = true
 
     connection.value.onreconnected(() => { isConnected.value = true })
     connection.value.onclose(() => { isConnected.value = false })
@@ -55,6 +57,14 @@ export function useSignalR() {
 
   function onJoinRequestResolved(callback: (data: any) => void) {
     joinRequestCallbacks.add(callback)
+    // If connection already exists but was started before this handler was added,
+    // register the event listener on the existing connection
+    if (connection.value && !(_hasJoinRequestHandler)) {
+      connection.value.on('JoinRequestResolved', (data: any) => {
+        joinRequestCallbacks.forEach(cb => cb(data))
+      })
+      _hasJoinRequestHandler = true
+    }
   }
 
   function offJoinRequestResolved(callback: (data: any) => void) {
