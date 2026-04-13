@@ -179,7 +179,7 @@
       :open="confirmDeleteAccount"
       title="Supprimer votre compte?"
       message="Cette action est irréversible. Votre compte sera supprimé et vous serez déconnecté."
-      confirm-label="Supprimer mon compte"
+      confirm-label="Supprimer"
       :danger="true"
       @confirm="handleDeleteAccount"
       @cancel="confirmDeleteAccount = false"
