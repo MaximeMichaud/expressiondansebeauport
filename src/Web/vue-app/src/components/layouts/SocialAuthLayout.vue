@@ -92,6 +92,10 @@ $soc-font-display: 'Montserrat', sans-serif;
   position: relative;
   transition: background 0.3s, color 0.3s;
 
+  @media (max-width: 47.99em) {
+    padding: 8px;
+  }
+
   &__theme-toggle {
     position: fixed;
     top: 16px;
@@ -117,6 +121,10 @@ $soc-font-display: 'Montserrat', sans-serif;
     box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);
     padding: 32px 28px;
     transition: background 0.3s, box-shadow 0.3s;
+
+    @media (max-width: 47.99em) {
+      padding: 24px 20px;
+    }
   }
 
   &__header {
