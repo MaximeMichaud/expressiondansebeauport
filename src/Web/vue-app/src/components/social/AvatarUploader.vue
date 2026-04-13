@@ -120,15 +120,4 @@ function onFileChange(e: Event) {
 .avatar-uploader__remove:hover {
   background: #b91c1c;
 }
-
-/* On touch devices (no hover), always show edit overlay and remove button */
-@media (hover: none) {
-  .avatar-uploader__edit {
-    opacity: 1 !important;
-    background: rgba(0, 0, 0, 0.35) !important;
-  }
-  .avatar-uploader__remove {
-    opacity: 1 !important;
-  }
-}
 </style>

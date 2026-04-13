@@ -8,23 +8,55 @@
       <h2 class="soc-account__title">Mon compte</h2>
     </div>
 
-    <!-- Avatar + Name -->
+    <!-- Name + Email summary -->
     <div class="soc-account__identity">
       <AvatarUploader
         :image-url="memberStore.member?.profileImageUrl"
         :fallback-initials="userInitials"
         :fallback-color="userAvatarColor"
         :size="80"
-        :can-edit="true"
-        :uploading="uploadingAvatar"
-        @upload="handleAvatarUpload"
-        @remove="confirmAvatarRemove = true"
+        :can-edit="false"
       />
-      <div>
+      <div class="soc-account__identity-info">
         <p class="text-sm font-semibold" :style="{ color: 'var(--soc-text)' }">{{ firstName || 'Prénom' }} {{ lastName || 'Nom' }}</p>
         <p class="text-xs" :style="{ color: 'var(--soc-text-muted)' }">{{ email || 'courriel@exemple.com' }}</p>
       </div>
     </div>
+
+    <!-- Avatar card -->
+    <section class="soc-account__card">
+      <div class="soc-account__card-header">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <h3>Photo de profil</h3>
+      </div>
+      <div class="soc-account__card-body">
+        <div class="soc-account__avatar-actions">
+          <input
+            ref="avatarInputRef"
+            type="file"
+            accept="image/*"
+            hidden
+            @change="onAvatarFileChange"
+          />
+          <button
+            type="button"
+            class="soc-account__avatar-btn"
+            :disabled="uploadingAvatar"
+            @click="avatarInputRef?.click()"
+          >
+            {{ uploadingAvatar ? 'Envoi...' : (memberStore.member?.profileImageUrl ? 'Changer la photo' : 'Ajouter une photo') }}
+          </button>
+          <button
+            v-if="memberStore.member?.profileImageUrl && !uploadingAvatar"
+            type="button"
+            class="soc-account__avatar-btn soc-account__avatar-btn--danger"
+            @click="confirmAvatarRemove = true"
+          >
+            Supprimer la photo
+          </button>
+        </div>
+      </div>
+    </section>
 
     <!-- Profile card -->
     <section class="soc-account__card">
@@ -144,6 +176,14 @@ const savingProfile = ref(false)
 const savingPassword = ref(false)
 const uploadingAvatar = ref(false)
 const confirmAvatarRemove = ref(false)
+const avatarInputRef = ref<HTMLInputElement | null>(null)
+
+function onAvatarFileChange(e: Event) {
+  const input = e.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (file) handleAvatarUpload(file)
+  if (input) input.value = ''
+}
 
 const userInitials = computed(() => {
   const f = firstName.value?.[0] || ''
@@ -325,6 +365,42 @@ $soc-black: #1a1a1a;
     align-items: center;
     gap: 14px;
     padding: 20px 20px 8px;
+  }
+
+  &__identity-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__avatar-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+
+  &__avatar-btn {
+    padding: 5px 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: 8px;
+    color: var(--soc-text);
+    background: var(--soc-bar-hover, #f5f3f0);
+    border: 1px solid var(--soc-divider, #e7e0da);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    &:hover:not(:disabled) { background: var(--soc-bar-active, #eae8e4); }
+    &:disabled { opacity: 0.5; cursor: default; }
+
+    &--danger {
+      color: #dc2626;
+      border-color: rgba(220, 38, 38, 0.2);
+      background: rgba(220, 38, 38, 0.06);
+      &:hover:not(:disabled) { background: rgba(220, 38, 38, 0.12); }
+    }
   }
 
   &__avatar {
