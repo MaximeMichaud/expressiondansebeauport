@@ -65,8 +65,8 @@
       </div>
 
       <!-- Mobile nav -->
-      <Transition name="soc-mobile-nav">
-      <nav v-if="isAuthenticated && isMenuOpen" class="soc-header__mobile-nav">
+      <div v-if="isAuthenticated" :class="['soc-header__mobile-wrap', isMenuOpen && 'is-open']">
+      <nav class="soc-header__mobile-nav">
         <router-link
           :to="{ name: 'socialAccount' }"
           :class="['soc-header__mobile-item', isActive('socialAccount') && 'is-active']"
@@ -106,7 +106,7 @@
           <span>Se déconnecter</span>
         </button>
       </nav>
-      </Transition>
+      </div>
     </header>
 
     <!-- Content -->
@@ -643,6 +643,17 @@ $soc-font-body: 'Karla', sans-serif;
     &.is-open:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
   }
 
+  // Mobile nav wrapper — uses grid-rows trick to animate to auto height smoothly
+  &__mobile-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    background: var(--soc-bar-bg);
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transition: grid-template-rows 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+    &.is-open { grid-template-rows: 1fr; }
+  }
+
   // Mobile nav dropdown
   &__mobile-nav {
     display: flex;
@@ -650,12 +661,14 @@ $soc-font-body: 'Karla', sans-serif;
     gap: 2px;
     max-width: 720px;
     margin: 0 auto;
-    padding: 8px 20px 12px;
-    background: var(--soc-bar-bg);
-    border-radius: 0 0 14px 14px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    transition: background 0.25s;
+    padding: 0 20px;
+    min-height: 0;
     overflow: hidden;
+    transition: padding 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &__mobile-wrap.is-open &__mobile-nav {
+    padding: 8px 20px 12px;
   }
 
   &__mobile-item {
@@ -675,23 +688,6 @@ $soc-font-body: 'Karla', sans-serif;
     &.is-active { color: var(--soc-bar-text-strong); background: var(--soc-bar-active); }
     &--logout { color: #dc2626; &:hover { color: #dc2626; background: rgba(220, 38, 38, 0.08); } }
   }
-}
-
-// Mobile nav slide transition
-.soc-mobile-nav-enter-active,
-.soc-mobile-nav-leave-active {
-  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
-}
-.soc-mobile-nav-enter-from,
-.soc-mobile-nav-leave-to {
-  max-height: 0 !important;
-  opacity: 0;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-.soc-mobile-nav-enter-to,
-.soc-mobile-nav-leave-from {
-  max-height: 400px;
 }
 
 @media (min-width: 48em) {
