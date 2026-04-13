@@ -126,7 +126,7 @@ $soc-font-display: 'Montserrat', sans-serif;
       padding: 24px 20px;
 
       // Tighter spacing around the page title (Connexion / Inscription / etc)
-      h2 { margin-top: 0; margin-bottom: 16px; font-size: 1.4rem; }
+      h2 { margin-top: 0; margin-bottom: 8px; font-size: 1.4rem; }
     }
   }
 
