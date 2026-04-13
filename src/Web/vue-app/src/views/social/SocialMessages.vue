@@ -5,9 +5,9 @@
       <h2 class="text-lg font-bold text-gray-900">Messages</h2>
       <button
         @click="showNewConvo = !showNewConvo"
-        class="rounded-lg bg-[#1a1a1a] px-3 py-1.5 text-xs font-semibold text-white"
+        class="rounded-lg border border-[rgba(21,128,61,0.15)] bg-[rgba(21,128,61,0.06)] px-3 py-1.5 text-xs font-semibold text-[#15803d] transition hover:bg-[rgba(21,128,61,0.12)] cursor-pointer"
       >
-        {{ showNewConvo ? 'Fermer' : '+ Nouveau' }}
+        {{ showNewConvo ? 'Fermer' : '+ Nouvelle conversation' }}
       </button>
     </div>
 
@@ -59,7 +59,7 @@
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
       <span class="text-sm">Aucune conversation pour le moment.</span>
     </div>
-    <div v-else-if="!showNewConvo" class="flex-1 overflow-y-auto">
+    <div v-else-if="!showNewConvo" ref="convoListContainer" class="flex-1 overflow-y-auto">
       <router-link
         v-for="conv in conversations"
         :key="conv.id"
@@ -67,15 +67,21 @@
         class="flex items-center gap-3 border-b px-4 py-3 transition hover:bg-gray-50"
         style="border-color: var(--soc-divider, #f0f0f0);"
       >
-        <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" :style="{ background: conv.otherMember.avatarColor || getAvatarColor(conv.otherMember.fullName) }">
-          {{ getInitials(conv.otherMember.fullName) }}
+        <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-sm font-bold text-white" :style="{ background: conv.otherMember.avatarColor || getAvatarColor(conv.otherMember.fullName) }">
+          <img
+            v-if="avatarRegistry.getAvatar(conv.otherMember.id, conv.otherMember.profileImageUrl)"
+            :src="avatarRegistry.getAvatar(conv.otherMember.id, conv.otherMember.profileImageUrl)!"
+            :alt="conv.otherMember.fullName"
+            class="h-full w-full object-cover"
+          />
+          <span v-else>{{ getInitials(conv.otherMember.fullName) }}</span>
         </div>
         <div class="min-w-0 flex-1">
           <span :class="['text-sm', conv.unreadCount > 0 ? 'font-bold text-gray-900' : 'font-medium text-gray-700']">
             {{ conv.otherMember.fullName }}
           </span>
           <p :class="['truncate text-xs', conv.unreadCount > 0 ? 'font-semibold text-gray-700' : 'text-gray-500']">
-            <span v-if="conv.lastMessage?.isMine" class="font-semibold">Vous: </span>{{ conv.lastMessage?.content || 'Aucun message' }}
+            <span>{{ lastMessagePrefix(conv.lastMessage) }}</span><span :class="isMediaOnlyPreview(conv.lastMessage) && 'italic'">{{ lastMessageBody(conv.lastMessage) }}</span>
           </p>
         </div>
         <div class="flex flex-col items-end gap-1 flex-shrink-0">
@@ -85,24 +91,45 @@
           </div>
         </div>
       </router-link>
+      <div v-if="loadingMoreConvos" class="flex justify-center py-3">
+        <div class="h-4 w-4 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, onActivated } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, onActivated, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useSignalR } from '@/composables/useSignalR'
 import { useMemberStore } from '@/stores/memberStore'
+import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
+import { useInfiniteScroll } from '@/composables/useInfiniteScroll'
 import type { Conversation } from '@/types/entities'
 
 const router = useRouter()
 const socialService = useSocialService()
 const { onMessage, offMessage } = useSignalR()
 const memberStore = useMemberStore()
-const conversations = ref<Conversation[]>([])
-const loading = ref(true)
+const avatarRegistry = useAvatarRegistryStore()
+const convoListContainer = ref<HTMLElement | null>(null)
+
+const {
+  items: rawConversations,
+  loading,
+  loadingMore: loadingMoreConvos,
+  load: loadRawConversations,
+  refreshFirst: refreshConvosFirst,
+  attachScroll: attachConvosScroll,
+} = useInfiniteScroll<Conversation>({
+  fetchFn: (page) => socialService.getConversations(page),
+  scrollContainer: convoListContainer,
+  direction: 'down',
+  threshold: 300,
+})
+
+const conversations = computed(() => rawConversations.value.filter((c: any) => c.lastMessage))
 
 // New conversation state
 const showNewConvo = ref(false)
@@ -115,6 +142,49 @@ let searchTimeout: ReturnType<typeof setTimeout> | null = null
 function getInitials(name: string) {
   if (!name || !name.trim()) return '??'
   return name.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase().slice(0, 2)
+}
+
+function isMediaOnlyPreview(lastMessage: any): boolean {
+  if (!lastMessage) return false
+  if (lastMessage.content && lastMessage.content.trim()) return false
+  return (lastMessage.mediaCount ?? 0) > 0 || lastMessage.hasLegacyMedia === true
+}
+
+function lastMessagePrefix(lastMessage: any): string {
+  if (!lastMessage) return ''
+  return lastMessage.isMine === true ? 'Vous: ' : ''
+}
+
+function lastMessageBody(lastMessage: any): string {
+  if (!lastMessage) return 'Aucun message'
+  const isMine = lastMessage.isMine === true
+
+  if (lastMessage.content && lastMessage.content.trim()) {
+    return lastMessage.content
+  }
+
+  const mediaCount = lastMessage.mediaCount ?? 0
+  const hasLegacy = lastMessage.hasLegacyMedia === true
+  if (mediaCount === 0 && !hasLegacy) return 'Aucun message'
+
+  const hasVideo = lastMessage.hasVideo === true
+  const hasImage = lastMessage.hasImage === true || hasLegacy
+  const count = Math.max(mediaCount, hasLegacy ? 1 : 0)
+
+  if (isMine) {
+    if (hasVideo && hasImage) return count > 1 ? `${count} fichiers` : 'Fichier'
+    if (hasVideo) return count > 1 ? `${count} vidéos` : 'Vidéo'
+    if (hasImage) return count > 1 ? `${count} photos` : 'Photo'
+    return 'Aucun message'
+  }
+
+  let label: string
+  if (hasVideo && hasImage) label = count > 1 ? `${count} fichiers` : 'un fichier'
+  else if (hasVideo) label = count > 1 ? `${count} vidéos` : 'une vidéo'
+  else if (hasImage) label = count > 1 ? `${count} photos` : 'une photo'
+  else return 'Aucun message'
+
+  return `Vous a envoyé ${label}`
 }
 
 const avatarColors = ['#e53e3e', '#dd6b20', '#d69e2e', '#38a169', '#319795', '#3182ce', '#5a67d8', '#805ad5', '#d53f8c', '#e53e3e']
@@ -167,12 +237,17 @@ watch(showNewConvo, (val) => {
   }
 })
 
+function populateRegistryFromConvos(list: Conversation[]) {
+  for (const c of list) {
+    if (c.otherMember?.id) {
+      avatarRegistry.setAvatar(c.otherMember.id, c.otherMember.profileImageUrl ?? null)
+    }
+  }
+}
+
 async function loadConversations() {
-  try {
-    const all = await socialService.getConversations()
-    conversations.value = all.filter((c: any) => c.lastMessage)
-  } catch { /* */ }
-  loading.value = false
+  await loadRawConversations()
+  populateRegistryFromConvos(conversations.value)
 }
 
 let pollInterval: ReturnType<typeof setInterval> | null = null
@@ -186,10 +261,11 @@ watch(() => memberStore.unreadMessageCount, () => loadConversations())
 onMounted(() => {
   loadConversations()
   onMessage(onNewMessage)
+  nextTick(() => attachConvosScroll())
   pollInterval = setInterval(async () => {
     try {
-      const all = await socialService.getConversations()
-      conversations.value = all.filter((c: any) => c.lastMessage)
+      await refreshConvosFirst()
+      populateRegistryFromConvos(conversations.value)
     } catch { /* */ }
   }, 3000)
 })

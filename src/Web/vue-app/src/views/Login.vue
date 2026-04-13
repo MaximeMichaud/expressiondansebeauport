@@ -91,6 +91,11 @@ async function sendLoginRequest() {
   const succeededOrNotResponse = await authenticationService.login(loginRequest.value)
   if (succeededOrNotResponse.succeeded) {
     const user = await userService.getCurrentUser()
+    if (!user) {
+      passwordRef.value?.setError(t('pages.login.validation.errorOccured'))
+      preventMultipleSubmit.value = false;
+      return;
+    }
     userStore.setUser(user)
     userStore.setUsername(loginRequest.value.username)
     apiStore.setNeedToLogout(false)
