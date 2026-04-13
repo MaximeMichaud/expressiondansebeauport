@@ -21,7 +21,7 @@
       v-if="canEdit"
       type="button"
       :class="[
-        'absolute inset-0 flex items-center justify-center transition cursor-pointer focus:outline-none',
+        'avatar-uploader__edit absolute inset-0 flex items-center justify-center transition cursor-pointer focus:outline-none',
         shape === 'square' ? 'rounded-lg' : 'rounded-full',
         uploading
           ? 'bg-black/50 opacity-100'

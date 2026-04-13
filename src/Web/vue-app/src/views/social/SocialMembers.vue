@@ -1,7 +1,8 @@
 <template>
   <div class="members-dir">
-    <!-- Search -->
+    <!-- Header + Search -->
     <div class="members-dir__search">
+      <h2 class="text-lg font-bold mb-3" style="color: var(--soc-bar-text-strong, #1a1a1a);">Membres</h2>
       <div class="members-dir__search-inner">
         <svg class="members-dir__search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
@@ -124,7 +125,7 @@ $dir-font-body: 'Karla', sans-serif;
     top: 0;
     z-index: 10;
     background: var(--soc-content-bg, white);
-    padding: 20px 20px 12px;
+    padding: 16px 16px 12px;
     border-bottom: 1px solid var(--soc-border, #e7e0da);
     transition: background 0.3s, border-color 0.3s;
   }
@@ -144,9 +145,9 @@ $dir-font-body: 'Karla', sans-serif;
 
   &__search-input {
     width: 100%;
-    padding: 12px 40px 12px 44px;
+    padding: 10px 36px 10px 40px;
     font-family: $dir-font-body;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--soc-text, #292524);
     background: var(--soc-input-bg, #f5f3f0);
     border: 1px solid transparent;
