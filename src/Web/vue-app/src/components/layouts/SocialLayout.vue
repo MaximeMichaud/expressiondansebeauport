@@ -676,13 +676,16 @@ $soc-font-body: 'Karla', sans-serif;
   &__mobile-nav {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     gap: 2px;
+    width: 100%;
     max-width: 960px;
     margin: 0 auto;
     padding: 0 20px;
     min-height: 0;
     overflow: hidden;
     transition: padding 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
   }
 
   &__mobile-wrap.is-open &__mobile-nav {
@@ -719,12 +722,21 @@ $soc-font-body: 'Karla', sans-serif;
 }
 
 // Force full-width stretched items on mobile (high-specificity standalone rules)
-.soc-header__mobile-nav { align-items: stretch; }
-.soc-header__mobile-nav > .soc-header__mobile-item {
-  align-self: stretch;
-  width: 100% !important;
-  justify-content: flex-start !important;
-  text-align: left !important;
+@media (max-width: 47.99em) {
+  .soc-header__mobile-wrap { width: 100%; }
+  .soc-header__mobile-nav {
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+  .soc-header__mobile-nav > .soc-header__mobile-item {
+    align-self: stretch !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    margin: 0 !important;
+  }
 }
 
 @media (min-width: 48em) {
