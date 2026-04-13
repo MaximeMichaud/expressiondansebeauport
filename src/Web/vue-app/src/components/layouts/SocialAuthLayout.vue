@@ -111,6 +111,10 @@ $soc-font-display: 'Montserrat', sans-serif;
     transition: color 0.15s, background 0.15s;
     z-index: 10;
     &:hover { color: $soc-black; background: rgba(0,0,0,0.08); }
+
+    @media (max-width: 47.99em) {
+      display: none;
+    }
   }
 
   &__card {
