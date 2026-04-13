@@ -231,6 +231,7 @@ async function handleDeleteAccount() {
       userStore.reset()
       memberStore.reset()
       await router.push({ name: 'socialLogin' })
+      toast.success('Votre compte a été supprimé.', 6000)
     } else {
       toast.error(result.errors?.[0]?.errorMessage || 'Erreur lors de la suppression.')
     }
