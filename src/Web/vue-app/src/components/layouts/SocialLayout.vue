@@ -286,7 +286,11 @@ onUnmounted(() => {
 const isActive = (name: string) => router.currentRoute.value.name === name
 const isMessagesRoute = computed(() => {
   const name = router.currentRoute.value.name
-  return name === 'socialMessages' || name === 'socialConversation' || name === 'socialAdminConversation'
+  return name === 'socialMessages'
+    || name === 'socialConversation'
+    || name === 'socialAdminConversation'
+    || name === 'socialAnnouncement'
+    || name === 'socialGroup'
 })
 
 const mainSiteUrl = computed(() => '/')
