@@ -1,5 +1,6 @@
 <template>
-  <div class="p-4">
+  <div class="ann-page">
+    <div class="ann-page__body p-4">
     <!-- Back + Delete -->
     <div class="mb-4 flex items-center justify-between">
       <button @click="$router.push({ name: 'socialImportant' })" class="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 cursor-pointer">
@@ -208,27 +209,28 @@
           </div>
           <p v-if="comments.length === 0" class="py-4 text-center text-xs text-gray-400">Aucun commentaire</p>
         </div>
-
-        <!-- Add comment -->
-        <div class="mt-3 flex gap-2">
-          <input
-            ref="commentInputEl"
-            v-model="newComment"
-            type="text"
-            class="flex-1 rounded-full border border-gray-200 px-4 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
-            placeholder="Écrire un commentaire..."
-            @keyup.enter="submitComment"
-          />
-          <button
-            @click="submitComment"
-            :disabled="!newComment.trim() || submitting"
-            class="btn-publish flex items-center justify-center rounded-full bg-[#1a1a1a] w-9 h-9 text-white disabled:opacity-50 cursor-pointer flex-shrink-0"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-          </button>
-        </div>
       </div>
     </template>
+    </div>
+
+    <!-- Add comment (stuck to bottom on mobile) -->
+    <div v-if="post && !editing" class="ann-page__composer">
+      <input
+        ref="commentInputEl"
+        v-model="newComment"
+        type="text"
+        class="flex-1 rounded-full border border-gray-200 px-4 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
+        placeholder="Écrire un commentaire..."
+        @keyup.enter="submitComment"
+      />
+      <button
+        @click="submitComment"
+        :disabled="!newComment.trim() || submitting"
+        class="btn-publish flex items-center justify-center rounded-full bg-[#1a1a1a] w-9 h-9 text-white disabled:opacity-50 cursor-pointer flex-shrink-0"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </div>
 
     <!-- Delete modal -->
     <Teleport to="body">
@@ -493,6 +495,29 @@ onUnmounted(() => {
 
 <style lang="scss">
 $ann-d-font: 'Montserrat', sans-serif;
+
+.ann-page__composer {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--soc-divider, #f0f0f0);
+  background: var(--soc-content-bg, white);
+  flex-shrink: 0;
+}
+
+@media (max-width: 47.99em) {
+  .ann-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+  }
+  .ann-page__body {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
 
 .ann-d-modal {
   &__overlay {
