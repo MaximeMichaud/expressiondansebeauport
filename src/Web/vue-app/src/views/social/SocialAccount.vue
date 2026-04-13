@@ -82,8 +82,9 @@
           <input v-model="email" type="email" placeholder="votre@courriel.com" class="soc-account__input" />
         </div>
         <div class="flex justify-end">
-          <button type="submit" :disabled="savingProfile" class="soc-account__btn-primary">
-            {{ savingProfile ? 'Sauvegarde...' : 'Sauvegarder' }}
+          <button type="submit" :disabled="savingProfile" class="soc-account__btn-primary inline-flex items-center gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            <span>{{ savingProfile ? 'Sauvegarde...' : 'Sauvegarder' }}</span>
           </button>
         </div>
       </form>
@@ -133,9 +134,10 @@
           <button
             type="submit"
             :disabled="savingPassword || !isNewPasswordValid || newPassword !== confirmNewPassword || !currentPassword"
-            class="soc-account__btn-primary"
+            class="soc-account__btn-primary inline-flex items-center gap-2"
           >
-            {{ savingPassword ? 'Modification...' : 'Modifier le mot de passe' }}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            <span>{{ savingPassword ? 'Modification...' : 'Modifier le mot de passe' }}</span>
           </button>
         </div>
       </form>
