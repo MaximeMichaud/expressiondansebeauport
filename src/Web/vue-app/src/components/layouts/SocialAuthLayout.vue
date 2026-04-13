@@ -124,6 +124,9 @@ $soc-font-display: 'Montserrat', sans-serif;
 
     @media (max-width: 47.99em) {
       padding: 24px 20px;
+
+      // Tighter spacing around the page title (Connexion / Inscription / etc)
+      h2 { margin-top: 0; margin-bottom: 16px; font-size: 1.4rem; }
     }
   }
 
@@ -133,6 +136,10 @@ $soc-font-display: 'Montserrat', sans-serif;
     justify-content: center;
     gap: 10px;
     margin-bottom: 28px;
+
+    @media (max-width: 47.99em) {
+      margin-bottom: 14px;
+    }
   }
 
   &__logo-circle {
