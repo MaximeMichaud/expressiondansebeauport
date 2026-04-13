@@ -164,7 +164,9 @@ export interface ISocialService {
   createAnnouncement(content: string, media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>): Promise<SucceededOrNotResponse>
   updateAnnouncement(id: string, content: string, media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>): Promise<SucceededOrNotResponse>
   getConversations(page?: number): Promise<{ items: Conversation[]; hasMore: boolean }>
+  getAdminConversations(memberId: string, page?: number): Promise<{ items: any[]; hasMore: boolean }>
   getMessages(conversationId: string, page?: number): Promise<{ items: Message[]; hasMore: boolean }>
+  getAdminMessages(conversationId: string, page?: number): Promise<{ items: any[]; hasMore: boolean }>
   sendMessage(
     conversationId: string,
     content: string,
@@ -178,6 +180,7 @@ export interface ISocialService {
   getMemberProfile(id: string): Promise<any>
   getMyProfile(): Promise<any>
   updateMyProfile(firstName: string, lastName: string, email: string): Promise<SucceededOrNotResponse>
+  deleteMyAccount(): Promise<SucceededOrNotResponse>
   deleteMember(id: string): Promise<SucceededOrNotResponse>
   promoteMember(id: string): Promise<SucceededOrNotResponse>
   demoteMember(id: string): Promise<SucceededOrNotResponse>

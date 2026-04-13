@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-[calc(100vh-120px)] flex-col">
+  <div class="group-page flex h-full min-h-0 flex-col">
     <!-- Group header -->
     <div class="group-banner flex items-center gap-3 border-b border-gray-200 bg-white px-4 py-3">
       <button @click="$router.push({ name: 'socialPortal' })" class="text-gray-600">
@@ -14,10 +14,7 @@
         class="group-header-avatar"
         :size="32"
         shape="square"
-        :can-edit="canEditGroupImage"
-        :uploading="uploadingGroupImage"
-        @upload="handleGroupImageUpload"
-        @remove="confirmGroupImageRemove = true"
+        :can-edit="false"
       />
       <h1 class="flex-1 text-base font-semibold text-gray-900">{{ group?.name || 'Groupe' }}</h1>
       <button
@@ -31,7 +28,7 @@
     </div>
 
     <!-- Feed -->
-    <div class="flex-1">
+    <div class="group-page__feed flex-1 min-h-0 overflow-y-auto">
         <!-- Post composer -->
         <div
           class="border-b-[6px] border-[var(--soc-page-bg,#f0f0f0)] px-4 py-3 relative"
@@ -374,11 +371,9 @@ const avatarRegistry = useAvatarRegistryStore()
 
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
 const canCreatePolls = computed(() => userStore.hasOneOfTheseRoles([Role.Professor, Role.Admin]))
-const canEditGroupImage = computed(() => userStore.hasOneOfTheseRoles([Role.Professor, Role.Admin]))
 const myMemberId = computed(() => memberStore.member?.id || '')
 const groupId = computed(() => route.params.id as string)
 const showPollModal = ref(false)
-const uploadingGroupImage = ref(false)
 const confirmGroupImageRemove = ref(false)
 const showLeaveModal = ref(false)
 
@@ -482,29 +477,6 @@ async function loadGroup() {
       document.title = `EDB Social - ${group.value.name}`
     }
   } catch { /* */ }
-}
-
-async function handleGroupImageUpload(file: File) {
-  if (uploadingGroupImage.value) return
-  uploadingGroupImage.value = true
-  try {
-    const uploaded = await socialService.uploadFile(file)
-    if (!uploaded.succeeded || !uploaded.displayUrl) {
-      toast.error("Échec du téléversement de l'image.")
-      return
-    }
-    const result = await socialService.setGroupImage(groupId.value, uploaded.displayUrl)
-    if (result.succeeded) {
-      await loadGroup()
-      toast.success('Image du groupe mise à jour.')
-    } else {
-      toast.error("Impossible d'enregistrer l'image.")
-    }
-  } catch {
-    toast.error('Erreur lors du téléversement.')
-  } finally {
-    uploadingGroupImage.value = false
-  }
 }
 
 async function handleGroupImageRemove() {

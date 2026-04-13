@@ -14,4 +14,5 @@ public interface IGroupMemberRepository
     Task<Dictionary<Guid, string>> GetRolesForMembers(Guid groupId, List<Guid> memberIds);
     Task<GroupMember?> FindProfessorInGroup(Guid groupId, Guid memberId);
     Task<List<GroupMember>> GetProfessorsOfGroup(Guid groupId);
+    Task<List<GroupMember>> GetProfessorsAndAdminsInGroup(Guid groupId);
 }

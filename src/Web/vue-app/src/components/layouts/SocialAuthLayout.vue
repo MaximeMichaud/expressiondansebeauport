@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, watch } from 'vue'
 import LogoEdb from '@/assets/icons/logo__edb.svg'
 import { useSocialToast } from '@/composables/useSocialToast'
 
@@ -57,14 +57,12 @@ function syncBodyDark(dark: boolean) {
   document.body.classList.toggle('soc--dark', dark)
 }
 syncBodyDark(isDarkMode.value)
+watch(isDarkMode, syncBodyDark)
 
 function toggleTheme() {
   isDarkMode.value = !isDarkMode.value
   localStorage.setItem('soc-theme', isDarkMode.value ? 'dark' : 'light')
-  syncBodyDark(isDarkMode.value)
 }
-
-onUnmounted(() => { document.body.classList.remove('soc--dark') })
 </script>
 
 <style lang="scss">
@@ -94,6 +92,10 @@ $soc-font-display: 'Montserrat', sans-serif;
   position: relative;
   transition: background 0.3s, color 0.3s;
 
+  @media (max-width: 47.99em) {
+    padding: 20px;
+  }
+
   &__theme-toggle {
     position: fixed;
     top: 16px;
@@ -109,6 +111,10 @@ $soc-font-display: 'Montserrat', sans-serif;
     transition: color 0.15s, background 0.15s;
     z-index: 10;
     &:hover { color: $soc-black; background: rgba(0,0,0,0.08); }
+
+    @media (max-width: 47.99em) {
+      display: none;
+    }
   }
 
   &__card {
@@ -119,6 +125,13 @@ $soc-font-display: 'Montserrat', sans-serif;
     box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);
     padding: 32px 28px;
     transition: background 0.3s, box-shadow 0.3s;
+
+    @media (max-width: 47.99em) {
+      padding: 24px 20px;
+
+      // Tighter spacing around the page title (Connexion / Inscription / etc)
+      h2 { margin-top: 0; margin-bottom: 8px; font-size: 1.4rem; }
+    }
   }
 
   &__header {
@@ -127,6 +140,10 @@ $soc-font-display: 'Montserrat', sans-serif;
     justify-content: center;
     gap: 10px;
     margin-bottom: 28px;
+
+    @media (max-width: 47.99em) {
+      margin-bottom: 14px;
+    }
   }
 
   &__logo-circle {

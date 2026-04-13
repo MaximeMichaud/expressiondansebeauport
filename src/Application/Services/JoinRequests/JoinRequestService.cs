@@ -13,19 +13,25 @@ public class JoinRequestService : IJoinRequestService
     private readonly IGroupRepository _groupRepository;
     private readonly IMemberRepository _memberRepository;
     private readonly IConversationService _conversationService;
+    private readonly IMessageRepository _messageRepository;
+    private readonly IConversationRepository _conversationRepository;
 
     public JoinRequestService(
         IJoinRequestRepository joinRequestRepository,
         IGroupMemberRepository groupMemberRepository,
         IGroupRepository groupRepository,
         IMemberRepository memberRepository,
-        IConversationService conversationService)
+        IConversationService conversationService,
+        IMessageRepository messageRepository,
+        IConversationRepository conversationRepository)
     {
         _joinRequestRepository = joinRequestRepository;
         _groupMemberRepository = groupMemberRepository;
         _groupRepository = groupRepository;
         _memberRepository = memberRepository;
         _conversationService = conversationService;
+        _messageRepository = messageRepository;
+        _conversationRepository = conversationRepository;
     }
 
     public async Task<JoinRequest> CreateRequest(Guid groupId, Guid requesterMemberId)
@@ -46,10 +52,9 @@ public class JoinRequestService : IJoinRequestService
         if (requester == null)
             throw new InvalidOperationException("Membre non trouvé.");
 
-        var professors = await _groupMemberRepository.GetProfessorsOfGroup(groupId);
-
-        // Collect recipient member IDs — professors first, fallback to admins
-        var recipientMemberIds = professors.Select(p => p.MemberId).ToList();
+        // Collect recipient member IDs — professors/admins in group first, fallback to global admins
+        var groupStaff = await _groupMemberRepository.GetProfessorsAndAdminsInGroup(groupId);
+        var recipientMemberIds = groupStaff.Select(p => p.MemberId).ToList();
 
         if (recipientMemberIds.Count == 0)
         {
@@ -97,16 +102,20 @@ public class JoinRequestService : IJoinRequestService
         if (joinRequest.Status != JoinRequestStatus.Pending)
             throw new InvalidOperationException("Demande d'adhésion déjà traitée.");
 
-        // Allow professors of the group OR global admins
-        var profGm = await _groupMemberRepository.FindProfessorInGroup(joinRequest.GroupId, professorMemberId);
-        if (profGm == null)
-        {
-            var actingMember = _memberRepository.FindById(professorMemberId);
-            if (actingMember == null || !actingMember.User.HasRole(Domain.Constants.User.Roles.ADMINISTRATOR))
-                throw new InvalidOperationException("Non autorisé à accepter cette demande.");
-        }
+        // Allow professors/admins in the group (by platform role) OR global admins
+        var actingMember = _memberRepository.FindById(professorMemberId, asNoTracking: false);
+        if (actingMember == null)
+            throw new InvalidOperationException("Membre non trouvé.");
 
-        var professor = _memberRepository.FindById(professorMemberId, asNoTracking: false);
+        var isGroupStaff = await _groupMemberRepository.IsMember(joinRequest.GroupId, professorMemberId)
+            && (actingMember.User.HasRole(Domain.Constants.User.Roles.PROFESSOR)
+                || actingMember.User.HasRole(Domain.Constants.User.Roles.ADMINISTRATOR));
+        var isGlobalAdmin = actingMember.User.HasRole(Domain.Constants.User.Roles.ADMINISTRATOR);
+
+        if (!isGroupStaff && !isGlobalAdmin)
+            throw new InvalidOperationException("Non autorisé à accepter cette demande.");
+
+        var professor = actingMember;
         if (professor == null)
             throw new InvalidOperationException("Professeur non trouvé.");
 
@@ -122,18 +131,6 @@ public class JoinRequestService : IJoinRequestService
         gm.SetRole(GroupMemberRole.Member);
         gm.SetJoinedAt(InstantHelper.GetLocalNow());
         await _groupMemberRepository.Add(gm);
-
-        var group = await _groupRepository.FindById(joinRequest.GroupId);
-        var conversation = await _conversationService.GetOrCreateConversation(joinRequest.RequesterMemberId, professorMemberId);
-        if (conversation != null)
-        {
-            await _conversationService.SendMessage(
-                conversation.Id,
-                professorMemberId,
-                $"{professor.FullName} a accepté votre demande pour {group?.Name ?? "le groupe"}",
-                new List<MessageMediaItem>(),
-                MessageType.JoinRequest);
-        }
     }
 
     public async Task RejectRequest(Guid joinRequestId, Guid professorMemberId)
@@ -145,35 +142,25 @@ public class JoinRequestService : IJoinRequestService
         if (joinRequest.Status != JoinRequestStatus.Pending)
             throw new InvalidOperationException("Demande d'adhésion déjà traitée.");
 
-        // Allow professors of the group OR global admins
-        var profGm = await _groupMemberRepository.FindProfessorInGroup(joinRequest.GroupId, professorMemberId);
-        if (profGm == null)
-        {
-            var actingMember = _memberRepository.FindById(professorMemberId);
-            if (actingMember == null || !actingMember.User.HasRole(Domain.Constants.User.Roles.ADMINISTRATOR))
-                throw new InvalidOperationException("Non autorisé à rejeter cette demande.");
-        }
+        // Allow professors/admins in the group (by platform role) OR global admins
+        var actingMember = _memberRepository.FindById(professorMemberId, asNoTracking: false);
+        if (actingMember == null)
+            throw new InvalidOperationException("Membre non trouvé.");
 
-        var professor = _memberRepository.FindById(professorMemberId, asNoTracking: false);
-        if (professor == null)
-            throw new InvalidOperationException("Professeur non trouvé.");
+        var isGroupStaff = await _groupMemberRepository.IsMember(joinRequest.GroupId, professorMemberId)
+            && (actingMember.User.HasRole(Domain.Constants.User.Roles.PROFESSOR)
+                || actingMember.User.HasRole(Domain.Constants.User.Roles.ADMINISTRATOR));
+        var isGlobalAdmin = actingMember.User.HasRole(Domain.Constants.User.Roles.ADMINISTRATOR);
+
+        if (!isGroupStaff && !isGlobalAdmin)
+            throw new InvalidOperationException("Non autorisé à rejeter cette demande.");
+
+        var professor = actingMember;
 
         joinRequest.SetStatus(JoinRequestStatus.Rejected);
         joinRequest.SetResolvedByMember(professor);
         joinRequest.SetResolvedAt(InstantHelper.GetLocalNow());
         await _joinRequestRepository.Update(joinRequest);
-
-        var group = await _groupRepository.FindById(joinRequest.GroupId);
-        var conversation = await _conversationService.GetOrCreateConversation(joinRequest.RequesterMemberId, professorMemberId);
-        if (conversation != null)
-        {
-            await _conversationService.SendMessage(
-                conversation.Id,
-                professorMemberId,
-                $"{professor.FullName} a refusé votre demande pour {group?.Name ?? "le groupe"}",
-                new List<MessageMediaItem>(),
-                MessageType.JoinRequest);
-        }
     }
 
     public async Task<JoinRequest?> GetPendingRequest(Guid groupId, Guid memberId)
@@ -194,9 +181,9 @@ public class JoinRequestService : IJoinRequestService
 
     public async Task<List<Guid>> GetRecipientMemberIds(Guid groupId)
     {
-        var professors = await _groupMemberRepository.GetProfessorsOfGroup(groupId);
-        if (professors.Count > 0)
-            return professors.Select(p => p.MemberId).ToList();
+        var groupStaff = await _groupMemberRepository.GetProfessorsAndAdminsInGroup(groupId);
+        if (groupStaff.Count > 0)
+            return groupStaff.Select(p => p.MemberId).ToList();
 
         var admins = await _memberRepository.GetAdminMembers();
         return admins.Select(a => a.Id).ToList();

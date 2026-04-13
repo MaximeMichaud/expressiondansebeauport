@@ -2,7 +2,7 @@
   <div class="p-4">
     <!-- Header -->
     <div class="mb-4 flex items-center justify-between">
-      <h2 class="text-lg font-bold text-gray-900">Portail EDB</h2>
+      <h2 class="text-lg font-bold text-gray-900">Groupes</h2>
       <button v-if="isAdmin" @click="editTarget = null; showCreateGroup = !showCreateGroup" class="rounded-lg border border-[rgba(21,128,61,0.15)] bg-[rgba(21,128,61,0.06)] px-3 py-1.5 text-xs font-semibold text-[#15803d] transition hover:bg-[rgba(21,128,61,0.12)] cursor-pointer">
         {{ showCreateGroup ? 'Fermer' : '+ Créer un groupe' }}
       </button>
@@ -209,7 +209,7 @@
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
         <span class="text-sm">{{ searchQuery ? 'Aucun groupe trouvé.' : 'Vous n\'avez pas encore rejoint de groupe.' }}</span>
       </div>
-      <div v-else class="grid grid-cols-2 gap-3">
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div
           v-for="group in filteredMyGroups"
           :key="group.id"
@@ -257,7 +257,7 @@
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
         <span class="text-sm">{{ searchQuery ? 'Aucun groupe trouvé.' : 'Aucun groupe pour le moment.' }}</span>
       </div>
-      <div v-else class="grid grid-cols-2 gap-3">
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div
           v-for="group in filteredAllGroups"
           :key="group.id"

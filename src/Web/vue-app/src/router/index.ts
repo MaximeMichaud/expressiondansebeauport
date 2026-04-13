@@ -96,6 +96,13 @@ const socialRoutes = [
     meta: { title: 'Messages', requiredRole: [Role.Member, Role.Professor, Role.Admin], social: true }
   },
   {
+    path: '/social/messages/admin/:conversationId',
+    name: 'socialAdminConversation',
+    component: () => import('@/views/social/SocialConversation.vue'),
+    meta: { title: 'Conversation (Admin)', requiredRole: [Role.Admin], social: true },
+    props: true
+  },
+  {
     path: '/social/messages/:conversationId',
     name: 'socialConversation',
     component: () => import('@/views/social/SocialConversation.vue'),
