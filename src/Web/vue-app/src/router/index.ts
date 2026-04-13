@@ -4,6 +4,7 @@ import {createRouter, createWebHistory} from "vue-router";
 
 import Home from "@/views/public/Home.vue";
 import PublicPage from "@/views/public/PublicPage.vue";
+import PreviewPage from "@/views/public/PreviewPage.vue";
 import NotFound from "@/views/public/NotFound.vue";
 import InternalError from "@/views/public/InternalError.vue";
 import Login from "@/views/Login.vue";
@@ -21,8 +22,10 @@ import AdminCustomizer from "@/views/admin/customizer/AdminCustomizer.vue";
 import AdminSiteHealth from "@/views/admin/health/AdminSiteHealth.vue";
 import AdminImportExport from "@/views/admin/importexport/AdminImportExport.vue";
 import AdminBackup from "@/views/admin/backup/AdminBackup.vue";
+import AdminErrorLogs from "@/views/admin/errorlogs/AdminErrorLogs.vue";
 
 import {useUserStore} from "@/stores/userStore";
+import {useUserService} from "@/inversify.config";
 
 const socialRoutes = [
   {
@@ -91,6 +94,13 @@ const socialRoutes = [
     name: 'socialMessages',
     component: () => import('@/views/social/SocialMessages.vue'),
     meta: { title: 'Messages', requiredRole: [Role.Member, Role.Professor, Role.Admin], social: true }
+  },
+  {
+    path: '/social/messages/admin/:conversationId',
+    name: 'socialAdminConversation',
+    component: () => import('@/views/social/SocialConversation.vue'),
+    meta: { title: 'Conversation (Admin)', requiredRole: [Role.Admin], social: true },
+    props: true
   },
   {
     path: '/social/messages/:conversationId',
@@ -226,6 +236,11 @@ const mainRoutes = [
         name: "admin.children.backup",
         component: AdminBackup,
       },
+      {
+        path: i18n.global.t("routes.admin.children.errorLogs.path"),
+        name: "admin.children.errorLogs",
+        component: AdminErrorLogs,
+      },
     ]
   },
   {
@@ -233,6 +248,15 @@ const mainRoutes = [
     name: "internalError",
     component: InternalError,
     meta: { public: true, title: "routes.internalError.name" }
+  },
+  {
+    path: "/preview/:slug",
+    name: "previewPage",
+    component: PreviewPage,
+    meta: {
+      title: "Aperçu",
+      public: true
+    }
   },
   {
     path: "/:slug",
@@ -264,6 +288,27 @@ export function isSocialRoute(route: { meta?: Record<string, any> }): boolean {
   return route.meta?.social === true || route.meta?.socialAuth === true
 }
 
+// Ensures we only hit /users/me once per page load. Subsequent navigations
+// rely on the populated store (or the first attempt's failure).
+let rehydrationAttempted = false;
+
+function hasAuthCookie(): boolean {
+  return document.cookie.split(';').some(c => c.trim().startsWith('accessToken='))
+}
+
+async function rehydrateWithRetry() {
+  const maxAttempts = 6
+  const delayMs = 2000
+  for (let i = 0; i < maxAttempts; i++) {
+    const user = await useUserService().getCurrentUser()
+    if (user) return user
+    if (i < maxAttempts - 1 && hasAuthCookie()) {
+      await new Promise(r => setTimeout(r, delayMs))
+    }
+  }
+  return null
+}
+
 // eslint-disable-next-line
 router.beforeEach(async (to, from) => {
   const userStore = useUserStore()
@@ -271,6 +316,18 @@ router.beforeEach(async (to, from) => {
   const requiredRole = to.matched.find(r => r.meta.requiredRole)?.meta.requiredRole;
   if (!requiredRole)
     return;
+
+  // On a hard reload the Pinia store is empty, but the auth cookie may still
+  // be valid server-side. Try to rehydrate from /users/me before deciding to
+  // bounce the user to login. Retries when an auth cookie exists but the
+  // backend hasn't started yet (dev server restart race condition).
+  if (!rehydrationAttempted && !userStore.user.email) {
+    rehydrationAttempted = true;
+    const user = await rehydrateWithRetry();
+    if (user) {
+      userStore.setUser(user);
+    }
+  }
 
   const isRoleArray = Array.isArray(requiredRole)
   const doesNotHaveGivenRole = !isRoleArray && !userStore.hasRole(requiredRole as Role);
@@ -289,7 +346,7 @@ router.afterEach((to) => {
   const social = isSocialRoute(to)
   if (social) {
     const titleKey = [...to.matched].reverse().find(r => r.meta.title)?.meta.title as string | undefined;
-    document.title = titleKey ? `${titleKey} - EDB Social` : 'EDB Social';
+    document.title = titleKey ? `EDB Social - ${titleKey}` : 'EDB Social';
   }
 });
 

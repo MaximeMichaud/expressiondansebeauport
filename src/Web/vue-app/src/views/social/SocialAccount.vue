@@ -8,14 +8,57 @@
       <h2 class="soc-account__title">Mon compte</h2>
     </div>
 
-    <!-- Avatar + Name -->
+    <!-- Name + Email summary -->
     <div class="soc-account__identity">
-      <div class="soc-account__avatar" :style="{ background: userAvatarColor }">{{ userInitials }}</div>
-      <div>
-        <p class="text-sm font-semibold text-gray-900">{{ firstName || 'Prénom' }} {{ lastName || 'Nom' }}</p>
-        <p class="text-xs text-gray-500">{{ email || 'courriel@exemple.com' }}</p>
+      <AvatarUploader
+        :image-url="memberStore.member?.profileImageUrl"
+        :fallback-initials="userInitials"
+        :fallback-color="userAvatarColor"
+        :size="80"
+        :can-edit="false"
+      />
+      <div class="soc-account__identity-info">
+        <p class="text-sm font-semibold" :style="{ color: 'var(--soc-text)' }">{{ firstName || 'Prénom' }} {{ lastName || 'Nom' }}</p>
+        <p class="text-xs" :style="{ color: 'var(--soc-text-muted)' }">{{ email || 'courriel@exemple.com' }}</p>
       </div>
     </div>
+
+    <!-- Avatar card -->
+    <section class="soc-account__card">
+      <div class="soc-account__card-header">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <h3>Photo de profil</h3>
+      </div>
+      <div class="soc-account__card-body">
+        <div class="soc-account__avatar-actions">
+          <input
+            ref="avatarInputRef"
+            type="file"
+            accept="image/*"
+            hidden
+            @change="onAvatarFileChange"
+          />
+          <button
+            type="button"
+            class="soc-account__avatar-btn inline-flex items-center justify-center gap-2"
+            :disabled="uploadingAvatar"
+            @click="avatarInputRef?.click()"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <span>{{ uploadingAvatar ? 'Envoi...' : (memberStore.member?.profileImageUrl ? 'Changer la photo' : 'Ajouter une photo') }}</span>
+          </button>
+          <button
+            v-if="memberStore.member?.profileImageUrl && !uploadingAvatar"
+            type="button"
+            class="soc-account__avatar-btn soc-account__avatar-btn--danger inline-flex items-center justify-center gap-2"
+            @click="confirmAvatarRemove = true"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+            <span>Supprimer la photo</span>
+          </button>
+        </div>
+      </div>
+    </section>
 
     <!-- Profile card -->
     <section class="soc-account__card">
@@ -24,7 +67,7 @@
         <h3>Informations personnelles</h3>
       </div>
       <form @submit.prevent="updateProfile" class="soc-account__card-body">
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label class="soc-account__label">Prénom</label>
             <input v-model="firstName" type="text" placeholder="Prénom" class="soc-account__input" />
@@ -39,8 +82,9 @@
           <input v-model="email" type="email" placeholder="votre@courriel.com" class="soc-account__input" />
         </div>
         <div class="flex justify-end">
-          <button type="submit" :disabled="savingProfile" class="soc-account__btn-primary">
-            {{ savingProfile ? 'Sauvegarde...' : 'Sauvegarder' }}
+          <button type="submit" :disabled="savingProfile" class="soc-account__btn-primary inline-flex items-center gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            <span>{{ savingProfile ? 'Sauvegarde...' : 'Sauvegarder' }}</span>
           </button>
         </div>
       </form>
@@ -90,26 +134,76 @@
           <button
             type="submit"
             :disabled="savingPassword || !isNewPasswordValid || newPassword !== confirmNewPassword || !currentPassword"
-            class="soc-account__btn-primary"
+            class="soc-account__btn-primary inline-flex items-center gap-2"
           >
-            {{ savingPassword ? 'Modification...' : 'Modifier le mot de passe' }}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            <span>{{ savingPassword ? 'Modification...' : 'Modifier le mot de passe' }}</span>
           </button>
         </div>
       </form>
     </section>
 
+    <!-- Danger zone -->
+    <section class="soc-account__card">
+      <div class="soc-account__card-header">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <h3>Zone de danger</h3>
+      </div>
+      <div class="soc-account__card-body">
+        <p class="text-xs" :style="{ color: 'var(--soc-text-muted)' }">
+          La suppression de votre compte est définitive. Vous ne pourrez plus vous connecter avec ce courriel.
+        </p>
+        <button
+          type="button"
+          class="soc-account__avatar-btn soc-account__avatar-btn--danger inline-flex items-center justify-center gap-2"
+          :disabled="deletingAccount"
+          @click="confirmDeleteAccount = true"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+          <span>{{ deletingAccount ? 'Suppression...' : 'Supprimer mon compte' }}</span>
+        </button>
+      </div>
+    </section>
+
+    <ConfirmModal
+      :open="confirmAvatarRemove"
+      title="Retirer la photo?"
+      message="Votre photo de profil sera remplacée par vos initiales."
+      confirm-label="Retirer"
+      :danger="true"
+      @confirm="handleAvatarRemove"
+      @cancel="confirmAvatarRemove = false"
+    />
+
+    <ConfirmModal
+      :open="confirmDeleteAccount"
+      title="Supprimer votre compte?"
+      message="Cette action est irréversible. Votre compte sera supprimé et vous serez déconnecté."
+      confirm-label="Supprimer"
+      :danger="true"
+      @confirm="handleDeleteAccount"
+      @cancel="confirmDeleteAccount = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthenticationService, useSocialService } from '@/inversify.config'
 import { useMemberStore } from '@/stores/memberStore'
+import { useUserStore } from '@/stores/userStore'
+import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
 import { useSocialToast } from '@/composables/useSocialToast'
+import AvatarUploader from '@/components/social/AvatarUploader.vue'
+import ConfirmModal from '@/components/social/ConfirmModal.vue'
 
+const router = useRouter()
 const authService = useAuthenticationService()
 const socialService = useSocialService()
 const memberStore = useMemberStore()
+const userStore = useUserStore()
+const avatarRegistry = useAvatarRegistryStore()
 const toast = useSocialToast()
 
 const firstName = ref('')
@@ -120,6 +214,39 @@ const newPassword = ref('')
 const confirmNewPassword = ref('')
 const savingProfile = ref(false)
 const savingPassword = ref(false)
+const uploadingAvatar = ref(false)
+const confirmAvatarRemove = ref(false)
+const avatarInputRef = ref<HTMLInputElement | null>(null)
+const confirmDeleteAccount = ref(false)
+const deletingAccount = ref(false)
+
+async function handleDeleteAccount() {
+  if (deletingAccount.value) return
+  deletingAccount.value = true
+  try {
+    const result = await socialService.deleteMyAccount()
+    if (result.succeeded) {
+      confirmDeleteAccount.value = false
+      await authService.logout()
+      userStore.reset()
+      memberStore.reset()
+      await router.push({ name: 'socialLogin' })
+      toast.success('Votre compte a été supprimé.', 6000)
+    } else {
+      toast.error(result.errors?.[0]?.errorMessage || 'Erreur lors de la suppression.')
+    }
+  } catch {
+    toast.error('Erreur de connexion.')
+  }
+  deletingAccount.value = false
+}
+
+function onAvatarFileChange(e: Event) {
+  const input = e.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (file) handleAvatarUpload(file)
+  if (input) input.value = ''
+}
 
 const userInitials = computed(() => {
   const f = firstName.value?.[0] || ''
@@ -187,6 +314,48 @@ async function updateProfile() {
   savingProfile.value = false
 }
 
+async function handleAvatarUpload(file: File) {
+  if (uploadingAvatar.value) return
+  uploadingAvatar.value = true
+  try {
+    const uploaded = await socialService.uploadFile(file)
+    if (!uploaded.succeeded || !uploaded.displayUrl) {
+      toast.error("Échec du téléversement de l'image.")
+      return
+    }
+    const result = await socialService.setMyProfileImage(uploaded.displayUrl)
+    if (result.succeeded) {
+      const profile = await socialService.getMyProfile()
+      memberStore.setMember(profile)
+      if (profile?.id) avatarRegistry.setAvatar(profile.id, uploaded.displayUrl)
+      toast.success('Photo de profil mise à jour.')
+    } else {
+      toast.error("Impossible d'enregistrer la photo.")
+    }
+  } catch {
+    toast.error('Erreur lors du téléversement.')
+  } finally {
+    uploadingAvatar.value = false
+  }
+}
+
+async function handleAvatarRemove() {
+  confirmAvatarRemove.value = false
+  try {
+    const result = await socialService.removeMyProfileImage()
+    if (result.succeeded) {
+      const profile = await socialService.getMyProfile()
+      memberStore.setMember(profile)
+      if (profile?.id) avatarRegistry.clearAvatar(profile.id)
+      toast.success('Photo de profil retirée.')
+    } else {
+      toast.error('Impossible de retirer la photo.')
+    }
+  } catch {
+    toast.error('Erreur lors du retrait.')
+  }
+}
+
 async function changePassword() {
   if (!isNewPasswordValid.value) return
   if (newPassword.value !== confirmNewPassword.value) {
@@ -235,10 +404,14 @@ $soc-black: #1a1a1a;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    width: 32px;
+    height: 32px;
     padding: 0;
-    color: #78716c;
-    transition: color 0.15s;
-    &:hover { color: $soc-black; }
+    border-radius: 8px;
+    color: var(--soc-text-muted, #78716c);
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    &:hover { color: var(--soc-bar-text-strong, #1a1a1a); background: var(--soc-bar-hover, #f5f3f0); }
   }
 
   &__title {
@@ -255,6 +428,61 @@ $soc-black: #1a1a1a;
     align-items: center;
     gap: 14px;
     padding: 20px 20px 8px;
+  }
+
+  &__identity-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__avatar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+
+    @media (min-width: 48em) {
+      flex-direction: row;
+    }
+  }
+
+  &__avatar-btn {
+    flex: 1 1 0;
+    width: 100%;
+    padding: 9px 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 8px;
+    color: white;
+    background: #1a1a1a;
+    border: 1px solid #1a1a1a;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    &:hover:not(:disabled) { opacity: 0.85; }
+    &:disabled { opacity: 0.5; cursor: default; }
+
+    .soc--dark & {
+      color: #1a1a1a;
+      background: white;
+      border-color: white;
+    }
+
+    &--danger {
+      color: #dc2626;
+      border-color: rgba(220, 38, 38, 0.2);
+      background: rgba(220, 38, 38, 0.06);
+      &:hover:not(:disabled) { background: rgba(220, 38, 38, 0.12); opacity: 1; }
+
+      .soc--dark & {
+        color: #fca5a5;
+        background: rgba(220, 38, 38, 0.12);
+        border-color: rgba(220, 38, 38, 0.3);
+        &:hover:not(:disabled) { background: rgba(220, 38, 38, 0.2); }
+      }
+    }
   }
 
   &__avatar {

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-[calc(100vh-120px)] flex-col">
+  <div class="group-page flex h-full min-h-0 flex-col">
     <!-- Group header -->
     <div class="group-banner flex items-center gap-3 border-b border-gray-200 bg-white px-4 py-3">
       <button @click="$router.push({ name: 'socialPortal' })" class="text-gray-600">
@@ -7,32 +7,125 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
       </button>
-      <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#1a1a1a] group-logo">
-        <img v-if="group?.imageUrl" :src="group.imageUrl" :alt="group?.name" class="h-full w-full rounded-lg object-cover" />
-        <span v-else class="text-[8px] font-bold text-white">EDB</span>
-      </div>
-      <h1 class="text-base font-semibold text-gray-900">{{ group?.name || 'Groupe' }}</h1>
+      <AvatarUploader
+        :image-url="group?.imageUrl"
+        :fallback-initials="'EDB'"
+        :fallback-color="'#1a1a1a'"
+        class="group-header-avatar"
+        :size="32"
+        shape="square"
+        :can-edit="false"
+      />
+      <h1 class="flex-1 text-base font-semibold text-gray-900">{{ group?.name || 'Groupe' }}</h1>
+      <button
+        @click="showLeaveModal = true"
+        class="soc-header__icon-btn soc-header__icon-btn--logout"
+        style="width: 30px; height: 30px;"
+        title="Quitter le groupe"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
     </div>
 
     <!-- Feed -->
-    <div class="flex-1">
+    <div class="group-page__feed flex-1 min-h-0 overflow-y-auto">
         <!-- Post composer -->
-        <div class="border-b-[6px] border-[var(--soc-page-bg,#f0f0f0)] px-4 py-3">
+        <div
+          class="border-b-[6px] border-[var(--soc-page-bg,#f0f0f0)] px-4 py-3 relative"
+          @dragenter="attachment.handleDragEnter"
+          @dragleave="attachment.handleDragLeave"
+          @dragover="attachment.handleDragOver"
+          @drop="attachment.handleDrop"
+        >
+          <div v-if="attachment.isDraggingOver.value" class="absolute inset-0 z-20 flex items-center justify-center bg-black/85 text-white font-semibold border-4 border-dashed border-white/40 rounded-lg pointer-events-none">
+            Déposer les images ici
+          </div>
           <div class="flex items-start gap-3">
-            <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: myAvatarColor }">
-              {{ userInitials }}
+            <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-xs font-bold text-white" :style="{ background: myAvatarColor }">
+              <img
+                v-if="avatarRegistry.getAvatar(myMemberId, memberStore.member?.profileImageUrl)"
+                :src="avatarRegistry.getAvatar(myMemberId, memberStore.member?.profileImageUrl)!"
+                :alt="userInitials"
+                class="h-full w-full object-cover"
+              />
+              <span v-else>{{ userInitials }}</span>
             </div>
-            <div class="flex-1">
+            <div class="flex-1 min-w-0">
               <textarea
                 v-model="newPostContent"
                 rows="2"
                 class="w-full resize-none rounded-lg border-0 bg-gray-100 px-3 py-2 text-sm placeholder-gray-400 focus:bg-white focus:ring-1 focus:ring-[#1a1a1a]"
                 placeholder="Partager quelque chose..."
               ></textarea>
-              <div class="mt-2 flex justify-end">
+
+              <div v-if="attachment.previews.value.length" class="mt-2 mb-4 flex gap-2 overflow-x-auto pt-2 pr-2">
+                <div
+                  v-for="(p, i) in attachment.previews.value"
+                  :key="p.url"
+                  class="relative h-20 w-20 flex-shrink-0"
+                >
+                  <video
+                    v-if="p.file.type.startsWith('video/')"
+                    :src="p.url"
+                    muted
+                    playsinline
+                    preload="metadata"
+                    class="h-full w-full rounded-lg object-cover bg-black"
+                  />
+                  <img v-else :src="p.url" class="h-full w-full rounded-lg object-cover" alt="" />
+                  <button
+                    type="button"
+                    @click="attachment.removeFile(i)"
+                    class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full shadow"
+                    style="background: #dc2626;"
+                    aria-label="Retirer"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <p v-if="attachment.error.value" class="mt-2 text-xs text-red-600">{{ attachment.error.value }}</p>
+
+              <div class="mt-2 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <input
+                    ref="fileInputRef"
+                    type="file"
+                    accept="image/*,video/*"
+                    multiple
+                    hidden
+                    @change="attachment.handleFileInput"
+                  />
+                  <button
+                    type="button"
+                    @click="triggerFilePicker"
+                    :disabled="attachment.files.value.length >= 10"
+                    class="soc-composer-icon flex h-9 w-9 items-center justify-center rounded-lg transition cursor-pointer disabled:opacity-40 disabled:cursor-default"
+                    title="Joindre un fichier"
+                    aria-label="Joindre un fichier"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                  </button>
+                  <button
+                    v-if="canCreatePolls"
+                    type="button"
+                    class="soc-composer-icon flex h-9 w-9 items-center justify-center rounded-lg transition cursor-pointer"
+                    title="Créer un sondage"
+                    @click="showPollModal = true"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="12" y1="20" x2="12" y2="10"/>
+                      <line x1="18" y1="20" x2="18" y2="4"/>
+                      <line x1="6" y1="20" x2="6" y2="16"/>
+                    </svg>
+                  </button>
+                </div>
                 <button
                   @click="submitPost"
-                  :disabled="!newPostContent.trim() || submittingPost"
+                  :disabled="(!newPostContent.trim() && !attachment.files.value.length) || submittingPost"
                   class="btn-publish rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#000] disabled:opacity-50 cursor-pointer"
                 >
                   Publier
@@ -54,8 +147,14 @@
           <div v-for="post in posts" :key="post.id" class="border-b-[6px] border-[var(--soc-page-bg,#f0f0f0)] px-4 py-4">
             <!-- Author info -->
             <div class="mb-3 flex items-center gap-2.5">
-              <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" :style="{ background: post.authorAvatarColor || '#1a1a1a' }">
-                {{ getInitials(post.authorName) }}
+              <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-xs font-bold text-white" :style="{ background: post.authorAvatarColor || '#1a1a1a' }">
+                <img
+                  v-if="avatarRegistry.getAvatar(post.authorMemberId, post.authorProfileImageUrl)"
+                  :src="avatarRegistry.getAvatar(post.authorMemberId, post.authorProfileImageUrl)!"
+                  :alt="post.authorName"
+                  class="h-full w-full object-cover"
+                />
+                <span v-else>{{ getInitials(post.authorName) }}</span>
               </div>
               <div class="flex-1">
                 <p class="text-sm font-semibold text-gray-900">{{ post.authorName }}</p>
@@ -76,11 +175,44 @@
             </div>
 
             <!-- Content -->
-            <p class="mb-3 whitespace-pre-wrap text-sm leading-relaxed text-gray-800">{{ post.content }}</p>
+            <p v-if="post.content" class="mb-3 whitespace-pre-wrap text-sm leading-relaxed text-gray-800">{{ post.content }}</p>
+
+            <!-- Poll -->
+            <PollCard
+              v-if="post.type === 'Poll' && post.poll"
+              :post-id="post.id"
+              :poll="post.poll"
+              @voted="refreshPostsFirst"
+            />
 
             <!-- Media -->
-            <div v-if="post.media && post.media.length" class="mb-3 grid gap-1" :class="post.media.length > 1 ? 'grid-cols-2' : ''">
-              <img v-for="media in post.media" :key="media.id" :src="media.thumbnailUrl || media.mediaUrl" class="w-full rounded-lg object-cover" />
+            <div v-if="post.media && post.media.length" class="mb-3 flex flex-wrap justify-center gap-1">
+              <template v-for="media in post.media" :key="media.id">
+                <div
+                  v-if="media.contentType && media.contentType.startsWith('video/')"
+                  class="relative w-[calc(25%-3px)] aspect-square rounded-lg overflow-hidden bg-black cursor-pointer"
+                  @click="openLightbox(media.mediaUrl, media.originalUrl, media.contentType)"
+                >
+                  <video
+                    :src="media.mediaUrl"
+                    muted
+                    playsinline
+                    preload="metadata"
+                    class="w-full h-full object-cover pointer-events-none"
+                  />
+                  <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-full bg-black/50 backdrop-blur-sm">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                  </div>
+                </div>
+                <img
+                  v-else
+                  :src="media.thumbnailUrl || media.mediaUrl"
+                  class="w-[calc(25%-3px)] aspect-square rounded-lg object-cover cursor-pointer"
+                  @click="openLightbox(media.mediaUrl, media.originalUrl, media.contentType)"
+                />
+              </template>
             </div>
 
             <!-- Actions -->
@@ -108,8 +240,14 @@
               </div>
               <div v-else>
                 <div v-for="comment in postComments" :key="comment.id" class="mb-3 flex gap-2">
-                  <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-[9px] font-bold text-white" :style="{ background: comment.authorAvatarColor || '#1a1a1a' }">
-                    {{ getInitials(comment.authorName) }}
+                  <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-[9px] font-bold text-white" :style="{ background: comment.authorAvatarColor || '#1a1a1a' }">
+                    <img
+                      v-if="avatarRegistry.getAvatar(comment.authorMemberId, comment.authorProfileImageUrl)"
+                      :src="avatarRegistry.getAvatar(comment.authorMemberId, comment.authorProfileImageUrl)!"
+                      :alt="comment.authorName"
+                      class="h-full w-full object-cover"
+                    />
+                    <span v-else>{{ getInitials(comment.authorName) }}</span>
                   </div>
                   <div class="flex-1">
                     <div class="rounded-lg bg-gray-50 px-3 py-2">
@@ -151,54 +289,132 @@
           </div>
         </div>
 
+        <!-- Load more spinner -->
+        <div v-if="loadingMorePosts" class="flex justify-center py-4">
+          <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
+        </div>
+
     </div>
 
     <!-- Delete confirmation modal -->
-    <Teleport to="body">
-      <div v-if="deleteTarget" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-5" @click.self="deleteTarget = null">
-        <div class="w-full max-w-[380px] rounded-2xl bg-white p-8 pt-7 text-center shadow-2xl">
-          <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-          </div>
-          <h3 class="mb-1 text-base font-bold text-gray-900">Supprimer cette publication?</h3>
-          <p class="mb-5 text-sm text-gray-500">Cette publication sera définitivement supprimée.</p>
-          <div class="flex gap-3">
-            <button @click="deleteTarget = null" class="flex-1 rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 cursor-pointer">Annuler</button>
-            <button @click="confirmDelete" :disabled="deleting" class="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-50 cursor-pointer">
-              {{ deleting ? 'Suppression...' : 'Supprimer' }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </Teleport>
+    <ConfirmModal
+      :open="!!deleteTarget"
+      title="Supprimer cette publication?"
+      message="Cette publication sera définitivement supprimée."
+      confirm-label="Supprimer"
+      :danger="true"
+      @confirm="confirmDelete"
+      @cancel="deleteTarget = null"
+    />
+
+    <CreatePollModal
+      :group-id="groupId"
+      :open="showPollModal"
+      @close="showPollModal = false"
+      @created="resetPosts"
+    />
+
+    <ConfirmModal
+      :open="confirmGroupImageRemove"
+      title="Retirer l'image du groupe?"
+      message="L'image sera remplacée par le logo par défaut."
+      confirm-label="Retirer"
+      :danger="true"
+      @confirm="handleGroupImageRemove"
+      @cancel="confirmGroupImageRemove = false"
+    />
+
+    <ConfirmModal
+      :open="showLeaveModal"
+      title="Quitter ce groupe?"
+      message="Vous ne pourrez plus voir les publications de ce groupe."
+      confirm-label="Quitter"
+      :danger="true"
+      @confirm="handleLeaveGroup"
+      @cancel="showLeaveModal = false"
+    />
+
+    <ImageLightbox
+      v-model:open="lightboxOpen"
+      :display-url="lightboxDisplayUrl"
+      :original-url="lightboxOriginalUrl"
+      :content-type="lightboxContentType"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useUserStore } from '@/stores/userStore'
 import { useMemberStore } from '@/stores/memberStore'
+import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
 import { useSocialToast } from '@/composables/useSocialToast'
 import { Role } from '@/types/enums'
 import type { Post } from '@/types/entities'
+import CreatePollModal from '@/components/social/CreatePollModal.vue'
+import PollCard from '@/components/social/PollCard.vue'
+import AvatarUploader from '@/components/social/AvatarUploader.vue'
+import ConfirmModal from '@/components/social/ConfirmModal.vue'
+import ImageLightbox from '@/components/social/ImageLightbox.vue'
+import { useImageAttachment } from '@/composables/useImageAttachment'
+import { useInfiniteScroll } from '@/composables/useInfiniteScroll'
 
 const route = useRoute()
+const router = useRouter()
 const socialService = useSocialService()
 const toast = useSocialToast()
 const userStore = useUserStore()
 const memberStore = useMemberStore()
+const avatarRegistry = useAvatarRegistryStore()
 
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
+const canCreatePolls = computed(() => userStore.hasOneOfTheseRoles([Role.Professor, Role.Admin]))
 const myMemberId = computed(() => memberStore.member?.id || '')
 const groupId = computed(() => route.params.id as string)
+const showPollModal = ref(false)
+const confirmGroupImageRemove = ref(false)
+const showLeaveModal = ref(false)
 
 const group = ref<any>(null)
-const posts = ref<Post[]>([])
-const loadingPosts = ref(true)
+const feedContainer = ref<HTMLElement | null>(null)
 const newPostContent = ref('')
 const submittingPost = ref(false)
+
+const attachment = useImageAttachment({ mode: 'multi', maxFiles: 10 })
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
+const {
+  items: posts,
+  loading: loadingPosts,
+  loadingMore: loadingMorePosts,
+  load: loadPosts,
+  refreshFirst: refreshPostsFirst,
+  reset: resetPosts,
+  attachScroll: attachFeedScroll,
+} = useInfiniteScroll<Post>({
+  fetchFn: (page) => socialService.getGroupFeed(groupId.value, page),
+  scrollContainer: feedContainer,
+  direction: 'down',
+  threshold: 300,
+})
+
+const lightboxOpen = ref(false)
+const lightboxDisplayUrl = ref('')
+const lightboxOriginalUrl = ref<string | undefined>(undefined)
+const lightboxContentType = ref<string | undefined>(undefined)
+
+function openLightbox(displayUrl: string, originalUrl?: string, contentType?: string) {
+  lightboxDisplayUrl.value = displayUrl
+  lightboxOriginalUrl.value = originalUrl
+  lightboxContentType.value = contentType
+  lightboxOpen.value = true
+}
+
+function triggerFilePicker() {
+  fileInputRef.value?.click()
+}
 
 // Delete state
 const deleteTarget = ref<Post | null>(null)
@@ -247,7 +463,7 @@ async function confirmDelete() {
     await socialService.deletePost(deleteTarget.value.id)
     deleteTarget.value = null
     toast.success('Publication supprimée.')
-    await loadPosts()
+    await resetPosts()
   } catch {
     toast.error('Erreur lors de la suppression.')
   }
@@ -257,25 +473,81 @@ async function confirmDelete() {
 async function loadGroup() {
   try {
     group.value = await socialService.getGroupDetails(groupId.value)
+    if (group.value?.name) {
+      document.title = `EDB Social - ${group.value.name}`
+    }
   } catch { /* */ }
 }
 
-async function loadPosts() {
-  loadingPosts.value = true
+async function handleGroupImageRemove() {
+  confirmGroupImageRemove.value = false
   try {
-    posts.value = await socialService.getGroupFeed(groupId.value)
-  } catch { /* */ }
-  loadingPosts.value = false
+    const result = await socialService.removeGroupImage(groupId.value)
+    if (result.succeeded) {
+      await loadGroup()
+      toast.success('Image du groupe retirée.')
+    } else {
+      toast.error("Impossible de retirer l'image.")
+    }
+  } catch {
+    toast.error('Erreur lors du retrait.')
+  }
+}
+
+async function handleLeaveGroup() {
+  showLeaveModal.value = false
+  try {
+    const result = await socialService.leaveGroup(groupId.value)
+    if (result.succeeded) {
+      toast.success('Vous avez quitté le groupe.')
+      await router.push({ name: 'socialPortal' })
+    } else {
+      toast.error(result.errors?.[0]?.errorMessage || 'Erreur.')
+    }
+  } catch {
+    toast.error('Erreur lors de la sortie du groupe.')
+  }
 }
 
 async function submitPost() {
-  if (!newPostContent.value.trim()) return
+  const text = newPostContent.value.trim()
+  const files = attachment.files.value
+  if (!text && files.length === 0) return
+
   submittingPost.value = true
   try {
-    await socialService.createPost(groupId.value, newPostContent.value)
+    let media: Array<{
+      displayUrl: string
+      thumbnailUrl: string
+      originalUrl: string
+      contentType: string
+      size: number
+    }> = []
+
+    if (files.length > 0) {
+      const uploads = await Promise.all(files.map(f => socialService.uploadFile(f)))
+      for (const u of uploads) {
+        if (!u.succeeded || !u.displayUrl || !u.thumbnailUrl || !u.originalUrl || !u.contentType || u.size == null) {
+          throw new Error('upload-failed')
+        }
+      }
+      media = uploads.map(u => ({
+        displayUrl: u.displayUrl!,
+        thumbnailUrl: u.thumbnailUrl!,
+        originalUrl: u.originalUrl!,
+        contentType: u.contentType!,
+        size: u.size!,
+      }))
+    }
+
+    const type = media.length > 0 ? 'Photo' : 'Text'
+    await socialService.createPost(groupId.value, text, type, media.length > 0 ? media : undefined)
     newPostContent.value = ''
-    await loadPosts()
-  } catch { /* */ }
+    attachment.clear()
+    await resetPosts()
+  } catch {
+    toast.error("Impossible de publier. Veuillez réessayer.")
+  }
   submittingPost.value = false
 }
 
@@ -296,7 +568,9 @@ async function toggleComments(post: Post) {
   expandedComments.value = post.id
   loadingComments.value = true
   try {
-    postComments.value = await socialService.getComments(post.id)
+    const result = await socialService.getComments(post.id)
+    postComments.value = result.items
+    avatarRegistry.populateFromList(postComments.value, 'authorMemberId', 'authorProfileImageUrl')
   } catch { postComments.value = [] }
   loadingComments.value = false
 }
@@ -307,7 +581,8 @@ async function submitComment(post: Post) {
   try {
     await socialService.addComment(post.id, newComment.value)
     newComment.value = ''
-    postComments.value = await socialService.getComments(post.id)
+    const result = await socialService.getComments(post.id)
+    postComments.value = result.items
     post.commentCount = (post.commentCount || 0) + 1
   } catch { /* */ }
   submittingComment.value = false
@@ -330,23 +605,29 @@ let pollInterval: ReturnType<typeof setInterval> | null = null
 onMounted(async () => {
   await loadGroup()
   await loadPosts()
+  avatarRegistry.populateFromList(posts.value as any[], 'authorMemberId', 'authorProfileImageUrl')
+  feedContainer.value = document.querySelector('.soc-main') as HTMLElement
+  nextTick(() => attachFeedScroll())
   pollInterval = setInterval(async () => {
     if (expandedComments.value || submittingComment.value) return
     try {
-      const fresh = await socialService.getGroupFeed(groupId.value)
-      const oldCounts = new Map(posts.value.map(p => [p.id, p.commentCount]))
-      for (const p of fresh) {
-        const old = oldCounts.get(p.id)
-        if (old != null && old > (p.commentCount || 0)) {
-          p.commentCount = old
-        }
-      }
-      posts.value = fresh
+      const freshPage1 = await refreshPostsFirst()
+      avatarRegistry.populateFromList(freshPage1 as any[], 'authorMemberId', 'authorProfileImageUrl')
     } catch { /* */ }
-  }, 5000)
+  }, 2000)
 })
 
 onUnmounted(() => {
   if (pollInterval) clearInterval(pollInterval)
 })
 </script>
+
+<style scoped>
+.soc-composer-icon {
+  color: var(--soc-text-muted);
+}
+.soc-composer-icon:hover {
+  background: var(--soc-bar-hover);
+  color: var(--soc-text);
+}
+</style>

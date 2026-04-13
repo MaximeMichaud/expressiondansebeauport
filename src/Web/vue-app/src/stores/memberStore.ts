@@ -21,6 +21,5 @@ export const useMemberStore = defineStore('member', {
   getters: {
     getMember: (state) => state.member,
     isLoggedIn: (state) => !!state.member.id,
-  },
-  persist: true
+  }
 })

@@ -1,5 +1,5 @@
 <template>
-  <div :class="['soc', isDarkMode && 'soc--dark']" data-social>
+  <div :class="['soc', isDarkMode && 'soc--dark', isMessagesRoute && 'soc--messages']" data-social>
     <!-- Theme toggle (fixed, top-right) -->
     <button @click="toggleTheme" class="soc-theme-toggle" :title="isDarkMode ? 'Mode clair' : 'Mode sombre'">
       <svg v-if="isDarkMode" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -7,7 +7,7 @@
     </button>
 
     <!-- Header -->
-    <header class="soc-header">
+    <header :class="['soc-header', isMenuOpen && 'soc-header--menu-open']">
       <div class="soc-header__strip">
         <div class="soc-header__left">
           <router-link :to="{ name: 'socialImportant' }" class="soc-header__brand">
@@ -65,7 +65,19 @@
       </div>
 
       <!-- Mobile nav -->
-      <nav v-if="isAuthenticated && isMenuOpen" class="soc-header__mobile-nav">
+      <div v-if="isAuthenticated" :class="['soc-header__mobile-wrap', isMenuOpen && 'is-open']">
+      <nav class="soc-header__mobile-nav">
+        <router-link
+          :to="{ name: 'socialAccount' }"
+          :class="['soc-header__mobile-item', isActive('socialAccount') && 'is-active']"
+          @click="isMenuOpen = false"
+        >
+          <span class="soc-header__pfp" :style="{ background: userAvatarColor }">
+            <img v-if="userPfp" :src="userPfp" alt="" class="soc-header__pfp-img" />
+            <span v-else class="soc-header__pfp-initials">{{ userInitials }}</span>
+          </span>
+          <span>{{ userName }}</span>
+        </router-link>
         <router-link
           v-for="tab in tabs"
           :key="tab.name"
@@ -76,7 +88,25 @@
           <component :is="tab.icon" class="soc-header__nav-icon" />
           <span>{{ tab.label }}</span>
         </router-link>
+        <button
+          class="soc-header__mobile-item"
+          @click="toggleTheme(); isMenuOpen = false"
+        >
+          <svg v-if="isDarkMode" class="soc-header__nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg v-else class="soc-header__nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          <span>{{ isDarkMode ? 'Mode clair' : 'Mode sombre' }}</span>
+        </button>
+        <button
+          class="soc-header__mobile-item soc-header__mobile-item--logout"
+          @click="isMenuOpen = false; handleLogout()"
+        >
+          <svg class="soc-header__nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          <span>Se déconnecter</span>
+        </button>
       </nav>
+      </div>
     </header>
 
     <!-- Content -->
@@ -140,7 +170,7 @@ import { useSignalR } from '@/composables/useSignalR'
 import { useSocialToast } from '@/composables/useSocialToast'
 import LogoEdb from '@/assets/icons/logo__edb.svg'
 
-const { toasts, dismiss: dismissToast } = useSocialToast()
+const { toasts, dismiss: dismissToast, success: toastSuccess, error: toastError } = useSocialToast()
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -153,16 +183,33 @@ const authService = useAuthenticationService()
 const isMenuOpen = ref(false)
 const isDarkMode = ref(localStorage.getItem('soc-theme') === 'dark')
 
+// Close hamburger menu when clicking anywhere outside the header
+function handleOutsideClick(e: MouseEvent) {
+  if (!isMenuOpen.value) return
+  const header = document.querySelector('.soc-header')
+  if (header && !header.contains(e.target as Node)) {
+    isMenuOpen.value = false
+  }
+}
+watch(isMenuOpen, (open) => {
+  if (open) {
+    // Defer so the opening click doesn't trigger immediate close
+    setTimeout(() => document.addEventListener('click', handleOutsideClick), 0)
+  } else {
+    document.removeEventListener('click', handleOutsideClick)
+  }
+})
+
 // Sync dark class on body so <Teleport to="body"> content (modals, toasts) inherits dark mode
 function syncBodyDark(dark: boolean) {
   document.body.classList.toggle('soc--dark', dark)
 }
 syncBodyDark(isDarkMode.value)
+watch(isDarkMode, syncBodyDark)
 
 function toggleTheme() {
   isDarkMode.value = !isDarkMode.value
   localStorage.setItem('soc-theme', isDarkMode.value ? 'dark' : 'light')
-  syncBodyDark(isDarkMode.value)
 }
 const unreadCount = computed(() => memberStore.unreadMessageCount)
 const userName = computed(() => {
@@ -208,8 +255,17 @@ watch(isAuthenticated, async (val) => {
       memberStore.setMember(profile)
     } catch { /* */ }
     try {
-      const count = await socialService.getUnreadCount()
-      memberStore.setUnreadCount(count)
+      const result = await socialService.getUnreadCount()
+      memberStore.setUnreadCount(result.count)
+      if (result.joinRequestNotifications && result.joinRequestNotifications.length > 0) {
+        for (const n of result.joinRequestNotifications) {
+          if (n.status === 'Accepted') {
+            toastSuccess(`Votre demande pour ${n.groupName} a été acceptée!`, 6000)
+          } else if (n.status === 'Rejected') {
+            toastError(`Votre demande pour ${n.groupName} a été refusée.`, 6000)
+          }
+        }
+      }
     } catch { /* */ }
     try {
       await startSignalR()
@@ -224,8 +280,17 @@ watch(isAuthenticated, (val) => {
   if (val) {
     unreadPoll = setInterval(async () => {
       try {
-        const count = await socialService.getUnreadCount()
-        memberStore.setUnreadCount(count)
+        const result = await socialService.getUnreadCount()
+        memberStore.setUnreadCount(result.count)
+        if (result.joinRequestNotifications && result.joinRequestNotifications.length > 0) {
+          for (const n of result.joinRequestNotifications) {
+            if (n.status === 'Accepted') {
+              toastSuccess(`Votre demande pour ${n.groupName} a été acceptée!`, 6000)
+            } else if (n.status === 'Rejected') {
+              toastError(`Votre demande pour ${n.groupName} a été refusée.`, 6000)
+            }
+          }
+        }
       } catch { /* */ }
     }, 3000)
   } else if (unreadPoll) {
@@ -235,10 +300,17 @@ watch(isAuthenticated, (val) => {
 }, { immediate: true })
 onUnmounted(() => {
   if (unreadPoll) clearInterval(unreadPoll)
-  document.body.classList.remove('soc--dark')
 })
 
 const isActive = (name: string) => router.currentRoute.value.name === name
+const isMessagesRoute = computed(() => {
+  const name = router.currentRoute.value.name
+  return name === 'socialMessages'
+    || name === 'socialConversation'
+    || name === 'socialAdminConversation'
+    || name === 'socialAnnouncement'
+    || name === 'socialGroup'
+})
 
 const mainSiteUrl = computed(() => '/')
 
@@ -387,7 +459,14 @@ $soc-font-body: 'Karla', sans-serif;
     border-radius: 0 0 14px 14px;
     color: var(--soc-bar-text);
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    transition: background 0.25s, color 0.25s;
+    transition: background 0.25s, color 0.25s, border-radius 0s 0.28s, box-shadow 0s 0.28s;
+
+    // When mobile nav is open, flatten bottom corners so menu flows as one bar
+    .soc-header--menu-open & {
+      border-radius: 0;
+      box-shadow: none;
+      transition: background 0.25s, color 0.25s, border-radius 0s 0s, box-shadow 0s 0s;
+    }
   }
 
   &__left {
@@ -574,7 +653,7 @@ $soc-font-body: 'Karla', sans-serif;
     display: block;
     width: 16px;
     height: 2px;
-    background: var(--soc-ham-color);
+    background: var(--soc-bar-text);
     border-radius: 2px;
     transition: transform 0.25s ease, opacity 0.25s ease, background 0.25s;
     &.is-open:nth-child(1) { transform: translateY(6px) rotate(45deg); }
@@ -582,21 +661,41 @@ $soc-font-body: 'Karla', sans-serif;
     &.is-open:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
   }
 
+  // Mobile nav wrapper — uses grid-rows trick to animate to auto height smoothly
+  &__mobile-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    background: var(--soc-bar-bg);
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transition: grid-template-rows 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+    &.is-open { grid-template-rows: 1fr; }
+  }
+
   // Mobile nav dropdown
   &__mobile-nav {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     gap: 2px;
-    max-width: 720px;
+    width: 100%;
+    max-width: 960px;
     margin: 0 auto;
+    padding: 0 20px;
+    min-height: 0;
+    overflow: hidden;
+    transition: padding 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+  }
+
+  &__mobile-wrap.is-open &__mobile-nav {
     padding: 8px 20px 12px;
-    background: var(--soc-bar-bg);
-    transition: background 0.25s;
   }
 
   &__mobile-item {
-    display: flex;
+    display: flex !important;
     align-items: center;
+    justify-content: flex-start !important;
     gap: 8px;
     padding: 10px 14px;
     font-family: $soc-font-display;
@@ -604,11 +703,39 @@ $soc-font-body: 'Karla', sans-serif;
     font-weight: 600;
     color: var(--soc-bar-text);
     text-decoration: none;
+    text-align: left !important;
     border-radius: 10px;
     cursor: pointer;
     transition: color 0.15s, background 0.15s;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border: none;
+    background: transparent;
+
+    // Keep icon + text tight-left, no flex-grow on children
+    > * { flex: 0 0 auto; margin: 0 !important; }
     &:hover { color: var(--soc-bar-text-strong); background: var(--soc-bar-hover); }
     &.is-active { color: var(--soc-bar-text-strong); background: var(--soc-bar-active); }
+    &--logout { color: #dc2626; &:hover { color: #dc2626; background: rgba(220, 38, 38, 0.08); } }
+  }
+}
+
+// Force full-width stretched items on mobile (high-specificity standalone rules)
+@media (max-width: 47.99em) {
+  .soc-header__mobile-wrap { width: 100%; }
+  .soc-header__mobile-nav {
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+  .soc-header__mobile-nav > .soc-header__mobile-item {
+    align-self: stretch !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    margin: 0 !important;
   }
 }
 
@@ -731,6 +858,38 @@ $soc-font-body: 'Karla', sans-serif;
     border-radius: 0;
   }
   .soc-footer__right { gap: 12px; }
+  .soc-theme-toggle { display: none; }
+  .soc-header__profile-btn { display: none; }
+  .soc-header .soc-header__icon-btn--logout { display: none; }
+
+  // On messages pages: lock to viewport so only the messages scroll, hide footer
+  .soc.soc--messages {
+    height: 100vh;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+  .soc.soc--messages .soc-main {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+  }
+  .soc-footer { display: none; }
+}
+
+// Desktop: on messages/announcements/groups routes, lock the layout so only
+// the main content scrolls internally. Footer stays visible.
+@media (min-width: 48em) {
+  .soc.soc--messages {
+    height: 100vh;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+  .soc.soc--messages .soc-main {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden;
+  }
 }
 
 // Toast system
@@ -841,7 +1000,8 @@ $soc-font-body: 'Karla', sans-serif;
   .soc-main { box-shadow: none; outline: none; border: none; }
 
   // Group banner
-  .group-banner { background: var(--soc-content-bg) !important; border-color: var(--soc-divider) !important; button { color: rgba(255,255,255,0.6) !important; } h1 { color: white !important; } }
+  .group-banner { background: var(--soc-content-bg) !important; border-color: var(--soc-divider) !important; button:not(.soc-header__icon-btn--logout) { color: rgba(255,255,255,0.6) !important; } .soc-header__icon-btn--logout:hover { color: #dc2626 !important; } h1 { color: white !important; } }
+  .group-header-avatar div { background: white !important; color: #1a1a1a !important; }
 
   // Group logo
   .group-logo.bg-\[\#1a1a1a\] { background-color: white !important; span { color: #1a1a1a !important; } }
@@ -933,6 +1093,67 @@ body.soc--dark {
   }
 
   // Portal modal icon needs light stroke in dark mode
-  .portal-modal__icon-ring svg { stroke: white; }
+  .portal-modal__icon-ring:not([style*="rgba(220"]) svg { stroke: white; }
+
+  // Delete/confirm modals — dark mode overrides for teleported content
+  .portal-modal__card,
+  .ann-modal__card,
+  .ann-d-modal__card,
+  .convo-modal__card,
+  .mp-modal__card {
+    background: #222120 !important;
+    color: #e7e5e4;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  }
+
+  .portal-modal__title,
+  .ann-modal__title,
+  .ann-d-modal__title,
+  .convo-modal__title,
+  .mp-modal__title {
+    color: #e7e5e4 !important;
+  }
+
+  .portal-modal__text,
+  .ann-modal__text,
+  .ann-d-modal__text,
+  .convo-modal__text,
+  .mp-modal__text {
+    color: #a8a29e !important;
+  }
+
+  .ann-modal__icon-ring,
+  .ann-d-modal__icon-ring,
+  .convo-modal__icon-ring,
+  .mp-modal__icon-ring {
+    background: rgba(220, 38, 38, 0.15) !important;
+  }
+
+  // portal-modal icon-ring: only override when used for destructive actions (has inline red bg)
+  // The join modal icon-ring keeps its neutral var(--soc-bar-hover) color
+  .portal-modal__icon-ring {
+    background: var(--soc-bar-hover) !important;
+  }
+  .portal-modal__icon-ring[style*="rgba(220"] {
+    background: rgba(220, 38, 38, 0.15) !important;
+  }
+
+  .portal-modal__btn--cancel,
+  .ann-modal__btn--cancel,
+  .ann-d-modal__btn--cancel,
+  .convo-modal__btn--cancel,
+  .mp-modal__btn--cancel {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #e7e5e4 !important;
+    &:hover { background: rgba(255, 255, 255, 0.14) !important; }
+  }
+
+  .portal-modal__input,
+  .ann-modal__input,
+  .mp-modal__input {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #e7e5e4 !important;
+  }
 }
 </style>

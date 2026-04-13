@@ -1,19 +1,30 @@
 <template>
-  <div class="p-4">
+  <div class="ann-page">
+    <div class="ann-page__body p-4">
     <!-- Back + Delete -->
     <div class="mb-4 flex items-center justify-between">
       <button @click="$router.push({ name: 'socialImportant' })" class="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 cursor-pointer">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
         Annonces
       </button>
-      <button
-        v-if="isAdmin"
-        @click="showDeleteModal = true"
-        class="soc-header__icon-btn soc-header__icon-btn--logout"
-        style="width: 30px; height: 30px;"
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-      </button>
+      <div v-if="isAdmin" class="flex items-center gap-2">
+        <button
+          @click="startEditing"
+          class="soc-header__icon-btn"
+          style="width: 30px; height: 30px;"
+          title="Modifier"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button
+          @click="showDeleteModal = true"
+          class="soc-header__icon-btn soc-header__icon-btn--logout"
+          style="width: 30px; height: 30px;"
+          title="Supprimer"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+        </button>
+      </div>
     </div>
 
     <!-- Loading -->
@@ -22,20 +33,126 @@
     </div>
 
     <template v-else-if="post">
-      <!-- Content -->
-      <div class="mb-4">
-        <h1 class="text-xl font-bold text-gray-900" style="font-family: 'Montserrat', sans-serif;">{{ getTitle(post.content) }}</h1>
-        <div class="mt-2 flex items-center gap-3 text-xs text-gray-400">
-          <span>{{ post.authorName }}</span>
-          <span>{{ formatDate(post.created) }}</span>
+      <!-- Edit mode -->
+      <div v-if="editing" class="mb-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
+        <div class="space-y-3">
+          <input
+            v-model="editTitle"
+            type="text"
+            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
+            placeholder="Titre de l'annonce"
+          />
+          <textarea
+            v-model="editDescription"
+            rows="4"
+            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
+            placeholder="Description (optionnel)"
+          ></textarea>
+
+          <!-- Existing image -->
+          <div v-if="!editRemoveImage && editExistingMedia" class="flex flex-wrap gap-2">
+            <div class="relative h-20 w-20">
+              <img :src="editExistingMedia.thumbnailUrl || editExistingMedia.mediaUrl" class="h-full w-full rounded-lg object-cover" alt="" />
+              <button
+                type="button"
+                @click="editRemoveImage = true"
+                class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full shadow"
+                style="background: #dc2626;"
+                aria-label="Retirer"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- New image preview -->
+          <div v-if="editAttachment.previews.value.length" class="flex flex-wrap gap-2">
+            <div
+              v-for="(p, i) in editAttachment.previews.value"
+              :key="i"
+              class="relative h-20 w-20"
+            >
+              <img :src="p.url" class="h-full w-full rounded-lg object-cover" alt="" />
+              <button
+                type="button"
+                @click="editAttachment.removeFile(i)"
+                class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full shadow"
+                style="background: #dc2626;"
+                aria-label="Retirer"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <p v-if="editAttachment.error.value" class="text-xs text-red-600">{{ editAttachment.error.value }}</p>
         </div>
-        <p v-if="getDescription(post.content)" class="mt-4 text-sm leading-relaxed text-gray-700 whitespace-pre-wrap">{{ getDescription(post.content) }}</p>
+        <div class="mt-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <input
+              ref="editFileInputRef"
+              type="file"
+              accept="image/*"
+              hidden
+              @change="editAttachment.handleFileInput"
+            />
+            <button
+              type="button"
+              @click="editFileInputRef?.click()"
+              :disabled="(!editRemoveImage && !!editExistingMedia) || editAttachment.files.value.length >= 1"
+              class="soc-composer-icon flex h-9 w-9 items-center justify-center rounded-lg transition cursor-pointer disabled:opacity-40 disabled:cursor-default"
+              title="Joindre une image"
+              aria-label="Joindre une image"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              @click="cancelEditing"
+              class="soc-btn-cancel rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition cursor-pointer"
+            >
+              Annuler
+            </button>
+            <button
+              @click="saveEditing"
+              :disabled="!editTitle.trim() || saving"
+              class="btn-publish rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#000] disabled:opacity-50 cursor-pointer"
+            >
+              {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+            </button>
+          </div>
+        </div>
       </div>
 
-      <!-- Media -->
-      <div v-if="post.media && post.media.length" class="mb-4 grid gap-2" :class="post.media.length > 1 ? 'grid-cols-2' : ''">
-        <img v-for="media in post.media" :key="media.id" :src="media.thumbnailUrl || media.mediaUrl" class="w-full rounded-lg object-cover" />
-      </div>
+      <!-- View mode -->
+      <template v-else>
+        <!-- Content -->
+        <div class="mb-4">
+          <h1 class="text-xl font-bold text-gray-900" style="font-family: 'Montserrat', sans-serif;">{{ getTitle(post.content) }}</h1>
+          <div class="mt-2 flex items-center gap-3 text-xs text-gray-400">
+            <span>{{ post.authorName }}</span>
+            <span>{{ formatDate(post.created) }}</span>
+          </div>
+
+          <!-- Media -->
+          <div v-if="post.media && post.media.length" class="mt-4 flex justify-center">
+            <img
+              v-for="media in post.media"
+              :key="media.id"
+              :src="media.mediaUrl"
+              class="max-h-80 w-auto rounded-lg object-contain cursor-pointer"
+              @click="openLightbox(media.mediaUrl, media.originalUrl, media.contentType)"
+            />
+          </div>
+
+          <p v-if="getDescription(post.content)" class="mt-4 text-sm leading-relaxed text-gray-700 whitespace-pre-wrap">{{ getDescription(post.content) }}</p>
+        </div>
+      </template>
 
       <!-- Actions -->
       <div class="mt-3 flex border-t border-gray-100 py-2">
@@ -64,8 +181,14 @@
         </div>
         <div v-else>
           <div v-for="comment in comments" :key="comment.id" class="mb-3 flex gap-2">
-            <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white" :style="{ background: comment.authorAvatarColor || '#1a1a1a' }">
-              {{ getInitials(comment.authorName) }}
+            <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-[10px] font-bold text-white" :style="{ background: comment.authorAvatarColor || '#1a1a1a' }">
+              <img
+                v-if="avatarRegistry.getAvatar(comment.authorMemberId, comment.authorProfileImageUrl)"
+                :src="avatarRegistry.getAvatar(comment.authorMemberId, comment.authorProfileImageUrl)!"
+                :alt="comment.authorName"
+                class="h-full w-full object-cover"
+              />
+              <span v-else>{{ getInitials(comment.authorName) }}</span>
             </div>
             <div class="flex-1">
               <div class="rounded-lg bg-gray-50 px-3 py-2">
@@ -86,27 +209,28 @@
           </div>
           <p v-if="comments.length === 0" class="py-4 text-center text-xs text-gray-400">Aucun commentaire</p>
         </div>
-
-        <!-- Add comment -->
-        <div class="mt-3 flex gap-2">
-          <input
-            ref="commentInputEl"
-            v-model="newComment"
-            type="text"
-            class="flex-1 rounded-full border border-gray-200 px-4 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
-            placeholder="Écrire un commentaire..."
-            @keyup.enter="submitComment"
-          />
-          <button
-            @click="submitComment"
-            :disabled="!newComment.trim() || submitting"
-            class="btn-publish flex items-center justify-center rounded-full bg-[#1a1a1a] w-9 h-9 text-white disabled:opacity-50 cursor-pointer flex-shrink-0"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-          </button>
-        </div>
       </div>
     </template>
+    </div>
+
+    <!-- Add comment (stuck to bottom on mobile) -->
+    <div v-if="post && !editing" class="ann-page__composer">
+      <input
+        ref="commentInputEl"
+        v-model="newComment"
+        type="text"
+        class="flex-1 rounded-full border border-gray-200 px-4 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
+        placeholder="Écrire un commentaire..."
+        @keyup.enter="submitComment"
+      />
+      <button
+        @click="submitComment"
+        :disabled="!newComment.trim() || submitting"
+        class="btn-publish flex items-center justify-center rounded-full bg-[#1a1a1a] w-9 h-9 text-white disabled:opacity-50 cursor-pointer flex-shrink-0"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </div>
 
     <!-- Delete modal -->
     <Teleport to="body">
@@ -130,6 +254,13 @@
         </div>
       </Transition>
     </Teleport>
+
+    <ImageLightbox
+      v-model:open="lightboxOpen"
+      :display-url="lightboxDisplayUrl"
+      :original-url="lightboxOriginalUrl"
+      :content-type="lightboxContentType"
+    />
   </div>
 </template>
 
@@ -140,6 +271,9 @@ import { useSocialService } from '@/inversify.config'
 import { useSocialToast } from '@/composables/useSocialToast'
 import { useUserStore } from '@/stores/userStore'
 import { useMemberStore } from '@/stores/memberStore'
+import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
+import { useImageAttachment } from '@/composables/useImageAttachment'
+import ImageLightbox from '@/components/social/ImageLightbox.vue'
 import { Role } from '@/types/enums'
 import type { Post } from '@/types/entities'
 
@@ -149,6 +283,7 @@ const socialService = useSocialService()
 const toast = useSocialToast()
 const userStore = useUserStore()
 const memberStore = useMemberStore()
+const avatarRegistry = useAvatarRegistryStore()
 
 const postId = computed(() => route.params.id as string)
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
@@ -163,6 +298,88 @@ const submitting = ref(false)
 const showDeleteModal = ref(false)
 const deleting = ref(false)
 const commentInputEl = ref<HTMLInputElement | null>(null)
+
+// Lightbox
+const lightboxOpen = ref(false)
+const lightboxDisplayUrl = ref('')
+const lightboxOriginalUrl = ref<string | undefined>(undefined)
+const lightboxContentType = ref<string | undefined>(undefined)
+
+function openLightbox(displayUrl: string, originalUrl?: string, contentType?: string) {
+  lightboxDisplayUrl.value = displayUrl
+  lightboxOriginalUrl.value = originalUrl
+  lightboxContentType.value = contentType
+  lightboxOpen.value = true
+}
+
+// Edit state
+const editing = ref(false)
+const editTitle = ref('')
+const editDescription = ref('')
+const editRemoveImage = ref(false)
+const editExistingMedia = ref<{ mediaUrl: string; thumbnailUrl?: string; displayUrl?: string; originalUrl?: string; contentType?: string; size?: number } | null>(null)
+const editAttachment = useImageAttachment({ mode: 'single', maxFiles: 1, allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] })
+const editFileInputRef = ref<HTMLInputElement | null>(null)
+const saving = ref(false)
+
+function startEditing() {
+  if (!post.value) return
+  editTitle.value = getTitle(post.value.content)
+  editDescription.value = getDescription(post.value.content)
+  editRemoveImage.value = false
+  editAttachment.clear()
+  editExistingMedia.value = post.value.media?.length ? post.value.media[0] : null
+  editing.value = true
+}
+
+function cancelEditing() {
+  editing.value = false
+  editAttachment.clear()
+}
+
+async function saveEditing() {
+  if (!post.value || !editTitle.value.trim()) return
+  saving.value = true
+
+  const content = editDescription.value.trim()
+    ? editTitle.value.trim() + '\n' + editDescription.value.trim()
+    : editTitle.value.trim()
+
+  try {
+    let media: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }> | undefined
+
+    if (editAttachment.files.value.length > 0) {
+      const uploaded = await socialService.uploadFile(editAttachment.files.value[0])
+      if (!uploaded.succeeded || !uploaded.displayUrl || !uploaded.thumbnailUrl || !uploaded.originalUrl || !uploaded.contentType || uploaded.size == null) {
+        toast.error("Échec du téléversement de l'image.")
+        saving.value = false
+        return
+      }
+      media = [{ displayUrl: uploaded.displayUrl, thumbnailUrl: uploaded.thumbnailUrl, originalUrl: uploaded.originalUrl, contentType: uploaded.contentType, size: uploaded.size }]
+    } else if (!editRemoveImage.value && editExistingMedia.value) {
+      media = [{
+        displayUrl: editExistingMedia.value.displayUrl || editExistingMedia.value.mediaUrl,
+        thumbnailUrl: editExistingMedia.value.thumbnailUrl || editExistingMedia.value.mediaUrl,
+        originalUrl: editExistingMedia.value.originalUrl || editExistingMedia.value.mediaUrl,
+        contentType: editExistingMedia.value.contentType || 'image/jpeg',
+        size: editExistingMedia.value.size || 0
+      }]
+    }
+
+    const result = await socialService.updateAnnouncement(post.value.id, content, media)
+    if (result.succeeded) {
+      toast.success('Annonce modifiée!')
+      editing.value = false
+      editAttachment.clear()
+      post.value = await socialService.getPost(postId.value)
+    } else {
+      toast.error('Erreur lors de la modification.')
+    }
+  } catch {
+    toast.error('Erreur lors de la modification.')
+  }
+  saving.value = false
+}
 
 function focusCommentInput() {
   nextTick(() => commentInputEl.value?.focus())
@@ -199,7 +416,9 @@ async function toggleLike() {
 async function loadComments() {
   loadingComments.value = true
   try {
-    comments.value = await socialService.getComments(postId.value)
+    const result = await socialService.getComments(postId.value)
+    comments.value = result.items
+    avatarRegistry.populateFromList(comments.value, 'authorMemberId', 'authorProfileImageUrl')
   } catch { comments.value = [] }
   loadingComments.value = false
 }
@@ -247,6 +466,7 @@ let likeDebounce = 0
 onMounted(async () => {
   try {
     post.value = await socialService.getPost(postId.value)
+    if (post.value) avatarRegistry.populateOne(post.value as any, 'authorMemberId', 'authorProfileImageUrl')
   } catch { /* */ }
   loading.value = false
   await loadComments()
@@ -260,7 +480,10 @@ onMounted(async () => {
         data.hasLiked = post.value.hasLiked
       }
       post.value = data
-      comments.value = await socialService.getComments(postId.value)
+      avatarRegistry.populateOne(data as any, 'authorMemberId', 'authorProfileImageUrl')
+      const commentsResult = await socialService.getComments(postId.value)
+      comments.value = commentsResult.items
+      avatarRegistry.populateFromList(comments.value, 'authorMemberId', 'authorProfileImageUrl')
     } catch { /* */ }
   }, 30000)
 })
@@ -272,6 +495,26 @@ onUnmounted(() => {
 
 <style lang="scss">
 $ann-d-font: 'Montserrat', sans-serif;
+
+.ann-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.ann-page__body {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+}
+.ann-page__composer {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--soc-divider, #f0f0f0);
+  background: var(--soc-content-bg, white);
+  flex-shrink: 0;
+}
 
 .ann-d-modal {
   &__overlay {
@@ -346,4 +589,20 @@ $ann-d-font: 'Montserrat', sans-serif;
 .ann-d-modal-leave-active { transition: all 0.15s ease; }
 .ann-d-modal-enter-from { opacity: 0; }
 .ann-d-modal-leave-to { opacity: 0; }
+
+.soc-composer-icon {
+  color: var(--soc-text-muted);
+}
+.soc-composer-icon:hover {
+  background: var(--soc-bar-hover);
+  color: var(--soc-text);
+}
+.soc-btn-cancel {
+  background: var(--soc-bar-hover, #f5f3f0);
+  color: var(--soc-bar-text-strong, #1a1a1a);
+  border-color: var(--soc-divider, #e7e0da);
+}
+.soc-btn-cancel:hover {
+  background: var(--soc-bar-active, #eae8e4);
+}
 </style>

@@ -9,4 +9,5 @@ public interface IMessageRepository
     Task<List<Message>> GetByConversation(Guid conversationId, int skip, int take);
     Task MarkAsRead(Guid conversationId, Guid memberId);
     Task SaveChanges();
+    Task<Message?> FindByJoinRequestId(Guid joinRequestId);
 }

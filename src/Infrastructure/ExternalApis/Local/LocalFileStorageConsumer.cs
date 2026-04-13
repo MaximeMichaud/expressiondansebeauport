@@ -45,4 +45,36 @@ public class LocalFileStorageConsumer : IFileStorageApiConsumer
 
         return Task.CompletedTask;
     }
+
+    public async Task<string> UploadStreamAsync(Stream content, string fileName, string contentType, string? subDirectory = null)
+    {
+        fileName = Path.GetFileName(fileName);
+        if (string.IsNullOrEmpty(fileName))
+            throw new ArgumentException("fileName cannot be empty after sanitization.", nameof(fileName));
+
+        if (!string.IsNullOrWhiteSpace(subDirectory) && (subDirectory.Contains("..") || subDirectory.Contains('/') || subDirectory.Contains('\\')))
+            throw new ArgumentException("subDirectory cannot contain path separators or '..'", nameof(subDirectory));
+
+        var folder = string.IsNullOrWhiteSpace(subDirectory)
+            ? UploadFolder
+            : Path.Combine(UploadFolder, subDirectory);
+
+        var folderAbs = Path.Combine(_webRootPath, folder);
+        if (!Directory.Exists(folderAbs))
+            Directory.CreateDirectory(folderAbs);
+
+        var uniqueFileName = $"{DateTime.Now.Ticks}-{fileName}";
+        var filePath = Path.Combine(folderAbs, uniqueFileName);
+
+        if (content.CanSeek) content.Position = 0;
+
+        await using var stream = new FileStream(filePath, FileMode.Create);
+        await content.CopyToAsync(stream);
+
+        var urlPath = string.IsNullOrWhiteSpace(subDirectory)
+            ? $"/{UploadFolder}/{uniqueFileName}"
+            : $"/{UploadFolder}/{subDirectory.Replace('\\', '/')}/{uniqueFileName}";
+
+        return urlPath;
+    }
 }

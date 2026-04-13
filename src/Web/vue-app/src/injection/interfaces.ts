@@ -7,7 +7,7 @@ import {
   ITwoFactorRequest
 } from "@/types/requests"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
-import {Administrator, BackupRecord, FooterPartner, MediaFile, NavigationMenu, NavigationMenuItem, Page, SiteHealth, SiteSettings, SocialLink, User, Group, GroupMember, Post, Comment, Conversation, Message} from "@/types/entities"
+import {Administrator, BackupRecord, ErrorLog, FooterPartner, MediaFile, NavigationMenu, NavigationMenuItem, Page, PageRevision, PageRevisionListItem, SiteHealth, SiteSettings, SocialLink, User, Group, GroupMember, Post, Comment, Conversation, Message} from "@/types/entities"
 export interface IApiService {
   headersWithJsonContentType(): any
 
@@ -37,7 +37,7 @@ export interface IAuthenticationService {
 }
 
 export interface IUserService {
-  getCurrentUser(): Promise<User>
+  getCurrentUser(): Promise<User | null>
 }
 
 export interface IMediaService {
@@ -64,6 +64,16 @@ export interface IPageService {
   delete(id: string): Promise<SucceededOrNotResponse>
 
   duplicate(id: string): Promise<Page | null>
+
+  getRevisions(pageId: string): Promise<PageRevisionListItem[]>
+
+  getRevision(pageId: string, revisionId: string): Promise<PageRevision>
+
+  restoreRevision(pageId: string, revisionId: string): Promise<Page | null>
+
+  autosave(pageId: string, data: Partial<Page>): Promise<{ savedAt: string } | null>
+
+  createPreview(pageId: string): Promise<{ token: string; previewUrl: string } | null>
 }
 
 export interface IMenuService {
@@ -122,38 +132,79 @@ export interface ISocialService {
   resendCode(email: string): Promise<SucceededOrNotResponse>
   getMyGroups(): Promise<Group[]>
   getActiveGroups(): Promise<Group[]>
-  createGroup(name: string, description: string, season: string, inviteCode: string): Promise<SucceededOrNotResponse>
+  createGroup(name: string, description: string, season: string, inviteCode: string, imageUrl?: string): Promise<SucceededOrNotResponse>
+  updateGroup(id: string, name: string, description: string, season: string, imageUrl?: string): Promise<SucceededOrNotResponse>
+  deleteGroup(id: string): Promise<SucceededOrNotResponse>
   getGroupDetails(id: string): Promise<any>
   getGroupMembers(groupId: string, page?: number): Promise<GroupMember[]>
   joinGroup(inviteCode: string): Promise<SucceededOrNotResponse>
-  getGroupFeed(groupId: string, page?: number): Promise<Post[]>
+  leaveGroup(groupId: string): Promise<SucceededOrNotResponse>
+  getGroupFeed(groupId: string, page?: number): Promise<{ items: Post[]; hasMore: boolean }>
   getPost(id: string): Promise<Post>
-  createPost(groupId: string, content: string, type?: string): Promise<SucceededOrNotResponse>
+  createPost(
+    groupId: string,
+    content: string,
+    type?: 'Text' | 'Photo' | 'Poll' | 'File',
+    media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>
+  ): Promise<SucceededOrNotResponse>
   deletePost(id: string): Promise<SucceededOrNotResponse>
   toggleLike(postId: string): Promise<SucceededOrNotResponse>
   recordView(postId: string): Promise<void>
   pinPost(postId: string, groupId: string): Promise<SucceededOrNotResponse>
-  getComments(postId: string, page?: number): Promise<Comment[]>
+  getComments(postId: string, page?: number): Promise<{ items: Comment[]; hasMore: boolean }>
   addComment(postId: string, content: string): Promise<SucceededOrNotResponse>
   deleteComment(id: string): Promise<SucceededOrNotResponse>
   votePoll(postId: string, pollOptionId: string): Promise<SucceededOrNotResponse>
-  getAnnouncements(page?: number): Promise<Post[]>
-  createAnnouncement(content: string): Promise<SucceededOrNotResponse>
-  getConversations(page?: number): Promise<Conversation[]>
-  getMessages(conversationId: string, page?: number): Promise<Message[]>
-  sendMessage(conversationId: string, content: string): Promise<SucceededOrNotResponse>
+  createPoll(groupId: string, question: string, options: string[], allowMultipleAnswers: boolean): Promise<SucceededOrNotResponse>
+  setMyProfileImage(imageUrl: string): Promise<SucceededOrNotResponse>
+  removeMyProfileImage(): Promise<SucceededOrNotResponse>
+  setGroupImage(groupId: string, imageUrl: string): Promise<SucceededOrNotResponse>
+  removeGroupImage(groupId: string): Promise<SucceededOrNotResponse>
+  getAnnouncements(page?: number): Promise<{ items: Post[]; hasMore: boolean }>
+  createAnnouncement(content: string, media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>): Promise<SucceededOrNotResponse>
+  updateAnnouncement(id: string, content: string, media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>): Promise<SucceededOrNotResponse>
+  getConversations(page?: number): Promise<{ items: Conversation[]; hasMore: boolean }>
+  getAdminConversations(memberId: string, page?: number): Promise<{ items: any[]; hasMore: boolean }>
+  getMessages(conversationId: string, page?: number): Promise<{ items: Message[]; hasMore: boolean }>
+  getAdminMessages(conversationId: string, page?: number): Promise<{ items: any[]; hasMore: boolean }>
+  sendMessage(
+    conversationId: string,
+    content: string,
+    media?: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }>
+  ): Promise<SucceededOrNotResponse>
   deleteMessage(messageId: string): Promise<SucceededOrNotResponse>
   startConversation(otherMemberId: string): Promise<any>
   markAsRead(conversationId: string): Promise<void>
-  getUnreadCount(): Promise<number>
+  getUnreadCount(): Promise<{ count: number, joinRequestNotifications?: Array<{ id: string, groupName: string, status: string }> }>
   searchMembers(query: string): Promise<any[]>
   getMemberProfile(id: string): Promise<any>
   getMyProfile(): Promise<any>
   updateMyProfile(firstName: string, lastName: string, email: string): Promise<SucceededOrNotResponse>
+  deleteMyAccount(): Promise<SucceededOrNotResponse>
   deleteMember(id: string): Promise<SucceededOrNotResponse>
   promoteMember(id: string): Promise<SucceededOrNotResponse>
   demoteMember(id: string): Promise<SucceededOrNotResponse>
-  uploadFile(file: File): Promise<{ succeeded: boolean; url: string; fileName: string; contentType: string; size: number }>
+  requestJoinGroup(groupId: string): Promise<any>
+  acceptJoinRequest(joinRequestId: string): Promise<SucceededOrNotResponse>
+  rejectJoinRequest(joinRequestId: string): Promise<SucceededOrNotResponse>
+  getMyJoinRequest(groupId: string): Promise<any>
+  uploadFile(file: File): Promise<{
+    succeeded: boolean
+    displayUrl?: string
+    thumbnailUrl?: string
+    originalUrl?: string
+    width?: number
+    height?: number
+    url?: string
+    fileName?: string
+    contentType?: string
+    size?: number
+    errors?: Array<{ errorType: string; errorMessage: string }>
+  }>
+}
+
+export interface IErrorLogsService {
+  getAll(): Promise<ErrorLog[]>
 }
 
 export interface IBackupService {
