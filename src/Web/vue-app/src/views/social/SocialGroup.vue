@@ -371,11 +371,9 @@ const avatarRegistry = useAvatarRegistryStore()
 
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
 const canCreatePolls = computed(() => userStore.hasOneOfTheseRoles([Role.Professor, Role.Admin]))
-const canEditGroupImage = computed(() => userStore.hasOneOfTheseRoles([Role.Professor, Role.Admin]))
 const myMemberId = computed(() => memberStore.member?.id || '')
 const groupId = computed(() => route.params.id as string)
 const showPollModal = ref(false)
-const uploadingGroupImage = ref(false)
 const confirmGroupImageRemove = ref(false)
 const showLeaveModal = ref(false)
 
@@ -479,29 +477,6 @@ async function loadGroup() {
       document.title = `EDB Social - ${group.value.name}`
     }
   } catch { /* */ }
-}
-
-async function handleGroupImageUpload(file: File) {
-  if (uploadingGroupImage.value) return
-  uploadingGroupImage.value = true
-  try {
-    const uploaded = await socialService.uploadFile(file)
-    if (!uploaded.succeeded || !uploaded.displayUrl) {
-      toast.error("Échec du téléversement de l'image.")
-      return
-    }
-    const result = await socialService.setGroupImage(groupId.value, uploaded.displayUrl)
-    if (result.succeeded) {
-      await loadGroup()
-      toast.success('Image du groupe mise à jour.')
-    } else {
-      toast.error("Impossible d'enregistrer l'image.")
-    }
-  } catch {
-    toast.error('Erreur lors du téléversement.')
-  } finally {
-    uploadingGroupImage.value = false
-  }
 }
 
 async function handleGroupImageRemove() {
