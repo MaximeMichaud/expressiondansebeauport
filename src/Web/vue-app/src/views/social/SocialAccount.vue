@@ -40,19 +40,21 @@
           />
           <button
             type="button"
-            class="soc-account__avatar-btn"
+            class="soc-account__avatar-btn inline-flex items-center justify-center gap-2"
             :disabled="uploadingAvatar"
             @click="avatarInputRef?.click()"
           >
-            {{ uploadingAvatar ? 'Envoi...' : (memberStore.member?.profileImageUrl ? 'Changer la photo' : 'Ajouter une photo') }}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <span>{{ uploadingAvatar ? 'Envoi...' : (memberStore.member?.profileImageUrl ? 'Changer la photo' : 'Ajouter une photo') }}</span>
           </button>
           <button
             v-if="memberStore.member?.profileImageUrl && !uploadingAvatar"
             type="button"
-            class="soc-account__avatar-btn soc-account__avatar-btn--danger"
+            class="soc-account__avatar-btn soc-account__avatar-btn--danger inline-flex items-center justify-center gap-2"
             @click="confirmAvatarRemove = true"
           >
-            Supprimer la photo
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+            <span>Supprimer la photo</span>
           </button>
         </div>
       </div>
