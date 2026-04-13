@@ -301,10 +301,14 @@ $soc-black: #1a1a1a;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    width: 32px;
+    height: 32px;
     padding: 0;
-    color: #78716c;
-    transition: color 0.15s;
-    &:hover { color: $soc-black; }
+    border-radius: 8px;
+    color: var(--soc-text-muted, #78716c);
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    &:hover { color: var(--soc-bar-text-strong, #1a1a1a); background: var(--soc-bar-hover, #f5f3f0); }
   }
 
   &__title {
