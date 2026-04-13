@@ -1,5 +1,5 @@
 <template>
-  <div :class="['soc', isDarkMode && 'soc--dark']" data-social>
+  <div :class="['soc', isDarkMode && 'soc--dark', isMessagesRoute && 'soc--messages']" data-social>
     <!-- Theme toggle (fixed, top-right) -->
     <button @click="toggleTheme" class="soc-theme-toggle" :title="isDarkMode ? 'Mode clair' : 'Mode sombre'">
       <svg v-if="isDarkMode" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -124,7 +124,7 @@
     </main>
 
     <!-- Footer -->
-    <footer v-if="isAuthenticated" class="soc-footer">
+    <footer v-if="isAuthenticated && !isMessagesRoute" class="soc-footer">
       <div class="soc-footer__strip">
         <div class="soc-footer__left">
           <span class="soc-footer__brand">EDB Social</span>
@@ -284,6 +284,10 @@ onUnmounted(() => {
 })
 
 const isActive = (name: string) => router.currentRoute.value.name === name
+const isMessagesRoute = computed(() => {
+  const name = router.currentRoute.value.name
+  return name === 'socialMessages' || name === 'socialConversation' || name === 'socialAdminConversation'
+})
 
 const mainSiteUrl = computed(() => '/')
 
@@ -788,6 +792,21 @@ $soc-font-body: 'Karla', sans-serif;
   .soc-theme-toggle { display: none; }
   .soc-header__profile-btn { display: none; }
   .soc-header__icon-btn--logout { display: none; }
+
+  // On messages pages: lock to viewport so only the messages scroll
+  .soc.soc--messages {
+    height: 100vh;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+  .soc.soc--messages .soc-main {
+    flex: 1 1 0;
+    min-height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-radius: 0;
+    overflow: hidden;
+  }
 }
 
 // Toast system
