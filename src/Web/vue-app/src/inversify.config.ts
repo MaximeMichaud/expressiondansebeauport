@@ -1,7 +1,6 @@
 import axios from 'axios'
 
 import {
-  ApiService,
   AuthenticationService,
   ErrorLogsService,
   ImportExportService,
@@ -18,7 +17,6 @@ import {BackupService} from "@/services/backupService"
 
 const axiosInstance = axios.create()
 
-const apiService = new ApiService(axiosInstance)
 const administratorService = new AdministratorService(axiosInstance)
 const authenticationService = new AuthenticationService(axiosInstance)
 const userService = new UserService(axiosInstance)
