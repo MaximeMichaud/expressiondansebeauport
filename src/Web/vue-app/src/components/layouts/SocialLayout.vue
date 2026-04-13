@@ -673,9 +673,9 @@ $soc-font-body: 'Karla', sans-serif;
   }
 
   &__mobile-item {
-    display: flex;
+    display: flex !important;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: flex-start !important;
     gap: 8px;
     padding: 10px 14px;
     font-family: $soc-font-display;
@@ -683,13 +683,16 @@ $soc-font-body: 'Karla', sans-serif;
     font-weight: 600;
     color: var(--soc-bar-text);
     text-decoration: none;
-    text-align: left;
+    text-align: left !important;
     border-radius: 10px;
     cursor: pointer;
     transition: color 0.15s, background 0.15s;
     width: 100%;
     border: none;
     background: transparent;
+
+    // Keep icon + text tight-left, no flex-grow on children
+    > * { flex: 0 0 auto; }
     &:hover { color: var(--soc-bar-text-strong); background: var(--soc-bar-hover); }
     &.is-active { color: var(--soc-bar-text-strong); background: var(--soc-bar-active); }
     &--logout { color: #dc2626; &:hover { color: #dc2626; background: rgba(220, 38, 38, 0.08); } }
