@@ -393,19 +393,32 @@ $soc-black: #1a1a1a;
     font-size: 0.8rem;
     font-weight: 600;
     border-radius: 8px;
-    color: var(--soc-text);
-    background: var(--soc-bar-hover, #f5f3f0);
-    border: 1px solid var(--soc-divider, #e7e0da);
+    color: white;
+    background: #1a1a1a;
+    border: 1px solid #1a1a1a;
     cursor: pointer;
-    transition: background 0.15s, color 0.15s, border-color 0.15s;
-    &:hover:not(:disabled) { background: var(--soc-bar-active, #eae8e4); }
+    transition: opacity 0.15s;
+    &:hover:not(:disabled) { opacity: 0.85; }
     &:disabled { opacity: 0.5; cursor: default; }
+
+    .soc--dark & {
+      color: #1a1a1a;
+      background: white;
+      border-color: white;
+    }
 
     &--danger {
       color: #dc2626;
       border-color: rgba(220, 38, 38, 0.2);
       background: rgba(220, 38, 38, 0.06);
-      &:hover:not(:disabled) { background: rgba(220, 38, 38, 0.12); }
+      &:hover:not(:disabled) { background: rgba(220, 38, 38, 0.12); opacity: 1; }
+
+      .soc--dark & {
+        color: #fca5a5;
+        background: rgba(220, 38, 38, 0.12);
+        border-color: rgba(220, 38, 38, 0.3);
+        &:hover:not(:disabled) { background: rgba(220, 38, 38, 0.2); }
+      }
     }
   }
 
