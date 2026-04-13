@@ -633,7 +633,7 @@ $soc-font-body: 'Karla', sans-serif;
     display: block;
     width: 16px;
     height: 2px;
-    background: var(--soc-ham-color);
+    background: var(--soc-bar-text);
     border-radius: 2px;
     transition: transform 0.25s ease, opacity 0.25s ease, background 0.25s;
     &.is-open:nth-child(1) { transform: translateY(6px) rotate(45deg); }
