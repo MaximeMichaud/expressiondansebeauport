@@ -33,7 +33,7 @@
         <h3>Informations personnelles</h3>
       </div>
       <form @submit.prevent="updateProfile" class="soc-account__card-body">
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label class="soc-account__label">Prénom</label>
             <input v-model="firstName" type="text" placeholder="Prénom" class="soc-account__input" />
