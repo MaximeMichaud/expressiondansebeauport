@@ -532,7 +532,6 @@ onUnmounted(() => {
     color: var(--soc-bar-text-strong, #1a1a1a);
     text-decoration: underline;
     text-underline-offset: 2px;
-    &:hover { opacity: 0.7; }
   }
 }
 </style>
