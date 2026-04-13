@@ -112,7 +112,6 @@
               </div>
             </div>
             <div class="flex items-center gap-1 flex-shrink-0">
-              <span class="text-[11px] font-medium text-gray-400">Voir plus</span>
               <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
             </div>
           </router-link>
