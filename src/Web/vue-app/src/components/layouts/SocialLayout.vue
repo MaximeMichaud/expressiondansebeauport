@@ -660,7 +660,7 @@ $soc-font-body: 'Karla', sans-serif;
     display: flex;
     flex-direction: column;
     gap: 2px;
-    max-width: 720px;
+    max-width: 960px;
     margin: 0 auto;
     padding: 0 20px;
     min-height: 0;
