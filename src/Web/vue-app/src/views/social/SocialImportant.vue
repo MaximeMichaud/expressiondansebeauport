@@ -112,7 +112,7 @@
               </div>
             </div>
             <div class="flex items-center gap-1 flex-shrink-0">
-              <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--soc-border, #d6d3d1);"><path d="M9 18l6-6-6-6"/></svg>
             </div>
           </router-link>
 
