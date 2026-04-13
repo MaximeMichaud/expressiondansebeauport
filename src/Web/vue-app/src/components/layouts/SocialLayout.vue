@@ -65,6 +65,7 @@
       </div>
 
       <!-- Mobile nav -->
+      <Transition name="soc-mobile-nav">
       <nav v-if="isAuthenticated && isMenuOpen" class="soc-header__mobile-nav">
         <router-link
           :to="{ name: 'socialAccount' }"
@@ -105,6 +106,7 @@
           <span>Se déconnecter</span>
         </button>
       </nav>
+      </Transition>
     </header>
 
     <!-- Content -->
@@ -653,6 +655,7 @@ $soc-font-body: 'Karla', sans-serif;
     border-radius: 0 0 14px 14px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     transition: background 0.25s;
+    overflow: hidden;
   }
 
   &__mobile-item {
@@ -672,6 +675,23 @@ $soc-font-body: 'Karla', sans-serif;
     &.is-active { color: var(--soc-bar-text-strong); background: var(--soc-bar-active); }
     &--logout { color: #dc2626; &:hover { color: #dc2626; background: rgba(220, 38, 38, 0.08); } }
   }
+}
+
+// Mobile nav slide transition
+.soc-mobile-nav-enter-active,
+.soc-mobile-nav-leave-active {
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+}
+.soc-mobile-nav-enter-from,
+.soc-mobile-nav-leave-to {
+  max-height: 0 !important;
+  opacity: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+.soc-mobile-nav-enter-to,
+.soc-mobile-nav-leave-from {
+  max-height: 400px;
 }
 
 @media (min-width: 48em) {
