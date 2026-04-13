@@ -718,6 +718,15 @@ $soc-font-body: 'Karla', sans-serif;
   }
 }
 
+// Force full-width stretched items on mobile (high-specificity standalone rules)
+.soc-header__mobile-nav { align-items: stretch; }
+.soc-header__mobile-nav > .soc-header__mobile-item {
+  align-self: stretch;
+  width: 100% !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+}
+
 @media (min-width: 48em) {
   .soc-header {
     &__strip {
