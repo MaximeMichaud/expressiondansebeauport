@@ -93,7 +93,7 @@ $soc-font-display: 'Montserrat', sans-serif;
   transition: background 0.3s, color 0.3s;
 
   @media (max-width: 47.99em) {
-    padding: 8px;
+    padding: 20px;
   }
 
   &__theme-toggle {
