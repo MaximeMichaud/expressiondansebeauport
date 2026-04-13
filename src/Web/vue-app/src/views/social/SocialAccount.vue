@@ -139,6 +139,27 @@
       </form>
     </section>
 
+    <!-- Danger zone -->
+    <section class="soc-account__card">
+      <div class="soc-account__card-header">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <h3>Zone de danger</h3>
+      </div>
+      <div class="soc-account__card-body">
+        <p class="text-xs" :style="{ color: 'var(--soc-text-muted)' }">
+          La suppression de votre compte est définitive. Vous ne pourrez plus vous connecter avec ce courriel.
+        </p>
+        <button
+          type="button"
+          class="soc-account__avatar-btn soc-account__avatar-btn--danger"
+          :disabled="deletingAccount"
+          @click="confirmDeleteAccount = true"
+        >
+          {{ deletingAccount ? 'Suppression...' : 'Supprimer mon compte' }}
+        </button>
+      </div>
+    </section>
+
     <ConfirmModal
       :open="confirmAvatarRemove"
       title="Retirer la photo?"
@@ -148,21 +169,35 @@
       @confirm="handleAvatarRemove"
       @cancel="confirmAvatarRemove = false"
     />
+
+    <ConfirmModal
+      :open="confirmDeleteAccount"
+      title="Supprimer votre compte?"
+      message="Cette action est irréversible. Votre compte sera supprimé et vous serez déconnecté."
+      confirm-label="Supprimer mon compte"
+      :danger="true"
+      @confirm="handleDeleteAccount"
+      @cancel="confirmDeleteAccount = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthenticationService, useSocialService } from '@/inversify.config'
 import { useMemberStore } from '@/stores/memberStore'
+import { useUserStore } from '@/stores/userStore'
 import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
 import { useSocialToast } from '@/composables/useSocialToast'
 import AvatarUploader from '@/components/social/AvatarUploader.vue'
 import ConfirmModal from '@/components/social/ConfirmModal.vue'
 
+const router = useRouter()
 const authService = useAuthenticationService()
 const socialService = useSocialService()
 const memberStore = useMemberStore()
+const userStore = useUserStore()
 const avatarRegistry = useAvatarRegistryStore()
 const toast = useSocialToast()
 
@@ -177,6 +212,28 @@ const savingPassword = ref(false)
 const uploadingAvatar = ref(false)
 const confirmAvatarRemove = ref(false)
 const avatarInputRef = ref<HTMLInputElement | null>(null)
+const confirmDeleteAccount = ref(false)
+const deletingAccount = ref(false)
+
+async function handleDeleteAccount() {
+  if (deletingAccount.value) return
+  deletingAccount.value = true
+  try {
+    const result = await socialService.deleteMyAccount()
+    if (result.succeeded) {
+      confirmDeleteAccount.value = false
+      await authService.logout()
+      userStore.reset()
+      memberStore.reset()
+      await router.push({ name: 'socialLogin' })
+    } else {
+      toast.error(result.errors?.[0]?.errorMessage || 'Erreur lors de la suppression.')
+    }
+  } catch {
+    toast.error('Erreur de connexion.')
+  }
+  deletingAccount.value = false
+}
 
 function onAvatarFileChange(e: Event) {
   const input = e.target as HTMLInputElement

@@ -306,6 +306,11 @@ export class SocialService extends ApiService {
     return response.data
   }
 
+  async deleteMyAccount(): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient.delete<SucceededOrNotResponse>(`${API}/social/members/me`)
+    return response.data
+  }
+
   async searchMembers(query: string): Promise<any[]> {
     const response = await this._httpClient.get(`${API}/social/members/search?Query=${encodeURIComponent(query)}`)
     return toCamel(response.data)

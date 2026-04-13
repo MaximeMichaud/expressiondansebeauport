@@ -180,6 +180,7 @@ export interface ISocialService {
   getMemberProfile(id: string): Promise<any>
   getMyProfile(): Promise<any>
   updateMyProfile(firstName: string, lastName: string, email: string): Promise<SucceededOrNotResponse>
+  deleteMyAccount(): Promise<SucceededOrNotResponse>
   deleteMember(id: string): Promise<SucceededOrNotResponse>
   promoteMember(id: string): Promise<SucceededOrNotResponse>
   demoteMember(id: string): Promise<SucceededOrNotResponse>
