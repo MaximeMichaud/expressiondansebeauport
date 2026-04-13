@@ -43,7 +43,7 @@
       >
         <!-- Avatar -->
         <div class="members-dir__avatar" :style="{ background: member.avatarColor || '#1a1a1a' }">
-          <img v-if="member.profileImageUrl" :src="member.profileImageUrl" :alt="member.fullName" class="members-dir__avatar-img" />
+          <img v-if="avatarRegistry.getAvatar(member.id, member.profileImageUrl)" :src="avatarRegistry.getAvatar(member.id, member.profileImageUrl)!" :alt="member.fullName" class="members-dir__avatar-img" />
           <span v-else class="members-dir__avatar-initials">{{ getInitials(member.fullName) }}</span>
         </div>
 
@@ -67,8 +67,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useSocialService } from '@/inversify.config'
+import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
 
 const socialService = useSocialService()
+const avatarRegistry = useAvatarRegistryStore()
 
 const members = ref<any[]>([])
 const loading = ref(true)
@@ -92,6 +94,7 @@ async function loadMembers(query?: string) {
   loading.value = true
   try {
     members.value = await socialService.searchMembers(query || '')
+    avatarRegistry.populateFromList(members.value, 'id', 'profileImageUrl')
   } catch { members.value = [] }
   loading.value = false
 }

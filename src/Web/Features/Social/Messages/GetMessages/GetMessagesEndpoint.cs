@@ -43,25 +43,71 @@ public class GetMessagesEndpoint : Endpoint<GetMessagesRequest>
             return;
         }
 
-        var messages = await _conversationService.GetMessages(req.ConversationId, req.Page);
+        var messagesResult = await _conversationService.GetMessages(req.ConversationId, req.Page);
+        var messages = messagesResult.Items;
 
         // Get the other participant's LastReadAt to determine read receipts
         var conversation = await _conversationRepository.FindById(req.ConversationId);
         var otherParticipant = conversation?.Participants?.FirstOrDefault(p => p.MemberId != member.Id);
         var otherLastReadAt = otherParticipant?.LastReadAt;
 
-        var results = messages.Select(m => new
+        var results = messages.Select(m =>
         {
-            m.Id,
-            m.ConversationId,
-            SenderMemberId = m.SenderMemberId,
-            SenderName = m.SenderMember?.FullName ?? "Inconnu",
-            Content = m.Deleted.HasValue ? null : m.Content,
-            Created = m.Created.ToDateTimeUtc().ToString("yyyy-MM-ddTHH:mm:ssZ"),
-            IsDeleted = m.Deleted.HasValue,
-            IsRead = m.SenderMemberId == member.Id && otherLastReadAt != null && m.Created <= otherLastReadAt
+            // Build media array: prefer the new MessageMedia collection; fall back to legacy single-media columns.
+            var mediaList = m.Media?
+                .OrderBy(x => x.SortOrder)
+                .Select(x => new
+                {
+                    x.Id,
+                    MediaUrl = x.MediaUrl,
+                    ThumbnailUrl = x.ThumbnailUrl,
+                    OriginalUrl = x.OriginalUrl,
+                    x.ContentType,
+                    x.Size,
+                    x.SortOrder
+                })
+                .Cast<object>()
+                .ToList() ?? new List<object>();
+
+            if (mediaList.Count == 0 && !string.IsNullOrEmpty(m.MediaUrl))
+            {
+                mediaList.Add(new
+                {
+                    Id = Guid.Empty,
+                    MediaUrl = m.MediaUrl,
+                    ThumbnailUrl = m.MediaThumbnailUrl,
+                    OriginalUrl = m.MediaOriginalUrl,
+                    ContentType = "image/webp",
+                    Size = 0L,
+                    SortOrder = 0
+                });
+            }
+
+            return new
+            {
+                m.Id,
+                m.ConversationId,
+                SenderMemberId = m.SenderMemberId,
+                SenderName = m.SenderMember?.FullName ?? "Inconnu",
+                Content = m.Deleted.HasValue ? null : m.Content,
+                Media = m.Deleted.HasValue ? new List<object>() : mediaList,
+                Created = m.Created.ToDateTimeUtc().ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                IsDeleted = m.Deleted.HasValue,
+                IsRead = m.SenderMemberId == member.Id && otherLastReadAt != null && m.Created <= otherLastReadAt,
+                MessageType = m.MessageType.ToString(),
+                JoinRequest = m.JoinRequest != null ? new
+                {
+                    m.JoinRequest.Id,
+                    m.JoinRequest.GroupId,
+                    GroupName = m.JoinRequest.Group?.Name,
+                    RequesterMemberId = m.JoinRequest.RequesterMemberId,
+                    RequesterName = m.JoinRequest.RequesterMember?.FullName ?? "Inconnu",
+                    Status = m.JoinRequest.Status.ToString(),
+                    ResolvedByName = m.JoinRequest.ResolvedByMember?.FullName
+                } : null
+            };
         });
 
-        await Send.OkAsync(results, ct);
+        await Send.OkAsync(new { Items = results, messagesResult.HasMore }, ct);
     }
 }

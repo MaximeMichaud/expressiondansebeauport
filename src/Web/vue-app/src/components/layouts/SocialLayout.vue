@@ -208,8 +208,8 @@ watch(isAuthenticated, async (val) => {
       memberStore.setMember(profile)
     } catch { /* */ }
     try {
-      const count = await socialService.getUnreadCount()
-      memberStore.setUnreadCount(count)
+      const result = await socialService.getUnreadCount()
+      memberStore.setUnreadCount(result.count)
     } catch { /* */ }
     try {
       await startSignalR()
@@ -224,8 +224,8 @@ watch(isAuthenticated, (val) => {
   if (val) {
     unreadPoll = setInterval(async () => {
       try {
-        const count = await socialService.getUnreadCount()
-        memberStore.setUnreadCount(count)
+        const result = await socialService.getUnreadCount()
+        memberStore.setUnreadCount(result.count)
       } catch { /* */ }
     }, 3000)
   } else if (unreadPoll) {
@@ -841,7 +841,8 @@ $soc-font-body: 'Karla', sans-serif;
   .soc-main { box-shadow: none; outline: none; border: none; }
 
   // Group banner
-  .group-banner { background: var(--soc-content-bg) !important; border-color: var(--soc-divider) !important; button { color: rgba(255,255,255,0.6) !important; } h1 { color: white !important; } }
+  .group-banner { background: var(--soc-content-bg) !important; border-color: var(--soc-divider) !important; button:not(.soc-header__icon-btn--logout) { color: rgba(255,255,255,0.6) !important; } .soc-header__icon-btn--logout:hover { color: #dc2626 !important; } h1 { color: white !important; } }
+  .group-header-avatar div { background: white !important; color: #1a1a1a !important; }
 
   // Group logo
   .group-logo.bg-\[\#1a1a1a\] { background-color: white !important; span { color: #1a1a1a !important; } }
@@ -934,5 +935,66 @@ body.soc--dark {
 
   // Portal modal icon needs light stroke in dark mode
   .portal-modal__icon-ring svg { stroke: white; }
+
+  // Delete/confirm modals — dark mode overrides for teleported content
+  .portal-modal__card,
+  .ann-modal__card,
+  .ann-d-modal__card,
+  .convo-modal__card,
+  .mp-modal__card {
+    background: #222120 !important;
+    color: #e7e5e4;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  }
+
+  .portal-modal__title,
+  .ann-modal__title,
+  .ann-d-modal__title,
+  .convo-modal__title,
+  .mp-modal__title {
+    color: #e7e5e4 !important;
+  }
+
+  .portal-modal__text,
+  .ann-modal__text,
+  .ann-d-modal__text,
+  .convo-modal__text,
+  .mp-modal__text {
+    color: #a8a29e !important;
+  }
+
+  .ann-modal__icon-ring,
+  .ann-d-modal__icon-ring,
+  .convo-modal__icon-ring,
+  .mp-modal__icon-ring {
+    background: rgba(220, 38, 38, 0.15) !important;
+  }
+
+  // portal-modal icon-ring: only override when used for destructive actions (has inline red bg)
+  // The join modal icon-ring keeps its neutral var(--soc-bar-hover) color
+  .portal-modal__icon-ring {
+    background: var(--soc-bar-hover) !important;
+  }
+  .portal-modal__icon-ring[style*="rgba(220"] {
+    background: rgba(220, 38, 38, 0.15) !important;
+  }
+
+  .portal-modal__btn--cancel,
+  .ann-modal__btn--cancel,
+  .ann-d-modal__btn--cancel,
+  .convo-modal__btn--cancel,
+  .mp-modal__btn--cancel {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #e7e5e4 !important;
+    &:hover { background: rgba(255, 255, 255, 0.14) !important; }
+  }
+
+  .portal-modal__input,
+  .ann-modal__input,
+  .mp-modal__input {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #e7e5e4 !important;
+  }
 }
 </style>

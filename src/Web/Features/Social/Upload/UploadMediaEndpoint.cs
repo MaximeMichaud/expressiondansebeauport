@@ -1,7 +1,7 @@
 using Application.Interfaces.FileStorage;
+using Application.Interfaces.Imaging;
 using Application.Interfaces.Services.Users;
 using Domain.Common;
-using Domain.Repositories;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
@@ -9,18 +9,33 @@ namespace Web.Features.Social.Upload;
 
 public class UploadMediaEndpoint : EndpointWithoutRequest
 {
+    private const string SocialSubDirectory = "social";
+    private const long MaxImageSize = 10 * 1024 * 1024; // 10 MB
+    private const long MaxPdfSize = 50 * 1024 * 1024; // 50 MB
+    private const long MaxVideoSize = 50 * 1024 * 1024; // 50 MB
+
+    private static readonly string[] AllowedImageTypes =
+    {
+        "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"
+    };
+
+    private static readonly string[] AllowedVideoTypes =
+    {
+        "video/mp4", "video/quicktime", "video/webm"
+    };
+
     private readonly IFileStorageApiConsumer _fileStorage;
+    private readonly IImageProcessor _imageProcessor;
     private readonly IAuthenticatedUserService _authenticatedUserService;
-    private readonly IMemberRepository _memberRepository;
 
     public UploadMediaEndpoint(
         IFileStorageApiConsumer fileStorage,
-        IAuthenticatedUserService authenticatedUserService,
-        IMemberRepository memberRepository)
+        IImageProcessor imageProcessor,
+        IAuthenticatedUserService authenticatedUserService)
     {
         _fileStorage = fileStorage;
+        _imageProcessor = imageProcessor;
         _authenticatedUserService = authenticatedUserService;
-        _memberRepository = memberRepository;
     }
 
     public override void Configure()
@@ -39,33 +54,140 @@ public class UploadMediaEndpoint : EndpointWithoutRequest
 
         if (Files.Count == 0)
         {
-            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("NoFile", "No file uploaded.")), ct);
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("NoFile", "Aucun fichier téléversé.")), ct);
             return;
         }
 
         var file = Files[0];
-        var allowedTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf" };
-        if (!allowedTypes.Contains(file.ContentType.ToLower()))
+        var contentType = file.ContentType.ToLowerInvariant();
+
+        if (contentType == "application/pdf")
         {
-            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("InvalidType", "File type not allowed.")), ct);
+            if (file.Length > MaxPdfSize)
+            {
+                await Send.OkAsync(new SucceededOrNotResponse(false, new Error("TooLarge", "Fichier trop volumineux. Maximum 50 Mo.")), ct);
+                return;
+            }
+
+            var url = await _fileStorage.UploadFileAsync(file);
+            await Send.OkAsync(new
+            {
+                Succeeded = true,
+                Url = url,
+                FileName = file.FileName,
+                ContentType = file.ContentType,
+                Size = file.Length
+            }, ct);
             return;
         }
 
-        if (file.Length > 50 * 1024 * 1024) // 50 MB
+        if (AllowedVideoTypes.Contains(contentType))
         {
-            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("TooLarge", "File too large. Max 50MB.")), ct);
+            if (file.Length > MaxVideoSize)
+            {
+                await Send.OkAsync(new SucceededOrNotResponse(false, new Error("TooLarge", "Vidéo trop volumineuse. Maximum 50 Mo.")), ct);
+                return;
+            }
+
+            var videoTicks = DateTime.Now.Ticks;
+            var videoBaseName = Path.GetFileNameWithoutExtension(file.FileName);
+            var videoSafeBase = string.Concat(videoBaseName.Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_'));
+            if (string.IsNullOrEmpty(videoSafeBase)) videoSafeBase = "video";
+
+            var videoExt = Path.GetExtension(file.FileName).TrimStart('.').ToLowerInvariant();
+            if (string.IsNullOrEmpty(videoExt))
+            {
+                videoExt = contentType switch
+                {
+                    "video/mp4" => "mp4",
+                    "video/quicktime" => "mov",
+                    "video/webm" => "webm",
+                    _ => "mp4"
+                };
+            }
+
+            await using var videoStream = file.OpenReadStream();
+            var videoUrl = await _fileStorage.UploadStreamAsync(
+                videoStream,
+                $"{videoSafeBase}-{videoTicks}.{videoExt}",
+                contentType,
+                SocialSubDirectory);
+
+            await Send.OkAsync(new
+            {
+                Succeeded = true,
+                OriginalUrl = videoUrl,
+                DisplayUrl = videoUrl,
+                ThumbnailUrl = videoUrl,
+                ContentType = contentType,
+                Size = file.Length
+            }, ct);
             return;
         }
 
-        var url = await _fileStorage.UploadFileAsync(file);
-
-        await Send.OkAsync(new
+        if (!AllowedImageTypes.Contains(contentType))
         {
-            Succeeded = true,
-            Url = url,
-            FileName = file.FileName,
-            ContentType = file.ContentType,
-            Size = file.Length
-        }, ct);
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("InvalidType", "Type de fichier non autorisé.")), ct);
+            return;
+        }
+
+        if (file.Length > MaxImageSize)
+        {
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("TooLarge", "Image trop volumineuse. Maximum 10 Mo.")), ct);
+            return;
+        }
+
+        ProcessedImage processed;
+        try
+        {
+            processed = await _imageProcessor.ProcessImageAsync(file, ct);
+        }
+        catch (InvalidImageException)
+        {
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("InvalidImage", "L'image est invalide ou corrompue.")), ct);
+            return;
+        }
+
+        try
+        {
+            var ticks = DateTime.Now.Ticks;
+            var baseName = Path.GetFileNameWithoutExtension(file.FileName);
+            var safeBase = string.Concat(baseName.Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_'));
+            if (string.IsNullOrEmpty(safeBase)) safeBase = "img";
+
+            var originalUrl = await _fileStorage.UploadStreamAsync(
+                processed.OriginalStream,
+                $"{safeBase}-{ticks}.original.{processed.OriginalFileExtension}",
+                processed.OriginalContentType,
+                SocialSubDirectory);
+
+            var displayUrl = await _fileStorage.UploadStreamAsync(
+                processed.DisplayStream,
+                $"{safeBase}-{ticks}.display.webp",
+                "image/webp",
+                SocialSubDirectory);
+
+            var thumbnailUrl = await _fileStorage.UploadStreamAsync(
+                processed.ThumbnailStream,
+                $"{safeBase}-{ticks}.thumb.webp",
+                "image/webp",
+                SocialSubDirectory);
+
+            await Send.OkAsync(new
+            {
+                Succeeded = true,
+                OriginalUrl = originalUrl,
+                DisplayUrl = displayUrl,
+                ThumbnailUrl = thumbnailUrl,
+                ContentType = processed.OriginalContentType,
+                Size = file.Length,
+                Width = processed.Width,
+                Height = processed.Height
+            }, ct);
+        }
+        finally
+        {
+            processed.Dispose();
+        }
     }
 }

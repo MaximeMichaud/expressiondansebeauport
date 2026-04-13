@@ -1,3 +1,4 @@
+using Application.Common;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Helpers;
@@ -12,37 +13,127 @@ public class PostService : IPostService
     private readonly ICommentRepository _commentRepository;
     private readonly IPollRepository _pollRepository;
     private readonly IMemberRepository _memberRepository;
+    private readonly IGroupMemberRepository _groupMemberRepository;
 
     public PostService(
         IPostRepository postRepository,
         ICommentRepository commentRepository,
         IPollRepository pollRepository,
-        IMemberRepository memberRepository)
+        IMemberRepository memberRepository,
+        IGroupMemberRepository groupMemberRepository)
     {
         _postRepository = postRepository;
         _commentRepository = commentRepository;
         _pollRepository = pollRepository;
         _memberRepository = memberRepository;
+        _groupMemberRepository = groupMemberRepository;
     }
 
-    public async Task<Post> CreatePost(Guid? groupId, Guid authorMemberId, string content, PostType type)
+    public async Task<Post> CreatePost(
+        Guid? groupId,
+        Guid authorMemberId,
+        string content,
+        PostType type,
+        IReadOnlyList<PostMediaItem> media)
     {
+        if (media.Count > 10)
+            throw new InvalidOperationException("A post cannot have more than 10 media items.");
+
         var member = _memberRepository.FindById(authorMemberId, asNoTracking: false);
         if (member == null) throw new InvalidOperationException("Member not found.");
+
+        var effectiveType = media.Count > 0 ? PostType.Photo : type;
 
         var post = new Post();
         post.SetGroupId(groupId);
         post.SetAuthor(member);
         post.SetContent(content);
-        post.SetType(type);
+        post.SetType(effectiveType);
+
+        for (var i = 0; i < media.Count; i++)
+        {
+            var item = media[i];
+            var pm = new PostMedia();
+            pm.SetPost(post);
+            pm.SetMediaUrl(item.DisplayUrl);
+            pm.SetThumbnailUrl(item.ThumbnailUrl);
+            pm.SetOriginalUrl(item.OriginalUrl);
+            pm.SetContentType(item.ContentType);
+            pm.SetSize(item.Size);
+            pm.SetSortOrder(i);
+            post.Media.Add(pm);
+        }
 
         await _postRepository.Add(post);
         return post;
     }
 
-    public async Task<Post> CreateAnnouncement(Guid authorMemberId, string content)
+    public async Task<Post> CreateAnnouncement(Guid authorMemberId, string content, IReadOnlyList<PostMediaItem> media)
     {
-        return await CreatePost(null, authorMemberId, content, PostType.Text);
+        return await CreatePost(null, authorMemberId, content, PostType.Text, media);
+    }
+
+    public async Task UpdateAnnouncement(Guid postId, string content, IReadOnlyList<PostMediaItem> media)
+    {
+        if (media.Count > 1)
+            throw new InvalidOperationException("An announcement can have at most one image.");
+
+        var post = await _postRepository.FindById(postId, asNoTracking: false);
+        if (post == null) throw new InvalidOperationException("Post not found.");
+        if (!post.IsAnnouncement) throw new InvalidOperationException("Post is not an announcement.");
+
+        post.SetContent(content);
+        post.Media.Clear();
+
+        for (var i = 0; i < media.Count; i++)
+        {
+            var item = media[i];
+            var pm = new PostMedia();
+            pm.SetPost(post);
+            pm.SetMediaUrl(item.DisplayUrl);
+            pm.SetThumbnailUrl(item.ThumbnailUrl);
+            pm.SetOriginalUrl(item.OriginalUrl);
+            pm.SetContentType(item.ContentType);
+            pm.SetSize(item.Size);
+            pm.SetSortOrder(i);
+            post.Media.Add(pm);
+        }
+
+        post.SetType(media.Count > 0 ? PostType.Photo : PostType.Text);
+        await _postRepository.Update(post);
+    }
+
+    public async Task<Post> CreatePollPost(
+        Guid groupId,
+        Guid authorMemberId,
+        string question,
+        IReadOnlyList<string> options,
+        bool allowMultipleAnswers)
+    {
+        var member = _memberRepository.FindById(authorMemberId, asNoTracking: false);
+        if (member == null) throw new InvalidOperationException("Member not found.");
+
+        var isMember = await _groupMemberRepository.IsMember(groupId, authorMemberId);
+        if (!isMember) throw new InvalidOperationException("Not a member of this group.");
+
+        var post = new Post();
+        post.SetGroupId(groupId);
+        post.SetAuthor(member);
+        post.SetContent(string.Empty);
+        post.SetType(PostType.Poll);
+
+        await _postRepository.Add(post);
+
+        var poll = Poll.Create(post, question, allowMultipleAnswers);
+        for (var i = 0; i < options.Count; i++)
+        {
+            var option = PollOption.Create(poll, options[i], i);
+            poll.Options.Add(option);
+        }
+
+        await _pollRepository.Add(poll);
+
+        return post;
     }
 
     public async Task DeletePost(Guid postId)
@@ -148,15 +239,20 @@ public class PostService : IPostService
         var option = await _pollRepository.FindOptionById(pollOptionId);
         if (option == null) throw new InvalidOperationException("Poll option not found.");
 
-        var hasVoted = await _pollRepository.HasVotedOnPoll(option.PollId, memberId);
-        if (hasVoted && !option.Poll.AllowMultipleAnswers)
-            throw new InvalidOperationException("Already voted on this poll.");
-
-        var alreadyVotedThisOption = await _pollRepository.HasVoted(pollOptionId, memberId);
-        if (alreadyVotedThisOption) throw new InvalidOperationException("Already voted on this option.");
-
         var member = _memberRepository.FindById(memberId, asNoTracking: false);
         if (member == null) throw new InvalidOperationException("Member not found.");
+
+        var alreadyVotedThisOption = await _pollRepository.HasVoted(pollOptionId, memberId);
+        if (alreadyVotedThisOption)
+        {
+            await _pollRepository.RemoveVote(pollOptionId, memberId);
+            return;
+        }
+
+        if (!option.Poll.AllowMultipleAnswers)
+        {
+            await _pollRepository.RemoveVotesForPoll(option.PollId, memberId);
+        }
 
         var vote = new PollVote();
         vote.SetPollOption(option);
@@ -166,16 +262,22 @@ public class PostService : IPostService
         await _pollRepository.AddVote(vote);
     }
 
-    public async Task<List<Post>> GetGroupFeed(Guid groupId, int page)
+    public async Task<PaginatedResult<Post>> GetGroupFeed(Guid groupId, int page)
     {
-        var skip = (page - 1) * 20;
-        return await _postRepository.GetByGroupId(groupId, skip, 20);
+        const int pageSize = 20;
+        var skip = (page - 1) * pageSize;
+        var items = await _postRepository.GetByGroupId(groupId, skip, pageSize + 1);
+        var hasMore = items.Count > pageSize;
+        return new PaginatedResult<Post>(items.Take(pageSize).ToList(), hasMore);
     }
 
-    public async Task<List<Post>> GetAnnouncements(int page)
+    public async Task<PaginatedResult<Post>> GetAnnouncements(int page)
     {
-        var skip = (page - 1) * 10;
-        return await _postRepository.GetAnnouncements(skip, 10);
+        const int pageSize = 10;
+        var skip = (page - 1) * pageSize;
+        var items = await _postRepository.GetAnnouncements(skip, pageSize + 1);
+        var hasMore = items.Count > pageSize;
+        return new PaginatedResult<Post>(items.Take(pageSize).ToList(), hasMore);
     }
 
     public async Task<Post?> GetPostById(Guid postId)
@@ -183,9 +285,12 @@ public class PostService : IPostService
         return await _postRepository.FindById(postId);
     }
 
-    public async Task<List<Comment>> GetComments(Guid postId, int page)
+    public async Task<PaginatedResult<Comment>> GetComments(Guid postId, int page)
     {
-        var skip = (page - 1) * 10;
-        return await _commentRepository.GetByPostId(postId, skip, 10);
+        const int pageSize = 10;
+        var skip = (page - 1) * pageSize;
+        var items = await _commentRepository.GetByPostId(postId, skip, pageSize + 1);
+        var hasMore = items.Count > pageSize;
+        return new PaginatedResult<Comment>(items.Take(pageSize).ToList(), hasMore);
     }
 }

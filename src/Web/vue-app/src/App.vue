@@ -39,6 +39,9 @@ const pageTitle = computed(() => {
 useHead({
   title: pageTitle,
   titleTemplate: (title) => {
+    if (isSocialRoute(router.currentRoute.value)) {
+      return title ? `EDB Social - ${title}` : 'EDB Social'
+    }
     const siteName = siteSettingsStore.siteTitle
     if (!title) return siteName || ''
     return siteName ? `${title} | ${siteName}` : title
@@ -73,22 +76,17 @@ onMounted(async () => {
     }
   }
 
-  if (isPublicPath.value)
-    return
-
   if (isSocial.value && isSocialAuthPath.value)
     return
 
-  if (!userStore.user.email) {
-    const user = await userService.getCurrentUser().catch(() => null)
-    if (user) {
-      userStore.setUser(user)
-    } else if (!isAuthenticationPath.value && !isSocialAuthPath.value) {
-      if (isSocial.value) {
-        await router.push({ name: 'socialLogin' })
-      } else {
-        await router.push(i18n.global.t("routes.login.path"))
-      }
+  const user = await userService.getCurrentUser().catch(() => null)
+  if (user) {
+    userStore.setUser(user)
+  } else if (!isAuthenticationPath.value && !isSocialAuthPath.value && !isPublicPath.value) {
+    if (isSocial.value) {
+      await router.push({ name: 'socialLogin' })
+    } else {
+      await router.push(i18n.global.t("routes.login.path"))
     }
   }
 });

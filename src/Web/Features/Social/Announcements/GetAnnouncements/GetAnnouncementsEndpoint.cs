@@ -40,7 +40,8 @@ public class GetAnnouncementsEndpoint : Endpoint<GetAnnouncementsRequest>
             return;
         }
 
-        var announcements = await _postService.GetAnnouncements(req.Page);
+        var announcementsResult = await _postService.GetAnnouncements(req.Page);
+        var announcements = announcementsResult.Items;
 
         var result = announcements.Select(p => new
         {
@@ -63,6 +64,6 @@ public class GetAnnouncementsEndpoint : Endpoint<GetAnnouncementsRequest>
             Created = p.Created.ToDateTimeUtc().ToString("yyyy-MM-ddTHH:mm:ssZ")
         });
 
-        await Send.OkAsync(result, ct);
+        await Send.OkAsync(new { Items = result, announcementsResult.HasMore }, ct);
     }
 }

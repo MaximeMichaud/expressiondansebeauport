@@ -24,8 +24,49 @@
           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
           placeholder="Description (optionnel)"
         ></textarea>
+
+        <!-- Image preview -->
+        <div v-if="attachment.previews.value.length" class="flex flex-wrap gap-2">
+          <div
+            v-for="(p, i) in attachment.previews.value"
+            :key="i"
+            class="relative h-20 w-20"
+          >
+            <img :src="p.url" class="h-full w-full rounded-lg object-cover" alt="" />
+            <button
+              type="button"
+              @click="attachment.removeFile(i)"
+              class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full shadow"
+              style="background: #dc2626;"
+              aria-label="Retirer"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <p v-if="attachment.error.value" class="text-xs text-red-600">{{ attachment.error.value }}</p>
       </div>
-      <div class="mt-3 flex justify-end">
+      <div class="mt-3 flex items-center justify-between">
+        <input
+          ref="fileInputRef"
+          type="file"
+          accept="image/*"
+          hidden
+          @change="attachment.handleFileInput"
+        />
+        <button
+          type="button"
+          @click="triggerFilePicker"
+          :disabled="attachment.files.value.length >= 1"
+          class="soc-composer-icon flex h-9 w-9 items-center justify-center rounded-lg transition cursor-pointer disabled:opacity-40 disabled:cursor-default"
+          title="Joindre une image"
+          aria-label="Joindre une image"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+        </button>
         <button
           @click="createAnnouncement"
           :disabled="!newTitle.trim() || creating"
@@ -48,14 +89,21 @@
     </div>
 
     <!-- List -->
-    <div v-else class="space-y-3">
-      <div
-        v-for="post in announcements"
+    <div v-else>
+      <div class="space-y-3">
+        <div
+          v-for="post in announcements"
         :key="post.id"
         class="rounded-xl border border-gray-200 overflow-hidden"
       >
         <div class="p-4">
-          <router-link :to="{ name: 'socialAnnouncement', params: { id: post.id } }" class="flex items-center justify-between gap-3 cursor-pointer">
+          <router-link :to="{ name: 'socialAnnouncement', params: { id: post.id } }" class="flex items-center gap-3 cursor-pointer">
+            <img
+              v-if="post.media && post.media.length"
+              :src="post.media[0].thumbnailUrl || post.media[0].mediaUrl"
+              class="h-14 w-14 flex-shrink-0 rounded-lg object-cover"
+              alt=""
+            />
             <div class="flex-1 min-w-0">
               <p class="text-sm font-semibold text-gray-900">{{ getTitle(post.content) }}</p>
               <div class="mt-2 flex items-center gap-4 text-[11px] text-gray-400">
@@ -95,8 +143,14 @@
           </div>
           <div v-else>
             <div v-for="comment in postComments" :key="comment.id" class="mb-3 flex gap-2">
-              <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-[9px] font-bold text-white" :style="{ background: comment.authorAvatarColor || '#1a1a1a' }">
-                {{ getInitials(comment.authorName) }}
+              <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-[9px] font-bold text-white" :style="{ background: comment.authorAvatarColor || '#1a1a1a' }">
+                <img
+                  v-if="avatarRegistry.getAvatar(comment.authorMemberId, comment.authorProfileImageUrl)"
+                  :src="avatarRegistry.getAvatar(comment.authorMemberId, comment.authorProfileImageUrl)!"
+                  :alt="comment.authorName"
+                  class="h-full w-full object-cover"
+                />
+                <span v-else>{{ getInitials(comment.authorName) }}</span>
               </div>
               <div class="flex-1">
                 <div class="rounded-lg bg-white px-3 py-2">
@@ -137,6 +191,10 @@
           </div>
         </div>
       </div>
+      </div>
+      <div v-if="loadingMore" class="flex justify-center py-4">
+        <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
+      </div>
     </div>
 
     <!-- Delete modal -->
@@ -170,6 +228,9 @@ import { useSocialService } from '@/inversify.config'
 import { useSocialToast } from '@/composables/useSocialToast'
 import { useUserStore } from '@/stores/userStore'
 import { useMemberStore } from '@/stores/memberStore'
+import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
+import { useImageAttachment } from '@/composables/useImageAttachment'
+import { useInfiniteScroll } from '@/composables/useInfiniteScroll'
 import { Role } from '@/types/enums'
 import type { Post } from '@/types/entities'
 
@@ -177,15 +238,34 @@ const socialService = useSocialService()
 const toast = useSocialToast()
 const userStore = useUserStore()
 const memberStore = useMemberStore()
+const avatarRegistry = useAvatarRegistryStore()
 
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
 const myMemberId = computed(() => memberStore.member?.id || '')
-const announcements = ref<Post[]>([])
-const loading = ref(true)
+
+const announcementsContainer = ref<HTMLElement | null>(null)
+
+const {
+  items: announcements,
+  loading,
+  loadingMore,
+  load: loadAnnouncements,
+  refreshFirst: refreshAnnouncementsFirst,
+  reset: resetAnnouncements,
+  attachScroll: attachAnnouncementsScroll,
+} = useInfiniteScroll<Post>({
+  fetchFn: (page) => socialService.getAnnouncements(page),
+  scrollContainer: announcementsContainer,
+  direction: 'down',
+  threshold: 300,
+})
+
 const showCreate = ref(false)
 const newTitle = ref('')
 const newDescription = ref('')
 const creating = ref(false)
+const attachment = useImageAttachment({ mode: 'single', maxFiles: 1, allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] })
+const fileInputRef = ref<HTMLInputElement | null>(null)
 const deleteTarget = ref<Post | null>(null)
 const deleting = ref(false)
 
@@ -239,7 +319,9 @@ async function toggleComments(post: Post) {
   expandedComments.value = post.id
   loadingComments.value = true
   try {
-    postComments.value = await socialService.getComments(post.id)
+    const result = await socialService.getComments(post.id)
+    postComments.value = result.items
+    avatarRegistry.populateFromList(postComments.value, 'authorMemberId', 'authorProfileImageUrl')
   } catch { postComments.value = [] }
   loadingComments.value = false
   await nextTick()
@@ -252,7 +334,8 @@ async function submitComment(post: Post) {
   try {
     await socialService.addComment(post.id, newComment.value)
     newComment.value = ''
-    postComments.value = await socialService.getComments(post.id)
+    const result = await socialService.getComments(post.id)
+    postComments.value = result.items
     post.commentCount = (post.commentCount || 0) + 1
   } catch { /* */ }
   submittingComment.value = false
@@ -269,11 +352,8 @@ async function deleteComment(commentId: string, post: Post) {
   }
 }
 
-async function loadAnnouncements() {
-  try {
-    announcements.value = await socialService.getAnnouncements()
-  } catch { /* */ }
-  loading.value = false
+function triggerFilePicker() {
+  fileInputRef.value?.click()
 }
 
 async function createAnnouncement() {
@@ -283,13 +363,26 @@ async function createAnnouncement() {
     ? newTitle.value.trim() + '\n' + newDescription.value.trim()
     : newTitle.value.trim()
   try {
-    const result = await socialService.createAnnouncement(content)
+    let media: Array<{ displayUrl: string; thumbnailUrl: string; originalUrl: string; contentType: string; size: number }> | undefined
+
+    if (attachment.files.value.length > 0) {
+      const uploaded = await socialService.uploadFile(attachment.files.value[0])
+      if (!uploaded.succeeded || !uploaded.displayUrl || !uploaded.thumbnailUrl || !uploaded.originalUrl || !uploaded.contentType || uploaded.size == null) {
+        toast.error("Échec du téléversement de l'image.")
+        creating.value = false
+        return
+      }
+      media = [{ displayUrl: uploaded.displayUrl, thumbnailUrl: uploaded.thumbnailUrl, originalUrl: uploaded.originalUrl, contentType: uploaded.contentType, size: uploaded.size }]
+    }
+
+    const result = await socialService.createAnnouncement(content, media)
     if (result.succeeded) {
       toast.success('Annonce publiée!')
       newTitle.value = ''
       newDescription.value = ''
+      attachment.clear()
       showCreate.value = false
-      await loadAnnouncements()
+      await resetAnnouncements()
     } else {
       toast.error('Erreur lors de la publication.')
     }
@@ -306,7 +399,7 @@ async function confirmDelete() {
     await socialService.deletePost(deleteTarget.value.id)
     deleteTarget.value = null
     toast.success('Annonce supprimée.')
-    await loadAnnouncements()
+    await resetAnnouncements()
   } catch {
     toast.error('Erreur lors de la suppression.')
   }
@@ -316,10 +409,12 @@ async function confirmDelete() {
 let pollInterval: ReturnType<typeof setInterval> | null = null
 
 onMounted(() => {
+  announcementsContainer.value = document.querySelector('.soc-main') as HTMLElement
   loadAnnouncements()
+  nextTick(() => attachAnnouncementsScroll())
   pollInterval = setInterval(async () => {
     if (Date.now() - likeDebounce < 3000) return
-    try { announcements.value = await socialService.getAnnouncements() } catch { /* */ }
+    try { await refreshAnnouncementsFirst() } catch { /* */ }
   }, 30000)
 })
 
@@ -413,4 +508,12 @@ $ann-font-display: 'Montserrat', sans-serif;
 .ann-modal-leave-active { transition: all 0.15s ease; }
 .ann-modal-enter-from { opacity: 0; }
 .ann-modal-leave-to { opacity: 0; }
+
+.soc-composer-icon {
+  color: var(--soc-text-muted);
+}
+.soc-composer-icon:hover {
+  background: var(--soc-bar-hover);
+  color: var(--soc-text);
+}
 </style>

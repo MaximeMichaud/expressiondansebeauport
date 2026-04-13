@@ -59,6 +59,16 @@ public class GetPostByIdEndpoint : Endpoint<GetPostByIdRequest>
             LikeCount = post.Reactions?.Count ?? 0,
             CommentCount = post.Comments?.Count ?? 0,
             HasLiked = post.Reactions?.Any(r => r.MemberId == member.Id) ?? false,
+            Media = post.Media?.Select(m => new
+            {
+                m.Id,
+                m.MediaUrl,
+                m.ThumbnailUrl,
+                m.OriginalUrl,
+                m.ContentType,
+                m.Size,
+                m.SortOrder
+            }) ?? Enumerable.Empty<object>(),
             Created = post.Created.ToDateTimeUtc().ToString("yyyy-MM-ddTHH:mm:ssZ")
         }, ct);
     }
