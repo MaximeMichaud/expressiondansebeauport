@@ -442,12 +442,13 @@ $soc-font-body: 'Karla', sans-serif;
     border-radius: 0 0 14px 14px;
     color: var(--soc-bar-text);
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    transition: background 0.25s, color 0.25s;
+    transition: background 0.25s, color 0.25s, border-radius 0s 0.28s, box-shadow 0s 0.28s;
 
     // When mobile nav is open, flatten bottom corners so menu flows as one bar
     .soc-header--menu-open & {
       border-radius: 0;
       box-shadow: none;
+      transition: background 0.25s, color 0.25s, border-radius 0s 0s, box-shadow 0s 0s;
     }
   }
 
@@ -674,6 +675,7 @@ $soc-font-body: 'Karla', sans-serif;
   &__mobile-item {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 8px;
     padding: 10px 14px;
     font-family: $soc-font-display;
@@ -681,9 +683,13 @@ $soc-font-body: 'Karla', sans-serif;
     font-weight: 600;
     color: var(--soc-bar-text);
     text-decoration: none;
+    text-align: left;
     border-radius: 10px;
     cursor: pointer;
     transition: color 0.15s, background 0.15s;
+    width: 100%;
+    border: none;
+    background: transparent;
     &:hover { color: var(--soc-bar-text-strong); background: var(--soc-bar-hover); }
     &.is-active { color: var(--soc-bar-text-strong); background: var(--soc-bar-active); }
     &--logout { color: #dc2626; &:hover { color: #dc2626; background: rgba(220, 38, 38, 0.08); } }
