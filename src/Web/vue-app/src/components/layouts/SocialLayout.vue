@@ -1093,7 +1093,7 @@ body.soc--dark {
   }
 
   // Portal modal icon needs light stroke in dark mode
-  .portal-modal__icon-ring svg { stroke: white; }
+  .portal-modal__icon-ring:not([style*="rgba(220"]) svg { stroke: white; }
 
   // Delete/confirm modals — dark mode overrides for teleported content
   .portal-modal__card,
