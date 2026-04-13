@@ -807,6 +807,7 @@ $soc-font-body: 'Karla', sans-serif;
     flex: 1 1 0;
     min-height: 0;
     overflow: hidden;
+    border-radius: 12px 12px 0 0;
   }
 }
 
