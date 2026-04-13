@@ -390,6 +390,11 @@ $mp-font-body: 'Karla', sans-serif;
     &:hover { opacity: 0.85; }
     &:active { transform: scale(0.98); }
     &:disabled { opacity: 0.45; cursor: default; }
+
+    .soc--dark & {
+      color: #1a1a1a;
+      background: white;
+    }
   }
 
   // Cards
