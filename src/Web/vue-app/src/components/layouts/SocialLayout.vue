@@ -831,7 +831,7 @@ $soc-font-body: 'Karla', sans-serif;
     overflow: hidden;
     border-radius: 12px 12px 0 0;
   }
-  .soc.soc--messages .soc-footer { display: none; }
+  .soc-footer { display: none; }
 }
 
 // Desktop: on messages/announcements/groups routes, lock the layout so only
