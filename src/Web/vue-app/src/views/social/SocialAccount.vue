@@ -376,15 +376,21 @@ $soc-black: #1a1a1a;
 
   &__avatar-actions {
     display: flex;
+    flex-direction: column;
     gap: 8px;
-    margin-top: 6px;
-    flex-wrap: wrap;
+    width: 100%;
+
+    @media (min-width: 48em) {
+      flex-direction: row;
+    }
   }
 
   &__avatar-btn {
-    padding: 5px 10px;
+    flex: 1 1 0;
+    width: 100%;
+    padding: 9px 14px;
     font-family: 'Montserrat', sans-serif;
-    font-size: 0.72rem;
+    font-size: 0.8rem;
     font-weight: 600;
     border-radius: 8px;
     color: var(--soc-text);
