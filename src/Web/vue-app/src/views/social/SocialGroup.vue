@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-[calc(100vh-120px)] flex-col">
+  <div class="group-page flex h-full min-h-0 flex-col">
     <!-- Group header -->
     <div class="group-banner flex items-center gap-3 border-b border-gray-200 bg-white px-4 py-3">
       <button @click="$router.push({ name: 'socialPortal' })" class="text-gray-600">
@@ -31,7 +31,7 @@
     </div>
 
     <!-- Feed -->
-    <div class="flex-1">
+    <div class="group-page__feed flex-1 min-h-0 overflow-y-auto">
         <!-- Post composer -->
         <div
           class="border-b-[6px] border-[var(--soc-page-bg,#f0f0f0)] px-4 py-3 relative"
