@@ -297,10 +297,11 @@ $mp-font-body: 'Karla', sans-serif;
     justify-content: center;
     width: 32px;
     height: 32px;
-    border-radius: 8px;
+    border-radius: 8px !important;
     color: var(--soc-text-muted, #78716c);
     transition: color 0.15s, background 0.15s;
     cursor: pointer;
+    overflow: hidden;
     &:hover { color: var(--soc-bar-text-strong, #1a1a1a); background: var(--soc-bar-hover, #f5f3f0); }
   }
 
