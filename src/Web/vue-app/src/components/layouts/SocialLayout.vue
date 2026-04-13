@@ -67,6 +67,17 @@
       <!-- Mobile nav -->
       <nav v-if="isAuthenticated && isMenuOpen" class="soc-header__mobile-nav">
         <router-link
+          :to="{ name: 'socialAccount' }"
+          :class="['soc-header__mobile-item', isActive('socialAccount') && 'is-active']"
+          @click="isMenuOpen = false"
+        >
+          <span class="soc-header__pfp" :style="{ background: userAvatarColor }">
+            <img v-if="userPfp" :src="userPfp" alt="" class="soc-header__pfp-img" />
+            <span v-else class="soc-header__pfp-initials">{{ userInitials }}</span>
+          </span>
+          <span>{{ userName }}</span>
+        </router-link>
+        <router-link
           v-for="tab in tabs"
           :key="tab.name"
           :to="{ name: tab.name }"
@@ -83,6 +94,15 @@
           <svg v-if="isDarkMode" class="soc-header__nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
           <svg v-else class="soc-header__nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
           <span>{{ isDarkMode ? 'Mode clair' : 'Mode sombre' }}</span>
+        </button>
+        <button
+          class="soc-header__mobile-item soc-header__mobile-item--logout"
+          @click="isMenuOpen = false; handleLogout()"
+        >
+          <svg class="soc-header__nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          <span>Se déconnecter</span>
         </button>
       </nav>
     </header>
@@ -634,6 +654,7 @@ $soc-font-body: 'Karla', sans-serif;
     transition: color 0.15s, background 0.15s;
     &:hover { color: var(--soc-bar-text-strong); background: var(--soc-bar-hover); }
     &.is-active { color: var(--soc-bar-text-strong); background: var(--soc-bar-active); }
+    &--logout { color: #dc2626; &:hover { color: #dc2626; background: rgba(220, 38, 38, 0.08); } }
   }
 }
 
@@ -757,6 +778,8 @@ $soc-font-body: 'Karla', sans-serif;
   }
   .soc-footer__right { gap: 12px; }
   .soc-theme-toggle { display: none; }
+  .soc-header__profile-btn { display: none; }
+  .soc-header__icon-btn--logout { display: none; }
 }
 
 // Toast system
