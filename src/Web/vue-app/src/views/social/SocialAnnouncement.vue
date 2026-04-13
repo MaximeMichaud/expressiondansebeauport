@@ -496,6 +496,17 @@ onUnmounted(() => {
 <style lang="scss">
 $ann-d-font: 'Montserrat', sans-serif;
 
+.ann-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.ann-page__body {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+}
 .ann-page__composer {
   display: flex;
   gap: 8px;
@@ -503,20 +514,6 @@ $ann-d-font: 'Montserrat', sans-serif;
   border-top: 1px solid var(--soc-divider, #f0f0f0);
   background: var(--soc-content-bg, white);
   flex-shrink: 0;
-}
-
-@media (max-width: 47.99em) {
-  .ann-page {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 0;
-  }
-  .ann-page__body {
-    flex: 1 1 0;
-    min-height: 0;
-    overflow-y: auto;
-  }
 }
 
 .ann-d-modal {
