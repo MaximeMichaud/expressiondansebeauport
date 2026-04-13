@@ -126,7 +126,7 @@
     </main>
 
     <!-- Footer -->
-    <footer v-if="isAuthenticated && !isMessagesRoute" class="soc-footer">
+    <footer v-if="isAuthenticated" class="soc-footer">
       <div class="soc-footer__strip">
         <div class="soc-footer__left">
           <span class="soc-footer__brand">EDB Social</span>
@@ -819,7 +819,7 @@ $soc-font-body: 'Karla', sans-serif;
   .soc-header__profile-btn { display: none; }
   .soc-header__icon-btn--logout { display: none; }
 
-  // On messages pages: lock to viewport so only the messages scroll
+  // On messages pages: lock to viewport so only the messages scroll, hide footer
   .soc.soc--messages {
     height: 100vh;
     min-height: 100vh;
@@ -830,6 +830,22 @@ $soc-font-body: 'Karla', sans-serif;
     min-height: 0;
     overflow: hidden;
     border-radius: 12px 12px 0 0;
+  }
+  .soc.soc--messages .soc-footer { display: none; }
+}
+
+// Desktop: on messages/announcements/groups routes, lock the layout so only
+// the main content scrolls internally. Footer stays visible.
+@media (min-width: 48em) {
+  .soc.soc--messages {
+    height: 100vh;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+  .soc.soc--messages .soc-main {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden;
   }
 }
 
