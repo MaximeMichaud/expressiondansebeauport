@@ -73,7 +73,7 @@ jobs:
       - name: Merge minor/patch updates
         if: steps.update-type.outputs.update_type != 'version-update:semver-major'
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.ADMIN_PAT }}
         run: |
           gh pr merge "${{ github.event.pull_request.number }}" \
             --repo "${{ github.repository }}" \
