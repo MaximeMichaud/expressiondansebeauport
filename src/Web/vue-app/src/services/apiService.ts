@@ -1,18 +1,15 @@
 import axios, {type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig} from "axios";
-import {inject, injectable} from "inversify";
 import {useApiStore} from "@/stores/apiStore";
 
 import "@/extensions/date.extensions";
 import Cookies from "universal-cookie";
-import {TYPES} from "@/injection/types";
 import {IApiService} from "@/injection/interfaces";
 import {SucceededOrNotResponse} from "@/types/responses";
 
-@injectable()
 export class ApiService implements IApiService {
   _httpClient: AxiosInstance;
 
-  constructor(@inject(TYPES.AxiosInstance) httpClient: AxiosInstance) {
+  constructor(httpClient: AxiosInstance) {
     this._httpClient = httpClient;
     /*
         Attaching the accessToken to the request header. The access token is stored in cookies by LoginEndpoint or TwoFactorEndpoint
