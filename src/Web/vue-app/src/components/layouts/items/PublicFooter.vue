@@ -67,6 +67,9 @@
 
     <div class="public-footer__copyright">
       <p>&copy; {{ currentYear }} {{ settings.copyrightText || t('public.footer.copyright') }}</p>
+      <RouterLink to="/politique-confidentialite" class="public-footer__privacy-link">
+        {{ t('public.footer.privacyPolicy') }}
+      </RouterLink>
     </div>
   </footer>
 </template>
