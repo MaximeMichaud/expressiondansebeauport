@@ -7,7 +7,7 @@
     </button>
 
     <!-- Header -->
-    <header class="soc-header">
+    <header :class="['soc-header', isMenuOpen && 'soc-header--menu-open']">
       <div class="soc-header__strip">
         <div class="soc-header__left">
           <router-link :to="{ name: 'socialImportant' }" class="soc-header__brand">
@@ -433,6 +433,12 @@ $soc-font-body: 'Karla', sans-serif;
     color: var(--soc-bar-text);
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     transition: background 0.25s, color 0.25s;
+
+    // When mobile nav is open, flatten bottom corners so menu flows as one bar
+    .soc-header--menu-open & {
+      border-radius: 0;
+      box-shadow: none;
+    }
   }
 
   &__left {
@@ -636,6 +642,8 @@ $soc-font-body: 'Karla', sans-serif;
     margin: 0 auto;
     padding: 8px 20px 12px;
     background: var(--soc-bar-bg);
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     transition: background 0.25s;
   }
 
