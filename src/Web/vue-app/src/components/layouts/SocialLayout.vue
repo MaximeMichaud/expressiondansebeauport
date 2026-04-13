@@ -860,7 +860,7 @@ $soc-font-body: 'Karla', sans-serif;
   .soc-footer__right { gap: 12px; }
   .soc-theme-toggle { display: none; }
   .soc-header__profile-btn { display: none; }
-  .soc-header__icon-btn--logout { display: none; }
+  .soc-header .soc-header__icon-btn--logout { display: none; }
 
   // On messages pages: lock to viewport so only the messages scroll, hide footer
   .soc.soc--messages {
