@@ -806,9 +806,7 @@ $soc-font-body: 'Karla', sans-serif;
   .soc.soc--messages .soc-main {
     flex: 1 1 0;
     min-height: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    border-radius: 0;
+    margin-bottom: 16px;
     overflow: hidden;
   }
 }
