@@ -183,6 +183,23 @@ const authService = useAuthenticationService()
 const isMenuOpen = ref(false)
 const isDarkMode = ref(localStorage.getItem('soc-theme') === 'dark')
 
+// Close hamburger menu when clicking anywhere outside the header
+function handleOutsideClick(e: MouseEvent) {
+  if (!isMenuOpen.value) return
+  const header = document.querySelector('.soc-header')
+  if (header && !header.contains(e.target as Node)) {
+    isMenuOpen.value = false
+  }
+}
+watch(isMenuOpen, (open) => {
+  if (open) {
+    // Defer so the opening click doesn't trigger immediate close
+    setTimeout(() => document.addEventListener('click', handleOutsideClick), 0)
+  } else {
+    document.removeEventListener('click', handleOutsideClick)
+  }
+})
+
 // Sync dark class on body so <Teleport to="body"> content (modals, toasts) inherits dark mode
 function syncBodyDark(dark: boolean) {
   document.body.classList.toggle('soc--dark', dark)
@@ -688,11 +705,13 @@ $soc-font-body: 'Karla', sans-serif;
     cursor: pointer;
     transition: color 0.15s, background 0.15s;
     width: 100%;
+    max-width: 100%;
+    margin: 0;
     border: none;
     background: transparent;
 
     // Keep icon + text tight-left, no flex-grow on children
-    > * { flex: 0 0 auto; }
+    > * { flex: 0 0 auto; margin: 0 !important; }
     &:hover { color: var(--soc-bar-text-strong); background: var(--soc-bar-hover); }
     &.is-active { color: var(--soc-bar-text-strong); background: var(--soc-bar-active); }
     &--logout { color: #dc2626; &:hover { color: #dc2626; background: rgba(220, 38, 38, 0.08); } }
