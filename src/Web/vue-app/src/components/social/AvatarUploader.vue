@@ -21,7 +21,7 @@
       v-if="canEdit"
       type="button"
       :class="[
-        'absolute inset-0 flex items-center justify-center transition cursor-pointer focus:outline-none',
+        'avatar-uploader__edit absolute inset-0 flex items-center justify-center transition cursor-pointer focus:outline-none',
         shape === 'square' ? 'rounded-lg' : 'rounded-full',
         uploading
           ? 'bg-black/50 opacity-100'
@@ -119,5 +119,16 @@ function onFileChange(e: Event) {
 }
 .avatar-uploader__remove:hover {
   background: #b91c1c;
+}
+
+/* On touch devices (no hover), always show edit overlay and remove button */
+@media (hover: none) {
+  .avatar-uploader__edit {
+    opacity: 1 !important;
+    background: rgba(0, 0, 0, 0.35) !important;
+  }
+  .avatar-uploader__remove {
+    opacity: 1 !important;
+  }
 }
 </style>
