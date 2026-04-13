@@ -14,10 +14,7 @@
         class="group-header-avatar"
         :size="32"
         shape="square"
-        :can-edit="canEditGroupImage"
-        :uploading="uploadingGroupImage"
-        @upload="handleGroupImageUpload"
-        @remove="confirmGroupImageRemove = true"
+        :can-edit="false"
       />
       <h1 class="flex-1 text-base font-semibold text-gray-900">{{ group?.name || 'Groupe' }}</h1>
       <button
