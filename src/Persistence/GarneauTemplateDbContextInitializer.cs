@@ -434,114 +434,90 @@ public class GarneauTemplateDbContextInitializer
             "</section>",
             CampPageCss());
 
-        await SeedPageIfNotExists("Politique de confidentialité", "politique-confidentialite", 99,
-            "<div class='policy-hero'>" +
-                "<p>Conformément à la Loi modernisant des dispositions législatives en matière de protection des renseignements personnels (Loi 25), " +
-                "Expression Danse de Beauport s'engage à protéger les renseignements personnels de ses membres, élèves et visiteurs.</p>" +
-            "</div>" +
-
-            "<section>" +
-                "<h2>1. Responsable de la protection des renseignements personnels</h2>" +
-                "<p>La directrice d'Expression Danse de Beauport est responsable de la protection des renseignements personnels au sein de l'organisation.</p>" +
-                "<p><strong>Courriel :</strong> <a href='mailto:info@expressiondansebeauport.com'>info@expressiondansebeauport.com</a></p>" +
-                "<p><strong>Téléphone :</strong> <a href='tel:4186666158'>418-666-6158</a></p>" +
-            "</section>" +
-
-            "<section>" +
-                "<h2>2. Renseignements collectés</h2>" +
-                "<p>Nous collectons uniquement les renseignements nécessaires à la prestation de nos services :</p>" +
-                "<ul>" +
-                    "<li>Nom et prénom</li>" +
-                    "<li>Adresse courriel</li>" +
-                    "<li>Numéro de téléphone</li>" +
-                    "<li>Date de naissance (pour les inscriptions de mineurs)</li>" +
-                    "<li>Informations de paiement (traitées par notre prestataire sécurisé)</li>" +
-                "</ul>" +
-            "</section>" +
-
-            "<section>" +
-                "<h2>3. Finalités de la collecte</h2>" +
-                "<p>Vos renseignements personnels sont utilisés aux fins suivantes :</p>" +
-                "<ul>" +
-                    "<li>Gestion des inscriptions aux cours et aux camps</li>" +
-                    "<li>Communication concernant les activités de l'école</li>" +
-                    "<li>Facturation et traitement des paiements</li>" +
-                    "<li>Respect de nos obligations légales</li>" +
-                "</ul>" +
-            "</section>" +
-
-            "<section>" +
-                "<h2>4. Partage des renseignements</h2>" +
-                "<p>Nous ne vendons, n'échangeons ni ne transmettons vos renseignements personnels à des tiers, sauf dans les cas suivants :</p>" +
-                "<ul>" +
-                    "<li>Prestataires de services tiers nécessaires à nos activités (ex. : traitement des paiements)</li>" +
-                    "<li>Obligations légales imposées par la loi</li>" +
-                "</ul>" +
-                "<p>Tout prestataire tiers ayant accès à vos données est tenu de respecter la confidentialité de celles-ci.</p>" +
-            "</section>" +
-
-            "<section>" +
-                "<h2>5. Conservation des renseignements</h2>" +
-                "<p>Vos renseignements personnels sont conservés uniquement pour la durée nécessaire aux finalités pour lesquelles ils ont été collectés, " +
-                "ou pour satisfaire aux exigences légales applicables. Une fois cette période écoulée, ils sont détruits de façon sécuritaire.</p>" +
-            "</section>" +
-
-            "<section>" +
-                "<h2>6. Vos droits</h2>" +
-                "<p>Conformément à la Loi 25, vous disposez des droits suivants :</p>" +
-                "<div class='policy-rights'>" +
-                    "<div class='policy-right'>" +
-                        "<h3>Droit d'accès</h3>" +
-                        "<p>Vous pouvez demander à consulter les renseignements personnels que nous détenons à votre sujet.</p>" +
-                    "</div>" +
-                    "<div class='policy-right'>" +
-                        "<h3>Droit de rectification</h3>" +
-                        "<p>Vous pouvez demander la correction de renseignements inexacts ou incomplets.</p>" +
-                    "</div>" +
-                    "<div class='policy-right'>" +
-                        "<h3>Droit à la suppression</h3>" +
-                        "<p>Vous pouvez demander la suppression de vos renseignements, sous réserve des obligations légales.</p>" +
-                    "</div>" +
-                    "<div class='policy-right'>" +
-                        "<h3>Droit à la portabilité</h3>" +
-                        "<p>Vous pouvez demander que vos données vous soient transmises dans un format structuré.</p>" +
-                    "</div>" +
-                "</div>" +
-                "<p>Pour exercer ces droits, contactez-nous à : <a href='mailto:info@expressiondansebeauport.com'>info@expressiondansebeauport.com</a></p>" +
-            "</section>" +
-
-            "<section>" +
-                "<h2>7. Sécurité</h2>" +
-                "<p>Nous mettons en œuvre des mesures de sécurité techniques et organisationnelles appropriées pour protéger vos renseignements personnels " +
-                "contre tout accès non autorisé, divulgation, altération ou destruction.</p>" +
-            "</section>" +
-
-            "<section>" +
-                "<h2>8. Mise à jour de la politique</h2>" +
-                "<p>Cette politique de confidentialité peut être mise à jour à tout moment. La version la plus récente sera toujours disponible sur cette page. " +
-                "Dernière mise à jour : janvier 2026.</p>" +
-            "</section>",
-            PolicyPageCss());
+        await SeedPolicyPageWithBlocks();
     }
 
-    private static string PolicyPageCss() =>
-        ".public-page__container { max-width: 900px; } " +
-        ".public-page__title { font-size: 2.2rem; margin-bottom: 2rem; } " +
-        ".public-page__content { display: flex; flex-direction: column; gap: 2.5rem; } " +
-        ".public-page__content h2 { font-size: 1.3rem; margin-bottom: 1rem; color: #be1e2c; padding-bottom: 0.5rem; border-bottom: 2px solid #f0f0f0; } " +
-        ".public-page__content h3 { font-size: 1rem; margin-bottom: 0.4rem; color: #1a1a1a; } " +
-        ".public-page__content ul { padding-left: 1.5rem; list-style: disc; } " +
-        ".public-page__content ul li { margin: 0.4rem 0; color: #444; font-size: 0.97rem; } " +
-        ".public-page__content p { color: #444; line-height: 1.7; font-size: 0.97rem; } " +
-        ".public-page__content a { color: #be1e2c; text-decoration: underline; } " +
-        ".policy-hero { background: #f4f6f8; border-radius: 12px; padding: 2rem; border-left: 4px solid #be1e2c; } " +
-        ".policy-hero p { font-size: 1rem; color: #444; line-height: 1.7; margin: 0; } " +
-        ".policy-rights { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.2rem; margin: 1.5rem 0; } " +
-        ".policy-right { background: #f4f6f8; border-radius: 10px; padding: 1.25rem 1.5rem; } " +
-        ".policy-right h3 { color: #be1e2c; margin-bottom: 0.5rem; font-size: 0.95rem; } " +
-        ".policy-right p { font-size: 0.9rem; color: #555; margin: 0; } " +
-        "section { padding-bottom: 0.25rem; } " +
-        "strong { color: #be1e2c; }";
+    private async Task SeedPolicyPageWithBlocks()
+    {
+        var slug = Page.GenerateSlug("politique-confidentialite");
+        var existing = _context.Pages.FirstOrDefault(p => p.Slug == slug);
+        var blocks = PolicyPageBlocks();
+
+        if (existing == null)
+        {
+            var page = new Page("Politique de confidentialité", "politique-confidentialite");
+            page.SetContentMode("blocks");
+            page.SetBlocks(blocks);
+            page.SetSortOrder(99);
+            page.Publish();
+            _context.Pages.Add(page);
+            await _context.SaveChangesAsync();
+        }
+        else if (existing.ContentMode != "blocks")
+        {
+            existing.SetContentMode("blocks");
+            existing.SetBlocks(blocks);
+            existing.SetCustomCss(null);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    private static string PolicyPageBlocks() =>
+        "[" +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<p>Conform\\u00e9ment \\u00e0 la Loi modernisant des dispositions l\\u00e9gislatives en mati\\u00e8re de protection des renseignements personnels (Loi 25), " +
+            "Expression Danse de Beauport s&#39;engage \\u00e0 prot\\u00e9ger les renseignements personnels de ses membres, \\u00e9l\\u00e8ves et visiteurs.</p>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>1. Responsable de la protection des renseignements personnels</h2>" +
+            "<p>La directrice d&#39;Expression Danse de Beauport est responsable de la protection des renseignements personnels au sein de l&#39;organisation.</p>" +
+            "<p><strong>Courriel :</strong> <a href=\\\"mailto:info@expressiondansebeauport.com\\\">info@expressiondansebeauport.com</a></p>" +
+            "<p><strong>T\\u00e9l\\u00e9phone :</strong> <a href=\\\"tel:4186666158\\\">418-666-6158</a></p>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>2. Renseignements collect\\u00e9s</h2>" +
+            "<p>Nous collectons uniquement les renseignements n\\u00e9cessaires \\u00e0 la prestation de nos services :</p>" +
+            "<ul><li>Nom et pr\\u00e9nom</li><li>Adresse courriel</li><li>Num\\u00e9ro de t\\u00e9l\\u00e9phone</li>" +
+            "<li>Date de naissance (pour les inscriptions de mineurs)</li><li>Informations de paiement (trait\\u00e9es par notre prestataire s\\u00e9curis\\u00e9)</li></ul>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>3. Finalit\\u00e9s de la collecte</h2>" +
+            "<p>Vos renseignements personnels sont utilis\\u00e9s aux fins suivantes :</p>" +
+            "<ul><li>Gestion des inscriptions aux cours et aux camps</li><li>Communication concernant les activit\\u00e9s de l&#39;\\u00e9cole</li>" +
+            "<li>Facturation et traitement des paiements</li><li>Respect de nos obligations l\\u00e9gales</li></ul>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>4. Partage des renseignements</h2>" +
+            "<p>Nous ne vendons, n&#39;\\u00e9changeons ni ne transmettons vos renseignements personnels \\u00e0 des tiers, sauf dans les cas suivants :</p>" +
+            "<ul><li>Prestataires de services tiers n\\u00e9cessaires \\u00e0 nos activit\\u00e9s (ex. : traitement des paiements)</li>" +
+            "<li>Obligations l\\u00e9gales impos\\u00e9es par la loi</li></ul>" +
+            "<p>Tout prestataire tiers ayant acc\\u00e8s \\u00e0 vos donn\\u00e9es est tenu de respecter la confidentialit\\u00e9 de celles-ci.</p>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>5. Conservation des renseignements</h2>" +
+            "<p>Vos renseignements personnels sont conserv\\u00e9s uniquement pour la dur\\u00e9e n\\u00e9cessaire aux finalit\\u00e9s pour lesquelles ils ont \\u00e9t\\u00e9 collect\\u00e9s, " +
+            "ou pour satisfaire aux exigences l\\u00e9gales applicables. Une fois cette p\\u00e9riode \\u00e9coul\\u00e9e, ils sont d\\u00e9truits de fa\\u00e7on s\\u00e9curitaire.</p>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>6. Vos droits</h2>" +
+            "<p>Conform\\u00e9ment \\u00e0 la Loi 25, vous disposez des droits suivants :</p>" +
+            "<ul><li><strong>Droit d&#39;acc\\u00e8s</strong> : Vous pouvez demander \\u00e0 consulter les renseignements personnels que nous d\\u00e9tenons \\u00e0 votre sujet.</li>" +
+            "<li><strong>Droit de rectification</strong> : Vous pouvez demander la correction de renseignements inexacts ou incomplets.</li>" +
+            "<li><strong>Droit \\u00e0 la suppression</strong> : Vous pouvez demander la suppression de vos renseignements, sous r\\u00e9serve des obligations l\\u00e9gales.</li>" +
+            "<li><strong>Droit \\u00e0 la portabilit\\u00e9</strong> : Vous pouvez demander que vos donn\\u00e9es vous soient transmises dans un format structur\\u00e9.</li></ul>" +
+            "<p>Pour exercer ces droits, contactez-nous \\u00e0 : <a href=\\\"mailto:info@expressiondansebeauport.com\\\">info@expressiondansebeauport.com</a></p>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>7. S\\u00e9curit\\u00e9</h2>" +
+            "<p>Nous mettons en \\u0153uvre des mesures de s\\u00e9curit\\u00e9 techniques et organisationnelles appropri\\u00e9es pour prot\\u00e9ger vos renseignements personnels " +
+            "contre tout acc\\u00e8s non autoris\\u00e9, divulgation, alt\\u00e9ration ou destruction.</p>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>8. Mise \\u00e0 jour de la politique</h2>" +
+            "<p>Cette politique de confidentialit\\u00e9 peut \\u00eatre mise \\u00e0 jour \\u00e0 tout moment. La version la plus r\\u00e9cente sera toujours disponible sur cette page. " +
+            "Derni\\u00e8re mise \\u00e0 jour : janvier 2026.</p>" +
+        "\"}}" +
+        "]";
 
     private static string CampPageCss() =>
         ".public-page__container { max-width: 1100px; } " +
