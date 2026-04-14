@@ -41,7 +41,7 @@ public class CreateAnnouncementEndpoint : Endpoint<CreateAnnouncementRequest, Su
             return;
         }
 
-        await _postService.CreateAnnouncement(member.Id, req.Content);
+        await _postService.CreateAnnouncement(member.Id, req.Content, Array.Empty<PostMediaItem>());
         await Send.OkAsync(new SucceededOrNotResponse(true), ct);
     }
 }

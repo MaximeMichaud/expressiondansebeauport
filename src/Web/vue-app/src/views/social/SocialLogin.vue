@@ -2,15 +2,6 @@
   <div>
     <h2 class="mb-6 text-center text-2xl font-bold text-gray-900">Connexion</h2>
 
-    <div v-if="showConfirmationLink" class="mb-4 text-center">
-      <router-link
-        :to="{ path: '/confirmation', query: { email: email } }"
-        class="text-xs font-medium text-[#1a1a1a] hover:underline"
-      >
-        Vous n'avez pas recu votre code de confirmation?
-      </router-link>
-    </div>
-
     <form @submit.prevent="handleLogin" class="space-y-4">
       <div>
         <label class="mb-1 block text-sm font-medium text-gray-700">Courriel</label>
@@ -67,16 +58,18 @@ const toast = useSocialToast()
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
-const showConfirmationLink = ref(false)
 
 async function handleLogin() {
   loading.value = true
-  showConfirmationLink.value = false
 
   try {
     const result = await authService.login({ username: email.value, password: password.value })
     if (result.succeeded) {
       const user = await userService.getCurrentUser()
+      if (!user) {
+        toast.error('Une erreur est survenue. Veuillez réessayer.')
+        return
+      }
       userStore.setUser(user)
       await router.push({ name: 'socialImportant' })
     } else {
@@ -86,7 +79,6 @@ async function handleLogin() {
         return
       }
       toast.error('Courriel ou mot de passe invalide.')
-      showConfirmationLink.value = true
     }
   } catch {
     toast.error('Une erreur est survenue. Veuillez réessayer.')

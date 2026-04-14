@@ -43,6 +43,8 @@ public class GarneauTemplateDbContext : IdentityDbContext<User, Role, Guid,
     public DbSet<NavigationMenu> NavigationMenus { get; set; } = null!;
     public DbSet<NavigationMenuItem> NavigationMenuItems { get; set; } = null!;
     public DbSet<Page> Pages { get; set; } = null!;
+    public DbSet<PageRevision> PageRevisions { get; set; } = null!;
+    public DbSet<PreviewToken> PreviewTokens { get; set; } = null!;
     public DbSet<SocialLink> SocialLinks { get; set; } = null!;
     public DbSet<FooterPartner> FooterPartners { get; set; } = null!;
     public DbSet<BackupRecord> BackupRecords { get; set; } = null!;
@@ -62,6 +64,8 @@ public class GarneauTemplateDbContext : IdentityDbContext<User, Role, Guid,
     public DbSet<Conversation> Conversations { get; set; } = null!;
     public DbSet<ConversationParticipant> ConversationParticipants { get; set; } = null!;
     public DbSet<Message> Messages { get; set; } = null!;
+    public DbSet<MessageMedia> MessageMedia { get; set; } = null!;
+    public DbSet<JoinRequest> JoinRequests { get; set; } = null!;
     public DbSet<EmailConfirmationCode> EmailConfirmationCodes { get; set; } = null!;
 
     public GarneauTemplateDbContext()

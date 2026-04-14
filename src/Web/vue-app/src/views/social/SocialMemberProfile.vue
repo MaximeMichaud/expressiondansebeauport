@@ -17,7 +17,7 @@
       <!-- Identity -->
       <div class="mp__identity">
         <div class="mp__avatar" :style="{ background: member.avatarColor || getAvatarColor(member.fullName) }">
-          <img v-if="member.profileImageUrl" :src="member.profileImageUrl" :alt="member.fullName" class="mp__avatar-img" />
+          <img v-if="avatarRegistry.getAvatar(member.id, member.profileImageUrl)" :src="avatarRegistry.getAvatar(member.id, member.profileImageUrl)!" :alt="member.fullName" class="mp__avatar-img" />
           <span v-else class="mp__avatar-initials">{{ getInitials(member.fullName) }}</span>
         </div>
         <h1 class="mp__name">{{ member.fullName }}</h1>
@@ -157,12 +157,14 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSocialService } from '@/inversify.config'
 import { useUserStore } from '@/stores/userStore'
+import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
 import { Role } from '@/types/enums'
 
 const route = useRoute()
 const router = useRouter()
 const socialService = useSocialService()
 const userStore = useUserStore()
+const avatarRegistry = useAvatarRegistryStore()
 
 const member = ref<any>(null)
 const loading = ref(true)
@@ -189,6 +191,7 @@ async function promoteMember() {
   try {
     await socialService.promoteMember(memberId)
     member.value = await socialService.getMemberProfile(route.params.id as string)
+    avatarRegistry.populateOne(member.value, 'id', 'profileImageUrl')
   } catch (e) { console.error('Promote error:', e) }
   promoting.value = false
 }
@@ -199,6 +202,7 @@ async function demoteMember() {
   try {
     await socialService.demoteMember(memberId)
     member.value = await socialService.getMemberProfile(route.params.id as string)
+    avatarRegistry.populateOne(member.value, 'id', 'profileImageUrl')
   } catch (e) { console.error('Demote error:', e) }
   promoting.value = false
 }
@@ -249,6 +253,7 @@ async function executeDelete() {
 onMounted(async () => {
   try {
     member.value = await socialService.getMemberProfile(route.params.id as string)
+    avatarRegistry.populateOne(member.value, 'id', 'profileImageUrl')
   } catch { /* */ }
   loading.value = false
 })
@@ -292,10 +297,11 @@ $mp-font-body: 'Karla', sans-serif;
     justify-content: center;
     width: 32px;
     height: 32px;
-    border-radius: 8px;
+    border-radius: 8px !important;
     color: var(--soc-text-muted, #78716c);
     transition: color 0.15s, background 0.15s;
     cursor: pointer;
+    overflow: hidden;
     &:hover { color: var(--soc-bar-text-strong, #1a1a1a); background: var(--soc-bar-hover, #f5f3f0); }
   }
 
@@ -384,6 +390,11 @@ $mp-font-body: 'Karla', sans-serif;
     &:hover { opacity: 0.85; }
     &:active { transform: scale(0.98); }
     &:disabled { opacity: 0.45; cursor: default; }
+
+    .soc--dark & {
+      color: #1a1a1a;
+      background: white;
+    }
   }
 
   // Cards

@@ -1,4 +1,5 @@
 using Domain.Common;
+using Domain.Enums;
 
 namespace Domain.Entities;
 
@@ -10,6 +11,12 @@ public class Message : AuditableAndSoftDeletableEntity
     public Member SenderMember { get; private set; } = null!;
     public string Content { get; private set; } = null!;
     public string? MediaUrl { get; private set; }
+    public string? MediaThumbnailUrl { get; private set; }
+    public string? MediaOriginalUrl { get; private set; }
+    public ICollection<MessageMedia> Media { get; private set; } = new List<MessageMedia>();
+    public MessageType MessageType { get; private set; }
+    public Guid? JoinRequestId { get; private set; }
+    public JoinRequest? JoinRequest { get; private set; }
 
     public void SetConversation(Conversation conversation)
     {
@@ -25,4 +32,9 @@ public class Message : AuditableAndSoftDeletableEntity
 
     public void SetContent(string content) => Content = content;
     public void SetMediaUrl(string? url) => MediaUrl = url;
+    public void SetMediaThumbnailUrl(string? url) => MediaThumbnailUrl = url;
+    public void SetMediaOriginalUrl(string? url) => MediaOriginalUrl = url;
+    public void SetMessageType(MessageType type) => MessageType = type;
+    public void SetJoinRequest(JoinRequest joinRequest) { JoinRequest = joinRequest; JoinRequestId = joinRequest.Id; }
+    public void SetJoinRequestId(Guid? joinRequestId) => JoinRequestId = joinRequestId;
 }

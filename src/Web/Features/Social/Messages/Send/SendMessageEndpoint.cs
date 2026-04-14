@@ -49,7 +49,29 @@ public class SendMessageEndpoint : Endpoint<SendMessageRequest, SucceededOrNotRe
             return;
         }
 
-        var message = await _conversationService.SendMessage(req.ConversationId, member.Id, req.Content);
+        var media = req.Media.Select(m => new MessageMediaItem
+        {
+            DisplayUrl = m.DisplayUrl,
+            ThumbnailUrl = m.ThumbnailUrl,
+            OriginalUrl = m.OriginalUrl,
+            ContentType = m.ContentType,
+            Size = m.Size
+        }).ToList();
+
+        Domain.Entities.Message message;
+        try
+        {
+            message = await _conversationService.SendMessage(
+                req.ConversationId,
+                member.Id,
+                req.Content,
+                media);
+        }
+        catch (InvalidOperationException ex)
+        {
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("InvalidMessage", ex.Message)), ct);
+            return;
+        }
 
         var conversation = await _conversationRepository.FindById(req.ConversationId);
         var recipientMemberId = conversation?.ParticipantAMemberId == member.Id
@@ -60,7 +82,30 @@ public class SendMessageEndpoint : Endpoint<SendMessageRequest, SucceededOrNotRe
         {
             var connectionId = ChatHub.GetConnectionId(recipientUser.UserId.ToString());
             if (connectionId != null)
-                await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveMessage", new { message.Id, message.Content, SenderName = member.FullName, message.ConversationId }, ct);
+            {
+                var mediaPayload = message.Media
+                    .OrderBy(m => m.SortOrder)
+                    .Select(m => new
+                    {
+                        m.Id,
+                        m.MediaUrl,
+                        m.ThumbnailUrl,
+                        m.OriginalUrl,
+                        m.ContentType,
+                        m.Size,
+                        m.SortOrder
+                    })
+                    .ToList();
+
+                await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveMessage", new
+                {
+                    message.Id,
+                    message.Content,
+                    SenderName = member.FullName,
+                    message.ConversationId,
+                    Media = mediaPayload
+                }, ct);
+            }
         }
 
         await Send.OkAsync(new SucceededOrNotResponse(true), ct);

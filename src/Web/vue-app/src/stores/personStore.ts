@@ -21,7 +21,5 @@ export const usePersonStore = defineStore('person', {
 
   getters: { // computed
     getPerson: (state) => state.person,
-  },
-
-  persist: true
+  }
 })

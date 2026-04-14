@@ -11,15 +11,18 @@ public class UnreadCountEndpoint : EndpointWithoutRequest
     private readonly IConversationService _conversationService;
     private readonly IAuthenticatedUserService _authenticatedUserService;
     private readonly IMemberRepository _memberRepository;
+    private readonly IJoinRequestRepository _joinRequestRepository;
 
     public UnreadCountEndpoint(
         IConversationService conversationService,
         IAuthenticatedUserService authenticatedUserService,
-        IMemberRepository memberRepository)
+        IMemberRepository memberRepository,
+        IJoinRequestRepository joinRequestRepository)
     {
         _conversationService = conversationService;
         _authenticatedUserService = authenticatedUserService;
         _memberRepository = memberRepository;
+        _joinRequestRepository = joinRequestRepository;
     }
 
     public override void Configure()
@@ -41,6 +44,21 @@ public class UnreadCountEndpoint : EndpointWithoutRequest
         }
 
         var count = await _conversationService.GetUnreadCount(member.Id);
-        await HttpContext.Response.WriteAsJsonAsync(new { Count = count }, ct);
+
+        var resolvedRequests = await _joinRequestRepository.FindUnnotifiedResolved(member.Id);
+        var notifications = resolvedRequests.Select(jr => new
+        {
+            jr.Id,
+            GroupName = jr.Group?.Name ?? "le groupe",
+            Status = jr.Status.ToString()
+        }).ToList();
+
+        // Mark them as notified so they don't show again
+        foreach (var jr in resolvedRequests)
+        {
+            await _joinRequestRepository.MarkNotified(jr.Id);
+        }
+
+        await HttpContext.Response.WriteAsJsonAsync(new { Count = count, JoinRequestNotifications = notifications }, ct);
     }
 }

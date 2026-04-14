@@ -42,6 +42,27 @@ public class PollRepository : IPollRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task RemoveVote(Guid pollOptionId, Guid memberId)
+    {
+        var vote = await _context.PollVotes
+            .FirstOrDefaultAsync(v => v.PollOptionId == pollOptionId && v.MemberId == memberId);
+        if (vote == null) return;
+
+        _context.PollVotes.Remove(vote);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task RemoveVotesForPoll(Guid pollId, Guid memberId)
+    {
+        var votes = await _context.PollVotes
+            .Where(v => v.PollOption.PollId == pollId && v.MemberId == memberId)
+            .ToListAsync();
+        if (votes.Count == 0) return;
+
+        _context.PollVotes.RemoveRange(votes);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<PollOption?> FindOptionById(Guid optionId)
     {
         return await _context.PollOptions

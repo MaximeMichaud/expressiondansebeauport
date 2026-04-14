@@ -87,6 +87,11 @@ async function sendTwoFactorAuthenticationRequest() {
   }
 
   const user = await userService.getCurrentUser()
+  if (!user) {
+    notifyError(t('pages.twoFactor.validation.errorOccured'))
+    preventMultipleSubmit.value = false;
+    return;
+  }
   userStore.setUser(user)
   apiStore.setNeedToLogout(false)
   await router.push(t("routes.account.path"))

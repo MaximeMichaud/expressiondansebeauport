@@ -1,0 +1,28 @@
+backend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/Application/**"
+          - "src/Domain/**"
+          - "src/Infrastructure/**"
+          - "src/Persistence/**"
+          - "src/Web/**"
+          - "!src/Web/vue-app/**"
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file: "src/Web/vue-app/**"
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file: "tests/**"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: ".github/**"
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.csproj"
+          - "**/package.json"
+          - "**/package-lock.json"
