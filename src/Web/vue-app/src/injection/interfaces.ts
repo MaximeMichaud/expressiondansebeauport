@@ -59,7 +59,7 @@ export interface IPageService {
 
   create(page: Page): Promise<SucceededOrNotResponse>
 
-  update(page: Page): Promise<SucceededOrNotResponse>
+  update(page: Page): Promise<{ succeeded: boolean; page?: Page }>
 
   delete(id: string): Promise<SucceededOrNotResponse>
 

@@ -81,7 +81,8 @@ public class UpdatePageEndpoint : Endpoint<UpdatePageRequest, PageDto>
             return;
         }
 
-        // Snapshot de l'état AVANT modification — uniquement si la requête apporte un changement réel
+        // Préparer le snapshot AVANT modification (capture l'état "avant") — uniquement si la requête apporte un changement réel
+        // Le snapshot est persisté APRÈS la mise à jour réussie pour éviter les entrées fantômes en cas d'échec
         var requestChangesPage = page.Title != req.Title
             || page.Content != req.Content
             || page.CustomCss != req.CustomCss
@@ -90,15 +91,14 @@ public class UpdatePageEndpoint : Endpoint<UpdatePageRequest, PageDto>
             || page.MetaDescription != req.MetaDescription
             || page.Status.ToString() != req.Status;
 
+        PageRevision? snapshot = null;
         if (requestChangesPage)
         {
             var latest = _revisionRepository.GetLatestByPageId(page.Id, RevisionType.Manual);
             if (latest is null || !latest.HasSameContentAs(page))
             {
                 var revisionNumber = _revisionRepository.GetNextRevisionNumber(page.Id);
-                var snapshot = PageRevision.CreateFromPage(page, revisionNumber, RevisionType.Manual, _userService.Username, InstantHelper.GetLocalNow());
-                await _revisionRepository.Create(snapshot);
-                await _revisionRepository.DeleteOldRevisions(page.Id, 25);
+                snapshot = PageRevision.CreateFromPage(page, revisionNumber, RevisionType.Manual, _userService.Username, InstantHelper.GetLocalNow());
             }
         }
 
@@ -125,6 +125,13 @@ public class UpdatePageEndpoint : Endpoint<UpdatePageRequest, PageDto>
         }
 
         await _pageRepository.Update(page);
+
+        // Persister le snapshot uniquement si la mise à jour a réussi
+        if (snapshot is not null)
+        {
+            await _revisionRepository.Create(snapshot);
+            await _revisionRepository.DeleteOldRevisions(page.Id, 25);
+        }
 
         // Supprimer l'autosave quand on sauvegarde manuellement
         await _revisionRepository.DeleteAutosave(page.Id);

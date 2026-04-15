@@ -175,13 +175,16 @@ async function onSubmit() {
   preventMultipleSubmit.value = true
 
   try {
-    const response = isEditing.value
-      ? await pageService.update(page.value)
-      : await pageService.create(page.value)
-
-    if (response && response.succeeded) {
-      onManualSave()
-      if (!isEditing.value) {
+    if (isEditing.value) {
+      const result = await pageService.update(page.value)
+      if (result.succeeded) {
+        if (result.page) page.value = result.page
+        onManualSave()
+      }
+    } else {
+      const response = await pageService.create(page.value)
+      if (response && response.succeeded) {
+        onManualSave()
         router.back()
       }
     }

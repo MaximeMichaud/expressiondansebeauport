@@ -1,6 +1,7 @@
 using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Persistence;
 
 namespace Infrastructure.Repositories.Pages;
@@ -71,17 +72,25 @@ public class PageRevisionRepository : IPageRevisionRepository
             await _context.SaveChangesAsync(ct);
             await tx.CommitAsync(ct);
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: "23505" })
         {
             // Race condition : une autre requête a inséré entre notre DELETE et notre INSERT
             await tx.RollbackAsync(ct);
             _context.Entry(revision).State = EntityState.Detached;
 
-            await _context.PageRevisions
+            // Ne remplacer que si notre révision est plus récente que la survivante
+            var surviving = await _context.PageRevisions
                 .Where(r => r.PageId == revision.PageId && r.RevisionType == RevisionType.Autosave)
-                .ExecuteDeleteAsync(ct);
-            _context.PageRevisions.Add(revision);
-            await _context.SaveChangesAsync(ct);
+                .FirstOrDefaultAsync(ct);
+
+            if (surviving is null || revision.CreatedAt >= surviving.CreatedAt)
+            {
+                await _context.PageRevisions
+                    .Where(r => r.PageId == revision.PageId && r.RevisionType == RevisionType.Autosave)
+                    .ExecuteDeleteAsync(ct);
+                _context.PageRevisions.Add(revision);
+                await _context.SaveChangesAsync(ct);
+            }
         }
     }
 
