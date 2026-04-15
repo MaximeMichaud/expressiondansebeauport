@@ -16,6 +16,9 @@ RUN npm run build
 # ============================================
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS dotnet-build
 
+ARG APP_VERSION=0.0.0-dev
+ENV MINVER_VERSION=$APP_VERSION
+
 WORKDIR /src
 
 COPY Directory.Build.props* ./

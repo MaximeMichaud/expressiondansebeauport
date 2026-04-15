@@ -27,6 +27,7 @@ jobs:
             cd /opt/expressiondansebeauport
             git fetch origin main
             git reset --hard origin/main
+            export APP_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0-dev")
             docker compose -f docker-compose.prod.yml --env-file .env.prod build
             docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --remove-orphans
             docker image prune -f
