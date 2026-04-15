@@ -25,6 +25,7 @@ import AdminBackup from "@/views/admin/backup/AdminBackup.vue";
 import AdminErrorLogs from "@/views/admin/errorlogs/AdminErrorLogs.vue";
 
 import {useUserStore} from "@/stores/userStore";
+import {useApiStore} from "@/stores/apiStore";
 import {useUserService} from "@/serviceRegistry";
 
 const socialRoutes = [
@@ -302,6 +303,9 @@ async function rehydrateWithRetry() {
   for (let i = 0; i < maxAttempts; i++) {
     const user = await useUserService().getCurrentUser()
     if (user) return user
+    // L'intercepteur pose ce flag quand le refresh-token échoue (403) —
+    // l'auth est définitivement invalide, inutile de réessayer.
+    if (useApiStore().needToLogout) return null
     if (i < maxAttempts - 1 && hasAuthCookie()) {
       await new Promise(r => setTimeout(r, delayMs))
     }
