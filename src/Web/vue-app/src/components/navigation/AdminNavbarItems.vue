@@ -1,15 +1,15 @@
 <template>
   <p class="navbar__section-title">{{ t('routes.admin.name') }}</p>
   <ul class="navbar__nav">
-    <li v-for="child in visibleRoutes" :key="child.name">
-      <RouterLink :to="getChildPath('admin', child.name?.toString())" class="navbar__navlink">
-        <component :is="iconMap[child.name?.toString() ?? '']" :size="16" />
-        {{ t(`routes.${child.name?.toString()}.name`) }}
+    <li v-for="route in adminNavRoutes" :key="route.name">
+      <RouterLink :to="route.path" class="navbar__navlink">
+        <component :is="route.meta.navIcon" :size="16" />
+        {{ t(`routes.${String(route.name)}.name`) }}
       </RouterLink>
     </li>
-    <li>
-      <RouterLink :to="t('routes.account.path')" class="navbar__navlink">
-        <UserCircle :size="16" />
+    <li v-if="accountRoute">
+      <RouterLink :to="accountRoute.path" class="navbar__navlink">
+        <component :is="accountRoute.meta.navIcon" :size="16" />
         {{ t('routes.account.name') }}
       </RouterLink>
     </li>
@@ -20,8 +20,6 @@
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
-import { getChildPath } from "@/router/helpers";
-import { Images, FileText, LayoutList, Palette, Activity, ArrowLeftRight, HardDriveDownload, AlertTriangle, UserCircle } from "lucide-vue-next";
 import { useBackupService } from "@/serviceRegistry";
 
 const { t } = useI18n();
@@ -29,27 +27,16 @@ const router = useRouter();
 const backupService = useBackupService();
 const backupAvailable = ref(true);
 
-const iconMap: Record<string, unknown> = {
-  'admin.children.media': Images,
-  'admin.children.pages': FileText,
-  'admin.children.menus': LayoutList,
-  'admin.children.customizer': Palette,
-  'admin.children.siteHealth': Activity,
-  'admin.children.importExport': ArrowLeftRight,
-  'admin.children.backup': HardDriveDownload,
-  'admin.children.errorLogs': AlertTriangle,
-};
-
-const adminChildRoutes = computed(() => {
-  const routes = router.getRoutes();
-  const match = routes.find(r => r.path === t('routes.admin.path'));
-  return match?.children ?? [];
-});
-
-const visibleRoutes = computed(() =>
-  adminChildRoutes.value.filter(r =>
-    r.name !== 'admin.children.backup' || backupAvailable.value
+const adminNavRoutes = computed(() =>
+  router.getRoutes().filter(r =>
+    r.meta.navIcon &&
+    String(r.name ?? '').startsWith('admin.children.') &&
+    (r.name !== 'admin.children.backup' || backupAvailable.value)
   )
+);
+
+const accountRoute = computed(() =>
+  router.getRoutes().find(r => r.name === 'account')
 );
 
 onMounted(async () => {
