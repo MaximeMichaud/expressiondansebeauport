@@ -76,21 +76,25 @@
     border: none;
     cursor: pointer;
     text-align: left;
-  }
 
-  &__navgroup-toggle--active {
-    color: var(--primary);
-    background-color: $color-grey-light;
+    &--open {
+      background-color: $color-grey-light;
+    }
+
+    &--active {
+      box-shadow: inset 3px 0 0 var(--primary);
+      background-color: $color-grey-light;
+    }
+
+    &--open > .navbar__navgroup-chevron {
+      transform: rotate(180deg);
+    }
   }
 
   &__navgroup-chevron {
     margin-left: auto;
     flex-shrink: 0;
-    transition: transform 200ms ease;
-
-    .navbar__navgroup-toggle--open & {
-      transform: rotate(180deg);
-    }
+    transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   // Sous-items indentés
@@ -98,7 +102,9 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
-    padding: 2px 0 2px 12px;
+    padding: 4px 0 4px 12px;
+    overflow: hidden;
+    transition: height 220ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   &__navlink--sub {

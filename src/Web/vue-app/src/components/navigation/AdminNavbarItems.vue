@@ -3,7 +3,7 @@
   <ul class="navbar__nav">
     <li v-for="route in mainRoutes" :key="route.name">
       <RouterLink :to="route.path" class="navbar__navlink">
-        <component :is="route.meta.navIcon" :size="16" />
+        <component :is="route.meta.navIcon" :size="16" aria-hidden="true" />
         {{ t(`routes.${String(route.name)}.name`) }}
       </RouterLink>
     </li>
@@ -15,27 +15,36 @@
           'navbar__navgroup-toggle--open': toolsOpen,
           'navbar__navgroup-toggle--active': isToolsActive,
         }"
+        :aria-expanded="toolsOpen"
+        aria-controls="tools-submenu"
         @click="toolsOpen = !toolsOpen"
       >
-        <Wrench :size="16" />
+        <Wrench :size="16" aria-hidden="true" />
         {{ t('nav.tools') }}
-        <ChevronDown :size="14" class="navbar__navgroup-chevron" />
+        <ChevronDown :size="14" class="navbar__navgroup-chevron" aria-hidden="true" />
       </button>
-      <ul v-show="toolsOpen" class="navbar__subnav">
-        <li v-for="route in toolRoutes" :key="route.name">
-          <RouterLink :to="route.path" class="navbar__navlink navbar__navlink--sub">
-            <component :is="route.meta.navIcon" :size="14" />
-            {{ t(`routes.${String(route.name)}.name`) }}
-          </RouterLink>
-        </li>
-      </ul>
+      <Transition
+        @enter="onEnter"
+        @after-enter="onAfterEnter"
+        @leave="onLeave"
+        @after-leave="onAfterLeave"
+      >
+        <ul v-if="toolsOpen" id="tools-submenu" class="navbar__subnav">
+          <li v-for="route in toolRoutes" :key="route.name">
+            <RouterLink :to="route.path" class="navbar__navlink navbar__navlink--sub">
+              <component :is="route.meta.navIcon" :size="14" aria-hidden="true" />
+              {{ t(`routes.${String(route.name)}.name`) }}
+            </RouterLink>
+          </li>
+        </ul>
+      </Transition>
     </li>
   </ul>
 
   <ul v-if="accountRoute" class="navbar__nav navbar__nav--account">
     <li>
       <RouterLink :to="accountRoute.path" class="navbar__navlink">
-        <component :is="accountRoute.meta.navIcon" :size="16" />
+        <component :is="accountRoute.meta.navIcon" :size="16" aria-hidden="true" />
         {{ t('routes.account.name') }}
       </RouterLink>
     </li>
@@ -94,4 +103,32 @@ watch(isToolsActive, (active) => {
 onMounted(async () => {
   backupAvailable.value = await backupService.checkStatus();
 });
+
+function onEnter(el: Element) {
+  const htmlEl = el as HTMLElement;
+  htmlEl.style.height = '0';
+  htmlEl.style.overflow = 'hidden';
+  void htmlEl.offsetHeight;
+  htmlEl.style.height = htmlEl.scrollHeight + 'px';
+}
+
+function onAfterEnter(el: Element) {
+  const htmlEl = el as HTMLElement;
+  htmlEl.style.height = '';
+  htmlEl.style.overflow = '';
+}
+
+function onLeave(el: Element) {
+  const htmlEl = el as HTMLElement;
+  htmlEl.style.height = htmlEl.scrollHeight + 'px';
+  htmlEl.style.overflow = 'hidden';
+  void htmlEl.offsetHeight;
+  htmlEl.style.height = '0';
+}
+
+function onAfterLeave(el: Element) {
+  const htmlEl = el as HTMLElement;
+  htmlEl.style.height = '';
+  htmlEl.style.overflow = '';
+}
 </script>
