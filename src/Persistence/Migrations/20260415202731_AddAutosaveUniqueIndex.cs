@@ -10,6 +10,18 @@ namespace Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Supprimer les autosaves en double avant de créer l'index unique
+            migrationBuilder.Sql("""
+                DELETE FROM "PageRevisions"
+                WHERE "RevisionType" = 'Autosave'
+                  AND "Id" NOT IN (
+                    SELECT DISTINCT ON ("PageId") "Id"
+                    FROM "PageRevisions"
+                    WHERE "RevisionType" = 'Autosave'
+                    ORDER BY "PageId", "CreatedAt" DESC
+                  );
+                """);
+
             migrationBuilder.CreateIndex(
                 name: "IX_PageRevisions_PageId_Autosave_Unique",
                 table: "PageRevisions",

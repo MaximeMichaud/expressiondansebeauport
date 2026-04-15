@@ -62,7 +62,7 @@ public class AutosaveEndpoint : Endpoint<AutosaveRequest, AutosaveResponse>
             req.ContentMode, req.Blocks, req.MetaDescription,
             parsedStatus, revisionNumber: 0, RevisionType.Autosave, _userService.Username, now);
 
-        await _revisionRepository.UpsertAutosave(revision);
+        await _revisionRepository.UpsertAutosave(revision, ct);
 
         await Send.OkAsync(new AutosaveResponse { SavedAt = now.ToString() }, cancellation: ct);
     }

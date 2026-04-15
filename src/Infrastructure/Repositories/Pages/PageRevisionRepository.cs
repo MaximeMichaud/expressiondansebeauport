@@ -54,15 +54,35 @@ public class PageRevisionRepository : IPageRevisionRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpsertAutosave(PageRevision revision)
+    public async Task UpsertAutosave(PageRevision revision, CancellationToken ct = default)
     {
-        await using var tx = await _context.Database.BeginTransactionAsync();
-        await _context.PageRevisions
-            .Where(r => r.PageId == revision.PageId && r.RevisionType == RevisionType.Autosave)
-            .ExecuteDeleteAsync();
+        await using var tx = await _context.Database.BeginTransactionAsync(ct);
+
+        var existing = await _context.PageRevisions
+            .FirstOrDefaultAsync(r => r.PageId == revision.PageId && r.RevisionType == RevisionType.Autosave, ct);
+
+        if (existing is not null)
+            _context.PageRevisions.Remove(existing);
+
         _context.PageRevisions.Add(revision);
-        await _context.SaveChangesAsync();
-        await tx.CommitAsync();
+
+        try
+        {
+            await _context.SaveChangesAsync(ct);
+            await tx.CommitAsync(ct);
+        }
+        catch (DbUpdateException)
+        {
+            // Race condition : une autre requête a inséré entre notre DELETE et notre INSERT
+            await tx.RollbackAsync(ct);
+            _context.Entry(revision).State = EntityState.Detached;
+
+            await _context.PageRevisions
+                .Where(r => r.PageId == revision.PageId && r.RevisionType == RevisionType.Autosave)
+                .ExecuteDeleteAsync(ct);
+            _context.PageRevisions.Add(revision);
+            await _context.SaveChangesAsync(ct);
+        }
     }
 
     public async Task DeleteOldRevisions(Guid pageId, int keepCount)

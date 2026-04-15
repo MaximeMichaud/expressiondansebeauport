@@ -81,14 +81,25 @@ public class UpdatePageEndpoint : Endpoint<UpdatePageRequest, PageDto>
             return;
         }
 
-        // Snapshot de l'état AVANT modification — permet au diff de l'historique de montrer ce qui a changé
-        var latest = _revisionRepository.GetLatestByPageId(page.Id, RevisionType.Manual);
-        if (latest is null || !latest.HasSameContentAs(page))
+        // Snapshot de l'état AVANT modification — uniquement si la requête apporte un changement réel
+        var requestChangesPage = page.Title != req.Title
+            || page.Content != req.Content
+            || page.CustomCss != req.CustomCss
+            || page.ContentMode != req.ContentMode
+            || page.Blocks != req.Blocks
+            || page.MetaDescription != req.MetaDescription
+            || page.Status.ToString() != req.Status;
+
+        if (requestChangesPage)
         {
-            var revisionNumber = _revisionRepository.GetNextRevisionNumber(page.Id);
-            var snapshot = PageRevision.CreateFromPage(page, revisionNumber, RevisionType.Manual, _userService.Username, InstantHelper.GetLocalNow());
-            await _revisionRepository.Create(snapshot);
-            await _revisionRepository.DeleteOldRevisions(page.Id, 25);
+            var latest = _revisionRepository.GetLatestByPageId(page.Id, RevisionType.Manual);
+            if (latest is null || !latest.HasSameContentAs(page))
+            {
+                var revisionNumber = _revisionRepository.GetNextRevisionNumber(page.Id);
+                var snapshot = PageRevision.CreateFromPage(page, revisionNumber, RevisionType.Manual, _userService.Username, InstantHelper.GetLocalNow());
+                await _revisionRepository.Create(snapshot);
+                await _revisionRepository.DeleteOldRevisions(page.Id, 25);
+            }
         }
 
         page.SetTitle(req.Title);
