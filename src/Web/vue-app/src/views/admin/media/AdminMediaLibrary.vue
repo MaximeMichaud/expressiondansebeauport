@@ -70,7 +70,7 @@
 <script lang="ts" setup>
 import {useI18n} from "vue-i18n"
 import {computed, onMounted, ref} from "vue"
-import {useMediaService} from "@/inversify.config"
+import {useMediaService} from "@/serviceRegistry"
 import {MediaFile} from "@/types/entities"
 import {PaginatedResponse} from "@/types/responses"
 import Loader from "@/components/layouts/items/Loader.vue"

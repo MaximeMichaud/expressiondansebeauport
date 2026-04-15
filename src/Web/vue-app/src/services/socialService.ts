@@ -1,4 +1,3 @@
-import { injectable } from "inversify"
 import { ApiService } from "@/services/apiService"
 import { SucceededOrNotResponse } from "@/types/responses"
 import type { Group, GroupMember, Member, Post, Comment, Conversation, Message } from "@/types/entities"
@@ -18,7 +17,6 @@ function toCamel(obj: any): any {
   return obj
 }
 
-@injectable()
 export class SocialService extends ApiService {
   // === Member Registration ===
   async register(firstName: string, lastName: string, email: string, password: string): Promise<SucceededOrNotResponse> {

@@ -1,12 +1,10 @@
 import {AxiosError, AxiosResponse} from "axios"
-import {injectable} from "inversify"
 
 import {ApiService} from "@/services/apiService"
 import {IMenuService} from "@/injection/interfaces"
 import {SucceededOrNotResponse} from "@/types/responses"
 import {NavigationMenu, NavigationMenuItem} from "@/types/entities"
 
-@injectable()
 export class MenuService extends ApiService implements IMenuService {
   public async getAll(): Promise<NavigationMenu[]> {
     const response = await this

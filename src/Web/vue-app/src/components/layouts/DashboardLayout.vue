@@ -30,7 +30,7 @@
 import {onMounted, ref, computed} from "vue";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
-import {useAdministratorService} from "@/inversify.config";
+import {useAdministratorService} from "@/serviceRegistry";
 import Navbar from "@/components/navigation/Navbar.vue";
 import LogoutPopup from "@/components/layouts/items/LogoutPopup.vue";
 import Notifications from "@/components/layouts/items/Notifications.vue";

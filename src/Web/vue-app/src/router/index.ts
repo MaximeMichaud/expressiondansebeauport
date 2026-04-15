@@ -25,7 +25,7 @@ import AdminBackup from "@/views/admin/backup/AdminBackup.vue";
 import AdminErrorLogs from "@/views/admin/errorlogs/AdminErrorLogs.vue";
 
 import {useUserStore} from "@/stores/userStore";
-import {useUserService} from "@/inversify.config";
+import {useUserService} from "@/serviceRegistry";
 
 const socialRoutes = [
   {

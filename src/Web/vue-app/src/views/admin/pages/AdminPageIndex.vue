@@ -34,7 +34,7 @@
 import {useI18n} from "vue-i18n"
 import {computed, onMounted, ref} from "vue"
 import {useRouter} from "vue-router"
-import {usePageService} from "@/inversify.config"
+import {usePageService} from "@/serviceRegistry"
 import {Page} from "@/types/entities"
 import {PaginatedResponse} from "@/types/responses"
 import DataTable from "@/components/layouts/items/DataTable.vue"

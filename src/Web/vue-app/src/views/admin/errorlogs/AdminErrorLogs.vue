@@ -66,7 +66,7 @@
 <script lang="ts" setup>
 import {useI18n} from "vue-i18n"
 import {computed, onMounted, ref, watch} from "vue"
-import {useErrorLogsService} from "@/inversify.config"
+import {useErrorLogsService} from "@/serviceRegistry"
 import {ErrorLog} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import {RefreshCw} from "lucide-vue-next"

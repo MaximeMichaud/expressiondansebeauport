@@ -1,5 +1,4 @@
 import {IAuthenticationService} from "@/injection/interfaces";
-import {injectable} from "inversify";
 import {ApiService} from "./apiService";
 import {SucceededOrNotResponse} from "@/types/responses";
 import {AxiosError, AxiosResponse} from "axios";
@@ -8,7 +7,6 @@ import {ITwoFactorRequest} from "@/types/requests/twoFactorRequest";
 import {IForgotPasswordRequest} from "@/types/requests/forgotPasswordRequest";
 import {IChangePasswordRequest, IResetPasswordRequest} from "@/types/requests";
 
-@injectable()
 export class AuthenticationService extends ApiService implements IAuthenticationService {
   public async login(request: ILoginRequest): Promise<SucceededOrNotResponse> {
     const response = await this

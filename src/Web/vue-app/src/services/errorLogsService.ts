@@ -1,11 +1,9 @@
 import {AxiosError, AxiosResponse} from "axios"
-import {injectable} from "inversify"
 
 import {ApiService} from "@/services/apiService"
 import {IErrorLogsService} from "@/injection/interfaces"
 import {ErrorLog} from "@/types/entities"
 
-@injectable()
 export class ErrorLogsService extends ApiService implements IErrorLogsService {
   public async getAll(): Promise<ErrorLog[]> {
     try {

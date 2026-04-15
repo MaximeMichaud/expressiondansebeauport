@@ -1,12 +1,10 @@
 import {AxiosError, AxiosResponse} from "axios"
-import {injectable} from "inversify"
 
 import {ApiService} from "@/services/apiService"
 import {ISiteSettingsService} from "@/injection/interfaces"
 import {SucceededOrNotResponse} from "@/types/responses"
 import {FooterPartner, SiteSettings, SocialLink} from "@/types/entities"
 
-@injectable()
 export class SiteSettingsService extends ApiService implements ISiteSettingsService {
   public async get(): Promise<SiteSettings> {
     const response = await this

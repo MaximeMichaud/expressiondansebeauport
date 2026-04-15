@@ -51,7 +51,7 @@
 <script lang="ts" setup>
 import {useI18n} from "vue-i18n"
 import {onMounted, ref} from "vue"
-import {useSiteHealthService} from "@/inversify.config"
+import {useSiteHealthService} from "@/serviceRegistry"
 import {SiteHealth} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import { CheckCircle2, AlertTriangle, XCircle, RefreshCw } from "lucide-vue-next"

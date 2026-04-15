@@ -64,7 +64,7 @@ import { required } from "@/validation/rules";
 import { Status } from "@/validation";
 import { IChangePasswordRequest } from "@/types/requests";
 import { Administrator } from "@/types/entities";
-import { useAuthenticationService, useAdministratorService } from "@/inversify.config";
+import { useAuthenticationService, useAdministratorService } from "@/serviceRegistry";
 import { usePersonStore } from "@/stores/personStore";
 import { notifyError, notifySuccess } from "@/notify";
 import Card from "@/components/layouts/items/Card.vue";
