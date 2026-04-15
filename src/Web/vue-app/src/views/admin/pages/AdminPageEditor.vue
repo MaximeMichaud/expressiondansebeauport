@@ -180,7 +180,9 @@ async function onSubmit() {
 
     if (response && response.succeeded) {
       onManualSave()
-      router.back()
+      if (!isEditing.value) {
+        router.back()
+      }
     }
   } finally {
     preventMultipleSubmit.value = false
