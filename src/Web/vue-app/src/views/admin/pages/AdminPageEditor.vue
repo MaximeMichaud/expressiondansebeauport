@@ -96,7 +96,7 @@
 import {useI18n} from "vue-i18n"
 import {computed, onMounted, ref} from "vue"
 import {useRoute, useRouter} from "vue-router"
-import {usePageService} from "@/inversify.config"
+import {usePageService} from "@/serviceRegistry"
 import {Page} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import BackLink from "@/components/layouts/items/BackLink.vue"

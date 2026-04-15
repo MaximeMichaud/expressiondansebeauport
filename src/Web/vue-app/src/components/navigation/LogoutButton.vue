@@ -8,7 +8,7 @@
 import {useI18n} from "vue-i18n";
 import {useRouter} from "vue-router";
 import {useUserStore} from "@/stores/userStore";
-import {useAuthenticationService} from "@/inversify.config";
+import {useAuthenticationService} from "@/serviceRegistry";
 import {useAdministratorStore} from "@/stores/administratorStore";
 import {usePersonStore} from "@/stores/personStore";
 

@@ -256,7 +256,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useSocialService } from '@/inversify.config'
+import { useSocialService } from '@/serviceRegistry'
 import { useMemberStore } from '@/stores/memberStore'
 import { useInfiniteScroll } from '@/composables/useInfiniteScroll'
 import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'

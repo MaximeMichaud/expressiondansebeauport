@@ -96,7 +96,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, watch } from 'vue'
-import { useSocialService } from '@/inversify.config'
+import { useSocialService } from '@/serviceRegistry'
 
 const props = defineProps<{ groupId: string; open: boolean }>()
 const emit = defineEmits<{ close: []; created: [] }>()

@@ -14,8 +14,10 @@ import {
 import {AdministratorService} from "@/services/administratorService"
 import {SocialService} from "@/services/socialService"
 import {BackupService} from "@/services/backupService"
+import {setupInterceptors} from "@/services/apiService"
 
 const axiosInstance = axios.create()
+setupInterceptors(axiosInstance)
 
 const administratorService = new AdministratorService(axiosInstance)
 const authenticationService = new AuthenticationService(axiosInstance)
