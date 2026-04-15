@@ -72,7 +72,7 @@ public class GetSiteHealthEndpoint : EndpointWithoutRequest<SiteHealthDto>
 
         // App info
         var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-        var appVersion = assembly.GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>()?.InformationalVersion
+        var appVersion = (Attribute.GetCustomAttribute(assembly, typeof(System.Reflection.AssemblyInformationalVersionAttribute)) as System.Reflection.AssemblyInformationalVersionAttribute)?.InformationalVersion
             ?? assembly.GetName().Version?.ToString()
             ?? "Inconnue";
         checks.Add(new HealthCheckDto
