@@ -17,7 +17,6 @@ public class GetSiteHealthEndpoint : EndpointWithoutRequest<SiteHealthDto>
 
     public override void Configure()
     {
-        DontCatchExceptions();
         Get("admin/site-health");
         Roles(Domain.Constants.User.Roles.ADMINISTRATOR);
         AuthSchemes(JwtBearerDefaults.AuthenticationScheme);
@@ -31,7 +30,24 @@ public class GetSiteHealthEndpoint : EndpointWithoutRequest<SiteHealthDto>
         try
         {
             await _context.Database.CanConnectAsync(ct);
-            checks.Add(new HealthCheckDto { Name = "Base de données", Status = "Good", Message = "Connectée" });
+
+            var connection = _context.Database.GetDbConnection();
+            var wasOpen = connection.State == System.Data.ConnectionState.Open;
+            if (!wasOpen) await connection.OpenAsync(ct);
+
+            string? dbVersion = null;
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = "SELECT version()";
+                dbVersion = (string?)await command.ExecuteScalarAsync(ct);
+            }
+
+            if (!wasOpen) await connection.CloseAsync();
+
+            // "PostgreSQL 18.0 on x86_64-pc-linux-musl, compiled by..." → "PostgreSQL 18.0"
+            var shortVersion = dbVersion?.Split(" on ")[0];
+
+            checks.Add(new HealthCheckDto { Name = "Base de données", Status = "Good", Message = "Connectée", Details = shortVersion });
         }
         catch (Exception ex)
         {
@@ -58,7 +74,7 @@ public class GetSiteHealthEndpoint : EndpointWithoutRequest<SiteHealthDto>
         });
 
         // Memory
-        var process = System.Diagnostics.Process.GetCurrentProcess();
+        using var process = System.Diagnostics.Process.GetCurrentProcess();
         var memoryMb = process.WorkingSet64 / 1024 / 1024;
         checks.Add(new HealthCheckDto
         {
@@ -69,15 +85,22 @@ public class GetSiteHealthEndpoint : EndpointWithoutRequest<SiteHealthDto>
         });
 
         // Entity counts
-        var pageCount = _context.Pages.Count();
-        var mediaCount = _context.MediaFiles.Count();
-        var menuCount = _context.NavigationMenus.Count();
-        checks.Add(new HealthCheckDto
+        try
         {
-            Name = "Contenu",
-            Status = "Good",
-            Message = $"{pageCount} page{(pageCount > 1 ? "s" : "")}, {mediaCount} média{(mediaCount > 1 ? "s" : "")}, {menuCount} menu{(menuCount > 1 ? "s" : "")}"
-        });
+            var pageCount = await _context.Pages.CountAsync(ct);
+            var mediaCount = await _context.MediaFiles.CountAsync(ct);
+            var menuCount = await _context.NavigationMenus.CountAsync(ct);
+            checks.Add(new HealthCheckDto
+            {
+                Name = "Contenu",
+                Status = "Good",
+                Message = $"{pageCount} page{(pageCount > 1 ? "s" : "")}, {mediaCount} média{(mediaCount > 1 ? "s" : "")}, {menuCount} menu{(menuCount > 1 ? "s" : "")}"
+            });
+        }
+        catch (Exception ex)
+        {
+            checks.Add(new HealthCheckDto { Name = "Contenu", Status = "Critical", Message = "Lecture impossible", Details = ex.Message });
+        }
 
         var overallStatus = checks.Any(c => c.Status == "Critical") ? "Critical"
             : checks.Any(c => c.Status == "Warning") ? "Warning" : "Good";
