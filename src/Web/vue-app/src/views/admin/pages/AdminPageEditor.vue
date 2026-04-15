@@ -15,7 +15,7 @@
     </div>
 
     <Loader v-if="isLoading" />
-    <div v-else class="page-editor">
+    <div v-else :key="editorKey" class="page-editor">
       <div class="page-editor__main">
         <div class="form-group">
           <label>{{ t('global.title') }}</label>
@@ -117,6 +117,7 @@ const isEditing = ref(false)
 const page = ref<Page>(new Page())
 const previewing = ref(false)
 const localDraft = ref<Record<string, any> | null>(null)
+const editorKey = ref(0)
 
 const {
   lastSavedAgo: autosaveAgo,
@@ -209,6 +210,7 @@ async function onPreview() {
 
 function onRevisionRestored(restoredPage: Page) {
   page.value = restoredPage
+  editorKey.value++
 }
 </script>
 
