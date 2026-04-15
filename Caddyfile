@@ -20,7 +20,10 @@ expression.mich.sh {
 	@uploads path /uploads/*
 	header @uploads Cache-Control "public, max-age=3600, must-revalidate"
 
-	reverse_proxy web:8080
+	reverse_proxy web:8080 {
+		health_uri /api/health
+		health_interval 5s
+	}
 
 	log {
 		output file /data/logs/access.log {

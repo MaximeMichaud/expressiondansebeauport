@@ -53,6 +53,9 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
 
 ENV ASPNETCORE_URLS=http://+:8080
 
+HEALTHCHECK --interval=10s --timeout=3s --start-period=15s --retries=3 \
+    CMD wget -qO- http://localhost:8080/api/health || exit 1
+
 EXPOSE 8080
 
 ENTRYPOINT ["docker-entrypoint.sh"]
