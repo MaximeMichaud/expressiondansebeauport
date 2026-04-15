@@ -9,6 +9,7 @@ public interface IPageRevisionRepository
     PageRevision? GetLatestByPageId(Guid pageId, RevisionType? type = null);
     int GetNextRevisionNumber(Guid pageId);
     Task Create(PageRevision revision);
+    Task UpsertAutosave(PageRevision revision);
     Task DeleteOldRevisions(Guid pageId, int keepCount);
     Task DeleteAutosave(Guid pageId);
     Task<PageRevision?> GetAutosave(Guid pageId);

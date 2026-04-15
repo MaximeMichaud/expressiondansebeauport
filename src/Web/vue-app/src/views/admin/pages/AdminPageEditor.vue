@@ -311,9 +311,7 @@ function onRevisionRestored(restoredPage: Page) {
   font-size: 0.875rem;
   margin-top: 0.5rem;
 }
-</style>
 
-<style>
 .page-editor .btn.btn--outline {
   background: transparent;
   border: 1px solid #d1d5db;

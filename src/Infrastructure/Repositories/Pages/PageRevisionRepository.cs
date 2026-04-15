@@ -54,6 +54,17 @@ public class PageRevisionRepository : IPageRevisionRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task UpsertAutosave(PageRevision revision)
+    {
+        await using var tx = await _context.Database.BeginTransactionAsync();
+        await _context.PageRevisions
+            .Where(r => r.PageId == revision.PageId && r.RevisionType == RevisionType.Autosave)
+            .ExecuteDeleteAsync();
+        _context.PageRevisions.Add(revision);
+        await _context.SaveChangesAsync();
+        await tx.CommitAsync();
+    }
+
     public async Task DeleteOldRevisions(Guid pageId, int keepCount)
     {
         var toDelete = _context.PageRevisions
