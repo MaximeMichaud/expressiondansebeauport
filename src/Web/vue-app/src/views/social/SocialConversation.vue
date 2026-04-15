@@ -432,7 +432,7 @@ async function loadConversationInfo() {
   } else {
     try {
       const profile = await socialService.getMyProfile()
-      currentMemberId.value = profile.id || profile.Id
+      currentMemberId.value = profile.id
       memberStore.setMember(profile)
     } catch { /* */ }
   }
