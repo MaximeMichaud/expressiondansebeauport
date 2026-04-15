@@ -16,8 +16,7 @@ RUN npm run build
 # ============================================
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS dotnet-build
 
-ARG APP_VERSION=0.0.0-dev
-ENV MINVER_VERSION=$APP_VERSION
+ARG APP_VERSION=0.0.0
 
 WORKDIR /src
 
@@ -34,7 +33,7 @@ COPY src/ src/
 
 COPY --from=vue-build /app/wwwroot/ src/Web/wwwroot/
 
-RUN dotnet publish src/Web/Web.csproj -c Release -o /app/publish --no-restore
+RUN dotnet publish src/Web/Web.csproj -c Release -o /app/publish --no-restore -p:MinVerVersion=$APP_VERSION
 
 # ============================================
 # Stage 3: Final runtime image

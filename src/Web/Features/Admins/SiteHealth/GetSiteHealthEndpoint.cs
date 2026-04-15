@@ -1,3 +1,4 @@
+using System.Reflection;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -72,7 +73,7 @@ public class GetSiteHealthEndpoint : EndpointWithoutRequest<SiteHealthDto>
 
         // App info
         var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-        var appVersion = (Attribute.GetCustomAttribute(assembly, typeof(System.Reflection.AssemblyInformationalVersionAttribute)) as System.Reflection.AssemblyInformationalVersionAttribute)?.InformationalVersion
+        var appVersion = (Attribute.GetCustomAttribute(assembly, typeof(AssemblyInformationalVersionAttribute)) as AssemblyInformationalVersionAttribute)?.InformationalVersion
             ?? assembly.GetName().Version?.ToString()
             ?? "Inconnue";
         checks.Add(new HealthCheckDto
