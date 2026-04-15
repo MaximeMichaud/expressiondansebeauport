@@ -81,6 +81,16 @@ public class UpdatePageEndpoint : Endpoint<UpdatePageRequest, PageDto>
             return;
         }
 
+        // Snapshot de l'état AVANT modification — permet au diff de l'historique de montrer ce qui a changé
+        var latest = _revisionRepository.GetLatestByPageId(page.Id, RevisionType.Manual);
+        if (latest is null || !latest.HasSameContentAs(page))
+        {
+            var revisionNumber = _revisionRepository.GetNextRevisionNumber(page.Id);
+            var snapshot = PageRevision.CreateFromPage(page, revisionNumber, RevisionType.Manual, _userService.Username, InstantHelper.GetLocalNow());
+            await _revisionRepository.Create(snapshot);
+            await _revisionRepository.DeleteOldRevisions(page.Id, 25);
+        }
+
         page.SetTitle(req.Title);
         if (!string.IsNullOrWhiteSpace(req.Slug))
         {
@@ -104,16 +114,6 @@ public class UpdatePageEndpoint : Endpoint<UpdatePageRequest, PageDto>
         }
 
         await _pageRepository.Update(page);
-
-        // Créer une révision manuelle si le contenu a changé
-        var latest = _revisionRepository.GetLatestByPageId(page.Id, RevisionType.Manual);
-        if (latest is null || !latest.HasSameContentAs(page))
-        {
-            var revisionNumber = _revisionRepository.GetNextRevisionNumber(page.Id);
-            var revision = PageRevision.CreateFromPage(page, revisionNumber, RevisionType.Manual, _userService.Username, InstantHelper.GetLocalNow());
-            await _revisionRepository.Create(revision);
-            await _revisionRepository.DeleteOldRevisions(page.Id, 25);
-        }
 
         // Supprimer l'autosave quand on sauvegarde manuellement
         await _revisionRepository.DeleteAutosave(page.Id);
