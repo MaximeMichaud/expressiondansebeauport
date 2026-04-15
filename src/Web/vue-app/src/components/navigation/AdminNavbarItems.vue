@@ -22,7 +22,7 @@ import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { getChildPath } from "@/router/helpers";
 import { Images, FileText, LayoutList, Palette, Activity, ArrowLeftRight, HardDriveDownload, AlertTriangle, UserCircle } from "lucide-vue-next";
-import { useBackupService } from "@/inversify.config";
+import { useBackupService } from "@/serviceRegistry";
 
 const { t } = useI18n();
 const router = useRouter();

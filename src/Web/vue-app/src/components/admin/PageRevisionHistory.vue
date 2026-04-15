@@ -77,7 +77,7 @@
 <script lang="ts" setup>
 import {ref} from 'vue'
 import type {PageRevision, PageRevisionListItem, Page} from '@/types/entities'
-import {usePageService} from '@/inversify.config'
+import {usePageService} from '@/serviceRegistry'
 
 const props = defineProps<{
   pageId: string

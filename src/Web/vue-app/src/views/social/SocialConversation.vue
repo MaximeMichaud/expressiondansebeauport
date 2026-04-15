@@ -256,7 +256,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useSocialService } from '@/inversify.config'
+import { useSocialService } from '@/serviceRegistry'
 import { useMemberStore } from '@/stores/memberStore'
 import { useInfiniteScroll } from '@/composables/useInfiniteScroll'
 import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
@@ -432,7 +432,7 @@ async function loadConversationInfo() {
   } else {
     try {
       const profile = await socialService.getMyProfile()
-      currentMemberId.value = profile.id || profile.Id
+      currentMemberId.value = profile.id
       memberStore.setMember(profile)
     } catch { /* */ }
   }

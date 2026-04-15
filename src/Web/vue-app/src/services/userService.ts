@@ -1,12 +1,10 @@
 import {AxiosResponse} from "axios";
-import {injectable} from "inversify";
 
 import "@/extensions/date.extensions";
 import {ApiService} from "@/services/apiService";
 import {IUserService} from "@/injection/interfaces";
 import {User} from "@/types";
 
-@injectable()
 export class UserService extends ApiService implements IUserService {
   public async getCurrentUser(): Promise<User | null> {
     try {

@@ -24,7 +24,7 @@ import {ref, type ComponentPublicInstance} from "vue"
 import {useI18n} from "vue-i18n"
 import {required} from "@/validation/rules"
 import {useRouter} from "vue-router";
-import {useAuthenticationService, useUserService} from "@/inversify.config";
+import {useAuthenticationService, useUserService} from "@/serviceRegistry";
 import {notifyError} from "@/notify";
 import {useUserStore} from "@/stores/userStore";
 

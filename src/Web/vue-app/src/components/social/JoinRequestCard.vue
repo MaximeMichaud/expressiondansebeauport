@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useSocialService } from '@/inversify.config'
+import { useSocialService } from '@/serviceRegistry'
 import { useSocialToast } from '@/composables/useSocialToast'
 
 const props = defineProps<{

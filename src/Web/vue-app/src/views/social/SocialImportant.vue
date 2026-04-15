@@ -223,7 +223,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
-import { useSocialService } from '@/inversify.config'
+import { useSocialService } from '@/serviceRegistry'
 import { useSocialToast } from '@/composables/useSocialToast'
 import { useUserStore } from '@/stores/userStore'
 import { useMemberStore } from '@/stores/memberStore'

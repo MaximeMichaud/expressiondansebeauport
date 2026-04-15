@@ -54,7 +54,7 @@
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-import { useSocialService } from '@/inversify.config'
+import { useSocialService } from '@/serviceRegistry'
 import type { Poll, PollOption } from '@/types/entities'
 
 const props = defineProps<{ postId: string; poll: Poll }>()

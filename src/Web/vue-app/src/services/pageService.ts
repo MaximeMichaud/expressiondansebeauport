@@ -1,12 +1,10 @@
 import {AxiosError, AxiosResponse} from "axios"
-import {injectable} from "inversify"
 
 import {ApiService} from "@/services/apiService"
 import {IPageService} from "@/injection/interfaces"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
 import {Page, PageRevision, PageRevisionListItem} from "@/types/entities"
 
-@injectable()
 export class PageService extends ApiService implements IPageService {
   public async getAll(pageIndex: number, pageSize: number, status?: string): Promise<PaginatedResponse<Page>> {
     let url = `${import.meta.env.VITE_API_BASE_URL}/admin/pages?pageIndex=${pageIndex}&pageSize=${pageSize}`

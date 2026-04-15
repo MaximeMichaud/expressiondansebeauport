@@ -44,9 +44,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthenticationService } from '@/inversify.config'
+import { useAuthenticationService } from '@/serviceRegistry'
 import { useUserStore } from '@/stores/userStore'
-import { useUserService } from '@/inversify.config'
+import { useUserService } from '@/serviceRegistry'
 import { useSocialToast } from '@/composables/useSocialToast'
 
 const router = useRouter()

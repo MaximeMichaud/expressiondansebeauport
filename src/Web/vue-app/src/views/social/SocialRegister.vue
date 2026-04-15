@@ -100,7 +100,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useSocialService } from '@/inversify.config'
+import { useSocialService } from '@/serviceRegistry'
 import { useSocialToast } from '@/composables/useSocialToast'
 
 const router = useRouter()

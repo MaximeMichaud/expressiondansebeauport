@@ -213,7 +213,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, onActivated, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useSocialService } from '@/inversify.config'
+import { useSocialService } from '@/serviceRegistry'
 import { useSignalR } from '@/composables/useSignalR'
 import { useMemberStore } from '@/stores/memberStore'
 import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'

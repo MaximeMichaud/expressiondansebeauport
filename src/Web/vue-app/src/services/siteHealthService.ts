@@ -1,11 +1,9 @@
 import {AxiosError, AxiosResponse} from "axios"
-import {injectable} from "inversify"
 
 import {ApiService} from "@/services/apiService"
 import {ISiteHealthService} from "@/injection/interfaces"
 import {SiteHealth} from "@/types/entities"
 
-@injectable()
 export class SiteHealthService extends ApiService implements ISiteHealthService {
   public async get(): Promise<SiteHealth> {
     const response = await this

@@ -117,7 +117,7 @@
 <script lang="ts" setup>
 import {useI18n} from "vue-i18n"
 import {computed, onMounted, ref} from "vue"
-import {useMediaService, useSiteSettingsService} from "@/inversify.config"
+import {useMediaService, useSiteSettingsService} from "@/serviceRegistry"
 import {FooterPartner, MediaFile, SiteSettings, SocialLink} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import {applyThemeSettings} from "@/theme"

@@ -190,7 +190,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthenticationService, useSocialService } from '@/inversify.config'
+import { useAuthenticationService, useSocialService } from '@/serviceRegistry'
 import { useMemberStore } from '@/stores/memberStore'
 import { useUserStore } from '@/stores/userStore'
 import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'

@@ -18,7 +18,7 @@ import AuthenticationLayout from "@/components/layouts/AuthenticationLayout.vue"
 import DashboardLayout from "@/components/layouts/DashboardLayout.vue";
 import SocialLayout from "@/components/layouts/SocialLayout.vue";
 import SocialAuthLayout from "@/components/layouts/SocialAuthLayout.vue";
-import {useUserService, useSiteSettingsService} from "@/inversify.config";
+import {useUserService, useSiteSettingsService} from "@/serviceRegistry";
 import {isSocialRoute} from "@/router";
 import i18n from "@/i18n";
 import {applyThemeSettings} from "@/theme";
