@@ -1,0 +1,15 @@
+pre-commit:
+  commands:
+    backend-build:
+      run: dotnet build src/Web/Web.csproj
+    frontend-lint:
+      root: src/Web/vue-app
+      run: npm run lint
+
+pre-push:
+  commands:
+    backend-test:
+      run: dotnet test --no-build
+    frontend-build-check:
+      root: src/Web/vue-app
+      run: npm run build:check
