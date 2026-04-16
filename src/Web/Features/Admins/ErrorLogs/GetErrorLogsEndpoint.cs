@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Web.Dtos;
@@ -59,8 +60,7 @@ public class GetErrorLogsEndpoint : EndpointWithoutRequest<List<ErrorLogDto>>
                     {
                         Timestamp = entry.TryGetProperty("@t", out var ts) ? ts.GetString()! : "",
                         Level = level,
-                        Message = entry.TryGetProperty("@m", out var msg) ? msg.GetString()! :
-                                  entry.TryGetProperty("@mt", out var mt) ? mt.GetString()! : "",
+                        Message = RenderMessage(entry),
                         Exception = entry.TryGetProperty("@x", out var ex) ? ex.GetString() : null,
                         RequestId = entry.TryGetProperty("RequestId", out var rid) ? rid.GetString() : null,
                         SourceContext = entry.TryGetProperty("SourceContext", out var src) ? src.GetString() : null
@@ -79,5 +79,29 @@ public class GetErrorLogsEndpoint : EndpointWithoutRequest<List<ErrorLogDto>>
             .ToList();
 
         await Send.OkAsync(result, cancellation: ct);
+    }
+
+    private static string RenderMessage(JsonElement entry)
+    {
+        if (entry.TryGetProperty("@m", out var msg) && msg.ValueKind == JsonValueKind.String)
+            return msg.GetString()!;
+
+        if (!entry.TryGetProperty("@mt", out var mt) || mt.ValueKind != JsonValueKind.String)
+            return "";
+
+        var template = mt.GetString()!;
+
+        // Substitue {propertyName} et {propertyName:format} avec les valeurs du JSON
+        return Regex.Replace(template, @"\{(\w+)(?::[^}]*)?\}", match =>
+        {
+            var name = match.Groups[1].Value;
+            if (entry.TryGetProperty(name, out var prop))
+            {
+                return prop.ValueKind == JsonValueKind.String
+                    ? prop.GetString() ?? match.Value
+                    : prop.ToString();
+            }
+            return match.Value;
+        });
     }
 }
