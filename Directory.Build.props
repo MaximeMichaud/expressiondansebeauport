@@ -1,5 +1,9 @@
 <Project>
 	<PropertyGroup>
 		<AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
+		<MinVerTagPrefix>v</MinVerTagPrefix>
 	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="MinVer" Version="6.0.0" PrivateAssets="All" />
+	</ItemGroup>
 </Project>

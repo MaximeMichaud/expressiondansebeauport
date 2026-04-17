@@ -494,6 +494,9 @@
       }
     }
   },
+  "nav": {
+    "tools": "Outils"
+  },
   "products": {
     "form": {
       "image-card-tooltip": "Format recommandé : largeur supérieur à 700px (ratio 2:1)",
@@ -622,6 +625,11 @@
     "url": "URL",
     "image": "Le lien sera ajouté sur l'image sélectionnée.",
     "tooltip": "Pour éditer le lien sur une image, cliquer sur la bordure bleue autour de celle-ci."
+  },
+  "updateToast": {
+    "message": "Une nouvelle version du site est disponible.",
+    "reload": "Recharger",
+    "dismiss": "Plus tard"
   },
   "validation": {
     "empty": "Veuillez renseigner ce champ.",
