@@ -7,6 +7,8 @@
   <PublicLayout v-else-if="isPublicPath"/>
   <AuthenticationLayout v-else-if="!userStore.user.email || isAuthenticationPath"/>
   <DashboardLayout v-else/>
+
+  <UpdateToast/>
 </template>
 
 <script lang="ts" setup>
@@ -18,6 +20,7 @@ import AuthenticationLayout from "@/components/layouts/AuthenticationLayout.vue"
 import DashboardLayout from "@/components/layouts/DashboardLayout.vue";
 import SocialLayout from "@/components/layouts/SocialLayout.vue";
 import SocialAuthLayout from "@/components/layouts/SocialAuthLayout.vue";
+import UpdateToast from "@/components/UpdateToast.vue";
 import {useUserService, useSiteSettingsService} from "@/serviceRegistry";
 import {isSocialRoute} from "@/router";
 import i18n from "@/i18n";

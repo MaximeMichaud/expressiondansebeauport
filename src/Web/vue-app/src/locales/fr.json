@@ -626,6 +626,11 @@
     "image": "Le lien sera ajouté sur l'image sélectionnée.",
     "tooltip": "Pour éditer le lien sur une image, cliquer sur la bordure bleue autour de celle-ci."
   },
+  "updateToast": {
+    "message": "Une nouvelle version du site est disponible.",
+    "reload": "Recharger",
+    "dismiss": "Plus tard"
+  },
   "validation": {
     "empty": "Veuillez renseigner ce champ.",
     "email": "Veuillez entrer un adresse courriel valide.",
