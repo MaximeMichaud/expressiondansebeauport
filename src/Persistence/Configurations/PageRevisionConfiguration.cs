@@ -17,6 +17,10 @@ public class PageRevisionConfiguration : IEntityTypeConfiguration<PageRevision>
 
         builder.HasIndex(r => new { r.PageId, r.RevisionNumber });
         builder.HasIndex(r => new { r.PageId, r.RevisionType });
+        builder.HasIndex(r => r.PageId)
+            .HasFilter("\"RevisionType\" = 'Autosave'")
+            .IsUnique()
+            .HasDatabaseName("IX_PageRevisions_PageId_Autosave_Unique");
 
         builder.Property(r => r.Title).HasMaxLength(200).IsRequired();
         builder.Property(r => r.MetaDescription).HasMaxLength(320);

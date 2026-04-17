@@ -494,6 +494,9 @@
       }
     }
   },
+  "nav": {
+    "tools": "Outils"
+  },
   "products": {
     "form": {
       "image-card-tooltip": "Format recommandé : largeur supérieur à 700px (ratio 2:1)",

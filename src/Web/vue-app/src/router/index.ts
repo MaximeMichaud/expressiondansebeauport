@@ -1,6 +1,14 @@
 import i18n from "@/i18n";
 import {Role} from "@/types/enums";
 import {createRouter, createWebHistory} from "vue-router";
+import type {Component} from "vue";
+import {Library, FileText, LayoutList, Palette, Activity, ArrowLeftRight, HardDriveDownload, AlertTriangle, UserCircle} from "lucide-vue-next";
+
+declare module "vue-router" {
+  interface RouteMeta {
+    navIcon?: Component;
+  }
+}
 
 import Home from "@/views/public/Home.vue";
 import PublicPage from "@/views/public/PublicPage.vue";
@@ -172,7 +180,8 @@ const mainRoutes = [
     name: "account",
     component: Account,
     meta: {
-      title: "routes.account.name"
+      title: "routes.account.name",
+      navIcon: UserCircle,
     }
   },
   {
@@ -190,6 +199,7 @@ const mainRoutes = [
         path: i18n.global.t("routes.admin.children.pages.path"),
         name: "admin.children.pages",
         component: Admin,
+        meta: { navIcon: FileText },
         children: [
           {
             path: "",
@@ -213,36 +223,43 @@ const mainRoutes = [
         path: i18n.global.t("routes.admin.children.menus.path"),
         name: "admin.children.menus",
         component: AdminMenuIndex,
+        meta: { navIcon: LayoutList },
       },
       {
         path: i18n.global.t("routes.admin.children.media.path"),
         name: "admin.children.media",
         component: AdminMediaLibrary,
+        meta: { navIcon: Library },
       },
       {
         path: i18n.global.t("routes.admin.children.customizer.path"),
         name: "admin.children.customizer",
         component: AdminCustomizer,
+        meta: { navIcon: Palette },
       },
       {
         path: i18n.global.t("routes.admin.children.siteHealth.path"),
         name: "admin.children.siteHealth",
         component: AdminSiteHealth,
+        meta: { navIcon: Activity },
       },
       {
         path: i18n.global.t("routes.admin.children.importExport.path"),
         name: "admin.children.importExport",
         component: AdminImportExport,
+        meta: { navIcon: ArrowLeftRight },
       },
       {
         path: i18n.global.t("routes.admin.children.backup.path"),
         name: "admin.children.backup",
         component: AdminBackup,
+        meta: { navIcon: HardDriveDownload },
       },
       {
         path: i18n.global.t("routes.admin.children.errorLogs.path"),
         name: "admin.children.errorLogs",
         component: AdminErrorLogs,
+        meta: { navIcon: AlertTriangle },
       },
     ]
   },
