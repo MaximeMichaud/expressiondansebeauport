@@ -8,6 +8,7 @@
   <AuthenticationLayout v-else-if="!userStore.user.email || isAuthenticationPath"/>
   <DashboardLayout v-else/>
 
+  <CookieBanner/>
   <UpdateToast/>
 </template>
 
@@ -20,6 +21,7 @@ import AuthenticationLayout from "@/components/layouts/AuthenticationLayout.vue"
 import DashboardLayout from "@/components/layouts/DashboardLayout.vue";
 import SocialLayout from "@/components/layouts/SocialLayout.vue";
 import SocialAuthLayout from "@/components/layouts/SocialAuthLayout.vue";
+import CookieBanner from "@/components/layouts/items/CookieBanner.vue";
 import UpdateToast from "@/components/UpdateToast.vue";
 import {useUserService, useSiteSettingsService} from "@/serviceRegistry";
 import {isSocialRoute} from "@/router";
