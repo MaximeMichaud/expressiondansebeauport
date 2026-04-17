@@ -12,8 +12,8 @@ import {SucceededOrNotResponse} from "@/types/responses";
 export class ApiService implements IApiService {
   _httpClient: AxiosInstance;
 
-  constructor(@inject(TYPES.AxiosInstance) httpClient: AxiosInstance) {
-    this._httpClient = httpClient;
+  constructor(@inject(TYPES.AxiosInstance) httpClient?: AxiosInstance) {
+    this._httpClient = httpClient ?? axios.create();
     /*
         Attaching the accessToken to the request header. The access token is stored in cookies by LoginEndpoint or TwoFactorEndpoint
         AccessToken and RefreshToken rotation is handled in by RefreshTokenEndpoint

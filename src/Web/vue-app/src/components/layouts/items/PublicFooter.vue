@@ -67,6 +67,9 @@
 
     <div class="public-footer__copyright">
       <p>&copy; {{ currentYear }} {{ settings.copyrightText || t('public.footer.copyright') }}</p>
+      <button class="public-footer__cookies-button" type="button" @click="openCookiePreferences">
+        Préférences de cookies
+      </button>
     </div>
   </footer>
 </template>
@@ -102,6 +105,10 @@ function getSocialIcon(platform?: string) {
   }
 }
 
+function openCookiePreferences() {
+  window.dispatchEvent(new Event('open-cookie-preferences'));
+}
+
 async function loadSettings() {
   try {
     const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/public/site-settings`);
@@ -128,3 +135,15 @@ onMounted(() => {
   loadFooterMenu();
 });
 </script>
+
+<style scoped lang="scss">
+.public-footer__cookies-button {
+  margin-top: 8px;
+  padding: 0;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+</style>
