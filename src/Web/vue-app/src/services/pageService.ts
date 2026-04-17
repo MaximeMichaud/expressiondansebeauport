@@ -42,18 +42,18 @@ export class PageService extends ApiService implements IPageService {
     return new SucceededOrNotResponse(succeeded, succeeded ? [] : response.data?.errors ?? [])
   }
 
-  public async update(page: Page): Promise<SucceededOrNotResponse> {
+  public async update(page: Page): Promise<{ succeeded: boolean; page?: Page }> {
     const response = await this
       ._httpClient
-      .put<any, AxiosResponse<any>>(
+      .put<any, AxiosResponse<Page>>(
         `${import.meta.env.VITE_API_BASE_URL}/admin/pages/${page.id}`,
         page,
         this.headersWithJsonContentType())
-      .catch(function (error: AxiosError): AxiosResponse<any> {
-        return error.response as AxiosResponse<any>
+      .catch(function (error: AxiosError): AxiosResponse<Page> {
+        return error.response as AxiosResponse<Page>
       })
     const succeeded = response.status >= 200 && response.status < 300
-    return new SucceededOrNotResponse(succeeded, succeeded ? [] : response.data?.errors ?? [])
+    return { succeeded, page: succeeded ? response.data as Page : undefined }
   }
 
   public async delete(id: string): Promise<SucceededOrNotResponse> {

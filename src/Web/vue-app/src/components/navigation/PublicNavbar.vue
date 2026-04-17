@@ -16,59 +16,25 @@
 
       <div class="public-navbar__menu" :class="{ 'is-open': isMenuOpen }">
         <ul class="public-navbar__links">
-          <li
-            v-for="item in menuItems"
-            :key="item.id"
-            class="nav-item"
-            :class="{ 'is-submenu-open': openSubmenuId === item.id }"
-          >
+          <li v-for="item in menuItems" :key="item.id" class="nav-item">
 
-            <template v-if="!item.children || item.children.length === 0">
-              <a
-                v-if="isExternalUrl(item.url)"
-                :href="item.url"
-                target="_blank"
-                rel="noopener"
-                class="public-navbar__link"
-                @click="isMenuOpen = false"
-              >
-                {{ item.label }}
-              </a>
-              <RouterLink
-                v-else
-                :to="item.url || `/${item.pageSlug}`"
-                class="public-navbar__link"
-                @click="isMenuOpen = false"
-              >
-                {{ item.label }}
-              </RouterLink>
-            </template>
-
-            <span
-              v-else
-              class="public-navbar__link nav-parent"
-              @click="toggleSubmenu(item.id)"
+            <RouterLink
+              v-if="!item.children || item.children.length === 0"
+              :to="item.url || `/${item.pageSlug}`"
+              class="public-navbar__link"
             >
+              {{ item.label }}
+            </RouterLink>
+
+            <span v-else class="public-navbar__link nav-parent">
               {{ item.label }}
             </span>
 
             <ul v-if="item.children && item.children.length" class="submenu">
               <li v-for="child in item.children" :key="child.id">
-                <a
-                  v-if="isExternalUrl(child.url)"
-                  :href="child.url"
-                  target="_blank"
-                  rel="noopener"
-                  class="submenu-link"
-                  @click="closeAll"
-                >
-                  {{ child.label }}
-                </a>
                 <RouterLink
-                  v-else
                   :to="child.url || `/${child.pageSlug}`"
                   class="submenu-link"
-                  @click="closeAll"
                 >
                   {{ child.label }}
                 </RouterLink>
@@ -107,21 +73,7 @@ import { NavigationMenuItem } from "@/types/entities";
 
 const { t } = useI18n();
 const isMenuOpen = ref(false);
-const openSubmenuId = ref<string | null>(null);
 const menuItems = ref<NavigationMenuItem[]>([]);
-
-function isExternalUrl(url?: string): boolean {
-  return !!url && /^https?:\/\//.test(url);
-}
-
-function toggleSubmenu(id?: string) {
-  openSubmenuId.value = openSubmenuId.value === id ? null : (id ?? null);
-}
-
-function closeAll() {
-  isMenuOpen.value = false;
-  openSubmenuId.value = null;
-}
 
 const fallbackLinks = [
   { key: "school" },
@@ -149,15 +101,22 @@ onMounted(() => {
 
 .nav-item{
   position: relative;
+  padding-bottom: 10px;
+}
+
+@media (min-width: 48em) {
+  .nav-item {
+    padding-bottom: 0;
+  }
 }
 
 .submenu{
   position: absolute;
   top: 100%;
   left: 0;
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.08);
   list-style: none;
   padding: 6px 0;
@@ -170,16 +129,10 @@ onMounted(() => {
   transition: all 0.2s ease;
 }
 
-.nav-item:hover .submenu,
-.nav-item.is-submenu-open .submenu{
+.nav-item:hover .submenu{
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
-}
-
-.nav-item{
-  margin-bottom: -10px;
-  padding-bottom: 10px;
 }
 
 .nav-parent{
@@ -191,12 +144,12 @@ onMounted(() => {
   padding: 10px 16px;
   font-size: 0.9rem;
   text-decoration: none;
-  color: inherit;
+  color: #1a1a1a;
   transition: background 0.15s ease;
 }
 
 .submenu-link:hover{
-  background: var(--color-muted);
+  background: #f4f6f8;
 }
 
 </style>

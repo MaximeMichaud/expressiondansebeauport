@@ -31,16 +31,24 @@ public class PageRevision : Entity
 
     public static PageRevision CreateFromPage(Page page, int revisionNumber, RevisionType type, string? createdBy, Instant createdAt)
     {
+        return CreateFromData(page.Id, page.Title, page.Content, page.CustomCss, page.ContentMode,
+            page.Blocks, page.MetaDescription, page.Status, revisionNumber, type, createdBy, createdAt);
+    }
+
+    public static PageRevision CreateFromData(Guid pageId, string title, string? content, string? customCss,
+        string contentMode, string? blocks, string? metaDescription, PageStatus status,
+        int revisionNumber, RevisionType type, string? createdBy, Instant createdAt)
+    {
         return new PageRevision
         {
-            PageId = page.Id,
-            Title = page.Title,
-            Content = page.Content,
-            CustomCss = page.CustomCss,
-            ContentMode = page.ContentMode,
-            Blocks = page.Blocks,
-            MetaDescription = page.MetaDescription,
-            Status = page.Status,
+            PageId = pageId,
+            Title = title,
+            Content = content,
+            CustomCss = customCss,
+            ContentMode = contentMode,
+            Blocks = blocks,
+            MetaDescription = metaDescription,
+            Status = status,
             RevisionNumber = revisionNumber,
             RevisionType = type,
             CreatedBy = createdBy,

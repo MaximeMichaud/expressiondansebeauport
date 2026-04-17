@@ -168,5 +168,11 @@
       padding: 7px 12px;
       white-space: nowrap;
     }
+
+    &__register-btn {
+      align-self: center;
+      flex-shrink: 0;
+      margin-right: 4px;
+    }
   }
 }

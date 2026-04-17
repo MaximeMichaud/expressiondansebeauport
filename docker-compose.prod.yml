@@ -50,6 +50,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        APP_VERSION: ${APP_VERSION:-0.0.0-dev}
     container_name: edb-web
     environment:
       ASPNETCORE_ENVIRONMENT: "Production"

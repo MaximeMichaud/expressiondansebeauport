@@ -21,6 +21,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        APP_VERSION: ${APP_VERSION:-0.0.0}
     container_name: expressiondansebeauport-web
     ports:
       - "8080:8080"

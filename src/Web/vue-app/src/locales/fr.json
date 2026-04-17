@@ -36,6 +36,9 @@
     "internalError": {
       "name": "Erreur serveur"
     },
+    "maintenance": {
+      "name": "Maintenance"
+    },
     "admin": {
       "path": "/admin",
       "fullPath": "/admin",
@@ -414,6 +417,15 @@
       "placeholderTagline": "L'art du mouvement, le cœur du quartier",
       "placeholderFooterDescription": "École de danse offrant des cours pour tous les âges...",
       "placeholderCopyright": "Expression Danse de Beauport inc. Tous droits réservés.",
+      "maintenance": {
+        "title": "Mode maintenance",
+        "description": "Activez ce mode pour afficher une page temporaire aux visiteurs pendant les mises à jour. Les administrateurs connectés continueront d'accéder normalement au panneau admin.",
+        "enabled": "Mode maintenance activé",
+        "disabled": "Mode maintenance désactivé",
+        "message": "Message affiché aux visiteurs",
+        "messagePlaceholder": "Le site est en maintenance. Revenez bientôt !",
+        "retryAfter": "Délai de réessai (secondes)"
+      },
       "update": {
         "validation": {
           "successMessage": "Les paramètres ont été mis à jour avec succès.",
@@ -481,6 +493,9 @@
         "failedMessage": "Une erreur s'est produite lors de l'importation."
       }
     }
+  },
+  "nav": {
+    "tools": "Outils"
   },
   "products": {
     "form": {
@@ -582,7 +597,8 @@
       "followUs": "Suivez-nous",
       "partners": "Partenaires",
       "copyright": "Expression Danse de Beauport inc. Tous droits réservés.",
-      "description": "École de danse offrant des cours pour tous les âges et tous les niveaux à Beauport, Québec."
+      "description": "École de danse offrant des cours pour tous les âges et tous les niveaux à Beauport, Québec.",
+      "privacyPolicy": "Politique de confidentialité"
     },
     "page": {
       "notFound": "Page introuvable",
@@ -591,6 +607,11 @@
       "serverError": "Erreur serveur",
       "serverErrorMessage": "Une erreur inattendue s'est produite. Veuillez réessayer ou contacter notre équipe si le problème persiste.",
       "retry": "Réessayer"
+    },
+    "maintenance": {
+      "title": "Site en maintenance",
+      "defaultMessage": "Le site est en maintenance. Revenez bientôt !",
+      "retryHint": "Merci de votre compréhension. Veuillez réessayer dans quelques instants."
     }
   },
   "textEditor": {
@@ -604,6 +625,11 @@
     "url": "URL",
     "image": "Le lien sera ajouté sur l'image sélectionnée.",
     "tooltip": "Pour éditer le lien sur une image, cliquer sur la bordure bleue autour de celle-ci."
+  },
+  "updateToast": {
+    "message": "Une nouvelle version du site est disponible.",
+    "reload": "Recharger",
+    "dismiss": "Plus tard"
   },
   "validation": {
     "empty": "Veuillez renseigner ce champ.",

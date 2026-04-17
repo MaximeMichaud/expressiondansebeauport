@@ -107,6 +107,26 @@
         </div>
       </div>
 
+      <div class="customizer__panel customizer__panel--maintenance">
+        <h2>{{ t('pages.customizer.maintenance.title') }}</h2>
+        <p class="customizer__description">{{ t('pages.customizer.maintenance.description') }}</p>
+        <div class="maintenance-toggle">
+          <label class="toggle-label">
+            <input type="checkbox" v-model="settings.isMaintenanceMode" class="toggle-input" />
+            <span class="toggle-switch"></span>
+            <span class="toggle-text">{{ settings.isMaintenanceMode ? t('pages.customizer.maintenance.enabled') : t('pages.customizer.maintenance.disabled') }}</span>
+          </label>
+        </div>
+        <div class="form-group" style="margin-top:1rem">
+          <label>{{ t('pages.customizer.maintenance.message') }}</label>
+          <textarea v-model="settings.maintenanceMessage" class="form-input" rows="2" :placeholder="t('pages.customizer.maintenance.messagePlaceholder')" />
+        </div>
+        <div class="form-group">
+          <label>{{ t('pages.customizer.maintenance.retryAfter') }}</label>
+          <input type="number" v-model.number="settings.maintenanceRetryAfter" class="form-input" min="60" max="86400" />
+        </div>
+      </div>
+
       <div class="customizer__actions">
         <button class="btn" :disabled="isSaving" @click="onSave">{{ t('global.save') }}</button>
       </div>
@@ -399,6 +419,70 @@ async function removePartner(partner: FooterPartner) {
 .btn--small {
   font-size: 0.8125rem;
   padding: 0.375rem 0.75rem;
+}
+
+.customizer__panel--maintenance {
+  border-left: 4px solid #be1e2c;
+}
+
+.customizer__description {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.maintenance-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-input {
+  display: none;
+}
+
+.toggle-switch {
+  width: 44px;
+  height: 24px;
+  background: #ccc;
+  border-radius: 999px;
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  transition: left 0.2s;
+}
+
+.toggle-input:checked + .toggle-switch {
+  background: #be1e2c;
+}
+
+.toggle-input:checked + .toggle-switch::after {
+  left: 23px;
+}
+
+.toggle-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a1a;
 }
 
 @media (max-width: 767px) {

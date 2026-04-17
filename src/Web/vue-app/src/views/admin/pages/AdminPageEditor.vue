@@ -15,7 +15,7 @@
     </div>
 
     <Loader v-if="isLoading" />
-    <div v-else class="page-editor">
+    <div v-else :key="editorKey" class="page-editor">
       <div class="page-editor__main">
         <div class="form-group">
           <label>{{ t('global.title') }}</label>
@@ -117,6 +117,7 @@ const isEditing = ref(false)
 const page = ref<Page>(new Page())
 const previewing = ref(false)
 const localDraft = ref<Record<string, any> | null>(null)
+const editorKey = ref(0)
 
 const {
   lastSavedAgo: autosaveAgo,
@@ -174,13 +175,18 @@ async function onSubmit() {
   preventMultipleSubmit.value = true
 
   try {
-    const response = isEditing.value
-      ? await pageService.update(page.value)
-      : await pageService.create(page.value)
-
-    if (response && response.succeeded) {
-      onManualSave()
-      router.back()
+    if (isEditing.value) {
+      const result = await pageService.update(page.value)
+      if (result.succeeded) {
+        if (result.page) page.value = result.page
+        onManualSave()
+      }
+    } else {
+      const response = await pageService.create(page.value)
+      if (response && response.succeeded) {
+        onManualSave()
+        router.back()
+      }
     }
   } finally {
     preventMultipleSubmit.value = false
@@ -207,6 +213,7 @@ async function onPreview() {
 
 function onRevisionRestored(restoredPage: Page) {
   page.value = restoredPage
+  editorKey.value++
 }
 </script>
 
@@ -311,9 +318,7 @@ function onRevisionRestored(restoredPage: Page) {
   font-size: 0.875rem;
   margin-top: 0.5rem;
 }
-</style>
 
-<style>
 .page-editor .btn.btn--outline {
   background: transparent;
   border: 1px solid #d1d5db;

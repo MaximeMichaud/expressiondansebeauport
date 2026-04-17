@@ -2,7 +2,7 @@
   <div class="content-grid content-grid--subpage">
     <div class="content-grid__header">
       <h1>{{ t('routes.admin.children.siteHealth.name') }}</h1>
-      <button class="btn" @click="loadHealth">
+      <button class="btn" @click="loadHealth" :disabled="isLoading">
         <RefreshCw :size="15" />
         {{ t('pages.siteHealth.refresh') }}
       </button>
@@ -40,7 +40,7 @@
 
     <div v-else class="site-health">
       <p>{{ t('validation.errorOccured') }}</p>
-      <button class="btn" @click="loadHealth" style="margin-top: 1rem;">
+      <button class="btn site-health__error-retry" @click="loadHealth" :disabled="isLoading">
         <RefreshCw :size="15" />
         {{ t('pages.siteHealth.refresh') }}
       </button>
@@ -87,8 +87,9 @@ async function loadHealth() {
     health.value = await healthService.get()
   } catch {
     health.value = null
+  } finally {
+    isLoading.value = false
   }
-  isLoading.value = false
 }
 </script>
 
@@ -178,6 +179,10 @@ async function loadHealth() {
 .site-health__pill--good    { background: #d1fae5; color: #065f46; }
 .site-health__pill--warning { background: #fef3c7; color: #92400e; }
 .site-health__pill--critical { background: #fee2e2; color: #991b1b; }
+
+.site-health__error-retry {
+  margin-top: 1rem;
+}
 
 @media (max-width: 767px) {
   .site-health__check {
