@@ -11,7 +11,8 @@ services:
       - caddy-data:/data
       - caddy-config:/config
     depends_on:
-      - web
+      web:
+        condition: service_healthy
     networks:
       - frontend
     logging:
@@ -65,6 +66,12 @@ services:
       Application__RedirectUrl: "https://expression.mich.sh"
       Cookies__Domain: "expression.mich.sh"
       Cookies__Secure: "true"
+    healthcheck:
+      test: wget -qO- http://localhost:8080/api/health || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 15s
     depends_on:
       db:
         condition: service_healthy

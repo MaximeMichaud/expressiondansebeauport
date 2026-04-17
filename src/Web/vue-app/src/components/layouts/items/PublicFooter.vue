@@ -70,6 +70,9 @@
       <button class="public-footer__cookies-button" type="button" @click="openCookiePreferences">
         Préférences de cookies
       </button>
+      <RouterLink to="/politique-confidentialite" class="public-footer__privacy-link">
+        {{ t('public.footer.privacyPolicy') }}
+      </RouterLink>
     </div>
   </footer>
 </template>

@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -18,8 +16,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "vite/client",
-      "reflect-metadata"
+      "vite/client"
     ],
     "paths": {
       "@/*": ["src/*"]

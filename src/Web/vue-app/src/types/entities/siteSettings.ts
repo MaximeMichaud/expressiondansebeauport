@@ -21,6 +21,9 @@ export class SiteSettings {
   facebookUrl?: string
   instagramUrl?: string
   copyrightText?: string
+  isMaintenanceMode?: boolean
+  maintenanceMessage?: string
+  maintenanceRetryAfter?: number
   socialLinks?: SocialLink[]
   footerPartners?: FooterPartner[]
 }

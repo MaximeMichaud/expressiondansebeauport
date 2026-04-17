@@ -23,6 +23,9 @@ public class SiteSettingsConfiguration : IEntityTypeConfiguration<SiteSettings>
         builder.Property(s => s.FacebookUrl).HasMaxLength(500);
         builder.Property(s => s.InstagramUrl).HasMaxLength(500);
         builder.Property(s => s.CopyrightText).HasMaxLength(200);
+        builder.Property(s => s.IsMaintenanceMode).HasDefaultValue(false).IsRequired();
+        builder.Property(s => s.MaintenanceMessage).HasMaxLength(500).HasDefaultValue("Le site est en maintenance. Revenez bientôt !");
+        builder.Property(s => s.MaintenanceRetryAfter).HasDefaultValue(3600).IsRequired();
 
         builder.HasOne(s => s.LogoMediaFile)
             .WithMany()

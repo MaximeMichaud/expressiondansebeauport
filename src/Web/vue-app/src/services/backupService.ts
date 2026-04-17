@@ -1,12 +1,10 @@
 import {AxiosError, AxiosResponse} from "axios"
-import {injectable} from "inversify"
 
 import {ApiService} from "@/services/apiService"
 import {IBackupService} from "@/injection/interfaces"
 import {BackupRecord} from "@/types/entities"
 import {SucceededOrNotResponse} from "@/types/responses"
 
-@injectable()
 export class BackupService extends ApiService implements IBackupService {
   public async getAll(): Promise<BackupRecord[]> {
     const response = await this

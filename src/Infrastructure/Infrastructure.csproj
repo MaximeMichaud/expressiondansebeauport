@@ -17,14 +17,12 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="10.0.5" />
 		<PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.5" />
 		<PackageReference Include="ScottBrady91.AspNetCore.Identity.Argon2PasswordHasher" Version="2.0.0" />
-		<PackageReference Include="SkiaSharp" Version="3.119.0" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.0" />
+		<PackageReference Include="SkiaSharp" Version="3.119.2" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.2" />
 		<PackageReference Include="SendGrid" Version="9.29.3" />
 		<PackageReference Include="SendGrid.Extensions.DependencyInjection" Version="1.0.1" />
-		<PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.5" />
 		<PackageReference Include="ZstdSharp.Port" Version="0.8.7" />
 	</ItemGroup>
 

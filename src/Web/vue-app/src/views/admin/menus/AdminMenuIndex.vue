@@ -156,7 +156,7 @@
 <script lang="ts" setup>
 import {useI18n} from "vue-i18n"
 import {computed, onMounted, ref} from "vue"
-import {useMenuService} from "@/inversify.config"
+import {useMenuService} from "@/serviceRegistry"
 import {NavigationMenu, NavigationMenuItem} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import {GripVertical, Pencil, Trash2} from "lucide-vue-next"

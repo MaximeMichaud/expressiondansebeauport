@@ -50,15 +50,30 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh pr checks "${{ github.event.pull_request.number }}" \
-            --repo "${{ github.repository }}" \
-            --watch \
-            --fail-fast
+          for i in $(seq 1 60); do
+            OUTPUT=$(gh pr checks "${{ github.event.pull_request.number }}" \
+              --repo "${{ github.repository }}" 2>&1 || true)
+            # Ignorer le check auto-merge lui-même pour éviter un deadlock
+            FILTERED=$(echo "$OUTPUT" | grep -v "Auto-merge")
+            echo "$FILTERED"
+            if echo "$FILTERED" | grep -q "fail"; then
+              echo "CI check failed"
+              exit 1
+            fi
+            if echo "$FILTERED" | grep -qE "pending|in_progress"; then
+              sleep 10
+              continue
+            fi
+            echo "All CI checks passed"
+            exit 0
+          done
+          echo "Timeout waiting for checks"
+          exit 1
 
       - name: Merge minor/patch updates
         if: steps.update-type.outputs.update_type != 'version-update:semver-major'
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.ADMIN_PAT }}
         run: |
           gh pr merge "${{ github.event.pull_request.number }}" \
             --repo "${{ github.repository }}" \

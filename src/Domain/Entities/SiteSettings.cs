@@ -23,6 +23,10 @@ public class SiteSettings : Entity
     public string? InstagramUrl { get; private set; }
     public string? CopyrightText { get; private set; }
 
+    public bool IsMaintenanceMode { get; private set; } = false;
+    public string MaintenanceMessage { get; private set; } = "Le site est en maintenance. Revenez bientôt !";
+    public int MaintenanceRetryAfter { get; private set; } = 3600;
+
     public MediaFile? LogoMediaFile { get; private set; }
     public MediaFile? FaviconMediaFile { get; private set; }
     public ICollection<SocialLink> SocialLinks { get; private set; } = new List<SocialLink>();
@@ -57,6 +61,9 @@ public class SiteSettings : Entity
     public void SetFacebookUrl(string? url) => FacebookUrl = url;
     public void SetInstagramUrl(string? url) => InstagramUrl = url;
     public void SetCopyrightText(string? text) => CopyrightText = text;
+    public void SetMaintenanceMode(bool isActive) => IsMaintenanceMode = isActive;
+    public void SetMaintenanceMessage(string message) => MaintenanceMessage = message;
+    public void SetMaintenanceRetryAfter(int seconds) => MaintenanceRetryAfter = seconds;
 
     private static void ValidateHexColor(string color)
     {

@@ -67,7 +67,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useSocialService } from '@/inversify.config'
+import { useSocialService } from '@/serviceRegistry'
 import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
 
 const socialService = useSocialService()
