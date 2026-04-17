@@ -7,6 +7,7 @@ import PublicPage from "@/views/public/PublicPage.vue";
 import PreviewPage from "@/views/public/PreviewPage.vue";
 import NotFound from "@/views/public/NotFound.vue";
 import InternalError from "@/views/public/InternalError.vue";
+import Maintenance from "@/views/public/Maintenance.vue";
 import Login from "@/views/Login.vue";
 import TwoFactor from "@/views/TwoFactor.vue";
 import ForgotPassword from "@/views/ForgotPassword.vue";
@@ -26,6 +27,7 @@ import AdminErrorLogs from "@/views/admin/errorlogs/AdminErrorLogs.vue";
 
 import {useUserStore} from "@/stores/userStore";
 import {useUserService} from "@/serviceRegistry";
+import axios from "axios";
 
 const socialRoutes = [
   {
@@ -259,6 +261,12 @@ const mainRoutes = [
     }
   },
   {
+    path: "/maintenance",
+    name: "maintenance",
+    component: Maintenance,
+    meta: { public: true, title: "routes.maintenance.name" }
+  },
+  {
     path: "/:slug",
     name: "publicPage",
     component: PublicPage,
@@ -312,6 +320,21 @@ async function rehydrateWithRetry() {
 // eslint-disable-next-line
 router.beforeEach(async (to, from) => {
   const userStore = useUserStore()
+
+  const isAdminRoute = !!to.matched.find(r => r.meta.requiredRole)?.meta.requiredRole;
+  const isMaintenancePage = to.name === "maintenance";
+  const isLoginRoute = to.name === "login" || to.name === "socialLogin";
+
+  if (!isAdminRoute && !isMaintenancePage && !isLoginRoute) {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/public/maintenance-status`)
+      if (response.data?.isMaintenanceMode) {
+        return { name: "maintenance" }
+      }
+    } catch {
+      // Si l'API est indisponible, on laisse la navigation continuer normalement.
+    }
+  }
 
   const requiredRole = to.matched.find(r => r.meta.requiredRole)?.meta.requiredRole;
   if (!requiredRole)
