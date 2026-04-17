@@ -81,6 +81,27 @@ public class UpdatePageEndpoint : Endpoint<UpdatePageRequest, PageDto>
             return;
         }
 
+        // Préparer le snapshot AVANT modification (capture l'état "avant") — uniquement si la requête apporte un changement réel
+        // Le snapshot est persisté APRÈS la mise à jour réussie pour éviter les entrées fantômes en cas d'échec
+        var requestChangesPage = page.Title != req.Title
+            || page.Content != req.Content
+            || page.CustomCss != req.CustomCss
+            || page.ContentMode != req.ContentMode
+            || page.Blocks != req.Blocks
+            || page.MetaDescription != req.MetaDescription
+            || page.Status.ToString() != req.Status;
+
+        PageRevision? snapshot = null;
+        if (requestChangesPage)
+        {
+            var latest = _revisionRepository.GetLatestByPageId(page.Id, RevisionType.Manual);
+            if (latest is null || !latest.HasSameContentAs(page))
+            {
+                var revisionNumber = _revisionRepository.GetNextRevisionNumber(page.Id);
+                snapshot = PageRevision.CreateFromPage(page, revisionNumber, RevisionType.Manual, _userService.Username, InstantHelper.GetLocalNow());
+            }
+        }
+
         page.SetTitle(req.Title);
         if (!string.IsNullOrWhiteSpace(req.Slug))
         {
@@ -105,13 +126,10 @@ public class UpdatePageEndpoint : Endpoint<UpdatePageRequest, PageDto>
 
         await _pageRepository.Update(page);
 
-        // Créer une révision manuelle si le contenu a changé
-        var latest = _revisionRepository.GetLatestByPageId(page.Id, RevisionType.Manual);
-        if (latest is null || !latest.HasSameContentAs(page))
+        // Persister le snapshot uniquement si la mise à jour a réussi
+        if (snapshot is not null)
         {
-            var revisionNumber = _revisionRepository.GetNextRevisionNumber(page.Id);
-            var revision = PageRevision.CreateFromPage(page, revisionNumber, RevisionType.Manual, _userService.Username, InstantHelper.GetLocalNow());
-            await _revisionRepository.Create(revision);
+            await _revisionRepository.Create(snapshot);
             await _revisionRepository.DeleteOldRevisions(page.Id, 25);
         }
 

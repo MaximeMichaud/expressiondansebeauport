@@ -25,6 +25,9 @@ public class UpdateSiteSettingsRequest
     public string? FacebookUrl { get; set; }
     public string? InstagramUrl { get; set; }
     public string? CopyrightText { get; set; }
+    public bool IsMaintenanceMode { get; set; }
+    public string MaintenanceMessage { get; set; } = "Le site est en maintenance. Revenez bientôt !";
+    public int MaintenanceRetryAfter { get; set; } = 3600;
 }
 
 public class UpdateSiteSettingsValidator : Validator<UpdateSiteSettingsRequest>
@@ -112,6 +115,9 @@ public class UpdateSiteSettingsEndpoint : Endpoint<UpdateSiteSettingsRequest, Si
         settings.SetFacebookUrl(req.FacebookUrl);
         settings.SetInstagramUrl(req.InstagramUrl);
         settings.SetCopyrightText(req.CopyrightText);
+        settings.SetMaintenanceMode(req.IsMaintenanceMode);
+        settings.SetMaintenanceMessage(req.MaintenanceMessage);
+        settings.SetMaintenanceRetryAfter(req.MaintenanceRetryAfter);
 
         await _settingsRepository.Update(settings);
         await Send.OkAsync(_mapper.Map<SiteSettingsDto>(settings), cancellation: ct);

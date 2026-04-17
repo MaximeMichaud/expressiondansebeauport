@@ -117,10 +117,22 @@
     padding-top: 20px;
     padding-bottom: 20px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
 
     p {
       font-size: rem(13);
     }
+  }
+
+  &__privacy-link {
+    font-size: rem(12);
+    color: $color-grey;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    @include colorHover($color-white);
   }
 }
 

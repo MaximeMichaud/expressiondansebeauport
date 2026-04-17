@@ -54,25 +54,15 @@ public class AutosaveEndpoint : Endpoint<AutosaveRequest, AutosaveResponse>
             return;
         }
 
-        // Supprimer l'autosave précédente (une seule par page)
-        await _revisionRepository.DeleteAutosave(page.Id);
-
         var now = InstantHelper.GetLocalNow();
-        var revisionNumber = _revisionRepository.GetNextRevisionNumber(page.Id);
+        var parsedStatus = Enum.TryParse<PageStatus>(req.Status, true, out var s) ? s : PageStatus.Draft;
 
-        // Créer une page temporaire pour utiliser CreateFromPage
-        var tempPage = new Page(req.Title, page.Slug);
-        tempPage.SetId(page.Id);
-        tempPage.SetContent(req.Content);
-        tempPage.SetCustomCss(req.CustomCss);
-        tempPage.SetContentMode(req.ContentMode);
-        tempPage.SetBlocks(req.Blocks);
-        tempPage.SetMetaDescription(req.MetaDescription);
-        if (Enum.TryParse<PageStatus>(req.Status, true, out var status) && status == PageStatus.Published)
-            tempPage.Publish();
+        var revision = PageRevision.CreateFromData(
+            page.Id, req.Title, req.Content, req.CustomCss,
+            req.ContentMode, req.Blocks, req.MetaDescription,
+            parsedStatus, revisionNumber: 0, RevisionType.Autosave, _userService.Username, now);
 
-        var revision = PageRevision.CreateFromPage(tempPage, revisionNumber, RevisionType.Autosave, _userService.Username, now);
-        await _revisionRepository.Create(revision);
+        await _revisionRepository.UpsertAutosave(revision, ct);
 
         await Send.OkAsync(new AutosaveResponse { SavedAt = now.ToString() }, cancellation: ct);
     }

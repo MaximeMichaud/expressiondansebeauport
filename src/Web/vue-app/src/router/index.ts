@@ -1,12 +1,21 @@
 import i18n from "@/i18n";
 import {Role} from "@/types/enums";
 import {createRouter, createWebHistory} from "vue-router";
+import type {Component} from "vue";
+import {Library, FileText, LayoutList, Palette, Activity, ArrowLeftRight, HardDriveDownload, AlertTriangle, UserCircle} from "lucide-vue-next";
+
+declare module "vue-router" {
+  interface RouteMeta {
+    navIcon?: Component;
+  }
+}
 
 import Home from "@/views/public/Home.vue";
 import PublicPage from "@/views/public/PublicPage.vue";
 import PreviewPage from "@/views/public/PreviewPage.vue";
 import NotFound from "@/views/public/NotFound.vue";
 import InternalError from "@/views/public/InternalError.vue";
+import Maintenance from "@/views/public/Maintenance.vue";
 import Login from "@/views/Login.vue";
 import TwoFactor from "@/views/TwoFactor.vue";
 import ForgotPassword from "@/views/ForgotPassword.vue";
@@ -25,7 +34,9 @@ import AdminBackup from "@/views/admin/backup/AdminBackup.vue";
 import AdminErrorLogs from "@/views/admin/errorlogs/AdminErrorLogs.vue";
 
 import {useUserStore} from "@/stores/userStore";
+import {useApiStore} from "@/stores/apiStore";
 import {useUserService} from "@/serviceRegistry";
+import axios from "axios";
 
 const socialRoutes = [
   {
@@ -169,7 +180,8 @@ const mainRoutes = [
     name: "account",
     component: Account,
     meta: {
-      title: "routes.account.name"
+      title: "routes.account.name",
+      navIcon: UserCircle,
     }
   },
   {
@@ -187,6 +199,7 @@ const mainRoutes = [
         path: i18n.global.t("routes.admin.children.pages.path"),
         name: "admin.children.pages",
         component: Admin,
+        meta: { navIcon: FileText },
         children: [
           {
             path: "",
@@ -210,36 +223,43 @@ const mainRoutes = [
         path: i18n.global.t("routes.admin.children.menus.path"),
         name: "admin.children.menus",
         component: AdminMenuIndex,
+        meta: { navIcon: LayoutList },
       },
       {
         path: i18n.global.t("routes.admin.children.media.path"),
         name: "admin.children.media",
         component: AdminMediaLibrary,
+        meta: { navIcon: Library },
       },
       {
         path: i18n.global.t("routes.admin.children.customizer.path"),
         name: "admin.children.customizer",
         component: AdminCustomizer,
+        meta: { navIcon: Palette },
       },
       {
         path: i18n.global.t("routes.admin.children.siteHealth.path"),
         name: "admin.children.siteHealth",
         component: AdminSiteHealth,
+        meta: { navIcon: Activity },
       },
       {
         path: i18n.global.t("routes.admin.children.importExport.path"),
         name: "admin.children.importExport",
         component: AdminImportExport,
+        meta: { navIcon: ArrowLeftRight },
       },
       {
         path: i18n.global.t("routes.admin.children.backup.path"),
         name: "admin.children.backup",
         component: AdminBackup,
+        meta: { navIcon: HardDriveDownload },
       },
       {
         path: i18n.global.t("routes.admin.children.errorLogs.path"),
         name: "admin.children.errorLogs",
         component: AdminErrorLogs,
+        meta: { navIcon: AlertTriangle },
       },
     ]
   },
@@ -257,6 +277,12 @@ const mainRoutes = [
       title: "Aperçu",
       public: true
     }
+  },
+  {
+    path: "/maintenance",
+    name: "maintenance",
+    component: Maintenance,
+    meta: { public: true, title: "routes.maintenance.name" }
   },
   {
     path: "/:slug",
@@ -302,6 +328,9 @@ async function rehydrateWithRetry() {
   for (let i = 0; i < maxAttempts; i++) {
     const user = await useUserService().getCurrentUser()
     if (user) return user
+    // L'intercepteur pose ce flag quand le refresh-token échoue (403) —
+    // l'auth est définitivement invalide, inutile de réessayer.
+    if (useApiStore().needToLogout) return null
     if (i < maxAttempts - 1 && hasAuthCookie()) {
       await new Promise(r => setTimeout(r, delayMs))
     }
@@ -312,6 +341,21 @@ async function rehydrateWithRetry() {
 // eslint-disable-next-line
 router.beforeEach(async (to, from) => {
   const userStore = useUserStore()
+
+  const isAdminRoute = !!to.matched.find(r => r.meta.requiredRole)?.meta.requiredRole;
+  const isMaintenancePage = to.name === "maintenance";
+  const isLoginRoute = to.name === "login" || to.name === "socialLogin";
+
+  if (!isAdminRoute && !isMaintenancePage && !isLoginRoute) {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/public/maintenance-status`)
+      if (response.data?.isMaintenanceMode) {
+        return { name: "maintenance" }
+      }
+    } catch {
+      // Si l'API est indisponible, on laisse la navigation continuer normalement.
+    }
+  }
 
   const requiredRole = to.matched.find(r => r.meta.requiredRole)?.meta.requiredRole;
   if (!requiredRole)

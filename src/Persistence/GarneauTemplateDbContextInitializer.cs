@@ -66,6 +66,7 @@ public class GarneauTemplateDbContextInitializer
             await SeedAdmins();
             await SeedPages();
             await SeedMenus();
+            await FixMenuHierarchy();
             await AssignAvatarColorsToExistingMembers();
         }
         catch (Exception ex)
@@ -432,7 +433,91 @@ public class GarneauTemplateDbContextInitializer
                 "<p><small>*Tous les danseurs doivent être propres et aller seuls aux toilettes.</small></p>" +
             "</section>",
             CampPageCss());
+
+        await SeedPolicyPageWithBlocks();
     }
+
+    private async Task SeedPolicyPageWithBlocks()
+    {
+        var slug = Page.GenerateSlug("politique-confidentialite");
+        var existing = _context.Pages.FirstOrDefault(p => p.Slug == slug);
+        var blocks = PolicyPageBlocks();
+
+        if (existing == null)
+        {
+            var page = new Page("Politique de confidentialité", "politique-confidentialite");
+            page.SetContentMode("blocks");
+            page.SetBlocks(blocks);
+            page.SetSortOrder(99);
+            page.Publish();
+            _context.Pages.Add(page);
+            await _context.SaveChangesAsync();
+        }
+        else if (existing.ContentMode != "blocks")
+        {
+            existing.SetContentMode("blocks");
+            existing.SetBlocks(blocks);
+            existing.SetCustomCss(null);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    private static string PolicyPageBlocks() =>
+        "[" +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<p>Conform\\u00e9ment \\u00e0 la Loi modernisant des dispositions l\\u00e9gislatives en mati\\u00e8re de protection des renseignements personnels (Loi 25), " +
+            "Expression Danse de Beauport s&#39;engage \\u00e0 prot\\u00e9ger les renseignements personnels de ses membres, \\u00e9l\\u00e8ves et visiteurs.</p>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>1. Responsable de la protection des renseignements personnels</h2>" +
+            "<p>La directrice d&#39;Expression Danse de Beauport est responsable de la protection des renseignements personnels au sein de l&#39;organisation.</p>" +
+            "<p><strong>Courriel :</strong> <a href=\\\"mailto:info@expressiondansebeauport.com\\\">info@expressiondansebeauport.com</a></p>" +
+            "<p><strong>T\\u00e9l\\u00e9phone :</strong> <a href=\\\"tel:4186666158\\\">418-666-6158</a></p>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>2. Renseignements collect\\u00e9s</h2>" +
+            "<p>Nous collectons uniquement les renseignements n\\u00e9cessaires \\u00e0 la prestation de nos services :</p>" +
+            "<ul><li>Nom et pr\\u00e9nom</li><li>Adresse courriel</li><li>Num\\u00e9ro de t\\u00e9l\\u00e9phone</li>" +
+            "<li>Date de naissance (pour les inscriptions de mineurs)</li><li>Informations de paiement (trait\\u00e9es par notre prestataire s\\u00e9curis\\u00e9)</li></ul>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>3. Finalit\\u00e9s de la collecte</h2>" +
+            "<p>Vos renseignements personnels sont utilis\\u00e9s aux fins suivantes :</p>" +
+            "<ul><li>Gestion des inscriptions aux cours et aux camps</li><li>Communication concernant les activit\\u00e9s de l&#39;\\u00e9cole</li>" +
+            "<li>Facturation et traitement des paiements</li><li>Respect de nos obligations l\\u00e9gales</li></ul>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>4. Partage des renseignements</h2>" +
+            "<p>Nous ne vendons, n&#39;\\u00e9changeons ni ne transmettons vos renseignements personnels \\u00e0 des tiers, sauf dans les cas suivants :</p>" +
+            "<ul><li>Prestataires de services tiers n\\u00e9cessaires \\u00e0 nos activit\\u00e9s (ex. : traitement des paiements)</li>" +
+            "<li>Obligations l\\u00e9gales impos\\u00e9es par la loi</li></ul>" +
+            "<p>Tout prestataire tiers ayant acc\\u00e8s \\u00e0 vos donn\\u00e9es est tenu de respecter la confidentialit\\u00e9 de celles-ci.</p>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>5. Conservation des renseignements</h2>" +
+            "<p>Vos renseignements personnels sont conserv\\u00e9s uniquement pour la dur\\u00e9e n\\u00e9cessaire aux finalit\\u00e9s pour lesquelles ils ont \\u00e9t\\u00e9 collect\\u00e9s, " +
+            "ou pour satisfaire aux exigences l\\u00e9gales applicables. Une fois cette p\\u00e9riode \\u00e9coul\\u00e9e, ils sont d\\u00e9truits de fa\\u00e7on s\\u00e9curitaire.</p>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>6. Vos droits</h2>" +
+            "<p>Conform\\u00e9ment \\u00e0 la Loi 25, vous disposez des droits suivants :</p>" +
+            "<ul><li><strong>Droit d&#39;acc\\u00e8s</strong> : Vous pouvez demander \\u00e0 consulter les renseignements personnels que nous d\\u00e9tenons \\u00e0 votre sujet.</li>" +
+            "<li><strong>Droit de rectification</strong> : Vous pouvez demander la correction de renseignements inexacts ou incomplets.</li>" +
+            "<li><strong>Droit \\u00e0 la suppression</strong> : Vous pouvez demander la suppression de vos renseignements, sous r\\u00e9serve des obligations l\\u00e9gales.</li>" +
+            "<li><strong>Droit \\u00e0 la portabilit\\u00e9</strong> : Vous pouvez demander que vos donn\\u00e9es vous soient transmises dans un format structur\\u00e9.</li></ul>" +
+            "<p>Pour exercer ces droits, contactez-nous \\u00e0 : <a href=\\\"mailto:info@expressiondansebeauport.com\\\">info@expressiondansebeauport.com</a></p>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>7. S\\u00e9curit\\u00e9</h2>" +
+            "<p>Nous mettons en \\u0153uvre des mesures de s\\u00e9curit\\u00e9 techniques et organisationnelles appropri\\u00e9es pour prot\\u00e9ger vos renseignements personnels " +
+            "contre tout acc\\u00e8s non autoris\\u00e9, divulgation, alt\\u00e9ration ou destruction.</p>" +
+        "\"}}," +
+        "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+            "<h2>8. Mise \\u00e0 jour de la politique</h2>" +
+            "<p>Cette politique de confidentialit\\u00e9 peut \\u00eatre mise \\u00e0 jour \\u00e0 tout moment. La version la plus r\\u00e9cente sera toujours disponible sur cette page. " +
+            "Derni\\u00e8re mise \\u00e0 jour : janvier 2026.</p>" +
+        "\"}}" +
+        "]";
 
     private static string CampPageCss() =>
         ".public-page__container { max-width: 1100px; } " +
@@ -701,6 +786,8 @@ public class GarneauTemplateDbContextInitializer
         return page;
     }
 
+    private static readonly string[] CampSlugs = ["camp-d-ete", "camp-d-hiver", "camp-relache"];
+
     private async Task SeedMenus()
     {
         if (_context.NavigationMenus.Any())
@@ -712,13 +799,66 @@ public class GarneauTemplateDbContextInitializer
 
         var pages = await _context.Pages.OrderBy(p => p.SortOrder).ToListAsync();
         var sortOrder = 0;
+
+        var mesCampsItem = new NavigationMenuItem(primaryMenu.Id, "Mes camps", 3);
+        _context.NavigationMenuItems.Add(mesCampsItem);
+        await _context.SaveChangesAsync();
+
         foreach (var page in pages)
         {
-            var item = new NavigationMenuItem(primaryMenu.Id, page.Title, sortOrder++);
-            item.SetPageId(page.Id);
-            item.SetUrl($"/{page.Slug}");
-            _context.NavigationMenuItems.Add(item);
+            if (page.Slug == "politique-confidentialite")
+                continue;
+
+            if (CampSlugs.Contains(page.Slug))
+            {
+                var child = new NavigationMenuItem(primaryMenu.Id, page.Title, sortOrder++);
+                child.SetPageId(page.Id);
+                child.SetUrl($"/{page.Slug}");
+                child.SetParentId(mesCampsItem.Id);
+                _context.NavigationMenuItems.Add(child);
+            }
+            else
+            {
+                var item = new NavigationMenuItem(primaryMenu.Id, page.Title, sortOrder++);
+                item.SetPageId(page.Id);
+                item.SetUrl($"/{page.Slug}");
+                _context.NavigationMenuItems.Add(item);
+            }
         }
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task FixMenuHierarchy()
+    {
+        var primaryMenu = _context.NavigationMenus
+            .FirstOrDefault(m => m.Location == MenuLocation.Primary);
+
+        if (primaryMenu == null) return;
+
+        var items = _context.NavigationMenuItems
+            .Where(i => i.MenuId == primaryMenu.Id)
+            .Include(i => i.Page)
+            .ToList();
+
+        var privacyItem = items.FirstOrDefault(i => i.Page != null && i.Page.Slug == "politique-confidentialite");
+        if (privacyItem != null)
+            _context.NavigationMenuItems.Remove(privacyItem);
+
+        var mesCampsItem = items.FirstOrDefault(i => i.Label == "Mes camps" && i.ParentId == null);
+        if (mesCampsItem == null)
+        {
+            mesCampsItem = new NavigationMenuItem(primaryMenu.Id, "Mes camps", 3);
+            _context.NavigationMenuItems.Add(mesCampsItem);
+            await _context.SaveChangesAsync();
+        }
+
+        var campItems = items.Where(i => i.Page != null && CampSlugs.Contains(i.Page.Slug)).ToList();
+        foreach (var campItem in campItems)
+        {
+            if (campItem.ParentId != mesCampsItem.Id)
+                campItem.SetParentId(mesCampsItem.Id);
+        }
+
         await _context.SaveChangesAsync();
     }
 

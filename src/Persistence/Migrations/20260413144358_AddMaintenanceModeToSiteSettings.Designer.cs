@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NodaTime;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(GarneauTemplateDbContext))]
-    partial class GarneauTemplateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260413144358_AddMaintenanceModeToSiteSettings")]
+    partial class AddMaintenanceModeToSiteSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -521,46 +524,6 @@ namespace Persistence.Migrations
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.JoinRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Instant>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("RequesterMemberId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("RequesterNotified")
-                        .HasColumnType("boolean");
-
-                    b.Property<Instant?>("ResolvedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("ResolvedByMemberId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RequesterMemberId");
-
-                    b.HasIndex("ResolvedByMemberId");
-
-                    b.HasIndex("GroupId", "RequesterMemberId", "Status");
-
-                    b.ToTable("JoinRequests");
-                });
-
             modelBuilder.Entity("Domain.Entities.MediaFile", b =>
                 {
                     b.Property<Guid>("Id")
@@ -709,33 +672,15 @@ namespace Persistence.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("JoinRequestId")
-                        .HasColumnType("uuid");
-
                     b.Property<Instant?>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
 
-                    b.Property<string>("MediaOriginalUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("MediaThumbnailUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
                     b.Property<string>("MediaUrl")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
-
-                    b.Property<string>("MessageType")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasDefaultValue("Text");
 
                     b.Property<Guid>("SenderMemberId")
                         .HasColumnType("uuid");
@@ -744,51 +689,9 @@ namespace Persistence.Migrations
 
                     b.HasIndex("ConversationId");
 
-                    b.HasIndex("JoinRequestId");
-
                     b.HasIndex("SenderMemberId");
 
                     b.ToTable("Messages");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MessageMedia", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("MediaUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<Guid>("MessageId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("OriginalUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<long>("Size")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ThumbnailUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MessageId");
-
-                    b.ToTable("MessageMedia");
                 });
 
             modelBuilder.Entity("Domain.Entities.NavigationMenu", b =>
@@ -942,74 +845,6 @@ namespace Persistence.Migrations
                     b.ToTable("Pages");
                 });
 
-            modelBuilder.Entity("Domain.Entities.PageRevision", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Blocks")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ContentMode")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasDefaultValue("html");
-
-                    b.Property<Instant>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("CustomCss")
-                        .HasColumnType("text");
-
-                    b.Property<string>("MetaDescription")
-                        .HasMaxLength(320)
-                        .HasColumnType("character varying(320)");
-
-                    b.Property<Guid>("PageId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("RevisionNumber")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("RevisionType")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PageId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_PageRevisions_PageId_Autosave_Unique")
-                        .HasFilter("\"RevisionType\" = 'Autosave'");
-
-                    b.HasIndex("PageId", "RevisionNumber");
-
-                    b.HasIndex("PageId", "RevisionType");
-
-                    b.ToTable("PageRevisions");
-                });
-
             modelBuilder.Entity("Domain.Entities.Poll", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1154,10 +989,6 @@ namespace Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<string>("OriginalUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
                     b.Property<Guid>("PostId")
                         .HasColumnType("uuid");
 
@@ -1224,40 +1055,6 @@ namespace Persistence.Migrations
                     b.HasIndex("MemberId");
 
                     b.ToTable("PostViews");
-                });
-
-            modelBuilder.Entity("Domain.Entities.PreviewToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Instant>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<Instant>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("PageId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PageId");
-
-                    b.HasIndex("Token")
-                        .IsUnique();
-
-                    b.ToTable("PreviewTokens");
                 });
 
             modelBuilder.Entity("Domain.Entities.SiteSettings", b =>
@@ -1624,32 +1421,6 @@ namespace Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.Entities.JoinRequest", b =>
-                {
-                    b.HasOne("Domain.Entities.Group", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Member", "RequesterMember")
-                        .WithMany()
-                        .HasForeignKey("RequesterMemberId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Member", "ResolvedByMember")
-                        .WithMany()
-                        .HasForeignKey("ResolvedByMemberId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("Group");
-
-                    b.Navigation("RequesterMember");
-
-                    b.Navigation("ResolvedByMember");
-                });
-
             modelBuilder.Entity("Domain.Entities.Member", b =>
                 {
                     b.HasOne("Domain.Entities.Identity.User", "User")
@@ -1669,11 +1440,6 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.JoinRequest", "JoinRequest")
-                        .WithMany()
-                        .HasForeignKey("JoinRequestId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("Domain.Entities.Member", "SenderMember")
                         .WithMany()
                         .HasForeignKey("SenderMemberId")
@@ -1682,20 +1448,7 @@ namespace Persistence.Migrations
 
                     b.Navigation("Conversation");
 
-                    b.Navigation("JoinRequest");
-
                     b.Navigation("SenderMember");
-                });
-
-            modelBuilder.Entity("Domain.Entities.MessageMedia", b =>
-                {
-                    b.HasOne("Domain.Entities.Message", "Message")
-                        .WithMany("Media")
-                        .HasForeignKey("MessageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Message");
                 });
 
             modelBuilder.Entity("Domain.Entities.NavigationMenuItem", b =>
@@ -1731,17 +1484,6 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("FeaturedImage");
-                });
-
-            modelBuilder.Entity("Domain.Entities.PageRevision", b =>
-                {
-                    b.HasOne("Domain.Entities.Page", "Page")
-                        .WithMany()
-                        .HasForeignKey("PageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Page");
                 });
 
             modelBuilder.Entity("Domain.Entities.Poll", b =>
@@ -1852,17 +1594,6 @@ namespace Persistence.Migrations
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("Domain.Entities.PreviewToken", b =>
-                {
-                    b.HasOne("Domain.Entities.Page", "Page")
-                        .WithMany()
-                        .HasForeignKey("PageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Page");
-                });
-
             modelBuilder.Entity("Domain.Entities.SiteSettings", b =>
                 {
                     b.HasOne("Domain.Entities.MediaFile", "FaviconMediaFile")
@@ -1947,11 +1678,6 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.Identity.User", b =>
                 {
                     b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Message", b =>
-                {
-                    b.Navigation("Media");
                 });
 
             modelBuilder.Entity("Domain.Entities.NavigationMenu", b =>
