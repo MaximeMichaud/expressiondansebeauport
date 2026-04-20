@@ -1,35 +1,34 @@
 <template>
-  <section v-if="isVisible" class="cookie-banner" aria-label="Préférences de cookies">
+  <section v-if="isVisible" class="cookie-banner" :aria-label="t('public.cookieBanner.title')">
     <div class="cookie-banner__content">
-      <p class="cookie-banner__title">Préférences de cookies</p>
+      <p class="cookie-banner__title">{{ t('public.cookieBanner.title') }}</p>
       <p class="cookie-banner__text">
-        Ce site utilise des cookies nécessaires à son fonctionnement ainsi que des cookies optionnels pour analyser l’utilisation du site et améliorer nos services.
-        Vous pouvez accepter, refuser ou personnaliser vos préférences.
-        <RouterLink to="/politique-confidentialite">Voir notre politique de confidentialité.</RouterLink>
+        {{ t('public.cookieBanner.description') }}
+        <RouterLink to="/politique-confidentialite">{{ t('public.cookieBanner.privacyLink') }}</RouterLink>
       </p>
 
       <div v-if="showDetails" class="cookie-banner__choices">
         <label class="cookie-banner__choice cookie-banner__choice--disabled">
           <input type="checkbox" checked disabled>
           <span>
-            <strong>Cookies nécessaires</strong>
-            <small>Toujours actifs pour le bon fonctionnement du site.</small>
+            <strong>{{ t('public.cookieBanner.necessary.title') }}</strong>
+            <small>{{ t('public.cookieBanner.necessary.description') }}</small>
           </span>
         </label>
 
         <label class="cookie-banner__choice">
           <input v-model="analyticsEnabled" type="checkbox">
           <span>
-            <strong>Cookies analytiques</strong>
-            <small>Aident à comprendre l’utilisation du site.</small>
+            <strong>{{ t('public.cookieBanner.analytics.title') }}</strong>
+            <small>{{ t('public.cookieBanner.analytics.description') }}</small>
           </span>
         </label>
 
         <label class="cookie-banner__choice">
           <input v-model="marketingEnabled" type="checkbox">
           <span>
-            <strong>Cookies marketing</strong>
-            <small>Permettent d’adapter certains contenus ou campagnes.</small>
+            <strong>{{ t('public.cookieBanner.marketing.title') }}</strong>
+            <small>{{ t('public.cookieBanner.marketing.description') }}</small>
           </span>
         </label>
       </div>
@@ -37,20 +36,20 @@
 
     <div class="cookie-banner__actions">
       <button class="cookie-banner__button cookie-banner__button--secondary" type="button" @click="rejectOptionalCookies">
-        Refuser les optionnels
+        {{ t('public.cookieBanner.actions.reject') }}
       </button>
       <button
         v-if="!showDetails"
         class="cookie-banner__button cookie-banner__button--secondary"
         type="button"
         @click="showDetails = true">
-        Personnaliser
+        {{ t('public.cookieBanner.actions.customize') }}
       </button>
       <button v-else class="cookie-banner__button" type="button" @click="saveCustomPreferences">
-        Enregistrer mes préférences
+        {{ t('public.cookieBanner.actions.save') }}
       </button>
       <button class="cookie-banner__button" type="button" @click="acceptOptionalCookies">
-        Accepter les optionnels
+        {{ t('public.cookieBanner.actions.accept') }}
       </button>
     </div>
   </section>
@@ -58,6 +57,7 @@
 
 <script setup lang="ts">
 import {onBeforeUnmount, onMounted, ref} from "vue";
+import {useI18n} from "vue-i18n";
 import {
   type CookiePreferences,
   getCookiePreferences,
@@ -65,6 +65,8 @@ import {
   setCookiePreferences
 } from "@/services/cookiePreferencesService";
 import {applyCookieControlledScripts} from "@/services/cookieControlledScripts";
+
+const {t} = useI18n();
 
 const isVisible = ref(!hasUserMadeChoice());
 const showDetails = ref(false);
