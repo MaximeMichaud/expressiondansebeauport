@@ -5,7 +5,7 @@
       <p class="cookie-banner__text">
         Ce site utilise des cookies nécessaires à son fonctionnement ainsi que des cookies optionnels pour analyser l’utilisation du site et améliorer nos services.
         Vous pouvez accepter, refuser ou personnaliser vos préférences.
-        <a href="/politique-confidentialite">Voir notre politique de confidentialité.</a>
+        <RouterLink to="/politique-confidentialite">Voir notre politique de confidentialité.</RouterLink>
       </p>
 
       <div v-if="showDetails" class="cookie-banner__choices">
