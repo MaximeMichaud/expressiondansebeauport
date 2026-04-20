@@ -118,12 +118,14 @@ onBeforeUnmount(() => window.removeEventListener('open-cookie-preferences', open
 </script>
 
 <style scoped lang="scss">
+@use "@/sass/tools" as *;
+
 .cookie-banner {
   position: fixed;
   right: 24px;
   bottom: 24px;
   left: 24px;
-  z-index: 70000;
+  z-index: $zindex-popup;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -131,11 +133,11 @@ onBeforeUnmount(() => window.removeEventListener('open-cookie-preferences', open
   max-width: 920px;
   margin: 0 auto;
   padding: 20px;
-  color: #1f2933;
-  background: #fff;
-  border: 1px solid rgba(31, 41, 51, 0.12);
+  color: $color-text;
+  background: $color-white;
+  border: 1px solid $color-border;
   border-radius: 12px;
-  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 18px 60px rgba($color-black, 0.18);
 }
 
 .cookie-banner__content {
@@ -163,7 +165,7 @@ onBeforeUnmount(() => window.removeEventListener('open-cookie-preferences', open
   gap: 14px;
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid rgba(31, 41, 51, 0.12);
+  border-top: 1px solid $color-border;
 }
 
 .cookie-banner__choice {
@@ -171,8 +173,8 @@ onBeforeUnmount(() => window.removeEventListener('open-cookie-preferences', open
   gap: 12px;
   align-items: flex-start;
   padding: 12px;
-  background: #f8fafc;
-  border: 1px solid rgba(31, 41, 51, 0.08);
+  background: $color-grey-lighter;
+  border: 1px solid rgba($color-black, 0.08);
   border-radius: 10px;
 }
 
@@ -187,7 +189,7 @@ onBeforeUnmount(() => window.removeEventListener('open-cookie-preferences', open
 
 .cookie-banner__choice small {
   margin-top: 2px;
-  color: #5f6b76;
+  color: $color-grey-medium;
 }
 
 .cookie-banner__choice--disabled {
@@ -199,22 +201,22 @@ onBeforeUnmount(() => window.removeEventListener('open-cookie-preferences', open
   gap: 12px;
   justify-content: flex-end;
   padding-top: 16px;
-  border-top: 1px solid rgba(31, 41, 51, 0.12);
+  border-top: 1px solid $color-border;
 }
 
 .cookie-banner__button {
   padding: 10px 16px;
   font-weight: 700;
-  color: #fff;
+  color: $color-white;
   cursor: pointer;
-  background: #174ea6;
-  border: 1px solid #174ea6;
+  background: var(--primary);
+  border: 1px solid var(--primary);
   border-radius: 999px;
 }
 
 .cookie-banner__button--secondary {
-  color: #174ea6;
-  background: #fff;
+  color: var(--primary);
+  background: $color-white;
 }
 
 @media (max-width: 720px) {
