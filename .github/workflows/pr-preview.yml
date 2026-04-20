@@ -143,6 +143,7 @@ jobs:
 
       - name: Wait for provisioning
         run: |
+          STATE=""
           for i in $(seq 1 30); do
             STATE=$(az containerapp show \
               --name ${{ env.CONTAINER_APP_NAME }} \
@@ -155,6 +156,10 @@ jobs:
               *) sleep 10 ;;
             esac
           done
+          if [ "$STATE" != "Succeeded" ]; then
+            echo "Provisioning did not reach Succeeded (last state: ${STATE})"
+            exit 1
+          fi
 
       - name: Get preview URL
         id: preview-url
@@ -163,6 +168,10 @@ jobs:
             --name ${{ env.CONTAINER_APP_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --query properties.configuration.ingress.fqdn -o tsv)
+          if [ -z "$FQDN" ]; then
+            echo "Empty FQDN returned by Azure, ingress not ready"
+            exit 1
+          fi
           echo "url=https://${FQDN}" >> "$GITHUB_OUTPUT"
 
       - name: Comment PR with preview URL
