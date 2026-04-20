@@ -51,6 +51,11 @@ export function setupInterceptors(httpClient: AxiosInstance) {
 
         if (error.request.status == 401) {
           originalRequest._retry = true;
+          // Pas de refreshToken : aucune session à rafraîchir, on propage le 401 sans
+          // appeler /refresh-token (qui répondrait 401/403 et polluerait la console).
+          if (!new Cookies().get("refreshToken")) {
+            return Promise.reject(error);
+          }
           try {
             const response = await axios.get<SucceededOrNotResponse>(
                 `${import.meta.env.VITE_API_BASE_URL}/authentication/refresh-token`
