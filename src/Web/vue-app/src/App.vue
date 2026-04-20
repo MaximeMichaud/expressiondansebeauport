@@ -85,14 +85,14 @@ onMounted(async () => {
   if (isSocial.value && isSocialAuthPath.value)
     return
 
-  // Visiteur sans cookie de session : inutile d'interroger /users/me, ce qui produirait
-  // un 401 attendu (et un 403 en cascade depuis l'intercepteur sur /refresh-token).
+  // Visiteur sans accessToken lisible côté JS : inutile d'interroger /users/me, ce qui
+  // produirait un 401 attendu (et un 403 en cascade depuis l'intercepteur sur /refresh-token).
+  // Le refreshToken est httpOnly donc pas lisible ici, on s'appuie sur l'accessToken seul.
   // TODO sécurité : passer accessToken en httpOnly + axios withCredentials + lecture
   // du cookie côté JwtBearer ASP.NET. Tant que l'accessToken reste lisible en JS pour
   // alimenter le header Bearer, on s'appuie sur sa présence pour gater l'appel.
-  const cookies = new Cookies()
-  const hasSessionCookie = !!cookies.get("accessToken") || !!cookies.get("refreshToken")
-  const user = hasSessionCookie
+  const hasAccessToken = !!new Cookies().get("accessToken")
+  const user = hasAccessToken
     ? await userService.getCurrentUser().catch(() => null)
     : null
   if (user) {

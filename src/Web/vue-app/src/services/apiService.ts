@@ -51,9 +51,10 @@ export function setupInterceptors(httpClient: AxiosInstance) {
 
         if (error.request.status == 401) {
           originalRequest._retry = true;
-          // Pas de refreshToken : aucune session à rafraîchir, on propage le 401 sans
-          // appeler /refresh-token (qui répondrait 401/403 et polluerait la console).
-          if (!new Cookies().get("refreshToken")) {
+          // Pas d'accessToken cookie : visiteur anonyme, aucune session à rafraîchir.
+          // Le refreshToken est httpOnly donc invisible côté JS, on ne peut pas s'en servir
+          // ici comme indicateur. accessToken (non httpOnly) est notre signal de session.
+          if (!new Cookies().get("accessToken")) {
             return Promise.reject(error);
           }
           try {
