@@ -54,6 +54,7 @@
               :id="`submenu-${item.id}`"
               class="submenu"
               :aria-hidden="!isOpen(item.id) && isMenuOpen"
+              :inert="!isOpen(item.id) && isMenuOpen"
             >
               <li v-for="child in item.children" :key="child.id">
                 <RouterLink
