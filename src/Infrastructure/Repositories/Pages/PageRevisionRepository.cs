@@ -57,41 +57,43 @@ public class PageRevisionRepository : IPageRevisionRepository
 
     public async Task UpsertAutosave(PageRevision revision, CancellationToken ct = default)
     {
-        await using var tx = await _context.Database.BeginTransactionAsync(ct);
-
-        var existing = await _context.PageRevisions
-            .FirstOrDefaultAsync(r => r.PageId == revision.PageId && r.RevisionType == RevisionType.Autosave, ct);
-
-        if (existing is not null)
-            _context.PageRevisions.Remove(existing);
-
-        _context.PageRevisions.Add(revision);
-
-        try
+        var strategy = _context.Database.CreateExecutionStrategy();
+        await strategy.ExecuteAsync(async () =>
         {
-            await _context.SaveChangesAsync(ct);
-            await tx.CommitAsync(ct);
-        }
-        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: "23505" })
-        {
-            // Race condition : une autre requête a inséré entre notre DELETE et notre INSERT
-            await tx.RollbackAsync(ct);
-            _context.Entry(revision).State = EntityState.Detached;
+            await using var tx = await _context.Database.BeginTransactionAsync(ct);
 
-            // Ne remplacer que si notre révision est plus récente que la survivante
-            var surviving = await _context.PageRevisions
-                .Where(r => r.PageId == revision.PageId && r.RevisionType == RevisionType.Autosave)
-                .FirstOrDefaultAsync(ct);
+            var existing = await _context.PageRevisions
+                .FirstOrDefaultAsync(r => r.PageId == revision.PageId && r.RevisionType == RevisionType.Autosave, ct);
 
-            if (surviving is null || revision.CreatedAt >= surviving.CreatedAt)
+            if (existing is not null)
+                _context.PageRevisions.Remove(existing);
+
+            _context.PageRevisions.Add(revision);
+
+            try
             {
-                await _context.PageRevisions
-                    .Where(r => r.PageId == revision.PageId && r.RevisionType == RevisionType.Autosave)
-                    .ExecuteDeleteAsync(ct);
-                _context.PageRevisions.Add(revision);
                 await _context.SaveChangesAsync(ct);
+                await tx.CommitAsync(ct);
             }
-        }
+            catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: "23505" })
+            {
+                await tx.RollbackAsync(ct);
+                _context.Entry(revision).State = EntityState.Detached;
+
+                var surviving = await _context.PageRevisions
+                    .Where(r => r.PageId == revision.PageId && r.RevisionType == RevisionType.Autosave)
+                    .FirstOrDefaultAsync(ct);
+
+                if (surviving is null || revision.CreatedAt >= surviving.CreatedAt)
+                {
+                    await _context.PageRevisions
+                        .Where(r => r.PageId == revision.PageId && r.RevisionType == RevisionType.Autosave)
+                        .ExecuteDeleteAsync(ct);
+                    _context.PageRevisions.Add(revision);
+                    await _context.SaveChangesAsync(ct);
+                }
+            }
+        });
     }
 
     public async Task DeleteOldRevisions(Guid pageId, int keepCount)
