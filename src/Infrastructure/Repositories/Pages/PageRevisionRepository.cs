@@ -58,15 +58,17 @@ public class PageRevisionRepository : IPageRevisionRepository
     public async Task UpsertAutosave(PageRevision revision, CancellationToken ct = default)
     {
         var strategy = _context.Database.CreateExecutionStrategy();
-        await strategy.ExecuteAsync(async () =>
+        await strategy.ExecuteAsync(ct, async ct =>
         {
             await using var tx = await _context.Database.BeginTransactionAsync(ct);
 
             var existing = await _context.PageRevisions
                 .FirstOrDefaultAsync(r => r.PageId == revision.PageId && r.RevisionType == RevisionType.Autosave, ct);
 
-            if (existing is not null)
+            if (existing is not null && existing.CreatedAt <= revision.CreatedAt)
                 _context.PageRevisions.Remove(existing);
+            else if (existing is not null)
+                return;
 
             _context.PageRevisions.Add(revision);
 
