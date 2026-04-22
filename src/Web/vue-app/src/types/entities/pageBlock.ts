@@ -2,9 +2,12 @@ export interface PageBlock {
   id: string
   type: BlockType
   data: Record<string, any>
+  width?: BlockWidth
 }
 
 export type BlockType = 'rich-text' | 'google-map' | 'image-gallery' | 'hero' | 'faq' | 'cta-button'
+
+export type BlockWidth = 'full' | 'half'
 
 export interface RichTextBlockData {
   html: string
@@ -25,6 +28,7 @@ export interface HeroBlockData {
   title: string
   subtitle?: string
   backgroundImageUrl?: string
+  backgroundColor?: string
   ctaLabel?: string
   ctaUrl?: string
   overlayOpacity?: number

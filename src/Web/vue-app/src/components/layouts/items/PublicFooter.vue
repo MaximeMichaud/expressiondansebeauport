@@ -68,7 +68,7 @@
     <div class="public-footer__copyright">
       <p>&copy; {{ currentYear }} {{ settings.copyrightText || t('public.footer.copyright') }}</p>
       <button class="public-footer__cookies-button" type="button" @click="openCookiePreferences">
-        Préférences de cookies
+        {{ t('public.footer.cookiePreferences') }}
       </button>
       <RouterLink to="/politique-confidentialite" class="public-footer__privacy-link">
         {{ t('public.footer.privacyPolicy') }}
