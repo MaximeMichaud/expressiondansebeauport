@@ -67,6 +67,7 @@ public class GarneauTemplateDbContextInitializer
             await SeedPages();
             await SeedMenus();
             await FixMenuHierarchy();
+            await SeedSiteSettings();
             await AssignAvatarColorsToExistingMembers();
             if (_environment.IsDevelopment())
                 await SeedDemoBlocksPage();
@@ -938,7 +939,13 @@ public class GarneauTemplateDbContextInitializer
 
     private async Task SeedMenus()
     {
-        if (_context.NavigationMenus.Any())
+        await SeedPrimaryMenu();
+        await SeedFooterMenu();
+    }
+
+    private async Task SeedPrimaryMenu()
+    {
+        if (_context.NavigationMenus.Any(m => m.Location == MenuLocation.Primary))
             return;
 
         var primaryMenu = new NavigationMenu("Menu principal", MenuLocation.Primary);
@@ -973,6 +980,118 @@ public class GarneauTemplateDbContextInitializer
                 _context.NavigationMenuItems.Add(item);
             }
         }
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task SeedFooterMenu()
+    {
+        if (_context.NavigationMenus.Any(m => m.Location == MenuLocation.Footer))
+            return;
+
+        var footerMenu = new NavigationMenu("Menu du pied de page", MenuLocation.Footer);
+        _context.NavigationMenus.Add(footerMenu);
+        await _context.SaveChangesAsync();
+
+        var pagesBySlug = await _context.Pages.ToDictionaryAsync(p => p.Slug);
+
+        var footerLinks = new[]
+        {
+            (Label: "Accueil", Slug: (string?)null, Url: "/"),
+            (Label: "Notre école", Slug: (string?)"notre-ecole", Url: "/notre-ecole"),
+            (Label: "Récréatif", Slug: (string?)"recreatif", Url: "/recreatif"),
+            (Label: "Camp d'été", Slug: (string?)"camp-d-ete", Url: "/camp-d-ete"),
+            (Label: "Compétitif", Slug: (string?)"troupes-competitives", Url: "/troupes-competitives"),
+            (Label: "Nous joindre", Slug: (string?)"nous-joindre", Url: "/nous-joindre"),
+            (Label: "Politique de confidentialité", Slug: (string?)"politique-confidentialite", Url: "/politique-confidentialite"),
+        };
+
+        var sortOrder = 0;
+        foreach (var link in footerLinks)
+        {
+            var item = new NavigationMenuItem(footerMenu.Id, link.Label, sortOrder++);
+            item.SetUrl(link.Url);
+            if (link.Slug is not null && pagesBySlug.TryGetValue(link.Slug, out var page))
+                item.SetPageId(page.Id);
+            _context.NavigationMenuItems.Add(item);
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task SeedSiteSettings()
+    {
+        var settings = await _context.SiteSettings
+            .Include(s => s.SocialLinks)
+            .FirstOrDefaultAsync();
+
+        var created = false;
+        if (settings is null)
+        {
+            settings = new SiteSettings();
+            _context.SiteSettings.Add(settings);
+            created = true;
+        }
+
+        if (string.IsNullOrWhiteSpace(settings.FooterAddress))
+            settings.SetFooterAddress("CP 29009 QUÉ CP RAYMOND PO");
+        if (string.IsNullOrWhiteSpace(settings.FooterCity))
+            settings.SetFooterCity("Québec, Qc G1B 3G0");
+        if (string.IsNullOrWhiteSpace(settings.FooterPhone))
+            settings.SetFooterPhone("418-666-6158");
+        if (string.IsNullOrWhiteSpace(settings.FooterEmail))
+            settings.SetFooterEmail("info@expressiondansebeauport.com");
+        if (string.IsNullOrWhiteSpace(settings.FacebookUrl))
+            settings.SetFacebookUrl("https://www.facebook.com/expressiondansebeauport");
+        if (string.IsNullOrWhiteSpace(settings.InstagramUrl))
+            settings.SetInstagramUrl("https://www.instagram.com/expressiondansebeauport/");
+        if (string.IsNullOrWhiteSpace(settings.CopyrightText))
+            settings.SetCopyrightText("EDB");
+
+        if (created)
+            await _context.SaveChangesAsync();
+
+        if (!settings.SocialLinks.Any(sl => sl.Platform == "facebook"))
+            _context.SocialLinks.Add(new SocialLink(settings.Id, "facebook", "https://www.facebook.com/expressiondansebeauport", 0));
+        if (!settings.SocialLinks.Any(sl => sl.Platform == "instagram"))
+            _context.SocialLinks.Add(new SocialLink(settings.Id, "instagram", "https://www.instagram.com/expressiondansebeauport/", 1));
+
+        await _context.SaveChangesAsync();
+
+        await SeedFooterPartners(settings);
+    }
+
+    private static readonly (string FileName, string ContentType, string AltText)[] SeedFooterPartnerAssets =
+    [
+        ("vdq-beauport.png", "image/png", "Ville de Québec - Arrondissement de Beauport"),
+        ("cafe-de-julie.png", "image/png", "Café de Julie"),
+        ("culture-beauport.png", "image/png", "Culture Beauport"),
+    ];
+
+    private async Task SeedFooterPartners(SiteSettings settings)
+    {
+        var existingPartners = await _context.FooterPartners
+            .Where(fp => fp.SiteSettingsId == settings.Id)
+            .Include(fp => fp.MediaFile)
+            .ToListAsync();
+
+        var sortOrder = 0;
+        foreach (var asset in SeedFooterPartnerAssets)
+        {
+            var blobUrl = $"/seed-partners/{asset.FileName}";
+            if (existingPartners.Any(fp => fp.MediaFile.BlobUrl == blobUrl))
+            {
+                sortOrder++;
+                continue;
+            }
+
+            var mediaFile = new MediaFile(asset.FileName, asset.FileName, asset.ContentType, 0, blobUrl);
+            mediaFile.SetAltText(asset.AltText);
+            _context.MediaFiles.Add(mediaFile);
+            await _context.SaveChangesAsync();
+
+            _context.FooterPartners.Add(new FooterPartner(settings.Id, mediaFile.Id, asset.AltText, null, sortOrder++));
+        }
+
         await _context.SaveChangesAsync();
     }
 
