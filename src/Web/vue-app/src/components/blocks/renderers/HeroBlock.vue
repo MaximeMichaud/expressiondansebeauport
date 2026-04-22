@@ -3,6 +3,7 @@
     class="hero-block"
     :style="heroStyle">
     <div
+      v-if="data.backgroundImageUrl"
       class="hero-block__overlay"
       :style="{ opacity: data.overlayOpacity ?? 0.5 }">
     </div>
@@ -32,10 +33,14 @@ const props = defineProps<{
 }>()
 
 const heroStyle = computed(() => {
-  if (!props.data.backgroundImageUrl) return {}
-  return {
-    backgroundImage: `url(${props.data.backgroundImageUrl})`
+  const style: Record<string, string> = {}
+  if (props.data.backgroundImageUrl) {
+    style.backgroundImage = `url(${props.data.backgroundImageUrl})`
   }
+  if (props.data.backgroundColor) {
+    style.backgroundColor = props.data.backgroundColor
+  }
+  return style
 })
 </script>
 
@@ -49,7 +54,7 @@ const heroStyle = computed(() => {
   text-align: center;
   background-size: cover;
   background-position: center;
-  background-color: #1a1a1a;
+  background-color: var(--color-primary, #be1e2c);
   border-radius: 16px;
   overflow: hidden;
   margin-bottom: 2rem;
@@ -86,17 +91,17 @@ const heroStyle = computed(() => {
 
 .hero-block__cta {
   display: inline-block;
-  background: var(--color-primary, #be1e2c);
-  color: #fff;
+  background: #fff;
+  color: var(--color-primary, #be1e2c);
   padding: 14px 28px;
   border-radius: 10px;
   font-weight: 700;
   text-decoration: none;
-  transition: background 0.3s;
+  transition: background 0.3s, color 0.3s;
 }
 
 .hero-block__cta:hover {
-  background: #9e1824;
+  background: rgba(255, 255, 255, 0.88);
 }
 
 @media (max-width: 640px) {
