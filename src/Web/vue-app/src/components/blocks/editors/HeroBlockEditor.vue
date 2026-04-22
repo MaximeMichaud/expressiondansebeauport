@@ -51,6 +51,17 @@
       />
     </div>
     <div class="form-group">
+      <label>{{ t('pages.blocks.hero.backgroundColor') }}</label>
+      <div class="hero-editor__color">
+        <input
+          type="color"
+          :value="modelValue.backgroundColor ?? '#be1e2c'"
+          @input="update({ backgroundColor: ($event.target as HTMLInputElement).value })"
+        />
+        <span class="hero-editor__color-hint">{{ t('pages.blocks.hero.backgroundColorHint') }}</span>
+      </div>
+    </div>
+    <div class="form-group">
       <label>{{ t('pages.blocks.hero.overlayOpacity') }} ({{ modelValue.overlayOpacity ?? 0.5 }})</label>
       <input
         type="range"
@@ -106,5 +117,25 @@ function update(partial: Partial<HeroBlockData>) {
 input[type="range"] {
   width: 100%;
   cursor: pointer;
+}
+
+.hero-editor__color {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hero-editor__color input[type="color"] {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.1rem;
+  border: 1px solid var(--color-gray-300, #d1d5db);
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.hero-editor__color-hint {
+  font-size: 0.8rem;
+  color: #6b7280;
 }
 </style>

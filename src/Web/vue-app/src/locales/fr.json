@@ -274,6 +274,8 @@
       "moveUp": "Monter",
       "moveDown": "Descendre",
       "reorder": "Réordonner",
+      "widthFull": "Pleine largeur",
+      "widthHalf": "Demi-largeur",
       "contentMode": "Mode de contenu",
       "contentModeHtml": "Contenu libre (HTML)",
       "contentModeBlocks": "Blocs visuels",
@@ -310,7 +312,9 @@
         "ctaLabelPlaceholder": "En savoir plus",
         "ctaUrl": "URL du bouton",
         "ctaUrlPlaceholder": "https://...",
-        "overlayOpacity": "Opacité de l'overlay"
+        "backgroundColor": "Couleur de fond",
+        "backgroundColorHint": "Utilisée quand aucune image de fond n'est définie",
+        "overlayOpacity": "Opacité de l'overlay (image seulement)"
       },
       "faq": {
         "label": "FAQ (Accordion)",
@@ -598,7 +602,31 @@
       "partners": "Partenaires",
       "copyright": "Expression Danse de Beauport inc. Tous droits réservés.",
       "description": "École de danse offrant des cours pour tous les âges et tous les niveaux à Beauport, Québec.",
-      "privacyPolicy": "Politique de confidentialité"
+      "privacyPolicy": "Politique de confidentialité",
+      "cookiePreferences": "Préférences de cookies"
+    },
+    "cookieBanner": {
+      "title": "Préférences de cookies",
+      "description": "Ce site utilise des cookies nécessaires à son fonctionnement ainsi que des cookies optionnels pour analyser l'utilisation du site et améliorer nos services. Vous pouvez accepter, refuser ou personnaliser vos préférences.",
+      "privacyLink": "Voir notre politique de confidentialité.",
+      "necessary": {
+        "title": "Cookies nécessaires",
+        "description": "Toujours actifs pour le bon fonctionnement du site."
+      },
+      "analytics": {
+        "title": "Cookies analytiques",
+        "description": "Aident à comprendre l'utilisation du site."
+      },
+      "marketing": {
+        "title": "Cookies marketing",
+        "description": "Permettent d'adapter certains contenus ou campagnes."
+      },
+      "actions": {
+        "reject": "Refuser les optionnels",
+        "customize": "Personnaliser",
+        "save": "Enregistrer mes préférences",
+        "accept": "Accepter les optionnels"
+      }
     },
     "page": {
       "notFound": "Page introuvable",
