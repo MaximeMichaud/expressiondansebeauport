@@ -1,5 +1,5 @@
 <template>
-  <template v-for="(row, i) in rows" :key="i">
+  <template v-for="row in rows" :key="row.type === 'pair' ? `pair-${row.blocks[0].id}-${row.blocks[1].id}` : `single-${row.block.id}`">
     <div v-if="row.type === 'pair'" class="page-blocks__row">
       <div class="page-blocks__col">
         <BlockRenderer :block="row.blocks[0]" />
