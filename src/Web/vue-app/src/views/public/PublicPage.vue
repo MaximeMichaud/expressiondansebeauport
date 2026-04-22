@@ -6,7 +6,7 @@
     <div class="public-page__container">
       <h1 class="public-page__title">{{ page.title }}</h1>
       <template v-if="page.contentMode === 'blocks'">
-        <BlockRenderer v-for="block in parsedBlocks" :key="block.id" :block="block" />
+        <PageBlocksRenderer :blocks="parsedBlocks" />
       </template>
       <div v-else class="public-page__content" v-html="page.content"></div>
     </div>
@@ -32,7 +32,7 @@ import axios from "axios"
 import {Page} from "@/types/entities"
 import type {PageBlock} from "@/types/entities/pageBlock"
 import Loader from "@/components/layouts/items/Loader.vue"
-import BlockRenderer from "@/components/blocks/BlockRenderer.vue"
+import PageBlocksRenderer from "@/components/blocks/PageBlocksRenderer.vue"
 
 const {t} = useI18n()
 const route = useRoute()

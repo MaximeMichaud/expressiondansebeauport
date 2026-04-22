@@ -68,6 +68,8 @@ public class GarneauTemplateDbContextInitializer
             await SeedMenus();
             await FixMenuHierarchy();
             await AssignAvatarColorsToExistingMembers();
+            if (_environment.IsDevelopment())
+                await SeedDemoBlocksPage();
         }
         catch (Exception ex)
         {
@@ -435,6 +437,152 @@ public class GarneauTemplateDbContextInitializer
             CampPageCss());
 
         await SeedPolicyPageWithBlocks();
+    }
+
+    private async Task SeedDemoBlocksPage()
+    {
+        const string slug = "demo-blocs-visuels";
+        var existing = _context.Pages.FirstOrDefault(p => p.Slug == slug);
+        if (existing != null) return;
+
+        var page = new Page("Démo - Blocs visuels", slug);
+        page.SetContentMode("blocks");
+        page.SetBlocks(DemoBlocksPageBlocks());
+        page.SetSortOrder(100);
+        page.Publish();
+        _context.Pages.Add(page);
+        await _context.SaveChangesAsync();
+    }
+
+    private static string DemoBlocksPageBlocks()
+    {
+        var blocks = new List<string>
+        {
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"hero\",\"data\":{" +
+                "\"title\":\"Bienvenue à Expression Danse de Beauport\"," +
+                "\"subtitle\":\"Découvrez comment nos pages sont construites avec des blocs visuels flexibles\"," +
+                "\"overlayOpacity\":0.55" +
+            "}}",
+
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
+                "<h2>Une page, des dizaines de possibilités</h2>" +
+                "<p>Chaque page du site est construite avec des <strong>blocs visuels</strong> que l'administrateur assemble librement. " +
+                "Chaque bloc peut occuper toute la largeur de la page, ou être placé <strong>côte à côte</strong> avec un autre. " +
+                "Sur mobile, les blocs s'empilent automatiquement.</p>" +
+            "\"}}",
+
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"width\":\"half\",\"data\":{\"html\":\"" +
+                "<h2>Cours récréatifs</h2>" +
+                "<p>Nos cours récréatifs sont ouverts à tous les groupes d'âge, des tout-petits aux adultes. " +
+                "Venez découvrir le plaisir de danser dans une ambiance décontractée.</p>" +
+                "<ul>" +
+                "<li>Ballet</li>" +
+                "<li>Jazz</li>" +
+                "<li>Hip-Hop</li>" +
+                "</ul>" +
+            "\"}}",
+
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"width\":\"half\",\"data\":{\"html\":\"" +
+                "<h2>Troupes compétitives</h2>" +
+                "<p>Pour les danseurs qui souhaitent aller plus loin, nos troupes compétitives participent " +
+                "à des compétitions régionales et provinciales tout au long de l'année.</p>" +
+                "<ul>" +
+                "<li>Contemporain</li>" +
+                "<li>Acro Danse</li>" +
+                "<li>Danse créative (3-5 ans)</li>" +
+                "</ul>" +
+            "\"}}",
+
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"image-gallery\",\"width\":\"half\",\"data\":{" +
+                "\"images\":[" +
+                    "{\"url\":\"/image-devant-studio.jpg\",\"alt\":\"Devant le studio\"}," +
+                    "{\"url\":\"/vue-de-rue-education.jpg\",\"alt\":\"Vue de la rue\"}" +
+                "]," +
+                "\"columns\":2" +
+            "}}",
+
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"width\":\"half\",\"data\":{\"html\":\"" +
+                "<h2>Nos installations</h2>" +
+                "<p>Le studio est situé au Centre de loisirs Ste-Gertrude, au 788, avenue du Cénacle à Beauport. " +
+                "Nos salles sont équipées de planchers de bois franc, de miroirs et d'une sono professionnelle.</p>" +
+                "<p>L'accès au stationnement se fait par l'Avenue de l'Éducation.</p>" +
+            "\"}}",
+
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"faq\",\"width\":\"half\",\"data\":{\"items\":[" +
+                "{\"question\":\"À quel âge peut-on commencer?\",\"answer\":\"Dès 3 ans avec nos cours de danse créative pour les tout-petits.\"}," +
+                "{\"question\":\"Les cours sont-ils pour tous les niveaux?\",\"answer\":\"Oui, nous accueillons les débutants comme les danseurs expérimentés.\"}," +
+                "{\"question\":\"Faut-il acheter un costume?\",\"answer\":\"Un costume de spectacle est requis en fin d'année. Les détails sont communiqués en janvier.\"}" +
+            "]}}",
+
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"cta-button\",\"width\":\"half\",\"data\":{" +
+                "\"label\":\"S'inscrire maintenant\"," +
+                "\"url\":\"https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session\"," +
+                "\"style\":\"primary\",\"alignment\":\"center\",\"openInNewTab\":true" +
+            "}}",
+
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"google-map\",\"width\":\"half\",\"data\":{" +
+                "\"embedUrl\":\"https://www.google.com/maps?q=788+avenue+du+C%C3%A9nacle,+Qu%C3%A9bec,+QC+G1E+5J4&z=15&output=embed\"," +
+                "\"address\":\"788 avenue du Cénacle, Québec, QC G1E 5J4\"," +
+                "\"height\":320" +
+            "}}",
+
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"width\":\"half\",\"data\":{\"html\":\"" +
+                "<h2>Comment s'y rendre</h2>" +
+                "<p>L'accès au stationnement et au local se fait par <strong>l'Avenue de l'Éducation</strong>. " +
+                "Google Maps peut parfois manquer de précision sur ce point.</p>" +
+                "<p><strong>Studio EDB</strong><br/>" +
+                "788, avenue du Cénacle<br/>" +
+                "Centre de loisirs Ste-Gertrude<br/>" +
+                "Québec, QC G1E 5J4</p>" +
+                "<p><strong>Téléphone :</strong> 418-666-6158</p>" +
+            "\"}}",
+
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"hero\",\"width\":\"half\",\"data\":{" +
+                "\"title\":\"Camp d'été\"," +
+                "\"subtitle\":\"Du 29 juin au 21 août 2026\"," +
+                "\"ctaLabel\":\"S'inscrire\"," +
+                "\"ctaUrl\":\"https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session\"," +
+                "\"overlayOpacity\":0.6" +
+            "}}",
+
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"hero\",\"width\":\"half\",\"data\":{" +
+                "\"title\":\"Camp d'hiver\"," +
+                "\"subtitle\":\"Semaine de relâche 2027\"," +
+                "\"ctaLabel\":\"S'inscrire\"," +
+                "\"ctaUrl\":\"https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session\"," +
+                "\"overlayOpacity\":0.6" +
+            "}}",
+
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"image-gallery\",\"data\":{" +
+                "\"images\":[" +
+                    "{\"url\":\"/image-devant-studio.jpg\",\"alt\":\"Devant le studio\"}," +
+                    "{\"url\":\"/vue-de-rue-education.jpg\",\"alt\":\"Vue de rue\"}," +
+                    "{\"url\":\"/directions-sur-map.jpg\",\"alt\":\"Plan d'accès\"}" +
+                "]," +
+                "\"columns\":3" +
+            "}}",
+
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"faq\",\"data\":{\"items\":[" +
+                "{\"question\":\"Quand ont lieu les spectacles de fin d'année?\",\"answer\":\"Le spectacle annuel a lieu généralement en mai. La date exacte est confirmée en janvier.\"}," +
+                "{\"question\":\"Quels styles de danse sont offerts?\",\"answer\":\"Ballet, Jazz, Hip-Hop, Contemporain, Acro Danse, Danse créative (3-5 ans) et cours Parents-Enfants.\"}," +
+                "{\"question\":\"Comment s'inscrire aux cours?\",\"answer\":\"Les inscriptions se font en ligne via notre partenaire Qidigo. Vous pouvez aussi nous contacter au 418-666-6158.\"}," +
+                "{\"question\":\"Y a-t-il des aides financières?\",\"answer\":\"Oui, des aides sont disponibles pour les familles dans le besoin. Contactez-nous pour en savoir plus.\"}" +
+            "]}}",
+
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"google-map\",\"data\":{" +
+                "\"embedUrl\":\"https://www.google.com/maps?q=788+avenue+du+C%C3%A9nacle,+Qu%C3%A9bec,+QC+G1E+5J4&z=15&output=embed\"," +
+                "\"address\":\"788 avenue du Cénacle, Québec, QC G1E 5J4\"," +
+                "\"height\":450" +
+            "}}",
+
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"cta-button\",\"data\":{" +
+                "\"label\":\"Voir tous nos cours et s'inscrire\"," +
+                "\"url\":\"https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session\"," +
+                "\"style\":\"primary\",\"alignment\":\"center\",\"openInNewTab\":true" +
+            "}}"
+        };
+
+        return "[" + string.Join(",", blocks) + "]";
     }
 
     private async Task SeedPolicyPageWithBlocks()

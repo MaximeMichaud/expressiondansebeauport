@@ -274,6 +274,8 @@
       "moveUp": "Monter",
       "moveDown": "Descendre",
       "reorder": "Réordonner",
+      "widthFull": "Pleine largeur",
+      "widthHalf": "Demi largeur",
       "contentMode": "Mode de contenu",
       "contentModeHtml": "Contenu libre (HTML)",
       "contentModeBlocks": "Blocs visuels",
@@ -310,7 +312,9 @@
         "ctaLabelPlaceholder": "En savoir plus",
         "ctaUrl": "URL du bouton",
         "ctaUrlPlaceholder": "https://...",
-        "overlayOpacity": "Opacité de l'overlay"
+        "backgroundColor": "Couleur de fond",
+        "backgroundColorHint": "Utilisée quand aucune image de fond n'est définie",
+        "overlayOpacity": "Opacité de l'overlay (image seulement)"
       },
       "faq": {
         "label": "FAQ (Accordion)",
