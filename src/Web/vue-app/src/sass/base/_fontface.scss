@@ -5,6 +5,7 @@
  src: url(@/assets/fonts/montserrat/Montserrat-Medium.ttf) format("truetype");
  font-weight: 500;
  font-style: normal;
+ font-display: swap;
 }
 
 @font-face {
@@ -12,6 +13,7 @@
  src: url(@/assets/fonts/montserrat/Montserrat-MediumItalic.ttf) format("truetype");
  font-weight: 500;
  font-style: italic;
+ font-display: swap;
 }
 
 @font-face {
@@ -19,6 +21,7 @@
  src: url(@/assets/fonts/montserrat/Montserrat-SemiBold.ttf) format("truetype");
  font-weight: 600;
  font-style: normal;
+ font-display: swap;
 }
 
 @font-face {
@@ -26,6 +29,7 @@
  src: url(@/assets/fonts/montserrat/Montserrat-SemiBoldItalic.ttf) format("truetype");
  font-weight: 600;
  font-style: italic;
+ font-display: swap;
 }
 
 @font-face {
@@ -33,6 +37,7 @@
  src: url(@/assets/fonts/montserrat/Montserrat-Bold.ttf) format("truetype");
  font-weight: 700;
  font-style: normal;
+ font-display: swap;
 }
 
 @font-face {
@@ -40,6 +45,7 @@
  src: url(@/assets/fonts/montserrat/Montserrat-BoldItalic.ttf) format("truetype");
  font-weight: 700;
  font-style: italic;
+ font-display: swap;
 }
 
 //Karla ======================================================
@@ -48,6 +54,7 @@
  src: url(@/assets/fonts/karla/Karla-MediumItalic.ttf) format("truetype");
  font-weight: 500;
  font-style: italic;
+ font-display: swap;
 }
 
 @font-face {
@@ -55,6 +62,7 @@
  src: url(@/assets/fonts/karla/Karla-Medium.ttf) format("truetype");
  font-weight: 500;
  font-style: normal;
+ font-display: swap;
 }
 
 @font-face {
@@ -62,6 +70,7 @@
  src: url(@/assets/fonts/karla/Karla-BoldItalic.ttf) format("truetype");
  font-weight: 700;
  font-style: italic;
+ font-display: swap;
 }
 
 @font-face {
@@ -69,6 +78,7 @@
  src: url(@/assets/fonts/karla/Karla-Bold.ttf) format("truetype");
  font-weight: 700;
  font-style: normal;
+ font-display: swap;
 }
 
 @font-face {
@@ -76,6 +86,7 @@
  src: url(@/assets/fonts/karla/Karla-ExtraBold.ttf) format("truetype");
  font-weight: 800;
  font-style: normal;
+ font-display: swap;
 }
 
 @font-face {
@@ -83,4 +94,5 @@
  src: url(@/assets/fonts/karla/Karla-ExtraBoldItalic.ttf) format("truetype");
  font-weight: 800;
  font-style: italic;
+ font-display: swap;
 }
