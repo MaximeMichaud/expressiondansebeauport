@@ -691,6 +691,8 @@ src/Web/wwwroot/vue
 src/Web/wwwroot/vue/*
 src/Web/wwwroot/uploads/
 src/Web/wwwroot/index.html
+src/Web/wwwroot/index.html.br
+src/Web/wwwroot/index.html.gz
 src/Web/wwwroot/favicon.svg
 src/Web/wwwroot/assets/
 
