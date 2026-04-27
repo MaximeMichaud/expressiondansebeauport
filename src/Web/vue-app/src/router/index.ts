@@ -12,26 +12,7 @@ declare module "vue-router" {
 
 import Home from "@/views/public/Home.vue";
 import PublicPage from "@/views/public/PublicPage.vue";
-import PreviewPage from "@/views/public/PreviewPage.vue";
 import NotFound from "@/views/public/NotFound.vue";
-import InternalError from "@/views/public/InternalError.vue";
-import Maintenance from "@/views/public/Maintenance.vue";
-import Login from "@/views/Login.vue";
-import TwoFactor from "@/views/TwoFactor.vue";
-import ForgotPassword from "@/views/ForgotPassword.vue";
-import ResetPassword from "@/views/ResetPassword.vue";
-import Account from "@/views/shared/Account.vue";
-
-import Admin from "../views/admin/Admin.vue";
-import AdminMediaLibrary from "@/views/admin/media/AdminMediaLibrary.vue";
-import AdminPageIndex from "@/views/admin/pages/AdminPageIndex.vue";
-import AdminPageEditor from "@/views/admin/pages/AdminPageEditor.vue";
-import AdminMenuIndex from "@/views/admin/menus/AdminMenuIndex.vue";
-import AdminCustomizer from "@/views/admin/customizer/AdminCustomizer.vue";
-import AdminSiteHealth from "@/views/admin/health/AdminSiteHealth.vue";
-import AdminImportExport from "@/views/admin/importexport/AdminImportExport.vue";
-import AdminBackup from "@/views/admin/backup/AdminBackup.vue";
-import AdminErrorLogs from "@/views/admin/errorlogs/AdminErrorLogs.vue";
 
 import {useUserStore} from "@/stores/userStore";
 import {useApiStore} from "@/stores/apiStore";
@@ -140,7 +121,7 @@ const mainRoutes = [
   {
     path: "/admin/connexion",
     name: "login",
-    component: Login,
+    component: () => import("@/views/Login.vue"),
     meta: {
       title: "routes.login.name"
     }
@@ -153,7 +134,7 @@ const mainRoutes = [
   {
     path: i18n.global.t("routes.twoFactor.path"),
     name: "twoFactor",
-    component: TwoFactor,
+    component: () => import("@/views/TwoFactor.vue"),
     meta: {
       title: "routes.twoFactor.name"
     }
@@ -161,7 +142,7 @@ const mainRoutes = [
   {
     path: i18n.global.t("routes.forgotPassword.path"),
     name: "forgotPassword",
-    component: ForgotPassword,
+    component: () => import("@/views/ForgotPassword.vue"),
     meta: {
       title: "routes.forgotPassword.name"
     }
@@ -169,7 +150,7 @@ const mainRoutes = [
   {
     path: i18n.global.t("routes.resetPassword.path"),
     name: "resetPassword",
-    component: ResetPassword,
+    component: () => import("@/views/ResetPassword.vue"),
     props: (route: any) => ({userId: route.query.userId, token: route.query.token}),
     meta: {
       title: "routes.resetPassword.name"
@@ -178,7 +159,7 @@ const mainRoutes = [
   {
     path: i18n.global.t("routes.account.path"),
     name: "account",
-    component: Account,
+    component: () => import("@/views/shared/Account.vue"),
     meta: {
       title: "routes.account.name",
       navIcon: UserCircle,
@@ -187,7 +168,7 @@ const mainRoutes = [
   {
     path: i18n.global.t("routes.admin.path"),
     name: "admin",
-    component: Admin,
+    component: () => import("@/views/admin/Admin.vue"),
     meta: {
       requiredRole: Role.Admin,
       noLinkInBreadcrumbs: true,
@@ -198,23 +179,23 @@ const mainRoutes = [
       {
         path: i18n.global.t("routes.admin.children.pages.path"),
         name: "admin.children.pages",
-        component: Admin,
+        component: () => import("@/views/admin/Admin.vue"),
         meta: { navIcon: FileText },
         children: [
           {
             path: "",
             name: "admin.children.pages.index",
-            component: AdminPageIndex,
+            component: () => import("@/views/admin/pages/AdminPageIndex.vue"),
           },
           {
             path: i18n.global.t("routes.admin.children.pages.add.path"),
             name: "admin.children.pages.add",
-            component: AdminPageEditor,
+            component: () => import("@/views/admin/pages/AdminPageEditor.vue"),
           },
           {
             path: i18n.global.t("routes.admin.children.pages.edit.path"),
             name: "admin.children.pages.edit",
-            component: AdminPageEditor,
+            component: () => import("@/views/admin/pages/AdminPageEditor.vue"),
             props: true,
           },
         ],
@@ -222,43 +203,43 @@ const mainRoutes = [
       {
         path: i18n.global.t("routes.admin.children.menus.path"),
         name: "admin.children.menus",
-        component: AdminMenuIndex,
+        component: () => import("@/views/admin/menus/AdminMenuIndex.vue"),
         meta: { navIcon: LayoutList },
       },
       {
         path: i18n.global.t("routes.admin.children.media.path"),
         name: "admin.children.media",
-        component: AdminMediaLibrary,
+        component: () => import("@/views/admin/media/AdminMediaLibrary.vue"),
         meta: { navIcon: Library },
       },
       {
         path: i18n.global.t("routes.admin.children.customizer.path"),
         name: "admin.children.customizer",
-        component: AdminCustomizer,
+        component: () => import("@/views/admin/customizer/AdminCustomizer.vue"),
         meta: { navIcon: Palette },
       },
       {
         path: i18n.global.t("routes.admin.children.siteHealth.path"),
         name: "admin.children.siteHealth",
-        component: AdminSiteHealth,
+        component: () => import("@/views/admin/health/AdminSiteHealth.vue"),
         meta: { navIcon: Activity },
       },
       {
         path: i18n.global.t("routes.admin.children.importExport.path"),
         name: "admin.children.importExport",
-        component: AdminImportExport,
+        component: () => import("@/views/admin/importexport/AdminImportExport.vue"),
         meta: { navIcon: ArrowLeftRight },
       },
       {
         path: i18n.global.t("routes.admin.children.backup.path"),
         name: "admin.children.backup",
-        component: AdminBackup,
+        component: () => import("@/views/admin/backup/AdminBackup.vue"),
         meta: { navIcon: HardDriveDownload },
       },
       {
         path: i18n.global.t("routes.admin.children.errorLogs.path"),
         name: "admin.children.errorLogs",
-        component: AdminErrorLogs,
+        component: () => import("@/views/admin/errorlogs/AdminErrorLogs.vue"),
         meta: { navIcon: AlertTriangle },
       },
     ]
@@ -266,13 +247,13 @@ const mainRoutes = [
   {
     path: "/erreur",
     name: "internalError",
-    component: InternalError,
+    component: () => import("@/views/public/InternalError.vue"),
     meta: { public: true, title: "routes.internalError.name" }
   },
   {
     path: "/preview/:slug",
     name: "previewPage",
-    component: PreviewPage,
+    component: () => import("@/views/public/PreviewPage.vue"),
     meta: {
       title: "Aperçu",
       public: true
@@ -281,7 +262,7 @@ const mainRoutes = [
   {
     path: "/maintenance",
     name: "maintenance",
-    component: Maintenance,
+    component: () => import("@/views/public/Maintenance.vue"),
     meta: { public: true, title: "routes.maintenance.name" }
   },
   {
