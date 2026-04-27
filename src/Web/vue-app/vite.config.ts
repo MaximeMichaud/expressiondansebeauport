@@ -29,12 +29,15 @@ export default defineConfig({
           return 'assets/[name]-[hash][extname]'
         },
         manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('@tiptap') || id.includes('prosemirror')) return 'vendor-editor'
-            if (id.includes('vue') || id.includes('pinia') || id.includes('vue-router') || id.includes('vue-i18n')) return 'vendor-vue'
-            if (id.includes('@microsoft/signalr')) return 'vendor-signalr'
-            return 'vendor'
-          }
+          if (!id.includes('node_modules')) return undefined
+          // Tiptap/ProseMirror exclus intentionnellement : laisser Rollup les grouper
+          // naturellement avec les chunks async (RichTextBlock, AdminPageEditor).
+          // Un manualChunk explicite force un modulepreload dans index.html même
+          // quand le code est derrière un defineAsyncComponent.
+          if (id.includes('@tiptap') || id.includes('prosemirror')) return undefined
+          if (id.includes('vue') || id.includes('pinia') || id.includes('vue-router') || id.includes('vue-i18n')) return 'vendor-vue'
+          if (id.includes('@microsoft/signalr')) return 'vendor-signalr'
+          return 'vendor'
         }
       }
     }
