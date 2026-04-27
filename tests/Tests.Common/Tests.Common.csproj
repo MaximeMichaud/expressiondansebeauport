@@ -10,7 +10,7 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="16.1.1" />
-        <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.6" />
+        <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.7" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
         <PackageReference Include="ScottBrady91.AspNetCore.Identity.Argon2PasswordHasher" Version="2.0.0" />
         <PackageReference Include="xunit" Version="2.9.3" />
