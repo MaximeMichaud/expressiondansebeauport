@@ -27,6 +27,7 @@ import i18n from "@/i18n";
 import {applyThemeSettings} from "@/theme";
 import {useSiteSettingsStore} from "@/stores/siteSettingsStore";
 import {useHead} from "@unhead/vue";
+import Cookies from "universal-cookie";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -82,7 +83,16 @@ onMounted(async () => {
   if (isSocial.value && isSocialAuthPath.value)
     return
 
-  const user = await userService.getCurrentUser().catch(() => null)
+  // Visiteur sans accessToken lisible côté JS : inutile d'interroger /users/me, ce qui
+  // produirait un 401 attendu (et un 403 en cascade depuis l'intercepteur sur /refresh-token).
+  // Le refreshToken est httpOnly donc pas lisible ici, on s'appuie sur l'accessToken seul.
+  // TODO sécurité : passer accessToken en httpOnly + axios withCredentials + lecture
+  // du cookie côté JwtBearer ASP.NET. Tant que l'accessToken reste lisible en JS pour
+  // alimenter le header Bearer, on s'appuie sur sa présence pour gater l'appel.
+  const hasAccessToken = !!new Cookies().get("accessToken")
+  const user = hasAccessToken
+    ? await userService.getCurrentUser().catch(() => null)
+    : null
   if (user) {
     userStore.setUser(user)
   } else if (!isAuthenticationPath.value && !isSocialAuthPath.value && !isPublicPath.value) {
