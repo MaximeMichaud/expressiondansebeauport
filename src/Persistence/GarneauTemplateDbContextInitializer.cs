@@ -917,7 +917,7 @@ public class GarneauTemplateDbContextInitializer
     private async Task SeedPageIfNotExists(string title, string slug, int sortOrder, string content, string? customCss = null)
     {
         var generatedSlug = Page.GenerateSlug(slug);
-        if (!_context.Pages.Any(p => p.Slug == generatedSlug))
+        if (!_context.Pages.IgnoreQueryFilters().Any(p => p.Slug == generatedSlug))
         {
             var page = CreatePage(title, slug, sortOrder, content, customCss);
             _context.Pages.Add(page);
