@@ -143,12 +143,7 @@ import Loader from "@/components/layouts/items/Loader.vue"
 import {applyThemeSettings} from "@/theme"
 import {notifyError, notifySuccess} from "@/notify"
 import {Trash2} from "lucide-vue-next"
-import IconFacebook from "vue-material-design-icons/Facebook.vue"
-import IconInstagram from "vue-material-design-icons/Instagram.vue"
-import IconYoutube from "vue-material-design-icons/Youtube.vue"
-import IconTwitter from "vue-material-design-icons/Twitter.vue"
-import IconLinkedin from "vue-material-design-icons/Linkedin.vue"
-import IconWeb from "vue-material-design-icons/Web.vue"
+import {getSocialIcon, getSocialLabel, socialLinkPlatforms} from "@/lib/socialLinks"
 
 const {t} = useI18n()
 const settingsService = useSiteSettingsService()
@@ -167,39 +162,14 @@ const newPartnerMediaFileId = ref("")
 const newPartnerAltText = ref("")
 const newPartnerUrl = ref("")
 
-const platforms = [
-  { value: "facebook", label: "Facebook" },
-  { value: "instagram", label: "Instagram" },
-  { value: "youtube", label: "YouTube" },
-  { value: "tiktok", label: "TikTok" },
-  { value: "twitter", label: "X / Twitter" },
-  { value: "linkedin", label: "LinkedIn" },
-  { value: "pinterest", label: "Pinterest" },
-]
-
 const availablePlatforms = computed(() => {
-  const used = new Set(socialLinks.value.map(l => l.platform))
-  return platforms.filter(p => !used.has(p.value))
+  const used = new Set(socialLinks.value.map(l => l.platform?.toLowerCase()))
+  return socialLinkPlatforms.filter(p => !used.has(p.value))
 })
 
 const availableImages = computed(() =>
   allMedia.value.filter(m => m.contentType?.startsWith("image/"))
 )
-
-function getSocialIcon(platform?: string) {
-  switch (platform) {
-    case "facebook": return IconFacebook
-    case "instagram": return IconInstagram
-    case "youtube": return IconYoutube
-    case "twitter": return IconTwitter
-    case "linkedin": return IconLinkedin
-    default: return IconWeb
-  }
-}
-
-function getSocialLabel(platform?: string) {
-  return platforms.find(p => p.value === platform)?.label || platform || ""
-}
 
 onMounted(async () => {
   isLoading.value = true
