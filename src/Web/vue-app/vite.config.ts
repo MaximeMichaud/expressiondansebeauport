@@ -2,13 +2,16 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import svgLoader from 'vite-svg-loader'
 import tailwindcss from '@tailwindcss/vite'
+import { compression } from 'vite-plugin-compression2'
 import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
   plugins: [
     vue(),
     svgLoader(),
-    tailwindcss()
+    tailwindcss(),
+    compression({ algorithm: 'brotliCompress', exclude: [/\.(png|jpg|jpeg|gif|webp|ico|svg)$/] }),
+    compression({ algorithm: 'gzip', exclude: [/\.(png|jpg|jpeg|gif|webp|ico|svg)$/] })
   ],
   base: '/',
   build: {
@@ -24,6 +27,17 @@ export default defineConfig({
             return 'css/[name]-[hash][extname]'
           }
           return 'assets/[name]-[hash][extname]'
+        },
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined
+          // Tiptap/ProseMirror exclus intentionnellement : laisser Rollup les grouper
+          // naturellement avec les chunks async (RichTextBlock, AdminPageEditor).
+          // Un manualChunk explicite force un modulepreload dans index.html même
+          // quand le code est derrière un defineAsyncComponent.
+          if (id.includes('@tiptap') || id.includes('prosemirror')) return undefined
+          if (id.includes('vue') || id.includes('pinia') || id.includes('vue-router') || id.includes('vue-i18n')) return 'vendor-vue'
+          if (id.includes('@microsoft/signalr')) return 'vendor-signalr'
+          return 'vendor'
         }
       }
     }

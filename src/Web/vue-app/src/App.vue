@@ -12,14 +12,11 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, onMounted} from "vue";
+import {computed, onMounted, defineAsyncComponent} from "vue";
 import {useRouter} from "vue-router";
 import {useUserStore} from "@/stores/userStore";
 import PublicLayout from "@/components/layouts/PublicLayout.vue";
 import AuthenticationLayout from "@/components/layouts/AuthenticationLayout.vue";
-import DashboardLayout from "@/components/layouts/DashboardLayout.vue";
-import SocialLayout from "@/components/layouts/SocialLayout.vue";
-import SocialAuthLayout from "@/components/layouts/SocialAuthLayout.vue";
 import UpdateToast from "@/components/UpdateToast.vue";
 import {useUserService, useSiteSettingsService} from "@/serviceRegistry";
 import {isSocialRoute} from "@/router";
@@ -28,6 +25,10 @@ import {applyThemeSettings} from "@/theme";
 import {useSiteSettingsStore} from "@/stores/siteSettingsStore";
 import {useHead} from "@unhead/vue";
 import Cookies from "universal-cookie";
+
+const DashboardLayout = defineAsyncComponent(() => import("@/components/layouts/DashboardLayout.vue"));
+const SocialLayout = defineAsyncComponent(() => import("@/components/layouts/SocialLayout.vue"));
+const SocialAuthLayout = defineAsyncComponent(() => import("@/components/layouts/SocialAuthLayout.vue"));
 
 const router = useRouter();
 const userStore = useUserStore();

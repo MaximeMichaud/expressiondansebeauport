@@ -60,10 +60,15 @@
 </template>
 
 <script lang="ts" setup>
+import Vue3EasyDataTable from "vue3-easy-data-table"
+import "vue3-easy-data-table/dist/style.css"
 import type {FilterOption, Header, Item} from "vue3-easy-data-table"
 import {useI18n} from "vue-i18n"
 import { Copy, Eye, Pencil, Trash2 } from "lucide-vue-next"
 import { computed } from "vue"
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const EasyDataTable = Vue3EasyDataTable as any
 
 const {t} = useI18n()
 
