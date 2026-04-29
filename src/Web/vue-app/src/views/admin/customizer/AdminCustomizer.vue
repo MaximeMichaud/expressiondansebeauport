@@ -163,7 +163,7 @@ const newPartnerAltText = ref("")
 const newPartnerUrl = ref("")
 
 const availablePlatforms = computed(() => {
-  const used = new Set(socialLinks.value.map(l => l.platform))
+  const used = new Set(socialLinks.value.map(l => l.platform?.toLowerCase()))
   return socialLinkPlatforms.filter(p => !used.has(p.value))
 })
 
