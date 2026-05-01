@@ -172,7 +172,7 @@ onMounted(async () => {
   width: 100%;
   padding: 12px 16px;
   font-size: 0.875rem;
-  color: #1a1a1a;
+  color: var(--soc-bar-text-strong, #1a1a1a);
   background: transparent;
   border: 0;
   text-align: left;
@@ -180,7 +180,7 @@ onMounted(async () => {
   transition: background 0.15s;
 }
 .quick-link:hover {
-  background: #f9fafb;
+  background: var(--soc-bar-hover, #f9fafb);
 }
 .quick-link:disabled {
   opacity: 0.5;
@@ -194,8 +194,8 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: #f5f3f0;
-  color: #1a1a1a;
+  background: var(--soc-bar-hover, #f5f3f0);
+  color: var(--soc-bar-text-strong, #1a1a1a);
 }
 .quick-link__label {
   flex: 1;
@@ -203,6 +203,6 @@ onMounted(async () => {
 }
 .quick-link__chevron {
   flex-shrink: 0;
-  color: #d6d3d1;
+  color: var(--soc-text-muted, #d6d3d1);
 }
 </style>
