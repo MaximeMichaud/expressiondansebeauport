@@ -440,6 +440,7 @@ $ann-font-display: 'Montserrat', sans-serif;
   height: 24px;
   margin: 24px -1rem;
   background: var(--soc-page-bg);
+  border-radius: 12px;
 }
 
 
