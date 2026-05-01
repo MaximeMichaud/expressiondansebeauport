@@ -143,6 +143,7 @@ onMounted(async () => {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 16px;
   padding: 12px 16px;
   font-size: 0.78rem;
