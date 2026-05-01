@@ -1,4 +1,5 @@
 using Domain.Common;
+using Domain.Entities;
 using IMapper = AutoMapper.IMapper;
 using Domain.Repositories;
 using FastEndpoints;
@@ -8,7 +9,12 @@ using Web.Features.Common;
 
 namespace Web.Features.Admins.Media.GetAll;
 
-public class GetAllMediaEndpoint : Endpoint<PaginateRequest, PaginatedList<MediaFileDto>>
+public class GetAllMediaRequest : PaginateRequest
+{
+    public string? FileType { get; set; }
+}
+
+public class GetAllMediaEndpoint : Endpoint<GetAllMediaRequest, PaginatedList<MediaFileDto>>
 {
     private readonly IMediaFileRepository _mediaFileRepository;
     private readonly IMapper _mapper;
@@ -27,9 +33,13 @@ public class GetAllMediaEndpoint : Endpoint<PaginateRequest, PaginatedList<Media
         AuthSchemes(JwtBearerDefaults.AuthenticationScheme);
     }
 
-    public override async Task HandleAsync(PaginateRequest req, CancellationToken ct)
+    public override async Task HandleAsync(GetAllMediaRequest req, CancellationToken ct)
     {
-        var paginatedList = _mediaFileRepository.GetAllPaginated(req.NormalizedPageIndex, req.NormalizedPageSize);
+        MediaFileType? fileType = null;
+        if (Enum.TryParse<MediaFileType>(req.FileType, true, out var parsed))
+            fileType = parsed;
+
+        var paginatedList = _mediaFileRepository.GetAllPaginated(req.NormalizedPageIndex, req.NormalizedPageSize, fileType);
         var dtos = _mapper.Map<List<MediaFileDto>>(paginatedList.Items);
         await Send.OkAsync(new PaginatedList<MediaFileDto>(dtos, paginatedList.TotalItems), cancellation: ct);
     }

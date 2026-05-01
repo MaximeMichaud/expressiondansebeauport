@@ -105,9 +105,13 @@
     object-position: center;
     filter: brightness(0) invert(1);
     opacity: 0.75;
+  }
 
+  &__partner-link {
     &:nth-child(-n+2) {
-      height: 70px;
+      .public-footer__partner-logo {
+        height: 70px;
+      }
     }
   }
 

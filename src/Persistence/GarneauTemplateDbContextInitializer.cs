@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Domain.Constants.User;
 using Domain.Entities;
 using Domain.Entities.Identity;
@@ -942,11 +943,11 @@ public class GarneauTemplateDbContextInitializer
         {
             var correctUrl = SeedMediaUrl(fileName);
             content = content
+                .Replace($"/uploads/uploads/{fileName}", correctUrl)
                 .Replace($"/uploads/seed-{fileName}", correctUrl)
                 .Replace($"/images/seed/{fileName}", correctUrl)
-                .Replace($"/images/{fileName}", correctUrl)
-                .Replace($"/{fileName}", correctUrl)
-                .Replace($"/uploads/uploads/{fileName}", correctUrl);
+                .Replace($"/images/{fileName}", correctUrl);
+            content = Regex.Replace(content, $@"(?<![A-Za-z0-9_./-])/{Regex.Escape(fileName)}", correctUrl);
         }
 
         return content;

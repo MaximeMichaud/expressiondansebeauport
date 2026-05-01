@@ -105,7 +105,7 @@
               <option :value="undefined">Aucun</option>
 
               <option
-                v-for="item in currentMenu?.menuItems"
+                v-for="item in rootMenuItems"
                 :key="item.id"
                 :value="item.id"
               >
@@ -190,6 +190,10 @@ const draggableItems = computed({
     }
   }
 })
+
+const rootMenuItems = computed(() =>
+  currentMenu.value?.menuItems?.filter(i => !i.parentId) ?? []
+)
 
 async function onDragEnd() {
   if (!currentMenu.value?.id) return
