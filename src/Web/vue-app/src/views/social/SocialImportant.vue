@@ -6,6 +6,8 @@
     <!-- Section separator (page bg) -->
     <div class="section-gap"></div>
 
+    <!-- Annonces section -->
+    <div class="annonces-section rounded-xl border border-gray-200 bg-white p-4">
     <!-- Header -->
     <div class="mb-4 flex items-center justify-between">
       <h2 class="text-lg font-bold text-gray-900">Annonces</h2>
@@ -201,6 +203,8 @@
         <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
       </div>
     </div>
+    </div>
+    <!-- /Annonces section -->
 
     <!-- Delete modal -->
     <Teleport to="body">
@@ -437,6 +441,7 @@ $ann-font-display: 'Montserrat', sans-serif;
   margin: 24px -1rem;
   background: var(--soc-page-bg);
 }
+
 
 .ann-modal {
   &__overlay {
