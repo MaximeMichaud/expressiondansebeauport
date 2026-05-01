@@ -741,7 +741,6 @@ $soc-font-body: 'Karla', sans-serif;
   width: 100%;
   max-width: 720px;
   margin: 16px auto 0;
-  padding: 0 16px;
 }
 .soc-above-main:empty { display: none; }
 
