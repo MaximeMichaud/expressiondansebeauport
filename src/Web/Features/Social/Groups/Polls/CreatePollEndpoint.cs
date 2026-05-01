@@ -27,7 +27,7 @@ public class CreatePollEndpoint : Endpoint<CreatePollRequest, SucceededOrNotResp
     {
         DontCatchExceptions();
         Post("social/groups/{GroupId}/polls");
-        Roles(Domain.Constants.User.Roles.PROFESSOR, Domain.Constants.User.Roles.ADMINISTRATOR);
+        Roles(Domain.Constants.User.Roles.MEMBER, Domain.Constants.User.Roles.PROFESSOR, Domain.Constants.User.Roles.ADMINISTRATOR);
         AuthSchemes(JwtBearerDefaults.AuthenticationScheme);
     }
 
