@@ -16,7 +16,6 @@ import {computed, onMounted, defineAsyncComponent} from "vue";
 import {useRouter} from "vue-router";
 import {useUserStore} from "@/stores/userStore";
 import PublicLayout from "@/components/layouts/PublicLayout.vue";
-import AuthenticationLayout from "@/components/layouts/AuthenticationLayout.vue";
 import UpdateToast from "@/components/UpdateToast.vue";
 import {useUserService, useSiteSettingsService} from "@/serviceRegistry";
 import {isSocialRoute} from "@/router";
@@ -26,6 +25,7 @@ import {useSiteSettingsStore} from "@/stores/siteSettingsStore";
 import {useHead} from "@unhead/vue";
 
 const DashboardLayout = defineAsyncComponent(() => import("@/components/layouts/DashboardLayout.vue"));
+const AuthenticationLayout = defineAsyncComponent(() => import("@/components/layouts/AuthenticationLayout.vue"));
 const SocialLayout = defineAsyncComponent(() => import("@/components/layouts/SocialLayout.vue"));
 const SocialAuthLayout = defineAsyncComponent(() => import("@/components/layouts/SocialAuthLayout.vue"));
 
