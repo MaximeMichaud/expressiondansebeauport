@@ -172,7 +172,7 @@ onMounted(async () => {
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 8px 12px;
+  padding: 14px 16px;
   font-size: 0.85rem;
   color: var(--soc-bar-text-strong, #1a1a1a);
   background: transparent;
