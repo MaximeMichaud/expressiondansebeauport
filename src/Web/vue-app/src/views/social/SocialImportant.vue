@@ -1,5 +1,8 @@
 <template>
   <div class="p-4">
+    <!-- Quick links block -->
+    <QuickLinks />
+
     <!-- Header -->
     <div class="mb-4 flex items-center justify-between">
       <h2 class="text-lg font-bold text-gray-900">Annonces</h2>
@@ -232,6 +235,7 @@ import { useImageAttachment } from '@/composables/useImageAttachment'
 import { useInfiniteScroll } from '@/composables/useInfiniteScroll'
 import { Role } from '@/types/enums'
 import type { Post } from '@/types/entities'
+import QuickLinks from '@/components/social/QuickLinks.vue'
 
 const socialService = useSocialService()
 const toast = useSocialToast()
