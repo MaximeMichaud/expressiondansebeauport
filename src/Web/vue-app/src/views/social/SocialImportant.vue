@@ -444,10 +444,10 @@ $ann-font-display: 'Montserrat', sans-serif;
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle 12px at bottom right, transparent 12px, var(--soc-content-bg) 12px) top left / 12px 12px no-repeat,
-    radial-gradient(circle 12px at bottom left, transparent 12px, var(--soc-content-bg) 12px) top right / 12px 12px no-repeat,
-    radial-gradient(circle 12px at top right, transparent 12px, var(--soc-content-bg) 12px) bottom left / 12px 12px no-repeat,
-    radial-gradient(circle 12px at top left, transparent 12px, var(--soc-content-bg) 12px) bottom right / 12px 12px no-repeat;
+    radial-gradient(circle at 100% 100%, transparent 0, transparent 12px, var(--soc-content-bg) 13px) top left / 12px 12px no-repeat,
+    radial-gradient(circle at 0 100%, transparent 0, transparent 12px, var(--soc-content-bg) 13px) top right / 12px 12px no-repeat,
+    radial-gradient(circle at 100% 0, transparent 0, transparent 12px, var(--soc-content-bg) 13px) bottom left / 12px 12px no-repeat,
+    radial-gradient(circle at 0 0, transparent 0, transparent 12px, var(--soc-content-bg) 13px) bottom right / 12px 12px no-repeat;
 }
 
 
