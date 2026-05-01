@@ -1,7 +1,9 @@
 <template>
   <div class="p-4">
-    <!-- Quick links block -->
-    <QuickLinks class="quicklinks-card" />
+    <!-- Quick links block (teleported above soc-main) -->
+    <Teleport to=".soc-above-main">
+      <QuickLinks />
+    </Teleport>
 
     <!-- Annonces section (own rounded card) -->
     <div class="annonces-card rounded-xl bg-white p-4">
@@ -433,11 +435,8 @@ onUnmounted(() => {
 <style lang="scss">
 $ann-font-display: 'Montserrat', sans-serif;
 
-.quicklinks-card {
-  margin: -1rem -1rem 24px;
-}
 .annonces-card {
-  margin: 0 -1rem -1rem;
+  margin: -1rem;
 }
 
 

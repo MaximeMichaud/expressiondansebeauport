@@ -109,6 +109,9 @@
       </div>
     </header>
 
+    <!-- Teleport target for sections above main (e.g. QuickLinks on socialImportant) -->
+    <div class="soc-above-main"></div>
+
     <!-- Content -->
     <main class="soc-main">
       <RouterView v-slot="{ Component }">
@@ -733,6 +736,14 @@ $soc-font-body: 'Karla', sans-serif;
     }
   }
 }
+
+.soc-above-main {
+  width: 100%;
+  max-width: 720px;
+  margin: 16px auto 0;
+  padding: 0 16px;
+}
+.soc-above-main:empty { display: none; }
 
 .soc-main {
   flex: 1 1 0;
