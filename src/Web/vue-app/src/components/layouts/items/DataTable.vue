@@ -66,10 +66,9 @@ import type {FilterOption, Header, Item} from "vue3-easy-data-table"
 import {useI18n} from "vue-i18n"
 import { Copy, Eye, Pencil, Trash2 } from "lucide-vue-next"
 import { computed } from "vue"
+import type { Component } from "vue"
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const EasyDataTable = Vue3EasyDataTable as any
-
+const EasyDataTable: Component = Vue3EasyDataTable
 const {t} = useI18n()
 
 const primaryColor = computed(() =>
