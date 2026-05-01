@@ -1,6 +1,7 @@
 <template>
   <div class="error-page">
     <div class="error-page__container">
+      <Breadcrumbs :items="breadcrumbs" class="error-page__breadcrumbs" />
       <p class="error-page__code">404</p>
       <h1 class="error-page__title">{{ t('public.page.notFound') }}</h1>
       <p class="error-page__message">{{ t('public.page.notFoundMessage') }}</p>
@@ -14,8 +15,17 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue"
 import { useI18n } from "vue-i18n"
+import Breadcrumbs from "@/components/layouts/items/Breadcrumbs.vue"
+import type {BreadcrumbItem} from "@/types/entities"
+
 const { t } = useI18n()
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+  { label: t('routes.home.name'), url: '/', isCurrent: false },
+  { label: t('public.page.notFound'), isCurrent: true }
+])
 </script>
 
 <style scoped>
@@ -30,6 +40,14 @@ const { t } = useI18n()
 
 .error-page__container {
   max-width: 480px;
+}
+
+.error-page__breadcrumbs {
+  margin-bottom: 1.5rem;
+}
+
+.error-page__breadcrumbs :deep(.breadcrumbs__list) {
+  justify-content: center;
 }
 
 .error-page__code {
