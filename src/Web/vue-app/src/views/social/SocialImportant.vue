@@ -433,9 +433,21 @@ onUnmounted(() => {
 $ann-font-display: 'Montserrat', sans-serif;
 
 .section-gap {
+  position: relative;
   height: 24px;
   margin: 24px -1rem;
   background: var(--soc-page-bg);
+}
+.section-gap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle 12px at bottom right, transparent 12px, var(--soc-content-bg) 12px) top left / 12px 12px no-repeat,
+    radial-gradient(circle 12px at bottom left, transparent 12px, var(--soc-content-bg) 12px) top right / 12px 12px no-repeat,
+    radial-gradient(circle 12px at top right, transparent 12px, var(--soc-content-bg) 12px) bottom left / 12px 12px no-repeat,
+    radial-gradient(circle 12px at top left, transparent 12px, var(--soc-content-bg) 12px) bottom right / 12px 12px no-repeat;
 }
 
 
