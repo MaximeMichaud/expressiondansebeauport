@@ -164,10 +164,7 @@
                 @click="canPin ? togglePin(post) : undefined"
                 :disabled="!canPin"
                 class="soc-header__icon-btn"
-                :class="[
-                  post.isPinned ? 'soc-header__icon-btn--logout' : '',
-                  !canPin ? 'cursor-default opacity-100' : ''
-                ]"
+                :class="!canPin ? 'cursor-default opacity-100' : ''"
                 style="width: 30px; height: 30px;"
                 :title="post.isPinned ? (canPin ? 'Désépingler la publication' : 'Publication épinglée') : 'Épingler la publication'"
               >
@@ -605,14 +602,9 @@ async function togglePin(post: Post) {
   const wasPinned = post.isPinned
   try {
     const result = await socialService.pinPost(post.id, groupId.value)
-    posts.value.forEach(p => {
-      if (p.id !== post.id && p.isPinned) p.isPinned = false
-    })
-    post.isPinned = result.isPinned
-    posts.value.sort((a, b) => {
-      if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1
-      return new Date(b.created).getTime() - new Date(a.created).getTime()
-    })
+    const fresh = await socialService.getGroupFeed(groupId.value, 1)
+    posts.value = fresh.items
+    avatarRegistry.populateFromList(fresh.items as any[], 'authorMemberId', 'authorProfileImageUrl')
     if (!wasPinned && result.replacedExisting) {
       toast.success('Publication épinglée. La précédente a été retirée.')
     } else if (!wasPinned && result.isPinned) {
