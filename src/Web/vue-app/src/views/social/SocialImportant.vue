@@ -3,6 +3,8 @@
     <!-- Quick links block -->
     <QuickLinks />
 
+    <!-- Annonces section card -->
+    <div class="rounded-xl border border-gray-200 bg-white p-4">
     <!-- Header -->
     <div class="mb-4 flex items-center justify-between">
       <h2 class="text-lg font-bold text-gray-900">Annonces</h2>
@@ -198,6 +200,8 @@
         <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
       </div>
     </div>
+    </div>
+    <!-- /Annonces section card -->
 
     <!-- Delete modal -->
     <Teleport to="body">
