@@ -75,7 +75,7 @@ const mainSiteUrl = computed(() => {
   if (host.startsWith('social.')) {
     return `${window.location.protocol}//${host.replace(/^social\./, '')}`
   }
-  return null
+  return '/'
 })
 
 const hasAnyLink = computed(() =>
