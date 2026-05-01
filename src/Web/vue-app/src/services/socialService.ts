@@ -4,6 +4,11 @@ import type { Group, GroupMember, Member, Post, Comment, Conversation, Message }
 
 const API = import.meta.env.VITE_API_BASE_URL
 
+export interface PinPostResponse {
+  isPinned: boolean
+  replacedExisting: boolean
+}
+
 // Normalize PascalCase keys from C# backend to camelCase
 function toCamel(obj: any): any {
   if (Array.isArray(obj)) return obj.map(toCamel)
@@ -132,9 +137,9 @@ export class SocialService extends ApiService {
     await this._httpClient.post(`${API}/social/posts/${postId}/view`, {}, this.headersWithJsonContentType())
   }
 
-  async pinPost(postId: string, groupId: string): Promise<SucceededOrNotResponse> {
-    const response = await this._httpClient.put<SucceededOrNotResponse>(`${API}/social/posts/${postId}/pin`, { groupId }, this.headersWithJsonContentType())
-    return response.data
+  async pinPost(postId: string, groupId: string): Promise<PinPostResponse> {
+    const response = await this._httpClient.put<any>(`${API}/social/posts/${postId}/pin`, { groupId }, this.headersWithJsonContentType())
+    return toCamel(response.data) as PinPostResponse
   }
 
   // === Comments ===

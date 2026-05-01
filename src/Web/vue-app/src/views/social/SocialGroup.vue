@@ -164,6 +164,19 @@
                 Épinglé
               </span>
               <button
+                v-if="canPin"
+                @click="togglePin(post)"
+                class="soc-header__icon-btn"
+                :class="post.isPinned ? 'soc-header__icon-btn--logout' : ''"
+                style="width: 30px; height: 30px;"
+                :title="post.isPinned ? 'Désépingler la publication' : 'Épingler la publication'"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" :fill="post.isPinned ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 17v5"/>
+                  <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>
+                </svg>
+              </button>
+              <button
                 v-if="isAdmin || post.authorMemberId === myMemberId"
                 @click="deleteTarget = post"
                 class="soc-header__icon-btn soc-header__icon-btn--logout"
@@ -371,6 +384,7 @@ const avatarRegistry = useAvatarRegistryStore()
 
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
 const canCreatePolls = computed(() => userStore.hasOneOfTheseRoles([Role.Professor, Role.Admin]))
+const canPin = computed(() => userStore.hasOneOfTheseRoles([Role.Admin, Role.Professor]))
 const myMemberId = computed(() => memberStore.member?.id || '')
 const groupId = computed(() => route.params.id as string)
 const showPollModal = ref(false)
@@ -586,6 +600,24 @@ async function submitComment(post: Post) {
     post.commentCount = (post.commentCount || 0) + 1
   } catch { /* */ }
   submittingComment.value = false
+}
+
+async function togglePin(post: Post) {
+  const wasPinned = post.isPinned
+  try {
+    const result = await socialService.pinPost(post.id, groupId.value)
+    const fresh = await refreshPostsFirst()
+    avatarRegistry.populateFromList(fresh as any[], 'authorMemberId', 'authorProfileImageUrl')
+    if (!wasPinned && result.replacedExisting) {
+      toast.success('Publication épinglée. La précédente a été retirée.')
+    } else if (!wasPinned && result.isPinned) {
+      toast.success('Publication épinglée.')
+    } else if (wasPinned && !result.isPinned) {
+      toast.success('Publication désépinglée.')
+    }
+  } catch {
+    toast.error("Erreur lors de l'épinglage de la publication.")
+  }
 }
 
 async function removeComment(commentId: string) {
