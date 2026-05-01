@@ -1,5 +1,5 @@
 <template>
-  <div v-if="hasAnyLink" class="rounded-xl border border-gray-200 overflow-hidden bg-white">
+  <div v-if="hasAnyLink" class="ql-card rounded-xl overflow-hidden">
     <!-- Footer-style inline links -->
     <div v-if="mainSiteUrl || phone || email" class="ql-strip" :class="{ 'ql-strip--bordered': profEntries.length }">
       <a v-if="phone" :href="phoneHref" class="ql-link">
@@ -138,7 +138,17 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.ql-card {
+  background: #d6e8f7;
+  border: 1px solid #a3c4e9;
+  color: var(--soc-text, #292524);
+}
+:global(.soc--dark) .ql-card {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
 .ql-strip {
   display: flex;
   flex-wrap: wrap;
