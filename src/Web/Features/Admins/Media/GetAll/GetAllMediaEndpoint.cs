@@ -29,7 +29,7 @@ public class GetAllMediaEndpoint : Endpoint<PaginateRequest, PaginatedList<Media
 
     public override async Task HandleAsync(PaginateRequest req, CancellationToken ct)
     {
-        var paginatedList = _mediaFileRepository.GetAllPaginated(req.PageIndex, req.PageSize);
+        var paginatedList = _mediaFileRepository.GetAllPaginated(req.NormalizedPageIndex, req.NormalizedPageSize);
         var dtos = _mapper.Map<List<MediaFileDto>>(paginatedList.Items);
         await Send.OkAsync(new PaginatedList<MediaFileDto>(dtos, paginatedList.TotalItems), cancellation: ct);
     }

@@ -444,7 +444,21 @@ public class GarneauTemplateDbContextInitializer
     {
         const string slug = "demo-blocs-visuels";
         var existing = _context.Pages.FirstOrDefault(p => p.Slug == slug);
-        if (existing != null) return;
+        if (existing != null)
+        {
+            if (!string.IsNullOrWhiteSpace(existing.Blocks))
+            {
+                var updatedBlocks = RewriteSeedMediaUrls(
+                    existing.Blocks,
+                    ["image-devant-studio.jpg", "vue-de-rue-education.jpg", "directions-sur-map.jpg"]);
+                if (updatedBlocks != existing.Blocks)
+                {
+                    existing.SetBlocks(updatedBlocks);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            return;
+        }
 
         var page = new Page("Démo - Blocs visuels", slug);
         page.SetContentMode("blocks");
@@ -496,8 +510,8 @@ public class GarneauTemplateDbContextInitializer
 
             "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"image-gallery\",\"width\":\"half\",\"data\":{" +
                 "\"images\":[" +
-                    "{\"url\":\"/image-devant-studio.jpg\",\"alt\":\"Devant le studio\"}," +
-                    "{\"url\":\"/vue-de-rue-education.jpg\",\"alt\":\"Vue de la rue\"}" +
+                    "{\"url\":\"/uploads/image-devant-studio.jpg\",\"alt\":\"Devant le studio\"}," +
+                    "{\"url\":\"/uploads/vue-de-rue-education.jpg\",\"alt\":\"Vue de la rue\"}" +
                 "]," +
                 "\"columns\":2" +
             "}}",
@@ -556,9 +570,9 @@ public class GarneauTemplateDbContextInitializer
 
             "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"image-gallery\",\"data\":{" +
                 "\"images\":[" +
-                    "{\"url\":\"/image-devant-studio.jpg\",\"alt\":\"Devant le studio\"}," +
-                    "{\"url\":\"/vue-de-rue-education.jpg\",\"alt\":\"Vue de rue\"}," +
-                    "{\"url\":\"/directions-sur-map.jpg\",\"alt\":\"Plan d'accès\"}" +
+                    "{\"url\":\"/uploads/image-devant-studio.jpg\",\"alt\":\"Devant le studio\"}," +
+                    "{\"url\":\"/uploads/vue-de-rue-education.jpg\",\"alt\":\"Vue de rue\"}," +
+                    "{\"url\":\"/uploads/directions-sur-map.jpg\",\"alt\":\"Plan d'accès\"}" +
                 "]," +
                 "\"columns\":3" +
             "}}",
@@ -817,19 +831,14 @@ public class GarneauTemplateDbContextInitializer
             ("directions-sur-map.jpg", "directions-sur-map.jpg", 59392L, "Vue aérienne annotée montrant le chemin à suivre vers le studio")
         };
 
-        // Patterns d'URLs obsolètes provenant d'anciennes versions du seed
-        var obsoleteUrlPatterns = new[] { "/uploads/seed-", "/images/seed/", "/images/" };
-
-        var mediaIds = new List<Guid>();
         foreach (var (fileName, originalName, size, alt) in seedImages)
         {
-            var correctUrl = $"/{fileName}";
+            var correctUrl = SeedMediaUrl(fileName);
             var existing = _context.Set<MediaFile>().FirstOrDefault(m => m.FileName == fileName);
             if (existing != null)
             {
-                if (obsoleteUrlPatterns.Any(p => existing.BlobUrl.Contains(p)) || existing.BlobUrl != correctUrl)
+                if (existing.BlobUrl != correctUrl)
                     existing.SetBlobUrl(correctUrl);
-                mediaIds.Add(existing.Id);
                 continue;
             }
 
@@ -839,7 +848,6 @@ public class GarneauTemplateDbContextInitializer
             if (legacy != null)
             {
                 legacy.SetBlobUrl(correctUrl);
-                mediaIds.Add(legacy.Id);
                 continue;
             }
 
@@ -847,11 +855,10 @@ public class GarneauTemplateDbContextInitializer
             media.SetAltText(alt);
             _context.Set<MediaFile>().Add(media);
             await _context.SaveChangesAsync();
-            mediaIds.Add(media.Id);
         }
 
         var imagesJson = string.Join(",", seedImages.Select((img, i) =>
-            $"{{\"url\":\"/{img.Item1}\",\"alt\":\"{img.Item4.Replace("\"", "\\\"")}\"}}"
+            $"{{\"url\":\"{SeedMediaUrl(img.Item1)}\",\"alt\":\"{img.Item4.Replace("\"", "\\\"")}\"}}"
         ));
 
         var blocksJson =
@@ -884,26 +891,14 @@ public class GarneauTemplateDbContextInitializer
                 "}}" +
             "]";
 
-        // Si la page est déjà en mode blocks, vérifier si les URLs sont obsolètes
+        // Si la page est déjà en mode blocks, migrer les URLs de médias seedés vers /uploads.
         if (page.ContentMode == "blocks")
         {
-            var needsUpdate = page.Blocks != null &&
-                obsoleteUrlPatterns.Any(p => page.Blocks.Contains(p));
-            if (needsUpdate)
+            if (!string.IsNullOrWhiteSpace(page.Blocks))
             {
-                var updatedBlocks = page.Blocks!;
-                foreach (var pattern in obsoleteUrlPatterns)
-                {
-                    // Remplacer /uploads/seed-X.jpg et /images/seed/X.jpg par /images/X.jpg
-                    foreach (var (fileName, _, _, _) in seedImages)
-                    {
-                        updatedBlocks = updatedBlocks
-                            .Replace($"/uploads/seed-{fileName}", $"/{fileName}")
-                            .Replace($"/images/seed/{fileName}", $"/{fileName}")
-                            .Replace($"/images/{fileName}", $"/{fileName}");
-                    }
-                }
-                page.SetBlocks(updatedBlocks);
+                var updatedBlocks = RewriteSeedMediaUrls(page.Blocks!, seedImages.Select(img => img.Item1));
+                if (updatedBlocks != page.Blocks)
+                    page.SetBlocks(updatedBlocks);
             }
             await _context.SaveChangesAsync();
             return;
@@ -936,6 +931,26 @@ public class GarneauTemplateDbContextInitializer
     }
 
     private static readonly string[] CampSlugs = ["camp-d-ete", "camp-d-hiver", "camp-relache"];
+
+    private static string SeedMediaUrl(string fileName) => $"/uploads/{fileName}";
+
+    private static string SeedFooterPartnerUrl(string fileName) => $"/uploads/seed-partners/{fileName}";
+
+    private static string RewriteSeedMediaUrls(string content, IEnumerable<string> fileNames)
+    {
+        foreach (var fileName in fileNames)
+        {
+            var correctUrl = SeedMediaUrl(fileName);
+            content = content
+                .Replace($"/uploads/seed-{fileName}", correctUrl)
+                .Replace($"/images/seed/{fileName}", correctUrl)
+                .Replace($"/images/{fileName}", correctUrl)
+                .Replace($"/{fileName}", correctUrl)
+                .Replace($"/uploads/uploads/{fileName}", correctUrl);
+        }
+
+        return content;
+    }
 
     private async Task SeedMenus()
     {
@@ -1077,17 +1092,31 @@ public class GarneauTemplateDbContextInitializer
         var sortOrder = 0;
         foreach (var asset in SeedFooterPartnerAssets)
         {
-            var blobUrl = $"/seed-partners/{asset.FileName}";
-            if (existingPartners.Any(fp => fp.MediaFile.BlobUrl == blobUrl))
+            var blobUrl = SeedFooterPartnerUrl(asset.FileName);
+            var mediaFile = await _context.MediaFiles.FirstOrDefaultAsync(m => m.FileName == asset.FileName);
+            if (mediaFile == null)
             {
-                sortOrder++;
-                continue;
+                mediaFile = new MediaFile(asset.FileName, asset.FileName, asset.ContentType, 0, blobUrl);
+                _context.MediaFiles.Add(mediaFile);
+                await _context.SaveChangesAsync();
             }
 
-            var mediaFile = new MediaFile(asset.FileName, asset.FileName, asset.ContentType, 0, blobUrl);
+            if (mediaFile.BlobUrl != blobUrl)
+                mediaFile.SetBlobUrl(blobUrl);
             mediaFile.SetAltText(asset.AltText);
-            _context.MediaFiles.Add(mediaFile);
-            await _context.SaveChangesAsync();
+
+            var existingPartner = existingPartners.FirstOrDefault(fp =>
+                fp.MediaFileId == mediaFile.Id ||
+                fp.MediaFile.FileName == asset.FileName ||
+                fp.MediaFile.BlobUrl.EndsWith($"/{asset.FileName}", StringComparison.OrdinalIgnoreCase));
+
+            if (existingPartner != null)
+            {
+                existingPartner.SetMediaFileId(mediaFile.Id);
+                existingPartner.SetAltText(asset.AltText);
+                existingPartner.SetSortOrder(sortOrder++);
+                continue;
+            }
 
             _context.FooterPartners.Add(new FooterPartner(settings.Id, mediaFile.Id, asset.AltText, null, sortOrder++));
         }

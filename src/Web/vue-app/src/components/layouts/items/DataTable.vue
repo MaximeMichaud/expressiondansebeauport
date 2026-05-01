@@ -26,14 +26,18 @@
         <router-link
             v-if="item.actions.view"
             :to="item.actions.view"
+            :aria-label="t('global.actions.view')"
             class="vue3-easy-data-table__action"
+            :title="t('global.actions.view')"
         >
           <Eye :size="16" color="white" />
         </router-link>
         <router-link
             v-if="item.actions.edit"
             :to="item.actions.edit"
+            :aria-label="t('global.actions.update')"
             class="vue3-easy-data-table__action"
+            :title="t('global.actions.update')"
         >
           <Pencil :size="16" color="white" />
         </router-link>
@@ -41,6 +45,8 @@
             v-if="item.actions.duplicate && item.id"
             class="vue3-easy-data-table__action"
             type="button"
+            aria-label="Dupliquer"
+            title="Dupliquer"
             @click="handleDuplicate(item)"
         >
           <Copy :size="16" color="white" />
@@ -49,6 +55,8 @@
             v-if="item.actions.delete && item.id"
             class="vue3-easy-data-table__action"
             type="button"
+            :aria-label="t('global.actions.delete')"
+            :title="t('global.actions.delete')"
             @click="handleDelete(item)"
         >
           <Trash2 :size="16" color="white" />
