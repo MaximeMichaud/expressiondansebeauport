@@ -14,4 +14,5 @@ public class PageDto
     public string? FeaturedImageUrl { get; set; }
     public string? MetaDescription { get; set; }
     public int SortOrder { get; set; }
+    public List<BreadcrumbDto> Breadcrumbs { get; set; } = new();
 }

@@ -1,3 +1,10 @@
+export class BreadcrumbItem {
+  label?: string
+  url?: string
+  absoluteUrl?: string
+  isCurrent?: boolean
+}
+
 export class Page {
   id?: string
   title?: string
@@ -11,4 +18,5 @@ export class Page {
   sortOrder?: number
   contentMode?: string
   blocks?: string  // JSON string, parsed côté composant
+  breadcrumbs?: BreadcrumbItem[]
 }

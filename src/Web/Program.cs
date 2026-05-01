@@ -13,6 +13,7 @@ using Serilog;
 using Sidio.Sitemap.Core.Services;
 using Web.BackgroundServices;
 using Web.Extensions;
+using Web.Features.Public.Breadcrumbs;
 using Web.Features.Public.Seo;
 using Web.Middleware;
 
@@ -72,6 +73,7 @@ builder.Logging.AddSerilog(Log.Logger);
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
 builder.Services.AddHostedService<BackupSchedulerService>();
 builder.Services.AddDefaultSitemapServices();
+builder.Services.AddScoped<IBreadcrumbService, BreadcrumbService>();
 builder.Services.AddScoped<ISeoFilesService, SeoFilesService>();
 
 builder.Services.AddResponseCompression(options =>
