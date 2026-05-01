@@ -1,16 +1,13 @@
 <template>
   <div class="p-4">
     <!-- Quick links block -->
-    <QuickLinks />
+    <QuickLinks class="quicklinks-card" />
 
     <!-- Section separator (page bg) -->
-    <div class="section-gap">
-      <div class="section-gap__corner section-gap__corner--tl"></div>
-      <div class="section-gap__corner section-gap__corner--tr"></div>
-      <div class="section-gap__corner section-gap__corner--bl"></div>
-      <div class="section-gap__corner section-gap__corner--br"></div>
-    </div>
+    <div class="section-gap"></div>
 
+    <!-- Annonces section (own rounded card) -->
+    <div class="annonces-card rounded-xl bg-white p-4">
     <!-- Header -->
     <div class="mb-4 flex items-center justify-between">
       <h2 class="text-lg font-bold text-gray-900">Annonces</h2>
@@ -206,6 +203,8 @@
         <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
       </div>
     </div>
+    </div>
+    <!-- /Annonces card -->
 
     <!-- Delete modal -->
     <Teleport to="body">
@@ -438,22 +437,16 @@ onUnmounted(() => {
 $ann-font-display: 'Montserrat', sans-serif;
 
 .section-gap {
-  position: relative;
   height: 24px;
-  margin: 24px -1rem;
+  margin: 0 -1rem;
   background: var(--soc-page-bg);
 }
-.section-gap__corner {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background: var(--soc-content-bg);
-  pointer-events: none;
+.quicklinks-card {
+  margin: -1rem -1rem 0;
 }
-.section-gap__corner--tl { top: 0; left: 0; border-bottom-right-radius: 12px; }
-.section-gap__corner--tr { top: 0; right: 0; border-bottom-left-radius: 12px; }
-.section-gap__corner--bl { bottom: 0; left: 0; border-top-right-radius: 12px; }
-.section-gap__corner--br { bottom: 0; right: 0; border-top-left-radius: 12px; }
+.annonces-card {
+  margin: 0 -1rem -1rem;
+}
 
 
 .ann-modal {

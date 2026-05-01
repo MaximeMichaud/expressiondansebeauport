@@ -1,5 +1,5 @@
 <template>
-  <div v-if="hasAnyLink" class="rounded-xl border border-gray-200 overflow-hidden bg-white">
+  <div v-if="hasAnyLink" class="rounded-xl overflow-hidden bg-white">
     <!-- Footer-style inline links -->
     <div v-if="mainSiteUrl || phone || email" class="ql-strip" :class="{ 'ql-strip--bordered': profEntries.length }">
       <a v-if="phone" :href="phoneHref" class="ql-link">
