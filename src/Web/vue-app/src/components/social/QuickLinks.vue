@@ -26,7 +26,7 @@
     <div v-if="profEntries.length" class="divide-y divide-gray-100">
       <button
         v-for="entry in profEntries"
-        :key="entry.groupId + ':' + entry.profMemberId"
+        :key="entry.profMemberId"
         @click="openProfDm(entry.profMemberId)"
         :disabled="opening === entry.profMemberId"
         class="quick-row"
@@ -38,7 +38,11 @@
         </span>
         <span class="quick-row__label">
           <span class="block text-[13px] font-semibold leading-tight">{{ entry.profName }}</span>
-          <span class="block text-[11px] text-gray-500 leading-tight">{{ entry.groupName }}</span>
+          <span
+            v-for="name in entry.groupNames"
+            :key="name"
+            class="block text-[11px] text-gray-500 leading-tight"
+          >{{ name }}</span>
         </span>
         <svg class="quick-row__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
       </button>
@@ -55,10 +59,9 @@ import { useMemberStore } from '@/stores/memberStore'
 import { useSocialToast } from '@/composables/useSocialToast'
 
 interface ProfEntry {
-  groupId: string
-  groupName: string
   profMemberId: string
   profName: string
+  groupNames: string[]
 }
 
 const router = useRouter()
@@ -114,24 +117,28 @@ onMounted(async () => {
   try {
     const groups = await socialService.getMyGroups()
     const myId = memberStore.member?.id
-    const entries: ProfEntry[] = []
+    const byProf = new Map<string, ProfEntry>()
     for (const group of groups) {
       try {
         const members = await socialService.getGroupMembers(group.id, 1)
         for (const m of members as any[]) {
           const isProf = (m.roles || []).includes('professor') || m.role === 'Professor'
           if (isProf && m.memberId !== myId) {
-            entries.push({
-              groupId: group.id,
-              groupName: group.name,
-              profMemberId: m.memberId,
-              profName: m.fullName,
-            })
+            const existing = byProf.get(m.memberId)
+            if (existing) {
+              if (!existing.groupNames.includes(group.name)) existing.groupNames.push(group.name)
+            } else {
+              byProf.set(m.memberId, {
+                profMemberId: m.memberId,
+                profName: m.fullName,
+                groupNames: [group.name],
+              })
+            }
           }
         }
       } catch { /* */ }
     }
-    profEntries.value = entries
+    profEntries.value = Array.from(byProf.values())
   } catch { /* */ }
 })
 </script>
