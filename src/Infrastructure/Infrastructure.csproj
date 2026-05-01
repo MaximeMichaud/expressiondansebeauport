@@ -9,6 +9,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="16.1.1" />
+		<PackageReference Include="NetVips" Version="3.2.0" />
+		<PackageReference Include="NetVips.Native.linux-musl-x64" Version="8.18.2" />
+		<PackageReference Include="NetVips.Native.linux-x64" Version="8.18.2" />
 		<PackageReference Include="Npgsql" Version="10.0.2" />
 		<PackageReference Include="FluentEmail.Razor" Version="3.0.2" />
 		<PackageReference Include="Humanizer" Version="3.0.10" />
@@ -19,8 +22,6 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.7" />
 		<PackageReference Include="ScottBrady91.AspNetCore.Identity.Argon2PasswordHasher" Version="2.0.0" />
-		<PackageReference Include="SkiaSharp" Version="3.119.2" />
-		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.2" />
 		<PackageReference Include="SendGrid" Version="9.29.3" />
 		<PackageReference Include="SendGrid.Extensions.DependencyInjection" Version="1.0.1" />
 		<PackageReference Include="ZstdSharp.Port" Version="0.8.8" />
