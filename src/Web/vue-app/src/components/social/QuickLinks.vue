@@ -38,11 +38,7 @@
         </span>
         <span class="quick-row__label">
           <span class="block text-[13px] font-semibold leading-tight">{{ entry.profName }}</span>
-          <span
-            v-for="name in entry.groupNames"
-            :key="name"
-            class="block text-[11px] text-gray-500 leading-tight"
-          >{{ name }}</span>
+          <span class="block text-[11px] text-gray-500 leading-tight">{{ entry.groupNames.join(', ') }}</span>
         </span>
         <svg class="quick-row__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
       </button>
