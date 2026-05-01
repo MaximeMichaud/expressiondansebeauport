@@ -1,73 +1,46 @@
 <template>
   <div v-if="hasAnyLink" class="mb-4 rounded-xl border border-gray-200 overflow-hidden bg-white">
-    <div class="px-4 py-3 border-b border-gray-100">
-      <h3 class="text-xs font-bold uppercase tracking-wide text-gray-500">Liens rapides</h3>
+    <!-- Compact icon row -->
+    <div v-if="mainSiteUrl || phone || email" class="flex items-center gap-2 p-3" :class="{ 'border-b border-gray-100': profEntries.length }">
+      <a v-if="mainSiteUrl" :href="mainSiteUrl" target="_blank" rel="noopener noreferrer" class="quick-icon" title="Site principal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+        </svg>
+      </a>
+      <a v-if="phone" :href="phoneHref" class="quick-icon" :title="phone">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+        </svg>
+      </a>
+      <a v-if="email" :href="'mailto:' + email" class="quick-icon" :title="email">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+      </a>
     </div>
-    <div class="divide-y divide-gray-100">
-      <a
-        v-if="mainSiteUrl"
-        :href="mainSiteUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="quick-link"
-      >
-        <span class="quick-link__icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="2" y1="12" x2="22" y2="12"/>
-            <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
-          </svg>
-        </span>
-        <span class="quick-link__label">Site principal</span>
-        <svg class="quick-link__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-      </a>
 
-      <a
-        v-if="phone"
-        :href="phoneHref"
-        class="quick-link"
-      >
-        <span class="quick-link__icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
-          </svg>
-        </span>
-        <span class="quick-link__label">{{ phone }}</span>
-        <svg class="quick-link__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-      </a>
-
-      <a
-        v-if="email"
-        :href="'mailto:' + email"
-        class="quick-link"
-      >
-        <span class="quick-link__icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-            <polyline points="22,6 12,13 2,6"/>
-          </svg>
-        </span>
-        <span class="quick-link__label">{{ email }}</span>
-        <svg class="quick-link__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-      </a>
-
+    <!-- DM profs (compact rows) -->
+    <div v-if="profEntries.length" class="divide-y divide-gray-100">
       <button
         v-for="entry in profEntries"
         :key="entry.groupId + ':' + entry.profMemberId"
         @click="openProfDm(entry.profMemberId)"
         :disabled="opening === entry.profMemberId"
-        class="quick-link quick-link--button"
+        class="quick-row"
       >
-        <span class="quick-link__icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <span class="quick-row__icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
           </svg>
         </span>
-        <span class="quick-link__label">
-          <span class="block font-semibold">{{ entry.profName }}</span>
-          <span class="block text-[11px] text-gray-500">{{ entry.groupName }}</span>
+        <span class="quick-row__label">
+          <span class="block text-[13px] font-semibold leading-tight">{{ entry.profName }}</span>
+          <span class="block text-[11px] text-gray-500 leading-tight">{{ entry.groupName }}</span>
         </span>
-        <svg class="quick-link__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        <svg class="quick-row__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
       </button>
     </div>
   </div>
@@ -132,14 +105,12 @@ async function openProfDm(profMemberId: string) {
 }
 
 onMounted(async () => {
-  // Site settings (phone, email)
   try {
     const settings = await siteSettingsService.getPublic()
     phone.value = settings?.footerPhone || undefined
     email.value = settings?.footerEmail || undefined
   } catch { /* */ }
 
-  // Profs in user's groups
   try {
     const groups = await socialService.getMyGroups()
     const myId = memberStore.member?.id
@@ -147,8 +118,9 @@ onMounted(async () => {
     for (const group of groups) {
       try {
         const members = await socialService.getGroupMembers(group.id, 1)
-        for (const m of members) {
-          if (m.role === 'Professor' && m.memberId !== myId) {
+        for (const m of members as any[]) {
+          const isProf = (m.roles || []).includes('professor') || m.role === 'Professor'
+          if (isProf && m.memberId !== myId) {
             entries.push({
               groupId: group.id,
               groupName: group.name,
@@ -165,13 +137,29 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.quick-link {
+.quick-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--soc-bar-hover, #f5f3f0);
+  color: var(--soc-bar-text-strong, #1a1a1a);
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+}
+.quick-icon:hover {
+  background: var(--soc-bar-active, #eae8e4);
+}
+
+.quick-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
-  padding: 12px 16px;
-  font-size: 0.875rem;
+  padding: 8px 12px;
+  font-size: 0.85rem;
   color: var(--soc-bar-text-strong, #1a1a1a);
   background: transparent;
   border: 0;
@@ -179,29 +167,29 @@ onMounted(async () => {
   cursor: pointer;
   transition: background 0.15s;
 }
-.quick-link:hover {
+.quick-row:hover {
   background: var(--soc-bar-hover, #f9fafb);
 }
-.quick-link:disabled {
+.quick-row:disabled {
   opacity: 0.5;
   cursor: default;
 }
-.quick-link__icon {
+.quick-row__icon {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 8px;
   background: var(--soc-bar-hover, #f5f3f0);
   color: var(--soc-bar-text-strong, #1a1a1a);
 }
-.quick-link__label {
+.quick-row__label {
   flex: 1;
   min-width: 0;
 }
-.quick-link__chevron {
+.quick-row__chevron {
   flex-shrink: 0;
   color: var(--soc-text-muted, #d6d3d1);
 }
