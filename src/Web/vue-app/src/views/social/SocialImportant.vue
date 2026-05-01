@@ -4,7 +4,12 @@
     <QuickLinks />
 
     <!-- Section separator (page bg) -->
-    <div class="section-gap"></div>
+    <div class="section-gap">
+      <div class="section-gap__corner section-gap__corner--tl"></div>
+      <div class="section-gap__corner section-gap__corner--tr"></div>
+      <div class="section-gap__corner section-gap__corner--bl"></div>
+      <div class="section-gap__corner section-gap__corner--br"></div>
+    </div>
 
     <!-- Header -->
     <div class="mb-4 flex items-center justify-between">
@@ -438,17 +443,17 @@ $ann-font-display: 'Montserrat', sans-serif;
   margin: 24px -1rem;
   background: var(--soc-page-bg);
 }
-.section-gap::before {
-  content: '';
+.section-gap__corner {
   position: absolute;
-  inset: 0;
+  width: 12px;
+  height: 12px;
+  background: var(--soc-content-bg);
   pointer-events: none;
-  background:
-    radial-gradient(circle at 100% 100%, transparent 0, transparent 12px, var(--soc-content-bg) 13px) top left / 12px 12px no-repeat,
-    radial-gradient(circle at 0 100%, transparent 0, transparent 12px, var(--soc-content-bg) 13px) top right / 12px 12px no-repeat,
-    radial-gradient(circle at 100% 0, transparent 0, transparent 12px, var(--soc-content-bg) 13px) bottom left / 12px 12px no-repeat,
-    radial-gradient(circle at 0 0, transparent 0, transparent 12px, var(--soc-content-bg) 13px) bottom right / 12px 12px no-repeat;
 }
+.section-gap__corner--tl { top: 0; left: 0; border-bottom-right-radius: 12px; }
+.section-gap__corner--tr { top: 0; right: 0; border-bottom-left-radius: 12px; }
+.section-gap__corner--bl { bottom: 0; left: 0; border-top-right-radius: 12px; }
+.section-gap__corner--br { bottom: 0; right: 0; border-top-left-radius: 12px; }
 
 
 .ann-modal {
