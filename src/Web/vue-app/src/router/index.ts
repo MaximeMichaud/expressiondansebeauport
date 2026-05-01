@@ -11,8 +11,6 @@ declare module "vue-router" {
 }
 
 import Home from "@/views/public/Home.vue";
-import PublicPage from "@/views/public/PublicPage.vue";
-import NotFound from "@/views/public/NotFound.vue";
 
 import {useUserStore} from "@/stores/userStore";
 import {useApiStore} from "@/stores/apiStore";
@@ -268,7 +266,7 @@ const mainRoutes = [
   {
     path: "/:slug",
     name: "publicPage",
-    component: PublicPage,
+    component: () => import("@/views/public/PublicPage.vue"),
     meta: {
       title: "routes.home.name",
       public: true
@@ -277,7 +275,7 @@ const mainRoutes = [
   {
     path: "/:pathMatch(.*)*",
     name: "notFound",
-    component: NotFound,
+    component: () => import("@/views/public/NotFound.vue"),
     meta: { public: true }
   },
 ]
