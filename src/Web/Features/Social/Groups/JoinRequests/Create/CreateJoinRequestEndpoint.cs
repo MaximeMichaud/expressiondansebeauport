@@ -48,7 +48,7 @@ public class CreateJoinRequestEndpoint : Endpoint<CreateJoinRequestRequest>
         Domain.Entities.JoinRequest joinRequest;
         try
         {
-            joinRequest = await _joinRequestService.CreateRequest(req.GroupId, member.Id);
+            joinRequest = await _joinRequestService.CreateRequest(req.GroupId, member.Id, req.Reason);
         }
         catch (InvalidOperationException ex) when (ex.Message == "DUPLICATE")
         {
@@ -74,7 +74,7 @@ public class CreateJoinRequestEndpoint : Endpoint<CreateJoinRequestRequest>
                 await _hubContext.Clients.Client(connectionId).SendAsync("ReceiveMessage", new
                 {
                     Id = Guid.NewGuid(),
-                    Content = $"{member.FullName} souhaite rejoindre le groupe {group?.Name ?? ""}",
+                    Content = $"{member.FullName} souhaite rejoindre le groupe {group?.Name ?? ""}.\n\n« {req.Reason} »",
                     SenderName = member.FullName,
                     ConversationId = Guid.Empty,
                     MessageType = "JoinRequest",

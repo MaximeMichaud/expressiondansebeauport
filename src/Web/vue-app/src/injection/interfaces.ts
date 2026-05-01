@@ -185,7 +185,7 @@ export interface ISocialService {
   deleteMember(id: string): Promise<SucceededOrNotResponse>
   promoteMember(id: string): Promise<SucceededOrNotResponse>
   demoteMember(id: string): Promise<SucceededOrNotResponse>
-  requestJoinGroup(groupId: string): Promise<any>
+  requestJoinGroup(groupId: string, reason: string): Promise<any>
   acceptJoinRequest(joinRequestId: string): Promise<SucceededOrNotResponse>
   rejectJoinRequest(joinRequestId: string): Promise<SucceededOrNotResponse>
   getMyJoinRequest(groupId: string): Promise<any>

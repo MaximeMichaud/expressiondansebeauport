@@ -1,7 +1,9 @@
 <template>
   <div :class="['soc', isDarkMode && 'soc--dark', isMessagesRoute && 'soc--messages']" data-social>
-    <!-- Theme toggle (fixed, top-right) -->
-    <button @click="toggleTheme" class="soc-theme-toggle" :title="isDarkMode ? 'Mode clair' : 'Mode sombre'">
+    <!-- Theme toggle (fixed, top-right) — only shown on non-auth pages.
+         Authenticated users get an inline toggle inside the header to avoid
+         overlap with the right-side nav at narrow desktop widths. -->
+    <button v-if="!isAuthenticated" @click="toggleTheme" class="soc-theme-toggle" :title="isDarkMode ? 'Mode clair' : 'Mode sombre'">
       <svg v-if="isDarkMode" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
     </button>
@@ -45,6 +47,10 @@
             </svg>
             <span v-if="unreadCount > 0" class="soc-header__notif">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
           </router-link>
+          <button @click="toggleTheme" class="soc-header__icon-btn soc-header__icon-btn--theme" :title="isDarkMode ? 'Mode clair' : 'Mode sombre'">
+            <svg v-if="isDarkMode" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          </button>
           <button @click="handleLogout" class="soc-header__icon-btn soc-header__icon-btn--logout" title="Se déconnecter">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
@@ -88,14 +94,6 @@
           <component :is="tab.icon" class="soc-header__nav-icon" />
           <span>{{ tab.label }}</span>
         </router-link>
-        <button
-          class="soc-header__mobile-item"
-          @click="toggleTheme(); isMenuOpen = false"
-        >
-          <svg v-if="isDarkMode" class="soc-header__nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-          <svg v-else class="soc-header__nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-          <span>{{ isDarkMode ? 'Mode clair' : 'Mode sombre' }}</span>
-        </button>
         <button
           class="soc-header__mobile-item soc-header__mobile-item--logout"
           @click="isMenuOpen = false; handleLogout()"
@@ -763,6 +761,13 @@ $soc-font-body: 'Karla', sans-serif;
   .soc-main { border-left: 1px solid var(--soc-content-border); border-right: 1px solid var(--soc-content-border); }
 }
 
+@media (max-width: 47.99em) {
+  .soc-main { margin: 0; max-width: none; border-radius: 0; }
+  .soc-above-main { padding: 0; max-width: none; }
+  .soc-header__strip { border-radius: 0; }
+  .soc-header__mobile-wrap { border-radius: 0; }
+}
+
 .soc-loader {
   display: flex;
   align-items: center;
@@ -795,7 +800,7 @@ $soc-font-body: 'Karla', sans-serif;
     flex: 1 1 0;
     min-height: 0;
     overflow: hidden;
-    border-radius: 12px 12px 0 0;
+    border-radius: 0;
   }
 }
 

@@ -15,6 +15,17 @@ using Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+const long MaxUploadBytes = 2L * 1024 * 1024 * 1024; // 2 GB
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = MaxUploadBytes;
+});
+
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = MaxUploadBytes;
+});
 
 builder.Services
     .AddApplicationServices(builder.Configuration)
@@ -63,7 +74,8 @@ builder.Services.AddCors(options =>
                     .Select(c => c.Value)
                     .ToArray()!)
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .AllowCredentials();
         });
 });
 

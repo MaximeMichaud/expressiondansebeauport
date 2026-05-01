@@ -70,18 +70,11 @@ public class LoginEndpoint : EndpointWithSanitizedRequest<LoginRequest, Succeede
 
     private async Task CreateAccessAndRefreshTokenForUser(User user)
     {
-        HttpContext.Response.SetCookieValue(
-            CookieName.ACCESS,
+        HttpContext.Response.IssueAuthCookies(
             _authenticationService.CreateJwtAccessToken(user),
-            _cookieSettings.Domain,
-            _cookieSettings.Secure,
-            false);
-
-        HttpContext.Response.SetCookieValue(
-            CookieName.REFRESH,
             await _authenticationService.CreateRefreshToken(user),
             _cookieSettings.Domain,
             _cookieSettings.Secure,
-            true);
+            TimeSpan.FromDays(_cookieSettings.MaxAgeDays));
     }
 }

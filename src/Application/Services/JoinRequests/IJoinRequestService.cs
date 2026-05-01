@@ -4,7 +4,7 @@ namespace Application.Services.JoinRequests;
 
 public interface IJoinRequestService
 {
-    Task<JoinRequest> CreateRequest(Guid groupId, Guid requesterMemberId);
+    Task<JoinRequest> CreateRequest(Guid groupId, Guid requesterMemberId, string reason);
     Task AcceptRequest(Guid joinRequestId, Guid professorMemberId);
     Task RejectRequest(Guid joinRequestId, Guid professorMemberId);
     Task<JoinRequest?> GetPendingRequest(Guid groupId, Guid memberId);

@@ -10,6 +10,7 @@ public class JoinRequest : Entity
     public Group Group { get; private set; } = null!;
     public Guid RequesterMemberId { get; private set; }
     public Member RequesterMember { get; private set; } = null!;
+    public string Reason { get; private set; } = string.Empty;
     public JoinRequestStatus Status { get; private set; }
     public Guid? ResolvedByMemberId { get; private set; }
     public Member? ResolvedByMember { get; private set; }
@@ -22,6 +23,7 @@ public class JoinRequest : Entity
     public void SetGroupId(Guid groupId) => GroupId = groupId;
     public void SetRequesterMember(Member member) { RequesterMember = member; RequesterMemberId = member.Id; }
     public void SetRequesterMemberId(Guid memberId) => RequesterMemberId = memberId;
+    public void SetReason(string reason) => Reason = reason;
     public void SetStatus(JoinRequestStatus status) => Status = status;
     public void SetResolvedByMember(Member member) { ResolvedByMember = member; ResolvedByMemberId = member.Id; }
     public void SetResolvedAt(Instant resolvedAt) => ResolvedAt = resolvedAt;

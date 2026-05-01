@@ -20,6 +20,8 @@ public abstract class NotificationModel
         Attachments = attachments ?? new List<AttachmentDto>();
     }
 
-    public abstract string TemplateId();
-    public abstract object TemplateData();
+    public virtual string TemplateId() => string.Empty;
+    public virtual object TemplateData() => new { };
+    public virtual string? Subject() => null;
+    public virtual string? HtmlBody() => null;
 }

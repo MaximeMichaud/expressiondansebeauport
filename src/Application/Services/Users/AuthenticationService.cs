@@ -6,9 +6,11 @@ using Application.Settings;
 using Domain.Authentication;
 using Domain.Entities.Authentication;
 using Domain.Entities.Identity;
+using Domain.Helpers;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using NodaTime;
 
 namespace Application.Services.Users;
 
@@ -88,7 +90,8 @@ public class AuthenticationService : IAuthenticationService
         if (user == null)
             throw new UserNotFoundException("Can't refresh token for null user.");
 
-        var refreshToken = new RefreshToken(user, await GenerateUniqueToken());
+        var expiresAt = InstantHelper.GetLocalNow().Plus(Duration.FromDays(_jwtTokenSettings.RefreshTokenExpiryDays));
+        var refreshToken = new RefreshToken(user, await GenerateUniqueToken(), expiresAt);
         await _refreshTokenRepository.Create(refreshToken);
 
         return refreshToken.Token;

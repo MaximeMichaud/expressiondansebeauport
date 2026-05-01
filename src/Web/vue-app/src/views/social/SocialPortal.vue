@@ -341,14 +341,27 @@
                 >
                   Demander à rejoindre
                 </button>
-                <button
-                  v-else
-                  @click="requestToJoin"
-                  :disabled="requestingJoin"
-                  class="portal-modal__btn portal-modal__btn--primary w-full"
-                >
-                  {{ requestingJoin ? 'Envoi...' : 'Demander à rejoindre' }}
-                </button>
+                <template v-else>
+                  <label for="joinReason" class="portal-modal__label">
+                    Pourquoi voulez-vous rejoindre ce groupe ?
+                  </label>
+                  <textarea
+                    id="joinReason"
+                    v-model="joinModalReason"
+                    rows="3"
+                    maxlength="200"
+                    class="portal-modal__textarea"
+                    placeholder="Ex.: Je suis le parent de [nom de l'enfant], élève au studio."
+                  ></textarea>
+                  <div class="portal-modal__counter">{{ joinModalReason.length }} / 200</div>
+                  <button
+                    @click="requestToJoin"
+                    :disabled="!joinModalReason.trim() || requestingJoin"
+                    class="portal-modal__btn portal-modal__btn--primary w-full"
+                  >
+                    {{ requestingJoin ? 'Envoi...' : 'Demander à rejoindre' }}
+                  </button>
+                </template>
 
                 <div v-if="joinModalError" class="portal-modal__error" style="margin-top: 16px;">{{ joinModalError }}</div>
 
@@ -509,6 +522,7 @@ async function createGroup() {
 const showJoinModal = ref(false)
 const joinModalGroup = ref<Group | null>(null)
 const joinModalCode = ref('')
+const joinModalReason = ref('')
 const joinModalError = ref('')
 const joiningFromModal = ref(false)
 const joinModalMode = ref<'choice' | 'code'>('choice')
@@ -524,6 +538,7 @@ async function onGroupClick(group: Group) {
 
   joinModalGroup.value = group
   joinModalCode.value = ''
+  joinModalReason.value = ''
   joinModalError.value = ''
   joinModalMode.value = 'choice'
   pendingJoinRequestId.value = null
@@ -543,6 +558,7 @@ function closeJoinModal() {
   showJoinModal.value = false
   joinModalGroup.value = null
   joinModalCode.value = ''
+  joinModalReason.value = ''
   joinModalError.value = ''
   joinModalMode.value = 'choice'
   pendingJoinRequestId.value = null
@@ -570,10 +586,12 @@ async function joinFromModal() {
 
 async function requestToJoin() {
   if (!joinModalGroup.value) return
+  const reason = joinModalReason.value.trim()
+  if (!reason) return
   requestingJoin.value = true
   joinModalError.value = ''
   try {
-    const result = await socialService.requestJoinGroup(joinModalGroup.value.id)
+    const result = await socialService.requestJoinGroup(joinModalGroup.value.id, reason)
     if (result?.succeeded) {
       closeJoinModal()
       toast.success('Demande envoyée!')
@@ -814,6 +832,40 @@ $portal-font-display: 'Montserrat', sans-serif;
 
   &__input:focus {
     border-color: var(--soc-bar-text-strong, #1a1a1a);
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--soc-bar-text-strong, #1a1a1a);
+    margin-bottom: 8px;
+    text-align: left;
+  }
+
+  &__textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: $portal-font-display;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    border: 1px solid var(--soc-border, #e7e0da);
+    border-radius: 10px;
+    background: var(--soc-input-bg, #faf9f7);
+    color: var(--soc-bar-text-strong, #1a1a1a);
+    outline: none;
+    resize: vertical;
+    min-height: 72px;
+    &:focus { border-color: var(--soc-bar-text-strong, #1a1a1a); }
+    &::placeholder { color: #a8a29e; }
+  }
+
+  &__counter {
+    font-size: 0.72rem;
+    color: var(--soc-text-muted, #78716c);
+    text-align: right;
+    margin-top: 4px;
+    margin-bottom: 16px;
   }
 }
 

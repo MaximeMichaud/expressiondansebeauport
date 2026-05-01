@@ -153,12 +153,22 @@ public static class ConfigureServices
                 {
                     OnMessageReceived = context =>
                     {
-                        var accessToken = context.Request.Query["access_token"];
                         var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                        var queryToken = context.Request.Query["access_token"];
+                        if (!string.IsNullOrEmpty(queryToken) && path.StartsWithSegments("/hubs"))
                         {
-                            context.Token = accessToken;
+                            context.Token = queryToken;
+                            return Task.CompletedTask;
                         }
+
+                        var hasAuthHeader = context.Request.Headers.ContainsKey("Authorization")
+                            && !string.IsNullOrWhiteSpace(context.Request.Headers["Authorization"]);
+                        if (!hasAuthHeader && context.Request.Cookies.TryGetValue("accessToken", out var cookieToken)
+                            && !string.IsNullOrWhiteSpace(cookieToken))
+                        {
+                            context.Token = cookieToken;
+                        }
+
                         return Task.CompletedTask;
                     }
                 };

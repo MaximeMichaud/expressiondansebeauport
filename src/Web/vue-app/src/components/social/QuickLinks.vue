@@ -1,5 +1,5 @@
 <template>
-  <div v-if="hasAnyLink" class="rounded-xl overflow-hidden bg-white">
+  <div v-if="hasAnyLink" class="ql-card rounded-xl overflow-hidden bg-white">
     <!-- Footer-style inline links -->
     <div v-if="mainSiteUrl || phone || email" class="ql-strip" :class="{ 'ql-strip--bordered': profEntries.length }">
       <a v-if="phone" :href="phoneHref" class="ql-link">
@@ -165,6 +165,10 @@ onMounted(async () => {
 }
 .ql-link:hover {
   color: var(--soc-bar-text-strong, #1a1a1a);
+}
+
+@media (max-width: 47.99em) {
+  .ql-card { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 }
 
 .quick-row {

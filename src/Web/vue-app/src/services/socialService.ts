@@ -340,8 +340,8 @@ export class SocialService extends ApiService {
   }
 
   // === Join Requests ===
-  async requestJoinGroup(groupId: string): Promise<any> {
-    const response = await this._httpClient.post(`${API}/social/groups/${groupId}/join-requests`, {}, this.headersWithJsonContentType())
+  async requestJoinGroup(groupId: string, reason: string): Promise<any> {
+    const response = await this._httpClient.post(`${API}/social/groups/${groupId}/join-requests`, { reason }, this.headersWithJsonContentType())
     return toCamel(response.data)
   }
 

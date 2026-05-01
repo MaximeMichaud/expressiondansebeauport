@@ -6,4 +6,5 @@ public class JwtTokenSettings
     public string Issuer { get; set; } = null!;
     public string Audience { get; set; } = null!;
     public int TokenExpiry { get; set; }
+    public int RefreshTokenExpiryDays { get; set; } = 90;
 }

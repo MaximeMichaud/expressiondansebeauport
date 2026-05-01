@@ -61,6 +61,7 @@
             :join-request-id="msg.joinRequest.id"
             :group-name="msg.joinRequest.groupName"
             :requester-name="msg.joinRequest.requesterName"
+            :reason="msg.joinRequest.reason"
             :status="msg.joinRequest.status"
             :resolved-by-name="msg.joinRequest.resolvedByName"
             :is-mine="msg.isMine"
@@ -291,6 +292,7 @@ interface ChatMessage {
     groupName: string
     requesterMemberId: string
     requesterName: string
+    reason?: string
     status: 'Pending' | 'Accepted' | 'Rejected'
     resolvedByName?: string
   }
