@@ -3,6 +3,9 @@
     <!-- Quick links block -->
     <QuickLinks />
 
+    <!-- Section separator (page bg) -->
+    <div class="section-gap"></div>
+
     <!-- Header -->
     <div class="mb-4 flex items-center justify-between">
       <h2 class="text-lg font-bold text-gray-900">Annonces</h2>
@@ -428,6 +431,12 @@ onUnmounted(() => {
 
 <style lang="scss">
 $ann-font-display: 'Montserrat', sans-serif;
+
+.section-gap {
+  height: 24px;
+  margin: 24px -1rem;
+  background: var(--soc-page-bg);
+}
 
 .ann-modal {
   &__overlay {
