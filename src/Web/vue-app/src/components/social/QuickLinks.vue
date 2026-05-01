@@ -1,24 +1,23 @@
 <template>
   <div v-if="hasAnyLink" class="mb-4 rounded-xl border border-gray-200 overflow-hidden bg-white">
-    <!-- Compact icon row -->
-    <div v-if="mainSiteUrl || phone || email" class="flex items-center gap-2 p-3" :class="{ 'border-b border-gray-100': profEntries.length }">
-      <a v-if="mainSiteUrl" :href="mainSiteUrl" target="_blank" rel="noopener noreferrer" class="quick-icon" title="Site principal">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="2" y1="12" x2="22" y2="12"/>
-          <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
-        </svg>
+    <!-- Footer-style inline links -->
+    <div v-if="mainSiteUrl || phone || email" class="ql-strip" :class="{ 'ql-strip--bordered': profEntries.length }">
+      <a v-if="mainSiteUrl" :href="mainSiteUrl" target="_blank" rel="noopener noreferrer" class="ql-link">
+        Site principal
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
       </a>
-      <a v-if="phone" :href="phoneHref" class="quick-icon" :title="phone">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <a v-if="phone" :href="phoneHref" class="ql-link">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
         </svg>
+        {{ phone }}
       </a>
-      <a v-if="email" :href="'mailto:' + email" class="quick-icon" :title="email">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <a v-if="email" :href="'mailto:' + email" class="ql-link">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
           <polyline points="22,6 12,13 2,6"/>
         </svg>
+        {{ email }}
       </a>
     </div>
 
@@ -140,20 +139,31 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.quick-icon {
+.ql-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  font-size: 0.78rem;
+  color: var(--soc-bar-text, #78716c);
+}
+.ql-strip--bordered {
+  border-bottom: 1px solid var(--soc-divider, #f0f0f0);
+}
+.ql-link {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--soc-bar-hover, #f5f3f0);
-  color: var(--soc-bar-text-strong, #1a1a1a);
-  transition: background 0.15s, color 0.15s;
+  gap: 5px;
+  color: var(--soc-bar-text, #78716c);
+  text-decoration: none;
+  font-weight: 500;
   cursor: pointer;
+  transition: color 0.15s;
+  white-space: nowrap;
 }
-.quick-icon:hover {
-  background: var(--soc-bar-active, #eae8e4);
+.ql-link:hover {
+  color: var(--soc-bar-text-strong, #1a1a1a);
 }
 
 .quick-row {

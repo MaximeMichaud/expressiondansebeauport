@@ -125,23 +125,6 @@
       </RouterView>
     </main>
 
-    <!-- Footer -->
-    <footer v-if="isAuthenticated" class="soc-footer">
-      <div class="soc-footer__strip">
-        <div class="soc-footer__left">
-          <span class="soc-footer__brand">EDB Social</span>
-          <span class="soc-footer__sub">Expression Danse de Beauport</span>
-        </div>
-        <div class="soc-footer__right">
-          <a :href="mainSiteUrl" class="soc-footer__link">
-            Site principal
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-          </a>
-          <a href="tel:4186666158" class="soc-footer__link">418-666-6158</a>
-        </div>
-      </div>
-    </footer>
-
     <!-- Toasts -->
     <Teleport to="body">
       <TransitionGroup name="soc-toast" tag="div" class="soc-toast-container">
@@ -312,8 +295,6 @@ const isMessagesRoute = computed(() => {
     || name === 'socialGroup'
 })
 
-const mainSiteUrl = computed(() => '/')
-
 const IconBell = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('path', { d: 'M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9' }), h('path', { d: 'M13.73 21a2 2 0 01-3.46 0' })]) }
 const IconGrid = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('rect', { x: '3', y: '3', width: '7', height: '7', rx: '1' }), h('rect', { x: '14', y: '3', width: '7', height: '7', rx: '1' }), h('rect', { x: '3', y: '14', width: '7', height: '7', rx: '1' }), h('rect', { x: '14', y: '14', width: '7', height: '7', rx: '1' })]) }
 const IconUsers = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('path', { d: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2' }), h('circle', { cx: '9', cy: '7', r: '4' }), h('path', { d: 'M23 21v-2a4 4 0 00-3-3.87' }), h('path', { d: 'M16 3.13a4 4 0 010 7.75' })]) }
@@ -382,7 +363,6 @@ $soc-font-body: 'Karla', sans-serif;
   --soc-avatar-bg: #{$soc-black};
   --soc-avatar-text: white;
   --soc-ham-color: #{$soc-text};
-  --soc-footer-sub: #{$soc-text-muted};
   --soc-input-bg: #faf9f7;
   --soc-input-border: #{$soc-border};
   --soc-card-bg: white;
@@ -410,7 +390,6 @@ $soc-font-body: 'Karla', sans-serif;
     --soc-avatar-bg: #3a3836;
     --soc-avatar-text: #e7e5e4;
     --soc-ham-color: rgba(255,255,255,0.6);
-    --soc-footer-sub: rgba(255,255,255,0.35);
     --soc-input-bg: rgba(255,255,255,0.06);
     --soc-input-border: rgba(255,255,255,0.12);
     --soc-card-bg: #222120;
@@ -791,78 +770,12 @@ $soc-font-body: 'Karla', sans-serif;
 
 @keyframes soc-spin { to { transform: rotate(360deg); } }
 
-.soc-footer {
-  margin-top: auto;
-
-  &__strip {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    max-width: 960px;
-    margin: 16px auto 0;
-    padding: 16px 24px;
-    background: var(--soc-bar-bg);
-    border-radius: 14px 14px 0 0;
-    color: var(--soc-bar-text);
-    font-size: 0.72rem;
-    box-shadow: 0 -1px 3px rgba(0,0,0,0.03);
-    transition: background 0.25s, color 0.25s;
-  }
-
-  &__left {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  &__brand {
-    font-family: $soc-font-display;
-    font-weight: 700;
-    font-size: 0.8rem;
-    color: var(--soc-bar-text-strong);
-    letter-spacing: -0.01em;
-    transition: color 0.25s;
-  }
-
-  &__sub {
-    color: var(--soc-footer-sub);
-    transition: color 0.25s;
-  }
-
-  &__right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  &__link {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    color: var(--soc-bar-text);
-    text-decoration: none;
-    font-weight: 500;
-    cursor: pointer;
-    transition: color 0.15s;
-    white-space: nowrap;
-    &:hover { color: var(--soc-bar-text-strong); }
-  }
-}
-
 @media (max-width: 47.99em) {
-  .soc-footer__strip {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    border-radius: 0;
-  }
-  .soc-footer__right { gap: 12px; }
   .soc-theme-toggle { display: none; }
   .soc-header__profile-btn { display: none; }
   .soc-header .soc-header__icon-btn--logout { display: none; }
 
-  // On messages pages: lock to viewport so only the messages scroll, hide footer
+  // On messages pages: lock to viewport so only the messages scroll
   .soc.soc--messages {
     height: 100vh;
     min-height: 100vh;
@@ -874,7 +787,6 @@ $soc-font-body: 'Karla', sans-serif;
     overflow: hidden;
     border-radius: 12px 12px 0 0;
   }
-  .soc-footer { display: none; }
 }
 
 // Desktop: on messages/announcements/groups routes, lock the layout so only
@@ -1149,10 +1061,15 @@ body.soc--dark {
   }
 
   .portal-modal__input,
+  .portal-modal__textarea,
   .ann-modal__input,
   .mp-modal__input {
     background: rgba(255, 255, 255, 0.06) !important;
     border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #e7e5e4 !important;
+  }
+
+  .portal-modal__label {
     color: #e7e5e4 !important;
   }
 }
