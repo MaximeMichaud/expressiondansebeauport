@@ -739,7 +739,7 @@ $soc-font-body: 'Karla', sans-serif;
   min-height: 0;
   width: 100%;
   max-width: 720px;
-  margin: 16px auto 0;
+  margin: 16px auto;
   background: var(--soc-content-bg);
   border-radius: 12px;
   transition: background 0.3s;
