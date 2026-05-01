@@ -73,7 +73,8 @@ public static class ConfigureServices
     {
         services.AddSingleton<IHttpContextUserService, HttpContextUserService>();
 
-        services.AddScoped<IImageProcessor, SkiaSharpImageProcessor>();
+        services.AddScoped<IImageProcessor, VipsImageProcessor>();
+        services.AddSingleton<IImageVariantGenerator, VipsImageVariantGenerator>();
 
         services.AddScoped<IAdministratorRepository, AdministratorRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
