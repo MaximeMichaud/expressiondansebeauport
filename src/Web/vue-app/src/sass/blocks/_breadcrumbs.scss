@@ -1,28 +1,38 @@
 @use "../tools" as *;
 .breadcrumbs {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
   gap: 8px;
   font-size: rem(14);
   margin-bottom: 8px;
+  color: $color-grey-medium;
 
-  &__breadcrumb {
-    color: $color-grey-medium;
+  &__list {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 
-    a {
-      @include colorHover(var(--primary));
-    }
+  &__item {
+    display: flex;
+    align-items: center;
 
     &::after {
       content: "/";
       margin-left: 8px;
+      color: rgba($color-grey-medium, 0.55);
+    }
+
+    &:last-child::after {
+      content: none;
     }
   }
 
-  &__active {
+  &__link {
+    @include colorHover(var(--primary));
+  }
+
+  &__label {
+    color: $color-grey-darker;
     font-weight: 700;
   }
 }

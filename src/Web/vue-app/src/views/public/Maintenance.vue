@@ -1,6 +1,7 @@
 <template>
   <div class="error-page">
     <div class="error-page__container">
+      <Breadcrumbs :items="breadcrumbs" class="error-page__breadcrumbs" />
       <p class="error-page__code">503</p>
       <h1 class="error-page__title">{{ t('public.maintenance.title') }}</h1>
       <p class="error-page__message">{{ message }}</p>
@@ -10,12 +11,18 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue"
+import { computed, ref, onMounted } from "vue"
 import { useI18n } from "vue-i18n"
 import axios from "axios"
+import Breadcrumbs from "@/components/layouts/items/Breadcrumbs.vue"
+import type {BreadcrumbItem} from "@/types/entities"
 
 const { t } = useI18n()
 const message = ref(t('public.maintenance.defaultMessage'))
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+  { label: t('routes.home.name'), url: '/', isCurrent: false },
+  { label: t('public.maintenance.title'), isCurrent: true }
+])
 
 onMounted(async () => {
   try {
@@ -41,6 +48,14 @@ onMounted(async () => {
 
 .error-page__container {
   max-width: 480px;
+}
+
+.error-page__breadcrumbs {
+  margin-bottom: 1.5rem;
+}
+
+.error-page__breadcrumbs :deep(.breadcrumbs__list) {
+  justify-content: center;
 }
 
 .error-page__code {

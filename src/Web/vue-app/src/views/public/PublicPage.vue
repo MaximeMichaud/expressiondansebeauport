@@ -4,6 +4,7 @@
     class="public-page">
     <component :is="'style'" v-if="page.customCss">{{ page.customCss }}</component>
     <div class="public-page__container">
+      <Breadcrumbs :items="page.breadcrumbs || []" class="public-page__breadcrumbs" />
       <h1 class="public-page__title">{{ page.title }}</h1>
       <template v-if="page.contentMode === 'blocks'">
         <PageBlocksRenderer :blocks="parsedBlocks" />
@@ -16,6 +17,7 @@
   </div>
   <div v-else class="public-page public-page--not-found">
     <div class="public-page__container">
+      <Breadcrumbs :items="notFoundBreadcrumbs" class="public-page__breadcrumbs" />
       <h1>{{ t('public.page.notFound') }}</h1>
       <p>{{ t('public.page.notFoundMessage') }}</p>
       <RouterLink :to="{ name: 'home' }" class="btn btn--primary">{{ t('public.page.backHome') }}</RouterLink>
@@ -29,19 +31,52 @@ import {useRoute} from "vue-router"
 import {useI18n} from "vue-i18n"
 import {useHead} from "@unhead/vue"
 import axios from "axios"
-import {Page} from "@/types/entities"
+import type {BreadcrumbItem, Page} from "@/types/entities"
 import type {PageBlock} from "@/types/entities/pageBlock"
 import Loader from "@/components/layouts/items/Loader.vue"
 import PageBlocksRenderer from "@/components/blocks/PageBlocksRenderer.vue"
+import Breadcrumbs from "@/components/layouts/items/Breadcrumbs.vue"
 
 const {t} = useI18n()
 const route = useRoute()
 const pageTitle = ref('')
 
-useHead({title: pageTitle})
-
 const page = ref<Page | null>(null)
 const isLoading = ref(true)
+const notFoundBreadcrumbs = computed<BreadcrumbItem[]>(() => [
+  { label: t('routes.home.name'), url: '/', isCurrent: false },
+  { label: t('public.page.notFound'), isCurrent: true }
+])
+
+const breadcrumbStructuredData = computed(() => {
+  const items = (page.value?.breadcrumbs ?? []).filter(isStructuredBreadcrumb)
+  if (items.length <= 1)
+    return null
+
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@id": item.absoluteUrl,
+        name: item.label
+      }
+    }))
+  })
+})
+
+useHead(computed(() => ({
+  title: pageTitle.value,
+  script: breadcrumbStructuredData.value
+    ? [{
+      id: "breadcrumb-json-ld",
+      type: "application/ld+json",
+      textContent: breadcrumbStructuredData.value
+    }]
+    : []
+})))
 
 const parsedBlocks = computed<PageBlock[]>(() => {
   if (!page.value?.blocks) return []
@@ -59,6 +94,10 @@ async function loadPage(slug: string) {
     pageTitle.value = ''
   }
   isLoading.value = false
+}
+
+function isStructuredBreadcrumb(item: BreadcrumbItem): item is BreadcrumbItem & { label: string; absoluteUrl: string } {
+  return !!item.label && !!item.absoluteUrl && item.absoluteUrl.startsWith('http')
 }
 
 watch(() => route.params.slug, (newSlug) => {
@@ -107,6 +146,14 @@ watch(() => route.params.slug, (newSlug) => {
   margin-bottom: 2rem;
   color: var(--color-primary, #be1e2c);
   text-align: center;
+}
+
+.public-page__breadcrumbs {
+  margin-bottom: 1.25rem;
+}
+
+.public-page__breadcrumbs .breadcrumbs__list {
+  justify-content: center;
 }
 
 .public-page__content :deep(h2) {

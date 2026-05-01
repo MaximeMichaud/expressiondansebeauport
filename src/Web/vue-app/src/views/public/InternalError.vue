@@ -1,6 +1,7 @@
 <template>
   <div class="error-page">
     <div class="error-page__container">
+      <Breadcrumbs :items="breadcrumbs" class="error-page__breadcrumbs" />
       <p class="error-page__code">500</p>
       <h1 class="error-page__title">{{ t('public.page.serverError') }}</h1>
       <p class="error-page__message">{{ t('public.page.serverErrorMessage') }}</p>
@@ -17,11 +18,19 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue"
 import { useI18n } from "vue-i18n"
 import { useRouter } from "vue-router"
+import Breadcrumbs from "@/components/layouts/items/Breadcrumbs.vue"
+import type {BreadcrumbItem} from "@/types/entities"
 
 const { t } = useI18n()
 const router = useRouter()
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+  { label: t('routes.home.name'), url: '/', isCurrent: false },
+  { label: t('public.page.serverError'), isCurrent: true }
+])
 
 function retry() {
   router.go(-1)
@@ -40,6 +49,14 @@ function retry() {
 
 .error-page__container {
   max-width: 480px;
+}
+
+.error-page__breadcrumbs {
+  margin-bottom: 1.5rem;
+}
+
+.error-page__breadcrumbs :deep(.breadcrumbs__list) {
+  justify-content: center;
 }
 
 .error-page__code {
@@ -101,4 +118,3 @@ function retry() {
   color: #fff;
 }
 </style>
-

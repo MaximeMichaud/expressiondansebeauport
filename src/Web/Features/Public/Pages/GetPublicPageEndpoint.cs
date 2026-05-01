@@ -2,6 +2,7 @@ using Domain.Entities;
 using Domain.Repositories;
 using FastEndpoints;
 using Web.Dtos;
+using Web.Features.Public.Breadcrumbs;
 using IMapper = AutoMapper.IMapper;
 
 namespace Web.Features.Public.Pages;
@@ -14,11 +15,16 @@ public class GetPublicPageRequest
 public class GetPublicPageEndpoint : Endpoint<GetPublicPageRequest, PageDto>
 {
     private readonly IPageRepository _pageRepository;
+    private readonly IBreadcrumbService _breadcrumbService;
     private readonly IMapper _mapper;
 
-    public GetPublicPageEndpoint(IPageRepository pageRepository, IMapper mapper)
+    public GetPublicPageEndpoint(
+        IPageRepository pageRepository,
+        IBreadcrumbService breadcrumbService,
+        IMapper mapper)
     {
         _pageRepository = pageRepository;
+        _breadcrumbService = breadcrumbService;
         _mapper = mapper;
     }
 
@@ -37,6 +43,10 @@ public class GetPublicPageEndpoint : Endpoint<GetPublicPageRequest, PageDto>
             await Send.NotFoundAsync(ct);
             return;
         }
-        await Send.OkAsync(_mapper.Map<PageDto>(page), cancellation: ct);
+
+        var dto = _mapper.Map<PageDto>(page);
+        dto.Breadcrumbs = _breadcrumbService.GetForPage(page).ToList();
+
+        await Send.OkAsync(dto, cancellation: ct);
     }
 }
