@@ -3,9 +3,6 @@
     <!-- Quick links block -->
     <QuickLinks class="quicklinks-card" />
 
-    <!-- Section separator (page bg) -->
-    <div class="section-gap"></div>
-
     <!-- Annonces section (own rounded card) -->
     <div class="annonces-card rounded-xl bg-white p-4">
     <!-- Header -->
@@ -436,13 +433,8 @@ onUnmounted(() => {
 <style lang="scss">
 $ann-font-display: 'Montserrat', sans-serif;
 
-.section-gap {
-  height: 24px;
-  margin: 0 -1rem;
-  background: var(--soc-page-bg);
-}
 .quicklinks-card {
-  margin: -1rem -1rem 0;
+  margin: -1rem -1rem 24px;
 }
 .annonces-card {
   margin: 0 -1rem -1rem;
