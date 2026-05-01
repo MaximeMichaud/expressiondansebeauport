@@ -181,6 +181,10 @@ onMounted(async () => {
   cursor: pointer;
   transition: background 0.15s;
 }
+.quick-row:last-child {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
 .quick-row:hover {
   background: var(--soc-bar-hover, #f9fafb);
 }
