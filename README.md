@@ -176,6 +176,12 @@ Un `Instant` représente un moment dans le temps, toujours en UTC. `InstantHelpe
 
 Lors du parsing d'une chaîne vers un Instant, la date est conservée telle quelle mais sauvegardée en UTC en base de données.
 
+## VARIABLES D'ENVIRONNEMENT DE PRODUCTION
+
+Ajouter au fichier `.env` du serveur de prod :
+
+- `VAPID_PRIVATE_KEY` — clé privée VAPID pour les notifications push (générée une fois, jamais committée)
+
 ## LICENCE
 
 Ce projet est développé dans le cadre du cours Projet intégrateur au Cégep Garneau.
