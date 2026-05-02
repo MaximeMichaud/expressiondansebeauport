@@ -68,6 +68,11 @@ public class GarneauTemplateDbContext : IdentityDbContext<User, Role, Guid,
     public DbSet<JoinRequest> JoinRequests { get; set; } = null!;
     public DbSet<EmailConfirmationCode> EmailConfirmationCodes { get; set; } = null!;
 
+    // Push notification entities
+    public DbSet<PushSubscription> PushSubscriptions { get; set; } = null!;
+    public DbSet<UserNotificationPreferences> UserNotificationPreferences { get; set; } = null!;
+    public DbSet<UserGroupNotificationPreferences> UserGroupNotificationPreferences { get; set; } = null!;
+
     public GarneauTemplateDbContext()
     {
     }
