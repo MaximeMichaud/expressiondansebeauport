@@ -31,19 +31,20 @@ self.addEventListener('push', (event) => {
   }
 
   event.waitUntil((async () => {
+    const targetUrl = payload.url ?? '/social'
     const allClients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
-    const visible = allClients.some((c) => {
+    const alreadyOpenAndFocused = allClients.some((c) => {
       const wc = c as WindowClient
-      return wc.visibilityState === 'visible' && wc.focused
+      return wc.visibilityState === 'visible' && wc.focused && wc.url.includes(targetUrl)
     })
-    if (visible) return
+    if (alreadyOpenAndFocused) return
 
     await self.registration.showNotification(payload.title, {
       body: payload.body,
       icon: '/icons/192.png',
       badge: '/icons/badge.png',
       tag: payload.tag,
-      data: { url: payload.url ?? '/social' }
+      data: { url: targetUrl }
     })
   })())
 })
@@ -59,6 +60,57 @@ self.addEventListener('notificationclick', (event) => {
       await (existing as WindowClient).focus()
     } else {
       await self.clients.openWindow(url)
+    }
+  })())
+})
+
+// @ts-expect-error pushsubscriptionchange is not in stock TS lib types
+self.addEventListener('pushsubscriptionchange', (event: ExtendableEvent) => {
+  // Browsers can silently rotate the push endpoint (rare, but happens).
+  // Re-subscribe and POST the new subscription to the backend.
+  event.waitUntil((async () => {
+    try {
+      const reg = self.registration
+      // Need the same applicationServerKey we originally used. The browser doesn't expose it here,
+      // so we fetch it from our backend.
+      const keyRes = await fetch('/api/social/push/vapid-public-key', { credentials: 'include' })
+      if (!keyRes.ok) return
+      const { publicKey } = await keyRes.json() as { publicKey: string }
+
+      const padding = '='.repeat((4 - publicKey.length % 4) % 4)
+      const base64 = (publicKey + padding).replace(/-/g, '+').replace(/_/g, '/')
+      const rawData = atob(base64)
+      const appServerKey = new Uint8Array(rawData.length)
+      for (let i = 0; i < rawData.length; i++) appServerKey[i] = rawData.charCodeAt(i)
+
+      const newSub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: appServerKey
+      })
+
+      const p256 = newSub.getKey('p256dh')
+      const auth = newSub.getKey('auth')
+      if (!p256 || !auth) return
+
+      const toBase64Url = (buf: ArrayBuffer) => {
+        let s = ''
+        const bytes = new Uint8Array(buf)
+        for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i])
+        return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+      }
+
+      await fetch('/api/social/push/subscriptions', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          endpoint: newSub.endpoint,
+          p256dh: toBase64Url(p256),
+          auth: toBase64Url(auth)
+        })
+      })
+    } catch {
+      // Silent fail — user will need to re-subscribe manually if this fails.
     }
   })())
 })

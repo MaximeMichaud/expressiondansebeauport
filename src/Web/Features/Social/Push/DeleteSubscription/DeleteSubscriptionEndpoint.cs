@@ -1,3 +1,4 @@
+using Application.Interfaces.Services.Users;
 using Domain.Common;
 using Domain.Repositories;
 using FastEndpoints;
@@ -13,8 +14,13 @@ public class DeleteSubscriptionRequest
 public class DeleteSubscriptionEndpoint : Endpoint<DeleteSubscriptionRequest, SucceededOrNotResponse>
 {
     private readonly IPushSubscriptionRepository _subRepo;
+    private readonly IAuthenticatedUserService _authUser;
 
-    public DeleteSubscriptionEndpoint(IPushSubscriptionRepository subRepo) => _subRepo = subRepo;
+    public DeleteSubscriptionEndpoint(IPushSubscriptionRepository subRepo, IAuthenticatedUserService authUser)
+    {
+        _subRepo = subRepo;
+        _authUser = authUser;
+    }
 
     public override void Configure()
     {
@@ -25,7 +31,12 @@ public class DeleteSubscriptionEndpoint : Endpoint<DeleteSubscriptionRequest, Su
 
     public override async Task HandleAsync(DeleteSubscriptionRequest req, CancellationToken ct)
     {
-        await _subRepo.DeleteByEndpoint(req.Endpoint);
+        var user = _authUser.GetAuthenticatedUser()!;
+        var existing = await _subRepo.FindByEndpoint(req.Endpoint);
+        if (existing != null && existing.UserId == user.Id)
+        {
+            await _subRepo.DeleteByEndpoint(req.Endpoint);
+        }
         await Send.OkAsync(new SucceededOrNotResponse(true), ct);
     }
 }

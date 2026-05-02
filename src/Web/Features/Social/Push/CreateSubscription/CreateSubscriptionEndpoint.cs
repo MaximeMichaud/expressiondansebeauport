@@ -40,11 +40,19 @@ public class CreateSubscriptionEndpoint : Endpoint<CreateSubscriptionRequest, Su
         {
             await _subRepo.Add(new PushSubscription(user.Id, req.Endpoint, req.P256dh, req.Auth));
         }
-        else
+        else if (existing.UserId == user.Id)
         {
             existing.UpdateKeys(req.P256dh, req.Auth);
             existing.TouchLastUsed();
             await _subRepo.Update(existing);
+        }
+        else
+        {
+            // Endpoint belongs to a different user (impossible in practice — endpoints are per-device-per-origin —
+            // but guard against the hijack scenario)
+            await _prefRepo.GetOrCreate(user.Id);
+            await Send.OkAsync(new SucceededOrNotResponse(false, new Error("EndpointConflict", "Cet abonnement appartient à un autre utilisateur.")), ct);
+            return;
         }
 
         await _prefRepo.GetOrCreate(user.Id);
