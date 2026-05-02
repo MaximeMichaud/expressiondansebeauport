@@ -2,13 +2,40 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import svgLoader from 'vite-svg-loader'
 import tailwindcss from '@tailwindcss/vite'
+import { VitePWA } from 'vite-plugin-pwa'
 import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
   plugins: [
     vue(),
     svgLoader(),
-    tailwindcss()
+    tailwindcss(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}']
+      },
+      manifest: {
+        name: 'Expression Danse Beauport',
+        short_name: 'EDB',
+        description: 'Portail communautaire d\'Expression Danse Beauport',
+        theme_color: '#be1e2c',
+        background_color: '#ffffff',
+        display: 'standalone',
+        orientation: 'portrait',
+        start_url: '/social',
+        scope: '/',
+        icons: [
+          { src: '/icons/192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/icons/512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/icons/512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+        ]
+      },
+      devOptions: { enabled: false }
+    })
   ],
   base: '/',
   build: {
