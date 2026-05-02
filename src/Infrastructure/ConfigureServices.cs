@@ -11,6 +11,7 @@ using Infrastructure.Repositories.Media;
 using Infrastructure.Repositories.Groups;
 using Infrastructure.Repositories.JoinRequests;
 using Infrastructure.Repositories.Messaging;
+using Infrastructure.Repositories.Notifications;
 using Infrastructure.Repositories.Posts;
 using Infrastructure.Repositories.Members;
 using Infrastructure.Repositories.Menus;
@@ -88,6 +89,8 @@ public static class ConfigureServices
         services.AddScoped<IConversationRepository, ConversationRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddScoped<IJoinRequestRepository, JoinRequestRepository>();
+        services.AddScoped<IPushSubscriptionRepository, PushSubscriptionRepository>();
+        services.AddScoped<INotificationPreferencesRepository, NotificationPreferencesRepository>();
 
         services.AddScoped<IBackupService>(sp =>
         {
