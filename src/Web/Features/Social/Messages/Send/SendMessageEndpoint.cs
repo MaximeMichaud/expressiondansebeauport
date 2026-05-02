@@ -1,5 +1,6 @@
 using Application.Interfaces.Services.Users;
 using Application.Services.Messaging;
+using Application.Services.Push;
 using Domain.Common;
 using Domain.Repositories;
 using FastEndpoints;
@@ -16,19 +17,22 @@ public class SendMessageEndpoint : Endpoint<SendMessageRequest, SucceededOrNotRe
     private readonly IAuthenticatedUserService _authenticatedUserService;
     private readonly IMemberRepository _memberRepository;
     private readonly IHubContext<ChatHub> _hubContext;
+    private readonly IPushNotificationDispatcher _dispatcher;
 
     public SendMessageEndpoint(
         IConversationService conversationService,
         IConversationRepository conversationRepository,
         IAuthenticatedUserService authenticatedUserService,
         IMemberRepository memberRepository,
-        IHubContext<ChatHub> hubContext)
+        IHubContext<ChatHub> hubContext,
+        IPushNotificationDispatcher dispatcher)
     {
         _conversationService = conversationService;
         _conversationRepository = conversationRepository;
         _authenticatedUserService = authenticatedUserService;
         _memberRepository = memberRepository;
         _hubContext = hubContext;
+        _dispatcher = dispatcher;
     }
 
     public override void Configure()
@@ -106,8 +110,24 @@ public class SendMessageEndpoint : Endpoint<SendMessageRequest, SucceededOrNotRe
                     Media = mediaPayload
                 }, ct);
             }
+
+            var preview = TruncatePreview(req.Content);
+            await _dispatcher.SendToUserAsync(recipientUser.UserId, PushNotificationType.DirectMessage, new PushPayload
+            {
+                Title = member.FullName,
+                Body = preview,
+                Url = $"/social/messages/{req.ConversationId}",
+                Tag = $"dm-{req.ConversationId}"
+            }, ct);
         }
 
         await Send.OkAsync(new SucceededOrNotResponse(true), ct);
+    }
+
+    private static string TruncatePreview(string content, int max = 120)
+    {
+        if (string.IsNullOrEmpty(content)) return "Nouveau message";
+        var trimmed = content.Trim();
+        return trimmed.Length <= max ? trimmed : trimmed.Substring(0, max - 1).TrimEnd() + "…";
     }
 }

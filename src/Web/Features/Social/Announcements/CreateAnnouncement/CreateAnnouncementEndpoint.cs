@@ -1,5 +1,6 @@
 using Application.Interfaces.Services.Users;
 using Application.Services.Posts;
+using Application.Services.Push;
 using Domain.Common;
 using Domain.Repositories;
 using FastEndpoints;
@@ -27,15 +28,18 @@ public class CreateAnnouncementEndpoint : Endpoint<CreateAnnouncementRequest, Su
     private readonly IPostService _postService;
     private readonly IAuthenticatedUserService _authenticatedUserService;
     private readonly IMemberRepository _memberRepository;
+    private readonly IPushNotificationDispatcher _dispatcher;
 
     public CreateAnnouncementEndpoint(
         IPostService postService,
         IAuthenticatedUserService authenticatedUserService,
-        IMemberRepository memberRepository)
+        IMemberRepository memberRepository,
+        IPushNotificationDispatcher dispatcher)
     {
         _postService = postService;
         _authenticatedUserService = authenticatedUserService;
         _memberRepository = memberRepository;
+        _dispatcher = dispatcher;
     }
 
     public override void Configure()
@@ -77,7 +81,32 @@ public class CreateAnnouncementEndpoint : Endpoint<CreateAnnouncementRequest, Su
             Size = m.Size
         }).ToList();
 
-        await _postService.CreateAnnouncement(member.Id, req.Content, media);
+        var createdAnnouncement = await _postService.CreateAnnouncement(member.Id, req.Content, media);
+
+        var allMembers = await _memberRepository.GetAll();
+        var recipientUserIds = allMembers
+            .Where(m => m.Id != member.Id)
+            .Select(m => m.UserId)
+            .Distinct()
+            .ToList();
+
+        var preview = TruncateAnnouncementPreview(req.Content);
+        await _dispatcher.SendToManyAsync(recipientUserIds, PushNotificationType.Announcement, new PushPayload
+        {
+            Title = "📢 Nouvelle annonce",
+            Body = preview,
+            Url = "/social/annonces",
+            Tag = $"announcement-{createdAnnouncement.Id}"
+        }, ct);
+
         await Send.OkAsync(new SucceededOrNotResponse(true), ct);
+    }
+
+    private static string TruncateAnnouncementPreview(string content, int max = 120)
+    {
+        if (string.IsNullOrEmpty(content)) return "Nouvelle annonce";
+        var stripped = System.Text.RegularExpressions.Regex.Replace(content, "<.*?>", string.Empty).Trim();
+        if (string.IsNullOrEmpty(stripped)) return "Nouvelle annonce";
+        return stripped.Length <= max ? stripped : stripped.Substring(0, max - 1).TrimEnd() + "…";
     }
 }
