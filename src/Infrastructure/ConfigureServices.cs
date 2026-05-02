@@ -1,11 +1,13 @@
 ﻿using System.Text;
 using Application.Interfaces.Imaging;
 using Application.Interfaces.Services;
+using Application.Services.Push;
 using Domain.Entities.Identity;
 using Domain.Repositories;
 using Infrastructure.Imaging;
 using Infrastructure.Mailing;
 using Infrastructure.Repositories.Admins;
+using Infrastructure.Services.Push;
 using Infrastructure.Repositories.Authentication;
 using Infrastructure.Repositories.Media;
 using Infrastructure.Repositories.Groups;
@@ -91,6 +93,7 @@ public static class ConfigureServices
         services.AddScoped<IJoinRequestRepository, JoinRequestRepository>();
         services.AddScoped<IPushSubscriptionRepository, PushSubscriptionRepository>();
         services.AddScoped<INotificationPreferencesRepository, NotificationPreferencesRepository>();
+        services.AddSingleton<IPushSenderClient, WebPushSenderClient>();
 
         services.AddScoped<IBackupService>(sp =>
         {
