@@ -124,7 +124,7 @@ public class SendMessageEndpoint : Endpoint<SendMessageRequest, SucceededOrNotRe
         await Send.OkAsync(new SucceededOrNotResponse(true), ct);
     }
 
-    private static string TruncatePreview(string content, int max = 120)
+    private static string TruncatePreview(string? content, int max = 120)
     {
         if (string.IsNullOrEmpty(content)) return "Nouveau message";
         var trimmed = content.Trim();

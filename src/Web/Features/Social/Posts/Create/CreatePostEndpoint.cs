@@ -82,7 +82,7 @@ public class CreatePostEndpoint : Endpoint<CreatePostRequest, SucceededOrNotResp
         if (req.GroupId != Guid.Empty)
         {
             var group = await _groupRepo.FindById(req.GroupId);
-            var groupMembers = await _groupMemberRepo.GetMembersOfGroup(req.GroupId);
+            var groupMembers = await _groupMemberRepo.GetMembersOfGroup(req.GroupId, skip: 0, take: int.MaxValue);
             var recipientUserIds = groupMembers
                 .Where(gm => gm.MemberId != member.Id)
                 .Select(gm => gm.Member.UserId)
