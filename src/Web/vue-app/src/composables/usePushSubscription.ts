@@ -59,7 +59,13 @@ export function usePushSubscription() {
       permission.value = perm
       if (perm !== 'granted') return false
 
-      const reg = await navigator.serviceWorker.ready
+      const reg = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Service worker non disponible (timeout 8s). L\'app doit être installée sur l\'écran d\'accueil.')), 8000)
+        )
+      ])
+
       const publicKey = await pushService.getVapidPublicKey()
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,

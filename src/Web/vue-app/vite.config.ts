@@ -34,7 +34,7 @@ export default defineConfig({
           { src: '/icons/512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
         ]
       },
-      devOptions: { enabled: false }
+      devOptions: { enabled: true, type: 'module', navigateFallback: 'index.html' }
     })
   ],
   base: '/',
