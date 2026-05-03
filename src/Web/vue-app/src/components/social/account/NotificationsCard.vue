@@ -159,3 +159,75 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.soc-account__card {
+  margin: 16px 16px 0;
+  background: white;
+  border: 1px solid #ece9e4;
+  border-radius: 14px;
+  overflow: hidden;
+
+  .soc--dark & {
+    background: var(--soc-card-bg, #1c1c1c);
+    border-color: var(--soc-border, #2a2a2a);
+  }
+}
+
+.soc-account__card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #f0eeeb;
+  color: #78716c;
+
+  .soc--dark & {
+    border-bottom-color: var(--soc-border, #2a2a2a);
+    color: var(--soc-text-muted, #9ca3af);
+  }
+
+  h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #57534e;
+    margin: 0;
+
+    .soc--dark & {
+      color: var(--soc-text, #e5e7eb);
+    }
+  }
+}
+
+.soc-account__card-body {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.soc-account__btn-primary {
+  height: 36px;
+  padding: 0 14px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 8px;
+  color: white;
+  background: #1a1a1a;
+  border: 1px solid #1a1a1a;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  &:hover:not(:disabled) { opacity: 0.85; }
+  &:disabled { opacity: 0.5; cursor: default; }
+
+  .soc--dark & {
+    color: #1a1a1a;
+    background: white;
+    border-color: white;
+  }
+}
+</style>
