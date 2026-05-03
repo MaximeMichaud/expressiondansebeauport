@@ -14,10 +14,6 @@
         Ouvrez le portail sur votre téléphone pour les activer.
       </div>
 
-      <div v-else-if="!isSupported" class="text-sm" :style="{ color: 'var(--soc-text-muted)' }">
-        Votre navigateur ne supporte pas les notifications push.
-      </div>
-
       <div v-else-if="!isPwaInstalled">
         <p class="text-sm mb-3" :style="{ color: 'var(--soc-text)' }">
           Pour recevoir des notifications, vous devez d'abord ajouter l'application à votre écran d'accueil.
@@ -38,6 +34,11 @@
             <li>Ouvrez l'application depuis l'icône de votre écran d'accueil</li>
           </ol>
         </div>
+      </div>
+
+      <div v-else-if="!isSupported" class="text-sm" :style="{ color: 'var(--soc-text-muted)' }">
+        Les notifications push ne sont pas disponibles dans cette version du navigateur.
+        Assurez-vous d'avoir la dernière version d'iOS ou d'Android.
       </div>
 
       <div v-else-if="!isSubscribed">
