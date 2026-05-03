@@ -821,6 +821,13 @@ $convo-font-body: 'Karla', sans-serif;
     padding: 12px 16px;
     border-top: 1px solid var(--soc-divider, #f0f0f0);
     flex-shrink: 0;
+
+    @media (max-width: 48em) {
+      // More breathing room above the iOS home bar / Android nav.
+      // env(safe-area-inset-bottom) is the device-reported home-indicator
+      // height (e.g. 34px on iPhones with home bar, 0 on older devices).
+      padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    }
   }
 
   &__input {
