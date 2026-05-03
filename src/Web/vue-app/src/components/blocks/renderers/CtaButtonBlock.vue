@@ -69,7 +69,7 @@ const alignment = computed(() => {
 
 .cta-button-block__link--primary {
   background: var(--color-primary, #be1e2c);
-  color: #fff;
+  color: var(--primary-foreground, #fff);
   border: 2px solid var(--color-primary, #be1e2c);
 }
 
@@ -80,12 +80,12 @@ const alignment = computed(() => {
 
 .cta-button-block__link--secondary {
   background: transparent;
-  color: var(--color-primary, #be1e2c);
+  color: var(--primary-readable, var(--color-primary, #be1e2c));
   border: 2px solid var(--color-primary, #be1e2c);
 }
 
 .cta-button-block__link--secondary:hover {
   background: var(--color-primary, #be1e2c);
-  color: #fff;
+  color: var(--primary-foreground, #fff);
 }
 </style>

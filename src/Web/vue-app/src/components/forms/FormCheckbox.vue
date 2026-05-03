@@ -8,14 +8,14 @@
       @change="handleChange"
       @blur="handleBlur"
       :aria-invalid="!status.valid"
-      :aria-describedby="'error__' + name"
+      :aria-describedby="!status.valid ? `error__${name}` : undefined"
     />
     <label :for="name"> 
       {{ label ? label : name }}
       <span class="form__indicator" v-if="required">*</span>
     </label>
 
-    <span class="form__error-message" :id="'error' + name" v-if="!status.valid">
+    <span class="form__error-message" :id="`error__${name}`" v-if="!status.valid">
       {{ status.message }}
     </span>
   </div>

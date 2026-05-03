@@ -12,7 +12,10 @@
     "build:check": "vue-tsc --noEmit && vite build --mode production",
     "preview": "vite preview",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "lint:a11y": "eslint \"src/components/blocks/renderers/**/*.vue\" \"src/components/forms/**/*.vue\" \"src/components/layouts/PublicLayout.vue\" \"src/components/layouts/AuthenticationLayout.vue\" \"src/components/layouts/items/CookieBanner.vue\" \"src/components/layouts/items/PublicFooter.vue\" \"src/components/navigation/PublicNavbar.vue\" \"src/views/Login.vue\" \"src/views/ForgotPassword.vue\" \"src/views/ResetPassword.vue\" \"src/views/TwoFactor.vue\" \"src/views/public/**/*.vue\" --max-warnings=0",
+    "test:a11y": "playwright test -c playwright.a11y.config.ts",
+    "lighthouse:a11y": "lighthouse \"${PLAYWRIGHT_BASE_URL:-http://127.0.0.1:5280}\" --only-categories=accessibility --output=json --output-path=./lighthouse-accessibility.json --chrome-flags=\"--headless --no-sandbox\""
   },
   "dependencies": {
     "@kyvg/vue3-notification": "^3.4.0",
@@ -31,6 +34,7 @@
     "axios": "^1.13.5",
     "clsx": "^2.1.1",
     "dompurify": "^3.3.2",
+    "focus-trap": "^8.1.0",
     "lucide-vue-next": "^1.0.0",
     "luxon": "^3.5.0",
     "pinia": "^3.0.4",
@@ -48,13 +52,17 @@
     "vue3-easy-data-table": "^1.5.47"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
     "@eslint/js": "^9.39.2",
+    "@playwright/test": "^1.59.1",
     "@types/luxon": "^3.4.0",
     "@types/node": "^25.2.1",
     "@vitejs/plugin-vue": "^6.0.5",
     "eslint": "^10.1.0",
     "eslint-plugin-vue": "^10.7.0",
+    "eslint-plugin-vuejs-accessibility": "^2.5.0",
     "globals": "^17.3.0",
+    "lighthouse": "^13.2.0",
     "sass": "^1.83.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.54.0",

@@ -14,6 +14,7 @@
                :rules="[required]"
                name="code"
                type="text"
+               autocomplete="username"
                @validated="handleValidation"/>
     <button class="btn btn--full btn--purple btn--big" @click="sendForgotPasswordRequest" :disabled="preventMultipleSubmit">
       {{ t('global.submit') }}

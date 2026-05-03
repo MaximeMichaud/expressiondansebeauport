@@ -11,7 +11,7 @@
         @change="handleChange"
         @blur="validateInput"
         :aria-invalid="!status.valid"
-        :aria-describedby="`error__${name}`"
+        :aria-describedby="!status.valid ? `error__${name}` : undefined"
       />
 
       <label :for="name">

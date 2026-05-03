@@ -5,8 +5,9 @@
     <input
         :id="name"
         v-model="inputValue"
-        :aria-describedby="`error__${name}`"
+        :aria-describedby="!status.valid ? `error__${name}` : undefined"
         :aria-invalid="!status.valid"
+        :autocomplete="autocomplete"
         :list="list"
         :min="type == 'number' ? '0' : ''"
         :name="name"
@@ -42,6 +43,7 @@ const props = defineProps<{
   rules?: Rule[]
   tooltip?: string,
   list?: string
+  autocomplete?: string
 }>();
 
  

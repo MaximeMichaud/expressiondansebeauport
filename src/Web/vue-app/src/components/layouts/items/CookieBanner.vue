@@ -210,7 +210,7 @@ onBeforeUnmount(() => window.removeEventListener('open-cookie-preferences', open
 .cookie-banner__button {
   padding: 10px 16px;
   font-weight: 700;
-  color: $color-white;
+  color: var(--primary-foreground, #ffffff);
   cursor: pointer;
   background: var(--primary);
   border: 1px solid var(--primary);
@@ -218,7 +218,7 @@ onBeforeUnmount(() => window.removeEventListener('open-cookie-preferences', open
 }
 
 .cookie-banner__button--secondary {
-  color: var(--primary);
+  color: var(--primary-readable, var(--primary));
   background: $color-white;
 }
 

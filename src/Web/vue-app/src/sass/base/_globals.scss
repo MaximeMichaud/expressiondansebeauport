@@ -1,6 +1,11 @@
 @use "../tools" as *;
 :root {
   --primary: #be1e2c;
+  --primary-foreground: #ffffff;
+  --primary-readable: var(--primary);
+  --primary-focus-ring: #111827;
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
 }
 
 html {
@@ -18,4 +23,14 @@ hr {
   border-top: 1px solid $color-border;
   padding-bottom: 16px;
   margin-top: 16px;
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 3px solid var(--primary-focus-ring, #111827) !important;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.92);
+}
+
+:where([tabindex="-1"]):focus {
+  outline: none;
 }
