@@ -388,8 +388,8 @@ const messageInput = ref<HTMLInputElement | null>(null)
 const ready = ref(false)
 
 const allMessages = computed(() => {
-  const sorted = [...scrollMessages.value].reverse()
-  return [...sorted, ...pendingMessages.value]
+  return [...scrollMessages.value, ...pendingMessages.value]
+    .sort((a, b) => new Date(a.created).getTime() - new Date(b.created).getTime())
 })
 
 function formatTime(dateStr: string) {
