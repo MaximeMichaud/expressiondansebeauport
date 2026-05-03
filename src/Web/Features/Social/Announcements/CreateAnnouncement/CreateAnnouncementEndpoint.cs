@@ -93,7 +93,7 @@ public class CreateAnnouncementEndpoint : Endpoint<CreateAnnouncementRequest, Su
         var preview = TruncateAnnouncementPreview(req.Content);
         await _dispatcher.SendToManyAsync(recipientUserIds, PushNotificationType.Announcement, new PushPayload
         {
-            Title = "📢 Nouvelle annonce",
+            Title = "Nouvelle annonce",
             Body = preview,
             Url = "/social/annonces",
             Tag = $"announcement-{createdAnnouncement.Id}"
