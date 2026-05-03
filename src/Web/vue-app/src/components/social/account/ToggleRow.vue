@@ -43,18 +43,26 @@ function onChange(e: Event) {
 
 <style lang="scss" scoped>
 .toggle-track {
-  background: #d1d5db; // light mode OFF — gray-300
+  background: #d1d5db; // gray-300
 
   .soc--dark & {
-    background: #4b5563; // dark mode OFF — gray-600
+    background: #4b5563; // gray-600
   }
 }
 
 .toggle-knob {
-  background: #ffffff; // always white in both modes
+  background: #ffffff;
+
+  .soc--dark & {
+    background: #000000;
+  }
 }
 
 .toggle-switch.is-on .toggle-track {
-  background: #000000; // ON in both modes — black, white knob pops
+  background: #000000;
+
+  .soc--dark & {
+    background: #ffffff;
+  }
 }
 </style>

@@ -65,7 +65,6 @@
                 :key="g.id"
                 :model-value="!mutedGroupIds.has(g.id)"
                 :label="g.name"
-                size="sm"
                 @update:model-value="(v: boolean) => onGroupToggle(g.id, v)"
               />
             </div>
