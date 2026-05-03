@@ -81,7 +81,7 @@ services:
     volumes:
       - app-logs:/app/logs
       - backups:/app/backups
-      - uploads:/app/wwwroot/uploads
+      - uploads:/app/app-data/uploads
       - dataprotection-keys:/home/app/.aspnet/DataProtection-Keys
     networks:
       - frontend

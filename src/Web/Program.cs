@@ -32,8 +32,13 @@ builder.Services
     .AddPersistenceServices(builder.Configuration)
     .AddInfrastructureServices(builder.Configuration);
 
-var webRootPath = builder.Environment.WebRootPath ?? Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
-builder.Services.AddScoped<IFileStorageApiConsumer>(_ => new LocalFileStorageConsumer(webRootPath));
+// User uploads live OUTSIDE wwwroot to protect them from any process that
+// rebuilds/wipes static assets (e.g. `vite build` with emptyOutDir).
+// The static files middleware below serves the URL prefix /uploads/ from
+// this directory, so DB-stored URLs like /uploads/social/foo.webp keep working.
+var uploadsRootPath = Path.Combine(builder.Environment.ContentRootPath, "app-data");
+Directory.CreateDirectory(Path.Combine(uploadsRootPath, "uploads"));
+builder.Services.AddScoped<IFileStorageApiConsumer>(_ => new LocalFileStorageConsumer(uploadsRootPath));
 
 builder.Services.AddSignalR();
 builder.Configuration.AddJsonFile("appsettings.local.json", true);
@@ -109,6 +114,17 @@ app.UseExceptionHandler(c => c.Run(async context =>
 }));
 
 app.UseStaticFiles();
+
+// Serve user uploads from the protected app-data/uploads/ directory
+// at the URL prefix /uploads/. Kept separate from wwwroot so a Vue build
+// cannot wipe user data.
+app.UseStaticFiles(new Microsoft.AspNetCore.Builder.StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+        Path.Combine(uploadsRootPath, "uploads")),
+    RequestPath = "/uploads"
+});
+
 app.UseRouting();
 app.UseCors("corsDomains");
 app.UseMaintenanceMode();
