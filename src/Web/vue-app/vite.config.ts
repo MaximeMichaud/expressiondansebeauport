@@ -40,7 +40,9 @@ export default defineConfig({
   base: '/',
   build: {
     outDir: '../wwwroot',
-    emptyOutDir: true,
+    // emptyOutDir must stay FALSE: wwwroot/uploads/ contains user-uploaded
+    // files that would be wiped by a clean build, causing data loss.
+    emptyOutDir: false,
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
