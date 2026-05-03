@@ -3506,4 +3506,13 @@ form .form__fields-container.error input[type=radio] + label::before {
   .public-footer__col {
     flex: 1;
   }
-}/*# sourceMappingURL=index.css.map */
+}
+
+/* iOS Safari auto-zooms when focusing any form field with font-size < 16px.
+   Force 16px on all form controls on small screens to suppress that. */
+@media only screen and (max-width: 47.99em) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+/*# sourceMappingURL=index.css.map */
