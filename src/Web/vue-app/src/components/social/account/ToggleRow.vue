@@ -1,8 +1,17 @@
 <template>
-  <label class="flex items-center justify-between cursor-pointer" :class="size === 'sm' ? 'text-sm' : ''">
+  <label
+    class="flex items-center justify-between"
+    :class="[size === 'sm' ? 'text-sm' : '', disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer']"
+  >
     <span :style="{ color: 'var(--soc-text)' }">{{ label }}</span>
     <span class="toggle-switch relative inline-block" :class="[size === 'sm' ? 'w-9 h-5' : 'w-11 h-6', { 'is-on': modelValue }]">
-      <input type="checkbox" :checked="modelValue" class="peer sr-only" @change="onChange" />
+      <input
+        type="checkbox"
+        :checked="modelValue"
+        :disabled="disabled"
+        class="peer sr-only"
+        @change="onChange"
+      />
       <span class="toggle-track absolute inset-0 rounded-full transition-colors"></span>
       <span
         class="toggle-knob absolute top-0.5 left-0.5 rounded-full transition-transform"
@@ -22,7 +31,8 @@ withDefaults(defineProps<{
   modelValue: boolean
   label: string
   size?: 'sm' | 'md'
-}>(), { size: 'md' })
+  disabled?: boolean
+}>(), { size: 'md', disabled: false })
 
 const emit = defineEmits<{ (e: 'update:modelValue', v: boolean): void }>()
 
