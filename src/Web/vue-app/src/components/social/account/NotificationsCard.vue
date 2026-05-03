@@ -9,7 +9,12 @@
     </div>
 
     <div class="soc-account__card-body">
-      <div v-if="!isSupported" class="text-sm" :style="{ color: 'var(--soc-text-muted)' }">
+      <div v-if="!isMobile" class="text-sm" :style="{ color: 'var(--soc-text-muted)' }">
+        Les notifications sont disponibles uniquement sur téléphone (iPhone ou Android).
+        Ouvrez le portail sur votre téléphone pour les activer.
+      </div>
+
+      <div v-else-if="!isSupported" class="text-sm" :style="{ color: 'var(--soc-text-muted)' }">
         Votre navigateur ne supporte pas les notifications push.
       </div>
 
@@ -25,16 +30,13 @@
             <li>Ouvrez l'application depuis l'icône de votre écran d'accueil</li>
           </ol>
         </div>
-        <div v-else-if="isAndroid" class="text-sm space-y-2" :style="{ color: 'var(--soc-text-muted)' }">
+        <div v-else class="text-sm space-y-2" :style="{ color: 'var(--soc-text-muted)' }">
           <p><strong>Sur Android :</strong></p>
           <ol class="list-decimal pl-5 space-y-1">
             <li>Touchez le menu <strong>⋮</strong> de Chrome</li>
             <li>Sélectionnez <strong>« Installer l'application »</strong></li>
             <li>Ouvrez l'application depuis l'icône de votre écran d'accueil</li>
           </ol>
-        </div>
-        <div v-else class="text-sm space-y-2" :style="{ color: 'var(--soc-text-muted)' }">
-          <p><strong>Sur ordinateur :</strong> Cliquez sur l'icône d'installation dans la barre d'adresse de votre navigateur.</p>
         </div>
       </div>
 
@@ -110,6 +112,7 @@ const groups = ref<{ id: string; name: string }[]>([])
 
 const isIOS = computed(() => /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as unknown as { MSStream?: unknown }).MSStream)
 const isAndroid = computed(() => /Android/.test(navigator.userAgent))
+const isMobile = computed(() => isIOS.value || isAndroid.value)
 
 async function loadPrefs() {
   if (!isSubscribed.value) return
