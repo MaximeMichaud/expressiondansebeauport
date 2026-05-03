@@ -30,8 +30,9 @@ export default defineConfig({
         scope: '/',
         icons: [
           { src: '/icons/192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icons/512.png', sizes: '512x512', type: 'image/png' },
-          { src: '/icons/512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+          { src: '/icons/512.png', sizes: '512x512', type: 'image/png' }
+          // No 'maskable' variant: our icons are pre-rounded with
+          // transparent corners, which conflicts with Android's mask.
         ]
       },
       devOptions: { enabled: true, type: 'module', navigateFallback: 'index.html' }
