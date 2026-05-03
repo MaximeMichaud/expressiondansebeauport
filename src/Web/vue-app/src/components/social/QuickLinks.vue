@@ -6,14 +6,16 @@
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
         </svg>
-        {{ phone }}
+        <span class="ql-link__full">{{ phone }}</span>
+        <span class="ql-link__short">Téléphone</span>
       </a>
       <a v-if="email" :href="'mailto:' + email" class="ql-link">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
           <polyline points="22,6 12,13 2,6"/>
         </svg>
-        {{ email }}
+        <span class="ql-link__full">{{ email }}</span>
+        <span class="ql-link__short">Courriel</span>
       </a>
       <a v-if="mainSiteUrl" :href="mainSiteUrl" target="_blank" rel="noopener noreferrer" class="ql-link">
         Site principal
@@ -167,8 +169,22 @@ onMounted(async () => {
   color: var(--soc-bar-text-strong, #1a1a1a);
 }
 
+/* Default (desktop): show actual phone/email values */
+.ql-link__short { display: none; }
+
 @media (max-width: 47.99em) {
   .ql-card { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+
+  /* Mobile: keep all 3 links on one line. Swap full values for short labels,
+     shrink font + gap, and keep flex-wrap off so they truly stay inline. */
+  .ql-strip {
+    flex-wrap: nowrap;
+    gap: 12px;
+    padding: 10px 12px;
+    font-size: 0.72rem;
+  }
+  .ql-link__full { display: none; }
+  .ql-link__short { display: inline; }
 }
 
 .quick-row {
