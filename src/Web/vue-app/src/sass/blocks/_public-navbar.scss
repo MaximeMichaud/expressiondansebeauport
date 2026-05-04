@@ -2,7 +2,7 @@
 
 .public-navbar {
   position: fixed;
-  top: 20px;
+  top: calc(20px + var(--banner-height, 0px));
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 40px);
@@ -134,7 +134,7 @@
 //Breakpoints ==================================
 @include breakpoint(sm-up) {
   .public-navbar {
-    top: 24px;
+    top: calc(24px + var(--banner-height, 0px));
 
     &__inner {
       flex-wrap: nowrap;

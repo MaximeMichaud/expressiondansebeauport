@@ -24,6 +24,9 @@ export class SiteSettings {
   isMaintenanceMode?: boolean
   maintenanceMessage?: string
   maintenanceRetryAfter?: number
+  isBannerEnabled?: boolean
+  bannerText?: string
+  bannerUrl?: string
   socialLinks?: SocialLink[]
   footerPartners?: FooterPartner[]
 }
