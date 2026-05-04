@@ -106,6 +106,27 @@ docker compose up
 
 L'application sera accessible à : http://localhost:8080/
 
+### Production VPS
+
+En production, Caddy expose `80/443` publiquement et relaie vers `web:8080` sur le réseau Docker interne. Le service `web` ne doit pas publier `8080` sur l'hôte en prod.
+
+Utiliser les cibles Makefile pour éviter de lancer la stack de développement par erreur :
+
+```bash
+make prod-up      # build + démarre la stack prod
+make prod-ps      # état des conteneurs prod
+make prod-logs    # logs prod
+make prod-down    # arrêt de la stack prod
+```
+
+Équivalent direct :
+
+```bash
+docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build --remove-orphans
+```
+
+Ne pas utiliser `docker compose up` seul sur le VPS : cette commande charge `docker-compose.yml`, prévu pour le développement local.
+
 ### Développement local
 
 ```bash
