@@ -64,7 +64,6 @@ self.addEventListener('notificationclick', (event) => {
   })())
 })
 
-// @ts-expect-error pushsubscriptionchange is not in stock TS lib types
 self.addEventListener('pushsubscriptionchange', (event: ExtendableEvent) => {
   // Browsers can silently rotate the push endpoint (rare, but happens).
   // Re-subscribe and POST the new subscription to the backend.
