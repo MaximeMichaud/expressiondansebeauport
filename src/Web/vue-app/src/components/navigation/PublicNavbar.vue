@@ -28,13 +28,23 @@
             }"
           >
             <RouterLink
-              v-if="!hasChildren(item)"
-              :to="item.url || `/${item.pageSlug}`"
+              v-if="!hasChildren(item) && shouldUseRouterLink(item)"
+              :to="getItemUrl(item)"
               class="public-navbar__link"
               @click="closeAll"
             >
               {{ item.label }}
             </RouterLink>
+            <a
+              v-else-if="!hasChildren(item)"
+              :href="getItemUrl(item)"
+              :target="getAnchorTarget(item)"
+              :rel="getAnchorRel(item)"
+              class="public-navbar__link"
+              @click="closeAll"
+            >
+              {{ item.label }}
+            </a>
 
             <button
               v-else
@@ -58,12 +68,23 @@
             >
               <li v-for="child in item.children" :key="child.id">
                 <RouterLink
-                  :to="child.url || `/${child.pageSlug}`"
+                  v-if="shouldUseRouterLink(child)"
+                  :to="getItemUrl(child)"
                   class="submenu-link"
                   @click="closeAll"
                 >
                   {{ child.label }}
                 </RouterLink>
+                <a
+                  v-else
+                  :href="getItemUrl(child)"
+                  :target="getAnchorTarget(child)"
+                  :rel="getAnchorRel(child)"
+                  class="submenu-link"
+                  @click="closeAll"
+                >
+                  {{ child.label }}
+                </a>
               </li>
             </ul>
           </li>
@@ -133,6 +154,31 @@ function hasChildren(item: NavigationMenuItem): boolean {
   return !!(item.children && item.children.length > 0);
 }
 
+function getItemUrl(item: NavigationMenuItem): string {
+  return item.url || (item.pageSlug ? `/${item.pageSlug}` : '/');
+}
+
+function isExternalUrl(url: string): boolean {
+  return /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(url);
+}
+
+function shouldOpenInNewTab(item: NavigationMenuItem): boolean {
+  return item.target?.toLowerCase() === 'blank';
+}
+
+function shouldUseRouterLink(item: NavigationMenuItem): boolean {
+  const url = getItemUrl(item);
+  return !shouldOpenInNewTab(item) && !isExternalUrl(url);
+}
+
+function getAnchorTarget(item: NavigationMenuItem): string | undefined {
+  return shouldOpenInNewTab(item) ? '_blank' : undefined;
+}
+
+function getAnchorRel(item: NavigationMenuItem): string | undefined {
+  return shouldOpenInNewTab(item) || isExternalUrl(getItemUrl(item)) ? 'noopener noreferrer' : undefined;
+}
+
 function isOpen(id: string | undefined): boolean {
   return !!id && openItemId.value === id;
 }
@@ -156,7 +202,8 @@ function isParentActive(item: NavigationMenuItem): boolean {
   if (!hasChildren(item)) return false;
   const currentPath = route.path;
   return (item.children ?? []).some(child => {
-    const target = child.url || (child.pageSlug ? `/${child.pageSlug}` : '');
+    const target = getItemUrl(child);
+    if (isExternalUrl(target)) return false;
     if (!target) return false;
     return currentPath === target || currentPath.startsWith(`${target}/`);
   });

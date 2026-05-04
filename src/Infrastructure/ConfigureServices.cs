@@ -49,16 +49,18 @@ public static class ConfigureServices
 
     private static void ConfigureFormsServices(IServiceCollection services)
     {
+        const long maxMultipartBodySize = 100 * 1024 * 1024;
+
         services.Configure<KestrelServerOptions>(options =>
         {
-            options.Limits.MaxRequestBodySize = int.MaxValue; // if don't set default value is: 30 MB
+            options.Limits.MaxRequestBodySize = maxMultipartBodySize;
         });
 
         services.Configure<FormOptions>(x =>
         {
-            x.ValueLengthLimit = int.MaxValue;
-            x.MultipartBodyLengthLimit = int.MaxValue; // if don't set default value is: 128 MB
-            x.MultipartHeadersLengthLimit = int.MaxValue;
+            x.ValueLengthLimit = 1024 * 1024;
+            x.MultipartBodyLengthLimit = maxMultipartBodySize;
+            x.MultipartHeadersLengthLimit = 64 * 1024;
         });
     }
 

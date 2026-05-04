@@ -43,10 +43,10 @@
                   <span v-if="item.url || item.pageSlug" class="menu-item__url">{{ item.url || item.pageSlug }}</span>
                 </div>
                 <div class="menu-item__actions">
-                  <button class="menu-item__btn" @click="editItem(item)">
+                  <button class="menu-item__btn" :aria-label="`${t('global.actions.update')} ${item.label}`" :title="t('global.actions.update')" @click="editItem(item)">
                     <Pencil :size="14" />
                   </button>
-                  <button class="menu-item__btn" @click="removeItem(item)">
+                  <button class="menu-item__btn" :aria-label="`${t('global.actions.delete')} ${item.label}`" :title="t('global.actions.delete')" @click="removeItem(item)">
                     <Trash2 :size="14" />
                   </button>
                 </div>
@@ -64,10 +64,10 @@
                   </span>
                 </div>
                 <div class="menu-item__actions">
-                  <button class="menu-item__btn" @click="editItem(child)">
+                  <button class="menu-item__btn" :aria-label="`${t('global.actions.update')} ${child.label}`" :title="t('global.actions.update')" @click="editItem(child)">
                     <Pencil :size="14" />
                   </button>
-                  <button class="menu-item__btn" @click="removeItem(child)">
+                  <button class="menu-item__btn" :aria-label="`${t('global.actions.delete')} ${child.label}`" :title="t('global.actions.delete')" @click="removeItem(child)">
                     <Trash2 :size="14" />
                   </button>
                 </div>
@@ -105,7 +105,7 @@
               <option :value="undefined">Aucun</option>
 
               <option
-                v-for="item in currentMenu?.menuItems"
+                v-for="item in rootMenuItems"
                 :key="item.id"
                 :value="item.id"
               >
@@ -191,6 +191,10 @@ const draggableItems = computed({
   }
 })
 
+const rootMenuItems = computed(() =>
+  currentMenu.value?.menuItems?.filter(i => !i.parentId) ?? []
+)
+
 async function onDragEnd() {
   if (!currentMenu.value?.id) return
   const items = (currentMenu.value.menuItems ?? [])
@@ -250,7 +254,7 @@ async function reloadCurrentMenu() {
 function validateItem(item: NavigationMenuItem): {label?: string; url?: string} {
   const errors: {label?: string; url?: string} = {}
   if (!item.label?.trim()) errors.label = t('validation.empty')
-  if (!item.url?.trim()) errors.url = t('validation.empty')
+  if (item.parentId && !item.url?.trim()) errors.url = t('validation.empty')
   return errors
 }
 

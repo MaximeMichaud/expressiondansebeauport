@@ -57,6 +57,18 @@ public class CreateMenuItemEndpoint : Endpoint<CreateMenuItemRequest, Navigation
 
     public override async Task HandleAsync(CreateMenuItemRequest req, CancellationToken ct)
     {
+        if (!await _context.NavigationMenus.AnyAsync(m => m.Id == req.MenuId, ct))
+        {
+            await Send.NotFoundAsync(ct);
+            return;
+        }
+
+        if (!await IsValidLinkedPage(req.PageId, ct) || !await IsValidParent(req.MenuId, req.ParentId, null, ct))
+        {
+            await Send.StringAsync(string.Empty, StatusCodes.Status400BadRequest, cancellation: ct);
+            return;
+        }
+
         var item = new NavigationMenuItem(req.MenuId, req.Label, req.SortOrder);
         item.SetUrl(req.Url);
         item.SetPageId(req.PageId);
@@ -67,6 +79,22 @@ public class CreateMenuItemEndpoint : Endpoint<CreateMenuItemRequest, Navigation
         _context.NavigationMenuItems.Add(item);
         await _context.SaveChangesAsync();
         await Send.OkAsync(_mapper.Map<NavigationMenuItemDto>(item), cancellation: ct);
+    }
+
+    private async Task<bool> IsValidLinkedPage(Guid? pageId, CancellationToken ct)
+    {
+        return pageId is null || await _context.Pages.AnyAsync(p => p.Id == pageId.Value, ct);
+    }
+
+    private async Task<bool> IsValidParent(Guid menuId, Guid? parentId, Guid? itemId, CancellationToken ct)
+    {
+        if (parentId is null) return true;
+        if (parentId == itemId) return false;
+
+        var parent = await _context.NavigationMenuItems.FirstOrDefaultAsync(i => i.Id == parentId.Value, ct);
+        return parent is not null
+            && parent.MenuId == menuId
+            && parent.ParentId is null;
     }
 }
 
@@ -125,6 +153,14 @@ public class UpdateMenuItemEndpoint : Endpoint<UpdateMenuItemRequest, Navigation
             return;
         }
 
+        if (!await IsValidLinkedPage(req.PageId, ct)
+            || !await IsValidParent(req.MenuId, req.ParentId, req.Id, ct)
+            || !await CanMoveUnderParent(item.Id, req.ParentId, ct))
+        {
+            await Send.StringAsync(string.Empty, StatusCodes.Status400BadRequest, cancellation: ct);
+            return;
+        }
+
         item.SetLabel(req.Label);
         item.SetUrl(req.Url);
         item.SetPageId(req.PageId);
@@ -136,6 +172,28 @@ public class UpdateMenuItemEndpoint : Endpoint<UpdateMenuItemRequest, Navigation
         _context.NavigationMenuItems.Update(item);
         await _context.SaveChangesAsync();
         await Send.OkAsync(_mapper.Map<NavigationMenuItemDto>(item), cancellation: ct);
+    }
+
+    private async Task<bool> IsValidLinkedPage(Guid? pageId, CancellationToken ct)
+    {
+        return pageId is null || await _context.Pages.AnyAsync(p => p.Id == pageId.Value, ct);
+    }
+
+    private async Task<bool> IsValidParent(Guid menuId, Guid? parentId, Guid itemId, CancellationToken ct)
+    {
+        if (parentId is null) return true;
+        if (parentId == itemId) return false;
+
+        var parent = await _context.NavigationMenuItems.FirstOrDefaultAsync(i => i.Id == parentId.Value, ct);
+        return parent is not null
+            && parent.MenuId == menuId
+            && parent.ParentId is null;
+    }
+
+    private async Task<bool> CanMoveUnderParent(Guid itemId, Guid? parentId, CancellationToken ct)
+    {
+        return parentId is null
+            || !await _context.NavigationMenuItems.AnyAsync(i => i.ParentId == itemId, ct);
     }
 }
 

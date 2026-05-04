@@ -39,7 +39,7 @@ public class GetAllPagesEndpoint : Endpoint<GetAllPagesRequest, PaginatedList<Pa
         if (Enum.TryParse<PageStatus>(req.Status, true, out var parsed))
             statusFilter = parsed;
 
-        var paginatedList = _pageRepository.GetAllPaginated(req.PageIndex, req.PageSize, statusFilter);
+        var paginatedList = _pageRepository.GetAllPaginated(req.NormalizedPageIndex, req.NormalizedPageSize, statusFilter);
         var dtos = _mapper.Map<List<PageDto>>(paginatedList.Items);
         await Send.OkAsync(new PaginatedList<PageDto>(dtos, paginatedList.TotalItems), cancellation: ct);
     }

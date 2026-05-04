@@ -17,12 +17,87 @@ public class UploadMediaRequest
 
 public class UploadMediaValidator : Validator<UploadMediaRequest>
 {
+    private const long MaxFileSize = 50 * 1024 * 1024;
+
+    private static readonly HashSet<string> AllowedContentTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+        "video/mp4",
+        "video/quicktime",
+        "video/webm",
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/vnd.oasis.opendocument.text",
+        "application/vnd.oasis.opendocument.spreadsheet",
+        "application/vnd.oasis.opendocument.presentation",
+        "text/plain",
+        "text/csv"
+    };
+
+    private static readonly HashSet<string> AllowedExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".webp",
+        ".mp4",
+        ".mov",
+        ".webm",
+        ".pdf",
+        ".doc",
+        ".docx",
+        ".xls",
+        ".xlsx",
+        ".ppt",
+        ".pptx",
+        ".odt",
+        ".ods",
+        ".odp",
+        ".csv",
+        ".txt"
+    };
+
     public UploadMediaValidator()
     {
         RuleFor(x => x.File)
             .NotNull()
             .WithErrorCode("FileRequired")
             .WithMessage("A file is required.");
+
+        When(x => x.File is not null, () =>
+        {
+            RuleFor(x => x.File.Length)
+                .GreaterThan(0)
+                .WithErrorCode("FileEmpty")
+                .WithMessage("File cannot be empty.")
+                .LessThanOrEqualTo(MaxFileSize)
+                .WithErrorCode("FileTooLarge")
+                .WithMessage("File must be 50 MB or less.");
+
+            RuleFor(x => x.File)
+                .Must(HaveAllowedTypeAndExtension)
+                .WithErrorCode("InvalidFileType")
+                .WithMessage("File type is not allowed.");
+        });
+    }
+
+    private static bool HaveAllowedTypeAndExtension(IFormFile? file)
+    {
+        if (file is null) return false;
+
+        var extension = Path.GetExtension(file.FileName);
+        return AllowedExtensions.Contains(extension)
+            && AllowedContentTypes.Contains(file.ContentType);
     }
 }
 
