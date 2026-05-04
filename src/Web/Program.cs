@@ -10,8 +10,10 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.ResponseCompression;
 using Persistence;
 using Serilog;
+using Sidio.Sitemap.Core.Services;
 using Web.BackgroundServices;
 using Web.Extensions;
+using Web.Features.Public.Seo;
 using Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,6 +55,8 @@ builder.Logging.AddSerilog(Log.Logger);
 
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
 builder.Services.AddHostedService<BackupSchedulerService>();
+builder.Services.AddDefaultSitemapServices();
+builder.Services.AddScoped<ISeoFilesService, SeoFilesService>();
 
 builder.Services.AddResponseCompression(options =>
 {
@@ -117,6 +121,7 @@ app.UseFastEndpoints(config => { config.Endpoints.RoutePrefix = "api"; });
 app.UseSwaggerGen();
 
 app.MapHub<Web.Hubs.ChatHub>("/hubs/chat");
+app.MapSeoFiles();
 
 // SPA fallback - serve Vue app for any non-API route
 app.MapFallbackToFile("index.html");
