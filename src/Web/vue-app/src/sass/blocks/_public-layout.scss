@@ -19,7 +19,15 @@
   padding-top: 120px;
   padding-bottom: 80px;
   text-align: center;
-  background: url('@/assets/images/hero.jpg') center center / cover no-repeat;
+  background-color: #1b1618;
+  background-image: image-set(
+    url('@/assets/images/hero-mobile.avif') type('image/avif'),
+    url('@/assets/images/hero-mobile.webp') type('image/webp'),
+    url('@/assets/images/hero.jpg') type('image/jpeg')
+  );
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
   position: relative;
 
   &::before {
@@ -87,6 +95,12 @@
 //Breakpoints ==================================
 @include breakpoint(sm-up) {
   .home-hero {
+    background-image: image-set(
+      url('@/assets/images/hero-desktop.avif') type('image/avif'),
+      url('@/assets/images/hero-desktop.webp') type('image/webp'),
+      url('@/assets/images/hero.jpg') type('image/jpeg')
+    );
+
     &__eyebrow {
       font-size: rem(13);
     }
