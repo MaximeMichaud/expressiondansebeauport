@@ -16,6 +16,31 @@
 </template>
 
 <script lang="ts" setup>
+import heroDesktop from "@/assets/images/hero-desktop.avif"
+import heroMobile from "@/assets/images/hero-mobile.avif"
+import {useHead} from "@unhead/vue"
 import {useI18n} from "vue-i18n"
+
 const {t} = useI18n()
+
+useHead({
+  link: [
+    {
+      rel: "preload",
+      as: "image",
+      href: heroMobile,
+      type: "image/avif",
+      media: "(max-width: 767px)",
+      fetchpriority: "high"
+    },
+    {
+      rel: "preload",
+      as: "image",
+      href: heroDesktop,
+      type: "image/avif",
+      media: "(min-width: 768px)",
+      fetchpriority: "high"
+    }
+  ]
+})
 </script>
