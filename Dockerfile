@@ -52,7 +52,7 @@ COPY docker-entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
     && mkdir -p /app/logs /app/backups /app/app-data/uploads /home/app/.aspnet/DataProtection-Keys \
-    && chown -R $APP_UID:$APP_UID /app/logs /app/backups /app/app-data/uploads /app/seed-uploads /home/app/.aspnet/DataProtection-Keys
+    && chown -R $APP_UID:$APP_UID /app/logs /app/backups /app/app-data /app/seed-uploads /home/app/.aspnet/DataProtection-Keys
 
 ENV ASPNETCORE_URLS=http://+:8080
 
