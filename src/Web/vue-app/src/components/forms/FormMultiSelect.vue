@@ -1,11 +1,13 @@
 <template>
   <div :class="{ error: !status.valid }" class="form__field form-select-multiple">
-    <tippy
+    <Tippy
         :arrow="false"
+        :offset="[0, 0]"
         :popper-options="popperOptions"
+        :z-index="30000"
         interactive
         max-width="100%"
-        offset="0"
+        placement="bottom"
         theme="custom-form-select"
         trigger="click focus"
     >
@@ -32,7 +34,7 @@
           </li>
         </ul>
       </template>
-    </tippy>
+    </Tippy>
 
     <label v-if="!noLabel" :for="name">
       {{ label ? label : name }}
@@ -52,6 +54,7 @@ import {Status, validateArray} from '@/validation'
 import {requiredArray, RuleArray} from '@/validation/rules'
 import {ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
+import {Tippy} from 'vue-tippy';
 
  
 const props = defineProps<{

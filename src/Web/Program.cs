@@ -7,6 +7,7 @@ using FastEndpoints.Swagger;
 using Infrastructure;
 using Infrastructure.ExternalApis.Local;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.ResponseCompression;
 using Persistence;
 using Serilog;
 using Web.BackgroundServices;
@@ -69,6 +70,14 @@ builder.Logging.AddSerilog(Log.Logger);
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
 builder.Services.AddHostedService<BackupSchedulerService>();
 
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Append("image/svg+xml");
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "corsDomains",
@@ -113,6 +122,7 @@ app.UseExceptionHandler(c => c.Run(async context =>
     await context.Response.WriteAsJsonAsync(responseBody);
 }));
 
+app.UseResponseCompression();
 app.UseStaticFiles();
 
 // Serve user uploads from the protected app-data/uploads/ directory

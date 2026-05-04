@@ -130,11 +130,11 @@ onBeforeUnmount(() => window.removeEventListener('open-cookie-preferences', open
   z-index: $zindex-popup;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   align-items: stretch;
   max-width: 920px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 18px;
   color: $color-text;
   background: $color-white;
   border: 1px solid $color-border;
@@ -154,7 +154,8 @@ onBeforeUnmount(() => window.removeEventListener('open-cookie-preferences', open
 
 .cookie-banner__text {
   margin: 0;
-  line-height: 1.45;
+  font-size: rem(15);
+  line-height: 1.4;
 }
 
 .cookie-banner a {
@@ -202,7 +203,7 @@ onBeforeUnmount(() => window.removeEventListener('open-cookie-preferences', open
   display: flex;
   gap: 12px;
   justify-content: flex-end;
-  padding-top: 16px;
+  padding-top: 14px;
   border-top: 1px solid $color-border;
 }
 
@@ -222,8 +223,24 @@ onBeforeUnmount(() => window.removeEventListener('open-cookie-preferences', open
 }
 
 @media (max-width: 720px) {
+  .cookie-banner {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 10px;
+  }
+
   .cookie-banner__actions {
     flex-direction: column-reverse;
+    gap: 8px;
+    padding-top: 12px;
+  }
+
+  .cookie-banner__button {
+    padding: 9px 12px;
+    font-size: rem(14);
   }
 }
 </style>

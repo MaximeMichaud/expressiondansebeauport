@@ -54,6 +54,24 @@ export default defineConfig({
             return 'css/[name]-[hash][extname]'
           }
           return 'assets/[name]-[hash][extname]'
+        },
+        manualChunks(id) {
+          const normalizedId = id.replaceAll('\\', '/')
+          if (!normalizedId.includes('/node_modules/')) return undefined
+          // Tiptap/ProseMirror exclus intentionnellement : laisser Rollup les grouper
+          // naturellement avec les chunks async (RichTextBlock, AdminPageEditor).
+          // Un manualChunk explicite force un modulepreload dans index.html même
+          // quand le code est derrière un defineAsyncComponent.
+          if (normalizedId.includes('/node_modules/@tiptap/') || normalizedId.includes('/node_modules/prosemirror')) return undefined
+          if (
+            normalizedId.includes('/node_modules/vue/') ||
+            normalizedId.includes('/node_modules/@vue/') ||
+            normalizedId.includes('/node_modules/pinia/') ||
+            normalizedId.includes('/node_modules/vue-router/') ||
+            normalizedId.includes('/node_modules/vue-i18n/')
+          ) return 'vendor-vue'
+          if (normalizedId.includes('/node_modules/@microsoft/signalr/')) return 'vendor-signalr'
+          return undefined
         }
       }
     }
