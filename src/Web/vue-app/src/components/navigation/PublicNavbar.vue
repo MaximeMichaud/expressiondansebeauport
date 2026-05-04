@@ -1,5 +1,5 @@
 <template>
-  <nav class="public-navbar" :class="{ 'is-menu-open': isMenuOpen }">
+  <nav class="public-navbar" :class="{ 'is-menu-open': isMenuOpen, 'is-hidden': isNavbarHidden }">
     <div class="public-navbar__inner">
       <RouterLink :to="{ name: 'home' }" class="public-navbar__logo">
         <LogoEdb class="public-navbar__logo-icon" />
@@ -99,7 +99,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useI18n } from "vue-i18n";
 import axios from "axios";
 import LogoEdb from "@/assets/icons/logo__edb.svg";
@@ -109,6 +109,23 @@ const { t } = useI18n();
 const isMenuOpen = ref(false);
 const openSubmenuId = ref<string | null>(null);
 const menuItems = ref<NavigationMenuItem[]>([]);
+const isNavbarHidden = ref(false);
+
+let lastScrollY = 0;
+
+function handleScroll() {
+  const currentScrollY = window.scrollY;
+  if (currentScrollY <= 0) {
+    isNavbarHidden.value = false;
+  } else if (currentScrollY > lastScrollY) {
+    isNavbarHidden.value = true;
+    isMenuOpen.value = false;
+    openSubmenuId.value = null;
+  } else {
+    isNavbarHidden.value = false;
+  }
+  lastScrollY = currentScrollY;
+}
 
 function isExternalUrl(url?: string): boolean {
   return !!url && /^https?:\/\//.test(url);
@@ -142,6 +159,12 @@ async function loadMenu() {
 
 onMounted(() => {
   loadMenu();
+  lastScrollY = window.scrollY;
+  window.addEventListener("scroll", handleScroll, { passive: true });
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
 });
 </script>
 
