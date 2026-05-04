@@ -36,10 +36,7 @@ axios.interceptors.response.use(
 import i18n from "@/i18n";
 import { createHead } from "@unhead/vue/client";
 import Notifications from "@kyvg/vue3-notification";
-import Vue3EasyDataTable from "vue3-easy-data-table";
-import "vue3-easy-data-table/dist/style.css";
 import "@/assets/css/globals.css";
-import VueTippy from 'vue-tippy'
 
 const head = createHead();
 
@@ -48,16 +45,6 @@ const app = createApp(App)
   .use(i18n)
   .use(Router)
   .use(pinia) // pinia store should be loaded after router to access  (https://pinia.vuejs.org/core-concepts/outside-component-usage.html#single-page-applications)
-  .use(Notifications)
-  .component('EasyDataTable', Vue3EasyDataTable)
-  .use(VueTippy, {
-    defaultProps: {
-        offset: [0, 12],
-        zIndex: 30000,
-        placement: "bottom",
-        theme: "custom-edb-app",
-        interactive: true
-    },
-  });
+  .use(Notifications);
 
 Router.isReady().then(() => app.mount("#app"));

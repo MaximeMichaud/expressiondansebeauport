@@ -1,4 +1,6 @@
-.PHONY: dev
+COMPOSE_PROD := docker compose --env-file .env.prod -f docker-compose.prod.yml
+
+.PHONY: dev prod-up prod-down prod-restart prod-logs prod-ps
 
 dev:
 	@echo "Démarrage de la base de données (Docker)..."
@@ -11,3 +13,18 @@ dev:
 	 echo "Backend prêt! Démarrage de Vite..." && \
 	 cd src/Web/vue-app && npm run dev) & \
 	wait
+
+prod-up:
+	$(COMPOSE_PROD) up -d --build --remove-orphans
+
+prod-down:
+	$(COMPOSE_PROD) down
+
+prod-restart:
+	$(COMPOSE_PROD) restart
+
+prod-logs:
+	$(COMPOSE_PROD) logs -f --tail=200
+
+prod-ps:
+	$(COMPOSE_PROD) ps
