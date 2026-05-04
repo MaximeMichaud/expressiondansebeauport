@@ -113,6 +113,8 @@ jobs:
                     "env": [
                       { "name": "ASPNETCORE_ENVIRONMENT", "value": "Development" },
                       { "name": "ConnectionStrings__DefaultConnection", "value": "Host=localhost;Port=5432;Database=expressiondansebeauport;Username=postgres;Password=PreviewPg2026;" },
+                      { "name": "DatabaseInitialization__MaxRetries", "value": "60" },
+                      { "name": "DatabaseInitialization__DelayMs", "value": "2000" },
                       { "name": "JwtToken__SecretKey", "value": "${JWT_KEY}" },
                       { "name": "JwtToken__Issuer", "value": "https://${PREVIEW_FQDN}" },
                       { "name": "JwtToken__Audience", "value": "https://${PREVIEW_FQDN}" },
