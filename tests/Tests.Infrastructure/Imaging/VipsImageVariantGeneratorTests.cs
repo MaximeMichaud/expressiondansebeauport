@@ -70,6 +70,49 @@ public class VipsImageVariantGeneratorTests
     }
 
     [Fact]
+    public async Task GivenCurrentVariant_WhenHasCurrentVariant_ThenReturnsTrue()
+    {
+        var tempDir = Directory.CreateTempSubdirectory("edb-image-variants-");
+        try
+        {
+            var sourcePath = Path.Combine(tempDir.FullName, "photo.jpg");
+            using (var image = Image.Black(32, 24).NewFromImage([255, 0, 0]))
+            {
+                image.WriteToFile(sourcePath);
+            }
+
+            var sut = new VipsImageVariantGenerator();
+            await sut.EnsureVariantsAsync(sourcePath, CancellationToken.None);
+
+            sut.HasCurrentVariant(sourcePath, ".webp").ShouldBeTrue();
+            sut.HasCurrentVariant(sourcePath, ".avif").ShouldBeTrue();
+        }
+        finally
+        {
+            tempDir.Delete(recursive: true);
+        }
+    }
+
+    [Fact]
+    public void GivenMissingVariant_WhenHasCurrentVariant_ThenReturnsFalse()
+    {
+        var tempDir = Directory.CreateTempSubdirectory("edb-image-variants-");
+        try
+        {
+            var sourcePath = Path.Combine(tempDir.FullName, "photo.jpg");
+            File.WriteAllBytes(sourcePath, [1]);
+
+            var sut = new VipsImageVariantGenerator();
+
+            sut.HasCurrentVariant(sourcePath, ".webp").ShouldBeFalse();
+        }
+        finally
+        {
+            tempDir.Delete(recursive: true);
+        }
+    }
+
+    [Fact]
     public void GivenGeneratedVariantPath_WhenSourceExists_ThenPathIsNotSupportedAsSource()
     {
         var tempDir = Directory.CreateTempSubdirectory("edb-image-variants-");
