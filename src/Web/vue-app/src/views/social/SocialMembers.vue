@@ -2,7 +2,7 @@
   <div class="members-dir">
     <!-- Header + Search -->
     <div class="members-dir__search">
-      <h2 class="text-lg font-bold mb-3" style="color: var(--soc-bar-text-strong, #1a1a1a);">Membres</h2>
+      <h2 class="text-lg font-bold mb-3" style="color: var(--soc-bar-text-strong, #1a1a1a);">Professeurs</h2>
       <div class="members-dir__search-inner">
         <svg class="members-dir__search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
@@ -11,14 +11,14 @@
           v-model="searchQuery"
           type="text"
           class="members-dir__search-input"
-          placeholder="Rechercher un membre..."
+          placeholder="Rechercher un professeur..."
           @input="onSearch"
         />
         <span v-if="searchQuery" class="members-dir__search-clear" @click="clearSearch">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </span>
       </div>
-      <p class="members-dir__count" v-if="!loading">{{ members.length }} membre{{ members.length !== 1 ? 's' : '' }}</p>
+      <p class="members-dir__count" v-if="!loading">{{ members.length }} professeur{{ members.length !== 1 ? 's' : '' }}</p>
     </div>
 
     <!-- Loading -->
@@ -29,8 +29,8 @@
     <!-- Empty -->
     <div v-else-if="members.length === 0" class="flex flex-col items-center justify-center gap-3 py-20 text-gray-400">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-      <span v-if="searchQuery" class="text-sm">Aucun membre trouvé pour « {{ searchQuery }} »</span>
-      <span v-else class="text-sm">Aucun membre pour le moment.</span>
+      <span v-if="searchQuery" class="text-sm">Aucun professeur trouvé pour « {{ searchQuery }} »</span>
+      <span v-else class="text-sm">Aucun professeur pour le moment.</span>
     </div>
 
     <!-- Grid -->
@@ -94,7 +94,8 @@ function isAdminRole(member: any) {
 async function loadMembers(query?: string) {
   loading.value = true
   try {
-    members.value = await socialService.searchMembers(query || '')
+    const all = await socialService.searchMembers(query || '')
+    members.value = all.filter((m: any) => isProfessor(m) || isAdminRole(m))
     avatarRegistry.populateFromList(members.value, 'id', 'profileImageUrl')
   } catch { members.value = [] }
   loading.value = false

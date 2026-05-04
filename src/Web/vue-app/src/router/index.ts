@@ -103,7 +103,7 @@ const socialRoutes = [
     path: '/social/membres',
     name: 'socialMembers',
     component: () => import('@/views/social/SocialMembers.vue'),
-    meta: { title: 'Membres', requiredRole: [Role.Professor, Role.Admin], social: true }
+    meta: { title: 'Professeurs', requiredRole: [Role.Member, Role.Professor, Role.Admin], social: true }
   },
   {
     path: '/social/membres/:id',
