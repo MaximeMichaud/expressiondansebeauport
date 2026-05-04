@@ -1,5 +1,5 @@
 <template>
-  <nav class="public-navbar" :class="{ 'is-menu-open': isMenuOpen }">
+  <nav class="public-navbar" :class="{ 'is-menu-open': isMenuOpen, 'is-hidden': isNavbarHidden }">
     <div class="public-navbar__inner">
       <RouterLink :to="{ name: 'home' }" class="public-navbar__logo" @click="closeAll">
         <LogoEdb class="public-navbar__logo-icon" />
@@ -103,6 +103,23 @@ const route = useRoute();
 const isMenuOpen = ref(false);
 const openItemId = ref<string | null>(null);
 const menuItems = ref<NavigationMenuItem[]>([]);
+const isNavbarHidden = ref(false);
+
+let lastScrollY = 0;
+
+function handleScroll() {
+  const currentScrollY = window.scrollY;
+  if (currentScrollY <= 0) {
+    isNavbarHidden.value = false;
+  } else if (currentScrollY > lastScrollY) {
+    isNavbarHidden.value = true;
+    isMenuOpen.value = false;
+    openItemId.value = null;
+  } else {
+    isNavbarHidden.value = false;
+  }
+  lastScrollY = currentScrollY;
+}
 
 const fallbackLinks = [
   { key: "school" },
@@ -180,11 +197,14 @@ watch(isMenuOpen, (open) => {
 
 onMounted(() => {
   loadMenu();
+  lastScrollY = window.scrollY;
+  window.addEventListener("scroll", handleScroll, { passive: true });
   document.addEventListener('click', onDocumentClick);
   document.addEventListener('keydown', onKeydown);
 });
 
 onBeforeUnmount(() => {
+  window.removeEventListener("scroll", handleScroll);
   document.removeEventListener('click', onDocumentClick);
   document.removeEventListener('keydown', onKeydown);
   document.body.style.overflow = '';

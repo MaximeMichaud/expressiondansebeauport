@@ -11,6 +11,13 @@
   border-radius: 16px;
   background: var(--primary);
   box-shadow: 0 8px 32px color-mix(in srgb, var(--primary) 30%, transparent), 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.35s ease, opacity 0.35s ease;
+
+  &.is-hidden {
+    transform: translateX(-50%) translateY(calc(-100% - 30px));
+    opacity: 0;
+    pointer-events: none;
+  }
 
   &.is-menu-open {
     background: var(--primary);

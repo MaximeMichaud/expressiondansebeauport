@@ -617,7 +617,7 @@
     },
     "cookieBanner": {
       "title": "Préférences de cookies",
-      "description": "Ce site utilise des cookies nécessaires à son fonctionnement ainsi que des cookies optionnels pour analyser l'utilisation du site et améliorer nos services. Vous pouvez accepter, refuser ou personnaliser vos préférences.",
+      "description": "Ce site utilise des cookies nécessaires et, avec votre accord, des cookies d'analyse.",
       "privacyLink": "Voir notre politique de confidentialité.",
       "necessary": {
         "title": "Cookies nécessaires",
