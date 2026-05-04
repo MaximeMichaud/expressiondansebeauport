@@ -1,5 +1,4 @@
 import {AxiosError, AxiosResponse} from "axios"
-import {injectable} from "inversify"
 
 import "@/extensions/date.extensions"
 import {ApiService} from "@/services/apiService"
@@ -7,7 +6,6 @@ import {IAdministratorService} from "@/injection/interfaces"
 import {Administrator} from "@/types/entities";
 import {SucceededOrNotResponse} from "@/types/responses";
 
-@injectable()
 export class AdministratorService extends ApiService implements IAdministratorService {
   public async getAuthenticated(): Promise<Administrator | undefined> {
     try {

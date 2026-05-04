@@ -79,4 +79,13 @@ public class MemberRepository : IMemberRepository
             _context.Members.Update(member);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<List<Member>> GetAdminMembers()
+    {
+        return await _context.Members
+            .AsNoTracking()
+            .Include(m => m.User).ThenInclude(u => u.UserRoles).ThenInclude(ur => ur.Role)
+            .Where(m => m.User.UserRoles.Any(ur => ur.Role.NormalizedName == "ADMIN"))
+            .ToListAsync();
+    }
 }

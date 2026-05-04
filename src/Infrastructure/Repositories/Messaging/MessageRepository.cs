@@ -33,6 +33,10 @@ public class MessageRepository : IMessageRepository
             .IgnoreQueryFilters()
             .Where(m => m.ConversationId == conversationId)
             .Include(m => m.SenderMember).ThenInclude(s => s.User)
+            .Include(m => m.Media.OrderBy(x => x.SortOrder))
+            .Include(m => m.JoinRequest).ThenInclude(jr => jr!.Group)
+            .Include(m => m.JoinRequest).ThenInclude(jr => jr!.RequesterMember)
+            .Include(m => m.JoinRequest).ThenInclude(jr => jr!.ResolvedByMember)
             .OrderByDescending(m => m.Created)
             .Skip(skip).Take(take)
             .ToListAsync();
@@ -61,4 +65,13 @@ public class MessageRepository : IMessageRepository
     }
 
     public async Task SaveChanges() => await _context.SaveChangesAsync();
+
+    public async Task<Message?> FindByJoinRequestId(Guid joinRequestId)
+    {
+        return await _context.Messages
+            .AsNoTracking()
+            .Where(m => m.JoinRequestId == joinRequestId)
+            .OrderBy(m => m.Created)
+            .FirstOrDefaultAsync();
+    }
 }

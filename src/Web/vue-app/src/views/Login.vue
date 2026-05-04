@@ -35,7 +35,7 @@ import { ref, onMounted, type ComponentPublicInstance } from "vue"
 import { useI18n } from "vue-i18n"
 import { required } from "@/validation/rules"
 import { useRouter } from "vue-router";
-import { useAuthenticationService, useUserService } from "@/inversify.config";
+import { useAuthenticationService, useUserService } from "@/serviceRegistry";
 import { useUserStore } from "@/stores/userStore";
 import { Role } from "@/types/enums";
 
@@ -91,6 +91,11 @@ async function sendLoginRequest() {
   const succeededOrNotResponse = await authenticationService.login(loginRequest.value)
   if (succeededOrNotResponse.succeeded) {
     const user = await userService.getCurrentUser()
+    if (!user) {
+      passwordRef.value?.setError(t('pages.login.validation.errorOccured'))
+      preventMultipleSubmit.value = false;
+      return;
+    }
     userStore.setUser(user)
     userStore.setUsername(loginRequest.value.username)
     apiStore.setNeedToLogout(false)

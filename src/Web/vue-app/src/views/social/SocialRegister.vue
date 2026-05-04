@@ -4,7 +4,7 @@
 
 
     <form @submit.prevent="handleRegister" class="space-y-4">
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
           <label class="mb-1 block text-sm font-medium text-gray-700">Prénom</label>
           <input
@@ -100,7 +100,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useSocialService } from '@/inversify.config'
+import { useSocialService } from '@/serviceRegistry'
 import { useSocialToast } from '@/composables/useSocialToast'
 
 const router = useRouter()

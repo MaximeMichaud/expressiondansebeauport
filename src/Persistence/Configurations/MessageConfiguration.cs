@@ -11,10 +11,22 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
         builder.HasKey(m => m.Id);
         builder.Property(m => m.Content).HasMaxLength(5000).IsRequired();
         builder.Property(m => m.MediaUrl).HasMaxLength(500);
+        builder.Property(m => m.MediaThumbnailUrl).HasMaxLength(500);
+        builder.Property(m => m.MediaOriginalUrl).HasMaxLength(500);
 
         builder.HasOne(m => m.SenderMember)
             .WithMany()
             .HasForeignKey(m => m.SenderMemberId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Property(m => m.MessageType)
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .HasDefaultValue(Domain.Enums.MessageType.Text);
+
+        builder.HasOne(m => m.JoinRequest)
+            .WithMany()
+            .HasForeignKey(m => m.JoinRequestId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

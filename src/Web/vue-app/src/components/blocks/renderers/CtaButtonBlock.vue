@@ -23,6 +23,13 @@ defineProps<{
 
 <style scoped>
 .cta-button-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 10rem;
+  padding: 2rem;
   margin-bottom: 2rem;
 }
 

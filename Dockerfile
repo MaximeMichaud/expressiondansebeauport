@@ -16,6 +16,8 @@ RUN npm run build
 # ============================================
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS dotnet-build
 
+ARG APP_VERSION=0.0.0
+
 WORKDIR /src
 
 COPY Directory.Build.props* ./
@@ -31,7 +33,7 @@ COPY src/ src/
 
 COPY --from=vue-build /app/wwwroot/ src/Web/wwwroot/
 
-RUN dotnet publish src/Web/Web.csproj -c Release -o /app/publish --no-restore
+RUN dotnet publish src/Web/Web.csproj -c Release -o /app/publish --no-restore -p:MinVerVersion=$APP_VERSION
 
 # ============================================
 # Stage 3: Final runtime image
@@ -52,6 +54,9 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
     && chown -R $APP_UID:$APP_UID /app/logs /app/backups /app/wwwroot/uploads /home/app/.aspnet/DataProtection-Keys
 
 ENV ASPNETCORE_URLS=http://+:8080
+
+HEALTHCHECK --interval=10s --timeout=3s --start-period=15s --retries=3 \
+    CMD wget -qO- http://localhost:8080/api/health || exit 1
 
 EXPOSE 8080
 

@@ -21,6 +21,9 @@ public class SiteSettingsDto
     public string? FacebookUrl { get; set; }
     public string? InstagramUrl { get; set; }
     public string? CopyrightText { get; set; }
+    public bool IsMaintenanceMode { get; set; }
+    public string MaintenanceMessage { get; set; } = null!;
+    public int MaintenanceRetryAfter { get; set; }
     public List<SocialLinkDto> SocialLinks { get; set; } = [];
     public List<FooterPartnerDto> FooterPartners { get; set; } = [];
 }

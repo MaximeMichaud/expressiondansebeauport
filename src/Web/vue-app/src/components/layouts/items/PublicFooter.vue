@@ -67,6 +67,12 @@
 
     <div class="public-footer__copyright">
       <p>&copy; {{ currentYear }} {{ settings.copyrightText || t('public.footer.copyright') }}</p>
+      <button class="public-footer__cookies-button" type="button" @click="openCookiePreferences">
+        {{ t('public.footer.cookiePreferences') }}
+      </button>
+      <RouterLink to="/politique-confidentialite" class="public-footer__privacy-link">
+        {{ t('public.footer.privacyPolicy') }}
+      </RouterLink>
     </div>
   </footer>
 </template>
@@ -76,13 +82,8 @@ import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import axios from "axios";
 import LogoEdb from "@/assets/icons/logo__edb.svg";
-import IconFacebook from "vue-material-design-icons/Facebook.vue";
-import IconInstagram from "vue-material-design-icons/Instagram.vue";
-import IconYoutube from "vue-material-design-icons/Youtube.vue";
-import IconTwitter from "vue-material-design-icons/Twitter.vue";
-import IconLinkedin from "vue-material-design-icons/Linkedin.vue";
-import IconWeb from "vue-material-design-icons/Web.vue";
 import { SiteSettings, SocialLink, FooterPartner, NavigationMenuItem } from "@/types/entities";
+import { getSocialIcon } from "@/lib/socialLinks";
 
 const { t } = useI18n();
 const currentYear = new Date().getFullYear();
@@ -91,15 +92,8 @@ const socialLinks = ref<SocialLink[]>([]);
 const footerPartners = ref<FooterPartner[]>([]);
 const footerMenuItems = ref<NavigationMenuItem[]>([]);
 
-function getSocialIcon(platform?: string) {
-  switch (platform) {
-    case "facebook": return IconFacebook;
-    case "instagram": return IconInstagram;
-    case "youtube": return IconYoutube;
-    case "twitter": return IconTwitter;
-    case "linkedin": return IconLinkedin;
-    default: return IconWeb;
-  }
+function openCookiePreferences() {
+  window.dispatchEvent(new Event('open-cookie-preferences'));
 }
 
 async function loadSettings() {
@@ -128,3 +122,15 @@ onMounted(() => {
   loadFooterMenu();
 });
 </script>
+
+<style scoped lang="scss">
+.public-footer__cookies-button {
+  margin-top: 8px;
+  padding: 0;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+</style>

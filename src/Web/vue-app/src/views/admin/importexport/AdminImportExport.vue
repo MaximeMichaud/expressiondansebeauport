@@ -29,7 +29,7 @@
 <script lang="ts" setup>
 import {useI18n} from "vue-i18n"
 import {ref} from "vue"
-import {useImportExportService} from "@/inversify.config"
+import {useImportExportService} from "@/serviceRegistry"
 import Loader from "@/components/layouts/items/Loader.vue"
 
 const {t} = useI18n()

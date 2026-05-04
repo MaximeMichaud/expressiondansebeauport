@@ -15,7 +15,7 @@ export default defineConfig({
     outDir: '../wwwroot',
     emptyOutDir: true,
     chunkSizeWarningLimit: 1000,
-    rolldownOptions: {
+    rollupOptions: {
       output: {
         entryFileNames: 'js/[name]-[hash].js',
         chunkFileNames: 'js/[name]-[hash].js',

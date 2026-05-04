@@ -7,13 +7,27 @@
       class="blocks-editor__list"
       @end="emitUpdate"
     >
-      <div v-for="(block, index) in blocks" :key="block.id" class="blocks-editor__block">
+      <div
+        v-for="(block, index) in blocks"
+        :key="block.id"
+        class="blocks-editor__block"
+        :class="{ 'blocks-editor__block--half': (block.width ?? 'full') === 'half' }"
+      >
         <div class="blocks-editor__header">
           <button class="blocks-editor__drag" :aria-label="t('pages.blocks.reorder')">
             <GripVertical :size="14" />
           </button>
           <span class="blocks-editor__type-label">{{ BLOCK_LABELS[block.type] }}</span>
           <div class="blocks-editor__actions">
+            <button
+              class="blocks-editor__action-btn blocks-editor__action-btn--width"
+              :aria-label="(block.width ?? 'full') === 'half' ? t('pages.blocks.widthHalf') : t('pages.blocks.widthFull')"
+              :title="(block.width ?? 'full') === 'half' ? t('pages.blocks.widthHalf') : t('pages.blocks.widthFull')"
+              @click="toggleWidth(index)"
+            >
+              <Columns2 v-if="(block.width ?? 'full') === 'half'" :size="14" />
+              <Square v-else :size="14" />
+            </button>
             <button
               class="blocks-editor__action-btn"
               :disabled="index === 0"
@@ -92,7 +106,7 @@
 import {useI18n} from "vue-i18n"
 import {ref} from "vue"
 import {VueDraggable} from "vue-draggable-plus"
-import {GripVertical, ChevronUp, ChevronDown, Trash2} from "lucide-vue-next"
+import {GripVertical, ChevronUp, ChevronDown, Trash2, Square, Columns2} from "lucide-vue-next"
 import {
   PageBlock,
   BlockType,
@@ -161,6 +175,12 @@ function updateBlockData(index: number, data: Record<string, any>) {
   blocks.value[index] = { ...blocks.value[index], data }
   emitUpdate()
 }
+
+function toggleWidth(index: number) {
+  const current = blocks.value[index].width ?? 'full'
+  blocks.value[index] = { ...blocks.value[index], width: current === 'half' ? 'full' : 'half' }
+  emitUpdate()
+}
 </script>
 
 <style scoped>
@@ -180,6 +200,21 @@ function updateBlockData(index: number, data: Record<string, any>) {
   border: 1px solid var(--color-gray-200, #e5e7eb);
   border-radius: 0.5rem;
   overflow: hidden;
+}
+
+.blocks-editor__block--half {
+  border-left: 3px solid var(--primary);
+}
+
+.blocks-editor__action-btn--width {
+  background: var(--color-gray-100, #f3f4f6);
+  color: #232323;
+}
+
+@media (hover: hover) {
+  .blocks-editor__action-btn--width:hover {
+    background: var(--color-gray-200, #e5e7eb);
+  }
 }
 
 .blocks-editor__header {
