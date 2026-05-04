@@ -28,6 +28,9 @@ public class UpdateSiteSettingsRequest
     public bool IsMaintenanceMode { get; set; }
     public string MaintenanceMessage { get; set; } = "Le site est en maintenance. Revenez bientôt !";
     public int MaintenanceRetryAfter { get; set; } = 3600;
+    public bool IsBannerEnabled { get; set; }
+    public string BannerText { get; set; } = "Actualités du moment";
+    public string BannerUrl { get; set; } = "/actualites";
 }
 
 public class UpdateSiteSettingsValidator : Validator<UpdateSiteSettingsRequest>
@@ -118,6 +121,9 @@ public class UpdateSiteSettingsEndpoint : Endpoint<UpdateSiteSettingsRequest, Si
         settings.SetMaintenanceMode(req.IsMaintenanceMode);
         settings.SetMaintenanceMessage(req.MaintenanceMessage);
         settings.SetMaintenanceRetryAfter(req.MaintenanceRetryAfter);
+        settings.SetBannerEnabled(req.IsBannerEnabled);
+        settings.SetBannerText(req.BannerText);
+        settings.SetBannerUrl(req.BannerUrl);
 
         await _settingsRepository.Update(settings);
         await Send.OkAsync(_mapper.Map<SiteSettingsDto>(settings), cancellation: ct);
