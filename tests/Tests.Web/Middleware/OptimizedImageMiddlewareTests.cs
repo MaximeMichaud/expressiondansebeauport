@@ -107,9 +107,6 @@ public class OptimizedImageMiddlewareTests
             await File.WriteAllBytesAsync(sourcePath, [1]);
 
             PathString? pathAtNext = null;
-            var environment = new Mock<IWebHostEnvironment>();
-            environment.SetupGet(x => x.WebRootPath).Returns(tempDir.FullName);
-            environment.SetupGet(x => x.ContentRootPath).Returns(tempDir.FullName);
 
             var generator = new Mock<IImageVariantGenerator>();
             generator.Setup(x => x.IsSupportedSourcePath(sourcePath)).Returns(true);
@@ -129,7 +126,7 @@ public class OptimizedImageMiddlewareTests
                     pathAtNext = _.Request.Path;
                     return Task.CompletedTask;
                 },
-                environment.Object,
+                tempDir.FullName,
                 generator.Object,
                 NullLogger<OptimizedImageMiddleware>.Instance);
 
@@ -165,9 +162,6 @@ public class OptimizedImageMiddlewareTests
             await File.WriteAllBytesAsync(avifPath, [1]);
 
             PathString? pathAtNext = null;
-            var environment = new Mock<IWebHostEnvironment>();
-            environment.SetupGet(x => x.WebRootPath).Returns(tempDir.FullName);
-            environment.SetupGet(x => x.ContentRootPath).Returns(tempDir.FullName);
 
             var generator = new Mock<IImageVariantGenerator>();
             generator.Setup(x => x.IsSupportedSourcePath(sourcePath)).Returns(true);
@@ -182,7 +176,7 @@ public class OptimizedImageMiddlewareTests
                     pathAtNext = _.Request.Path;
                     return Task.CompletedTask;
                 },
-                environment.Object,
+                tempDir.FullName,
                 generator.Object,
                 NullLogger<OptimizedImageMiddleware>.Instance);
 
