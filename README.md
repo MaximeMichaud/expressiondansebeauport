@@ -79,14 +79,6 @@ L'application comprend un CMS sur mesure pour gérer le site public (pages, menu
 - **CI/CD :** GitHub Actions (lint, build, tests, déploiement VPS, PR previews sur Azure Container Apps)
 - **Conteneurisation :** Docker (multi-stage build)
 
-## BRANCHES
-
-- **main** - Production uniquement. Protégée, aucun push direct. Reçoit les merges depuis `dev` lors des releases.
-- **dev** - Branche d'intégration. Cible de toutes les PRs (`feat/*`, `fix/*`, `chore/*`).
-- **feat/\*, fix/\*, chore/\*** - Branches de travail, créées depuis `dev`.
-
-Quand `dev` est stable, une PR `dev → main` est créée pour déployer en production.
-
 ## PRÉREQUIS
 
 - .NET SDK 10
@@ -147,15 +139,25 @@ dotnet dev-certs https --trust
 dotnet watch run
 ```
 
+### Migrations
+
+```bash
+cd src/Persistence
+
+# Créer une migration
+dotnet ef migrations add {NomMigration} --startup-project ../Web/
+
+# Appliquer les migrations
+dotnet ef database update --startup-project ../Web/
+```
+
 ### Seed
 
 - Utilisateur par défaut : `admin@gmail.com` / `Qwerty123!`
 
-## INSTANT (NodaTime)
+## CONTRIBUTION
 
-Un `Instant` représente un moment dans le temps, toujours en UTC. `InstantHelper.GetLocalNow()` retourne la date/heure UTC courante.
-
-Lors du parsing d'une chaîne vers un Instant, la date est conservée telle quelle mais sauvegardée en UTC en base de données.
+Voir [CONTRIBUTING.md](./CONTRIBUTING.md) pour la stratégie de branches et la convention de commits.
 
 ## LICENCE
 
