@@ -8,5 +8,9 @@ public interface IImageVariantGenerator
 
     string GetVariantPath(string sourcePath, string variantExtension);
 
+    bool HasCurrentVariant(string sourcePath, string variantExtension);
+
     Task EnsureVariantsAsync(string sourcePath, CancellationToken ct);
+
+    Task<bool> TryEnsureVariantsAsync(string sourcePath, CancellationToken ct);
 }

@@ -50,28 +50,36 @@ public class OptimizedImageMiddleware
             return;
         }
 
-        try
-        {
-            await _imageVariantGenerator.EnsureVariantsAsync(sourcePath, context.RequestAborted);
-        }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Unable to generate optimized image variants for {ImagePath}", sourcePath);
-        }
-
         var variantPath = _imageVariantGenerator.GetVariantPath(sourcePath, preferredExtension);
-        if (File.Exists(variantPath))
+        if (_imageVariantGenerator.HasCurrentVariant(sourcePath, preferredExtension))
         {
             var relativeVariantPath = Path.GetRelativePath(_rootPath, variantPath)
                 .Replace(Path.DirectorySeparatorChar, '/');
             context.Request.Path = "/" + relativeVariantPath;
         }
+        else
+        {
+            QueueVariantGeneration(sourcePath);
+        }
 
         await _next(context);
+    }
+
+    private void QueueVariantGeneration(string sourcePath)
+    {
+        _ = Task.Run(() => TryGenerateVariantsAsync(sourcePath), CancellationToken.None);
+    }
+
+    private async Task TryGenerateVariantsAsync(string sourcePath)
+    {
+        try
+        {
+            await _imageVariantGenerator.TryEnsureVariantsAsync(sourcePath, CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Unable to generate optimized image variants for {ImagePath}", sourcePath);
+        }
     }
 
     private string? GetPhysicalPath(PathString requestPath)
