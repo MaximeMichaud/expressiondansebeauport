@@ -43,7 +43,7 @@ public class LoginEndpoint : EndpointWithSanitizedRequest<LoginRequest, Succeede
         var existingUser = await _userManager.FindByEmailAsync(req.Username);
         if (existingUser != null && !existingUser.EmailConfirmed)
         {
-            var confirmError = new Error("EmailNotConfirmed", "Please confirm your email address.");
+            var confirmError = new Error("EmailNotConfirmed", "Veuillez confirmer votre adresse courriel.");
             await Send.OkAsync(new SucceededOrNotResponse(succeeded: false, confirmError), ct);
             return;
         }
@@ -64,7 +64,7 @@ public class LoginEndpoint : EndpointWithSanitizedRequest<LoginRequest, Succeede
         }
 
         await _notificationService.SendTwoFactorAuthenticationCodeNotification(user, code);
-        var error = new Error("TwoFactorRequired", "Next step: complete two factor authentication.");
+        var error = new Error("TwoFactorRequired", "Étape suivante : complétez l'authentification à deux facteurs.");
         await Send.OkAsync(new SucceededOrNotResponse(succeeded: false, error), ct);
     }
 

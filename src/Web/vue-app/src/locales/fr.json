@@ -36,6 +36,9 @@
     "internalError": {
       "name": "Erreur serveur"
     },
+    "maintenance": {
+      "name": "Maintenance"
+    },
     "admin": {
       "path": "/admin",
       "fullPath": "/admin",
@@ -100,6 +103,11 @@
           "path": "sessions",
           "fullPath": "/admin/sessions",
           "name": "Sessions"
+        },
+        "errorLogs": {
+          "path": "logs-erreurs",
+          "fullPath": "/admin/logs-erreurs",
+          "name": "Logs d'erreurs"
         }
       }
     }
@@ -266,6 +274,8 @@
       "moveUp": "Monter",
       "moveDown": "Descendre",
       "reorder": "Réordonner",
+      "widthFull": "Pleine largeur",
+      "widthHalf": "Demi-largeur",
       "contentMode": "Mode de contenu",
       "contentModeHtml": "Contenu libre (HTML)",
       "contentModeBlocks": "Blocs visuels",
@@ -302,7 +312,9 @@
         "ctaLabelPlaceholder": "En savoir plus",
         "ctaUrl": "URL du bouton",
         "ctaUrlPlaceholder": "https://...",
-        "overlayOpacity": "Opacité de l'overlay"
+        "backgroundColor": "Couleur de fond",
+        "backgroundColorHint": "Utilisée quand aucune image de fond n'est définie",
+        "overlayOpacity": "Opacité de l'overlay (image seulement)"
       },
       "faq": {
         "label": "FAQ (Accordion)",
@@ -409,6 +421,15 @@
       "placeholderTagline": "L'art du mouvement, le cœur du quartier",
       "placeholderFooterDescription": "École de danse offrant des cours pour tous les âges...",
       "placeholderCopyright": "Expression Danse de Beauport inc. Tous droits réservés.",
+      "maintenance": {
+        "title": "Mode maintenance",
+        "description": "Activez ce mode pour afficher une page temporaire aux visiteurs pendant les mises à jour. Les administrateurs connectés continueront d'accéder normalement au panneau admin.",
+        "enabled": "Mode maintenance activé",
+        "disabled": "Mode maintenance désactivé",
+        "message": "Message affiché aux visiteurs",
+        "messagePlaceholder": "Le site est en maintenance. Revenez bientôt !",
+        "retryAfter": "Délai de réessai (secondes)"
+      },
       "update": {
         "validation": {
           "successMessage": "Les paramètres ont été mis à jour avec succès.",
@@ -424,6 +445,17 @@
         "warning": "Avertissement",
         "critical": "Critique"
       }
+    },
+    "errorLogs": {
+      "refresh": "Rafraîchir",
+      "allLevels": "Tous les niveaux",
+      "allSources": "Toutes les sources",
+      "search": "Rechercher...",
+      "date": "Date",
+      "level": "Niveau",
+      "message": "Message",
+      "source": "Source",
+      "noLogs": "Aucune erreur récente."
     },
     "backup": {
       "createBackup": "Créer un backup",
@@ -465,6 +497,9 @@
         "failedMessage": "Une erreur s'est produite lors de l'importation."
       }
     }
+  },
+  "nav": {
+    "tools": "Outils"
   },
   "products": {
     "form": {
@@ -566,7 +601,32 @@
       "followUs": "Suivez-nous",
       "partners": "Partenaires",
       "copyright": "Expression Danse de Beauport inc. Tous droits réservés.",
-      "description": "École de danse offrant des cours pour tous les âges et tous les niveaux à Beauport, Québec."
+      "description": "École de danse offrant des cours pour tous les âges et tous les niveaux à Beauport, Québec.",
+      "privacyPolicy": "Politique de confidentialité",
+      "cookiePreferences": "Préférences de cookies"
+    },
+    "cookieBanner": {
+      "title": "Préférences de cookies",
+      "description": "Ce site utilise des cookies nécessaires à son fonctionnement ainsi que des cookies optionnels pour analyser l'utilisation du site et améliorer nos services. Vous pouvez accepter, refuser ou personnaliser vos préférences.",
+      "privacyLink": "Voir notre politique de confidentialité.",
+      "necessary": {
+        "title": "Cookies nécessaires",
+        "description": "Toujours actifs pour le bon fonctionnement du site."
+      },
+      "analytics": {
+        "title": "Cookies analytiques",
+        "description": "Aident à comprendre l'utilisation du site."
+      },
+      "marketing": {
+        "title": "Cookies marketing",
+        "description": "Permettent d'adapter certains contenus ou campagnes."
+      },
+      "actions": {
+        "reject": "Refuser les optionnels",
+        "customize": "Personnaliser",
+        "save": "Enregistrer mes préférences",
+        "accept": "Accepter les optionnels"
+      }
     },
     "page": {
       "notFound": "Page introuvable",
@@ -575,6 +635,11 @@
       "serverError": "Erreur serveur",
       "serverErrorMessage": "Une erreur inattendue s'est produite. Veuillez réessayer ou contacter notre équipe si le problème persiste.",
       "retry": "Réessayer"
+    },
+    "maintenance": {
+      "title": "Site en maintenance",
+      "defaultMessage": "Le site est en maintenance. Revenez bientôt !",
+      "retryHint": "Merci de votre compréhension. Veuillez réessayer dans quelques instants."
     }
   },
   "textEditor": {
@@ -588,6 +653,11 @@
     "url": "URL",
     "image": "Le lien sera ajouté sur l'image sélectionnée.",
     "tooltip": "Pour éditer le lien sur une image, cliquer sur la bordure bleue autour de celle-ci."
+  },
+  "updateToast": {
+    "message": "Une nouvelle version du site est disponible.",
+    "reload": "Recharger",
+    "dismiss": "Plus tard"
   },
   "validation": {
     "empty": "Veuillez renseigner ce champ.",

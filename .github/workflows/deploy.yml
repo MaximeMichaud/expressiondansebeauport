@@ -22,8 +22,12 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          script_stop: true
           script: |
             cd /opt/expressiondansebeauport
-            git pull origin main
-            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build --remove-orphans
+            git fetch origin main
+            git reset --hard origin/main
+            export APP_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
+            docker compose -f docker-compose.prod.yml --env-file .env.prod build
+            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --remove-orphans
             docker image prune -f

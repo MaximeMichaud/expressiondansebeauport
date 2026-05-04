@@ -37,7 +37,5 @@ export const useUserStore = defineStore('user', {
   getters: { // computed
     getUser: (state) => state.user,
     getUsername: (state) => state.username,
-  },
-
-  persist: true
+  }
 })

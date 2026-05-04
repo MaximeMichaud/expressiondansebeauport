@@ -1,11 +1,9 @@
 import {AxiosError, AxiosResponse} from "axios"
-import {injectable} from "inversify"
 
 import {ApiService} from "@/services/apiService"
 import {IImportExportService} from "@/injection/interfaces"
 import {SucceededOrNotResponse} from "@/types/responses"
 
-@injectable()
 export class ImportExportService extends ApiService implements IImportExportService {
   public async exportData(): Promise<Blob> {
     const response = await this

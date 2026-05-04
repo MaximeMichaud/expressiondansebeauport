@@ -11,6 +11,7 @@ using Persistence;
 using Serilog;
 using Web.BackgroundServices;
 using Web.Extensions;
+using Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,6 +99,7 @@ app.UseExceptionHandler(c => c.Run(async context =>
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("corsDomains");
+app.UseMaintenanceMode();
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -68,7 +68,7 @@
 <script lang="ts" setup>
 import {useI18n} from "vue-i18n"
 import {onMounted, ref} from "vue"
-import {useBackupService} from "@/inversify.config"
+import {useBackupService} from "@/serviceRegistry"
 import {BackupRecord} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import {HardDriveDownload, Download, RotateCcw, Trash2} from "lucide-vue-next"

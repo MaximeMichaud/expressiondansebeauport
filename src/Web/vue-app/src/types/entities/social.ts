@@ -55,6 +55,7 @@ export interface PostMedia {
   id: string
   mediaUrl: string
   thumbnailUrl?: string
+  originalUrl?: string
   contentType: string
   size: number
   sortOrder: number
@@ -104,11 +105,34 @@ export interface Conversation {
   unreadCount: number
 }
 
+export interface MessageMedia {
+  id: string
+  mediaUrl: string
+  thumbnailUrl?: string
+  originalUrl?: string
+  contentType: string
+  size: number
+  sortOrder: number
+}
+
+export interface JoinRequestInfo {
+  id: string
+  groupId: string
+  groupName: string
+  requesterMemberId: string
+  requesterName: string
+  status: 'Pending' | 'Accepted' | 'Rejected'
+  resolvedByName?: string
+}
+
 export interface Message {
   id: string
   conversationId: string
   senderMemberId: string
   senderName: string
   content: string
+  media?: MessageMedia[]
   created: string
+  messageType?: string
+  joinRequest?: JoinRequestInfo
 }

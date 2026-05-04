@@ -1,12 +1,10 @@
 import {AxiosError, AxiosResponse} from "axios"
-import {injectable} from "inversify"
 
 import {ApiService} from "@/services/apiService"
 import {IMediaService} from "@/injection/interfaces"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
 import {MediaFile} from "@/types/entities"
 
-@injectable()
 export class MediaService extends ApiService implements IMediaService {
   public async getAll(pageIndex: number, pageSize: number): Promise<PaginatedResponse<MediaFile>> {
     const response = await this
