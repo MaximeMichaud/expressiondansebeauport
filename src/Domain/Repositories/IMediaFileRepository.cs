@@ -5,7 +5,7 @@ namespace Domain.Repositories;
 
 public interface IMediaFileRepository
 {
-    PaginatedList<MediaFile> GetAllPaginated(int pageIndex, int pageSize);
+    PaginatedList<MediaFile> GetAllPaginated(int pageIndex, int pageSize, MediaFileType? fileType = null);
     MediaFile? FindById(Guid id);
     bool Exists(string fileName);
     Task Create(MediaFile mediaFile);

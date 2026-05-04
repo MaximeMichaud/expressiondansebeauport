@@ -15,9 +15,12 @@ public class MediaFileRepository : IMediaFileRepository
         _context = context;
     }
 
-    public PaginatedList<MediaFile> GetAllPaginated(int pageIndex, int pageSize)
+    public PaginatedList<MediaFile> GetAllPaginated(int pageIndex, int pageSize, MediaFileType? fileType = null)
     {
         var query = _context.MediaFiles.AsNoTracking();
+        if (fileType is not null)
+            query = query.Where(x => x.FileType == fileType);
+
         var items = query.OrderByDescending(x => x.Created).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
         return new PaginatedList<MediaFile>(items, query.Count());
     }

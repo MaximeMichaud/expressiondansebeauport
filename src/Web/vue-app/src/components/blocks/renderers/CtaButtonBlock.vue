@@ -1,7 +1,7 @@
 <template>
   <div
     class="cta-button-block"
-    :style="{ textAlign: data.alignment ?? 'center' }">
+    :class="'cta-button-block--' + alignment">
     <a
       :href="data.url"
       :target="data.openInNewTab ? '_blank' : undefined"
@@ -14,11 +14,20 @@
 </template>
 
 <script lang="ts" setup>
+import {computed} from "vue"
 import type {CtaButtonBlockData} from "@/types/entities/pageBlock"
 
-defineProps<{
+const props = defineProps<{
   data: CtaButtonBlockData
 }>()
+
+const alignment = computed(() => {
+  const value = props.data.alignment
+
+  return value === 'left' || value === 'right' || value === 'center'
+    ? value
+    : 'center'
+})
 </script>
 
 <style scoped>
@@ -29,8 +38,23 @@ defineProps<{
   align-items: center;
   justify-content: center;
   min-height: 10rem;
-  padding: 2rem;
+  padding: 2rem 0;
   margin-bottom: 2rem;
+}
+
+.cta-button-block--left {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.cta-button-block--center {
+  align-items: center;
+  text-align: center;
+}
+
+.cta-button-block--right {
+  align-items: flex-end;
+  text-align: right;
 }
 
 .cta-button-block__link {

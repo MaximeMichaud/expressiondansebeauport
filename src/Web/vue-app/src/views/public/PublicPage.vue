@@ -109,37 +109,37 @@ watch(() => route.params.slug, (newSlug) => {
   text-align: center;
 }
 
-.public-page__content :deep(h2) {
+.public-page__content h2 {
   font-size: 1.75rem;
   margin: 2rem 0 1rem;
 }
 
-.public-page__content :deep(h3) {
+.public-page__content h3 {
   font-size: 1.25rem;
   margin: 1.5rem 0 0.75rem;
 }
 
-.public-page__content :deep(p) {
+.public-page__content p {
   margin-bottom: 1rem;
   line-height: 1.7;
 }
 
-.public-page__content :deep(ul) {
+.public-page__content ul {
   margin-bottom: 1rem;
   padding-left: 1.5rem;
 }
 
-.public-page__content :deep(li) {
+.public-page__content li {
   margin-bottom: 0.5rem;
   line-height: 1.5;
 }
 
-.public-page__content :deep(a:not([class*="btn"])) {
+.public-page__content a:not([class*="btn"]) {
   color: var(--color-primary, #be1e2c);
 }
 
 /* Bouton S'inscrire utilisé dans les pages de camp */
-.public-page__content :deep(.btn-camp) {
+.public-page__content .btn-camp {
   display: inline-block;
   background: #be1e2c;
   color: #fff !important;
@@ -151,12 +151,12 @@ watch(() => route.params.slug, (newSlug) => {
   transition: background 0.3s;
 }
 
-.public-page__content :deep(.btn-camp:hover) {
+.public-page__content .btn-camp:hover {
   background: #9e1824;
 }
 
 /* Boîte hero utilisée dans les pages de camp */
-.public-page__content :deep(.camp-hero) {
+.public-page__content .camp-hero {
   background: #f4f6f8;
   border-radius: 16px;
   display: flex;

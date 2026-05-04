@@ -29,16 +29,44 @@ public class DownloadBackupEndpoint : Endpoint<DownloadBackupRequest>
 
     public override async Task HandleAsync(DownloadBackupRequest req, CancellationToken ct)
     {
-        await using var stream = await _backupService.GetFileStreamAsync(req.FileName, ct);
-        if (stream is null)
+        if (!IsValidBackupFileName(req.FileName))
         {
-            await Send.NotFoundAsync(ct);
+            await Send.StringAsync(string.Empty, StatusCodes.Status400BadRequest, cancellation: ct);
             return;
         }
 
-        HttpContext.Response.ContentType = "application/octet-stream";
-        var disposition = new ContentDisposition { FileName = req.FileName, DispositionType = "attachment" };
-        HttpContext.Response.Headers.Append("Content-Disposition", disposition.ToString());
-        await stream.CopyToAsync(HttpContext.Response.Body, ct);
+        Stream? stream;
+        try
+        {
+            stream = await _backupService.GetFileStreamAsync(req.FileName, ct);
+        }
+        catch (ArgumentException)
+        {
+            await Send.StringAsync(string.Empty, StatusCodes.Status400BadRequest, cancellation: ct);
+            return;
+        }
+
+        await using (stream)
+        {
+            if (stream is null)
+            {
+                await Send.NotFoundAsync(ct);
+                return;
+            }
+
+            HttpContext.Response.ContentType = "application/octet-stream";
+            var disposition = new ContentDisposition { FileName = req.FileName, DispositionType = "attachment" };
+            HttpContext.Response.Headers.Append("Content-Disposition", disposition.ToString());
+            await stream.CopyToAsync(HttpContext.Response.Body, ct);
+        }
+    }
+
+    private static bool IsValidBackupFileName(string? fileName)
+    {
+        if (string.IsNullOrWhiteSpace(fileName))
+            return false;
+
+        return fileName == Path.GetFileName(fileName)
+            && fileName.EndsWith(".tar.zst", StringComparison.OrdinalIgnoreCase);
     }
 }
