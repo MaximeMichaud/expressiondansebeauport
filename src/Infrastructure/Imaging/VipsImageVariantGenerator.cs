@@ -23,9 +23,7 @@ public class VipsImageVariantGenerator : IImageVariantGenerator
 
     public string GetVariantPath(string sourcePath, string variantExtension)
     {
-        var extension = variantExtension.StartsWith('.')
-            ? variantExtension.ToLowerInvariant()
-            : $".{variantExtension.ToLowerInvariant()}";
+        var extension = NormalizeVariantExtension(variantExtension);
 
         if (!VariantExtensions.Contains(extension))
         {
@@ -33,6 +31,17 @@ public class VipsImageVariantGenerator : IImageVariantGenerator
         }
 
         return sourcePath + extension;
+    }
+
+    public bool HasCurrentVariant(string sourcePath, string variantExtension)
+    {
+        if (!IsSupportedSourcePath(sourcePath) || !File.Exists(sourcePath))
+        {
+            return false;
+        }
+
+        var variantPath = GetVariantPath(sourcePath, variantExtension);
+        return IsCurrent(variantPath, File.GetLastWriteTimeUtc(sourcePath));
     }
 
     public async Task EnsureVariantsAsync(string sourcePath, CancellationToken ct)
@@ -46,30 +55,59 @@ public class VipsImageVariantGenerator : IImageVariantGenerator
         await gate.WaitAsync(ct);
         try
         {
-            var sourceExtension = Path.GetExtension(sourcePath).ToLowerInvariant();
-            var sourceLastWriteUtc = File.GetLastWriteTimeUtc(sourcePath);
-            var missingVariants = Variants
-                .Where(variant => variant.Extension != sourceExtension)
-                .Where(variant => !IsCurrent(GetVariantPath(sourcePath, variant.Extension), sourceLastWriteUtc))
-                .ToArray();
-
-            if (missingVariants.Length == 0)
-            {
-                return;
-            }
-
-            using var image = VipsImageFormats.LoadFromFile(sourcePath);
-            using var webImage = VipsImageFormats.PrepareForWeb(image);
-
-            foreach (var variant in missingVariants)
-            {
-                ct.ThrowIfCancellationRequested();
-                WriteVariant(webImage, sourcePath, sourceLastWriteUtc, variant);
-            }
+            EnsureVariantsCore(sourcePath, ct);
         }
         finally
         {
             gate.Release();
+        }
+    }
+
+    public async Task<bool> TryEnsureVariantsAsync(string sourcePath, CancellationToken ct)
+    {
+        if (!IsSupportedSourcePath(sourcePath) || !File.Exists(sourcePath))
+        {
+            return false;
+        }
+
+        var gate = _locks.GetOrAdd(sourcePath, _ => new SemaphoreSlim(1, 1));
+        if (!await gate.WaitAsync(0, ct))
+        {
+            return false;
+        }
+
+        try
+        {
+            EnsureVariantsCore(sourcePath, ct);
+            return true;
+        }
+        finally
+        {
+            gate.Release();
+        }
+    }
+
+    private void EnsureVariantsCore(string sourcePath, CancellationToken ct)
+    {
+        var sourceExtension = Path.GetExtension(sourcePath).ToLowerInvariant();
+        var sourceLastWriteUtc = File.GetLastWriteTimeUtc(sourcePath);
+        var missingVariants = Variants
+            .Where(variant => variant.Extension != sourceExtension)
+            .Where(variant => !IsCurrent(GetVariantPath(sourcePath, variant.Extension), sourceLastWriteUtc))
+            .ToArray();
+
+        if (missingVariants.Length == 0)
+        {
+            return;
+        }
+
+        using var image = VipsImageFormats.LoadFromFile(sourcePath);
+        using var webImage = VipsImageFormats.PrepareForWeb(image);
+
+        foreach (var variant in missingVariants)
+        {
+            ct.ThrowIfCancellationRequested();
+            WriteVariant(webImage, sourcePath, sourceLastWriteUtc, variant);
         }
     }
 
@@ -112,5 +150,12 @@ public class VipsImageVariantGenerator : IImageVariantGenerator
                 File.Delete(tempPath);
             }
         }
+    }
+
+    private static string NormalizeVariantExtension(string variantExtension)
+    {
+        return variantExtension.StartsWith('.')
+            ? variantExtension.ToLowerInvariant()
+            : $".{variantExtension.ToLowerInvariant()}";
     }
 }
