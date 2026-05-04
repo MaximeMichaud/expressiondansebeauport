@@ -151,46 +151,6 @@ dotnet watch run
 
 - Utilisateur par défaut : `admin@gmail.com` / `Qwerty123!`
 
-### Migrations
-
-```bash
-cd src/Persistence
-
-# Créer une migration
-dotnet ef migrations add {NomMigration} --startup-project ../Web/
-
-# Appliquer les migrations
-dotnet ef database update --startup-project ../Web/
-```
-
-## STRUCTURE DU PROJET
-
-```
-expressiondansebeauport/
-├── src/
-│   ├── Domain/              # Entités, value objects, interfaces repositories
-│   ├── Application/         # Services, DTOs, mappings, exceptions
-│   ├── Infrastructure/      # SendGrid, repositories EF Core, backup providers
-│   ├── Persistence/         # DbContext, migrations, configurations EF, intercepteurs
-│   └── Web/                 # API FastEndpoints + frontend Vue
-│       ├── Features/        # Endpoints (Admins, Public, Social, Users)
-│       ├── Hubs/            # SignalR (ChatHub)
-│       ├── BackgroundServices/  # Scheduler de sauvegardes
-│       └── vue-app/         # Application Vue 3 SPA
-├── tests/
-│   ├── Tests.Application/
-│   ├── Tests.Domain/
-│   ├── Tests.Infrastructure/
-│   ├── Tests.Web/
-│   └── Tests.Common/
-├── deploy/                  # Script de setup VPS
-├── docker-compose.yml       # Développement
-├── docker-compose.prod.yml  # Production
-├── Caddyfile                # Reverse proxy HTTPS
-├── Dockerfile               # Build multi-stage (Node + .NET)
-└── .github/workflows/       # CI, PR previews, cleanup
-```
-
 ## INSTANT (NodaTime)
 
 Un `Instant` représente un moment dans le temps, toujours en UTC. `InstantHelper.GetLocalNow()` retourne la date/heure UTC courante.
