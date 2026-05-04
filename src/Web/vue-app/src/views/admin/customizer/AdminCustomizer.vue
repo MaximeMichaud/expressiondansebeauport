@@ -174,20 +174,35 @@ const availableImages = computed(() =>
 onMounted(async () => {
   isLoading.value = true
   try {
-    const [settingsData, mediaResponse] = await Promise.all([
+    const [settingsData, imageMedia] = await Promise.all([
       settingsService.get(),
-      mediaService.getAll(1, 100)
+      loadAllImages()
     ])
     settings.value = settingsData
     socialLinks.value = settingsData.socialLinks || []
     footerPartners.value = settingsData.footerPartners || []
-    if (mediaResponse?.items) allMedia.value = mediaResponse.items
+    allMedia.value = imageMedia
   } catch {
     notifyError(t('pages.customizer.update.validation.failedMessage'))
   } finally {
     isLoading.value = false
   }
 })
+
+async function loadAllImages(): Promise<MediaFile[]> {
+  const size = 100
+  const firstPage = await mediaService.getAll(1, size, "Image")
+  const items = [...(firstPage.items || [])]
+  const totalItems = firstPage.totalItems || items.length
+  const pageCount = Math.ceil(totalItems / size)
+
+  for (let page = 2; page <= pageCount; page++) {
+    const response = await mediaService.getAll(page, size, "Image")
+    if (response.items) items.push(...response.items)
+  }
+
+  return items
+}
 
 async function onSave() {
   isSaving.value = true

@@ -41,7 +41,7 @@ export interface IUserService {
 }
 
 export interface IMediaService {
-  getAll(pageIndex: number, pageSize: number): Promise<PaginatedResponse<MediaFile>>
+  getAll(pageIndex: number, pageSize: number, fileType?: string): Promise<PaginatedResponse<MediaFile>>
 
   get(id: string): Promise<MediaFile>
 

@@ -168,7 +168,9 @@ const cssSource = ref(props.cssModelValue || '');
 const editor = useEditor({
   content: props.modelValue || '',
   extensions: [
-    StarterKit,
+    StarterKit.configure({
+      link: false,
+    }),
     Link.configure({
       openOnClick: false,
       HTMLAttributes: { target: '_blank' },

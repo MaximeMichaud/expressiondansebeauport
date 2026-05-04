@@ -21,10 +21,10 @@
     </div>
 
     <Loader v-if="isLoading" />
-    <p v-else-if="!mediaFiles.length" class="media-empty">{{ t('global.table.noData') }}</p>
+    <p v-else-if="!allMediaFiles.length" class="media-empty">{{ t('global.table.noData') }}</p>
     <div v-else class="media-grid">
       <div
-        v-for="media in mediaFiles"
+        v-for="media in allMediaFiles"
         :key="media.id"
         class="media-grid__item"
         :class="{ 'media-grid__item--selected': selectedMedia?.id === media.id }"
@@ -97,11 +97,6 @@ const filters = computed(() => [
   { value: "Other", label: t('pages.media.filterOther') },
 ])
 
-const mediaFiles = computed(() => {
-  if (activeFilter.value === "all") return allMediaFiles.value
-  return allMediaFiles.value.filter(m => m.fileType === activeFilter.value)
-})
-
 onMounted(async () => {
   await loadMedia(1, pageSize)
 })
@@ -109,7 +104,7 @@ onMounted(async () => {
 async function loadMedia(page: number, size: number) {
   isLoading.value = true
   pageIndex.value = page
-  const response = await mediaService.getAll(page, size)
+  const response = await mediaService.getAll(page, size, activeFilter.value)
   if (response) {
     paginatedResponse.value = response
     if (response.items)
@@ -118,9 +113,10 @@ async function loadMedia(page: number, size: number) {
   isLoading.value = false
 }
 
-function onFilterChange(filter: string) {
+async function onFilterChange(filter: string) {
   activeFilter.value = filter
   selectedMedia.value = null
+  await loadMedia(1, pageSize)
 }
 
 function selectMedia(media: MediaFile) {
@@ -168,6 +164,7 @@ async function onDelete() {
   const response = await mediaService.delete(selectedMedia.value.id)
   if (response && response.succeeded) {
     allMediaFiles.value = allMediaFiles.value.filter(m => m.id !== selectedMedia.value?.id)
+    paginatedResponse.value.totalItems = Math.max((paginatedResponse.value.totalItems || 1) - 1, 0)
     selectedMedia.value = null
   }
 }

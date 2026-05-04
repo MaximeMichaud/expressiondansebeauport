@@ -19,7 +19,11 @@ public class LocalFileStorageConsumer : IFileStorageApiConsumer
 
     public async Task<string> UploadFileAsync(IFormFile file)
     {
-        var uniqueFileName = $"{DateTime.Now.Ticks}-{file.FileName}";
+        var fileName = Path.GetFileName(file.FileName);
+        if (string.IsNullOrWhiteSpace(fileName))
+            fileName = "file";
+
+        var uniqueFileName = $"{DateTime.Now.Ticks}-{fileName}";
         var filePath = Path.Combine(_webRootPath, UploadFolder, uniqueFileName);
 
         await using var stream = new FileStream(filePath, FileMode.Create);
@@ -32,18 +36,32 @@ public class LocalFileStorageConsumer : IFileStorageApiConsumer
     {
         if (string.IsNullOrEmpty(url)) return Task.CompletedTask;
 
-        string fileName;
-        if (url.StartsWith('/'))
-            fileName = Path.GetFileName(url);
-        else
-            fileName = Path.GetFileName(new Uri(url).LocalPath);
+        var path = GetPathFromUrl(url);
+        if (path is null || !path.StartsWith($"/{UploadFolder}/", StringComparison.OrdinalIgnoreCase))
+            return Task.CompletedTask;
 
-        var filePath = Path.Combine(_webRootPath, UploadFolder, fileName);
+        var relativePath = path[$"/{UploadFolder}/".Length..].Replace('/', Path.DirectorySeparatorChar);
+        var uploadsPath = Path.GetFullPath(Path.Combine(_webRootPath, UploadFolder));
+        var filePath = Path.GetFullPath(Path.Combine(uploadsPath, relativePath));
+
+        if (!filePath.StartsWith(uploadsPath + Path.DirectorySeparatorChar, StringComparison.Ordinal))
+            return Task.CompletedTask;
 
         if (File.Exists(filePath))
             File.Delete(filePath);
 
         return Task.CompletedTask;
+    }
+
+    private static string? GetPathFromUrl(string url)
+    {
+        if (Uri.TryCreate(url, UriKind.Absolute, out var absoluteUri))
+            return absoluteUri.LocalPath;
+
+        if (Uri.TryCreate(url, UriKind.Relative, out var relativeUri))
+            return relativeUri.OriginalString.Split('?', '#')[0];
+
+        return null;
     }
 
     public async Task<string> UploadStreamAsync(Stream content, string fileName, string contentType, string? subDirectory = null)
