@@ -217,10 +217,6 @@ function resolveMenuItemUrl(item: NavigationMenuItem): string {
   return item.url || (item.pageSlug ? `/${item.pageSlug}` : '/');
 }
 
-function isExternalUrl(url: string): boolean {
-  return /^https?:\/\//i.test(url);
-}
-
 function focusFirstSubmenuLink(id: string | undefined) {
   if (!id) return;
   openItemId.value = id;
