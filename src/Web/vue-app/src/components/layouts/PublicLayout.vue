@@ -1,5 +1,6 @@
 <template>
   <div class="public-layout">
+    <NewsBanner />
     <PublicNavbar />
     <main class="public-layout__content">
       <RouterView v-slot="{ Component }">
@@ -20,4 +21,5 @@
 import PublicNavbar from "@/components/navigation/PublicNavbar.vue";
 import PublicFooter from "@/components/layouts/items/PublicFooter.vue";
 import CookieBanner from "@/components/layouts/items/CookieBanner.vue";
+import NewsBanner from "@/components/layouts/items/NewsBanner.vue";
 </script>

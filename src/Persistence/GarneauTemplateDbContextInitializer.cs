@@ -439,6 +439,7 @@ public class GarneauTemplateDbContextInitializer
             CampPageCss());
 
         await SeedPolicyPageWithBlocks();
+        await SeedActualitesPage();
     }
 
     private async Task SeedDemoBlocksPage()
@@ -1034,6 +1035,45 @@ public class GarneauTemplateDbContextInitializer
         await _context.SaveChangesAsync();
     }
 
+    private async Task SeedActualitesPage()
+    {
+        const string slug = "actualites";
+        var generatedSlug = Page.GenerateSlug(slug);
+        if (_context.Pages.Any(p => p.Slug == generatedSlug))
+            return;
+
+        var blocks = new List<string>
+        {
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{" +
+                "\"html\":\"<h2>Actualités du moment</h2>" +
+                "<p>Bienvenue sur la page des actualités d'Expression Danse de Beauport. " +
+                "Retrouvez ici toutes les nouvelles importantes concernant nos activités, " +
+                "nos inscriptions et nos événements spéciaux.</p>\"" +
+            "}}",
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{" +
+                "\"html\":\"<h3>🎉 Inscriptions ouvertes</h3>" +
+                "<p>Les inscriptions pour la prochaine saison sont maintenant ouvertes ! " +
+                "Ne tardez pas à vous inscrire, les places sont limitées.</p>" +
+                "<p><strong>Date limite :</strong> à confirmer par l'équipe administrative.</p>\"" +
+            "}}",
+            "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"cta-button\",\"data\":{" +
+                "\"label\":\"S'inscrire maintenant\"," +
+                "\"url\":\"https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session\"," +
+                "\"style\":\"primary\"," +
+                "\"alignment\":\"center\"," +
+                "\"openInNewTab\":true" +
+            "}}"
+        };
+
+        var page = new Page("Actualités", slug);
+        page.SetContentMode("blocks");
+        page.SetBlocks("[" + string.Join(",", blocks) + "]");
+        page.SetSortOrder(98);
+        page.Publish();
+        _context.Pages.Add(page);
+        await _context.SaveChangesAsync();
+    }
+
     private async Task SeedSiteSettings()
     {
         var settings = await _context.SiteSettings
@@ -1062,6 +1102,13 @@ public class GarneauTemplateDbContextInitializer
             settings.SetInstagramUrl("https://www.instagram.com/expressiondansebeauport/");
         if (string.IsNullOrWhiteSpace(settings.CopyrightText))
             settings.SetCopyrightText("EDB");
+
+        if (!settings.IsBannerEnabled)
+        {
+            settings.SetBannerEnabled(true);
+            settings.SetBannerText("📣 Inscriptions ouvertes ! Consultez nos actualités du moment");
+            settings.SetBannerUrl("/actualites");
+        }
 
         if (created)
             await _context.SaveChangesAsync();

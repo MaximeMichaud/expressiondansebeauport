@@ -27,6 +27,10 @@ public class SiteSettings : Entity
     public string MaintenanceMessage { get; private set; } = "Le site est en maintenance. Revenez bientôt !";
     public int MaintenanceRetryAfter { get; private set; } = 3600;
 
+    public bool IsBannerEnabled { get; private set; } = false;
+    public string BannerText { get; private set; } = "Actualités du moment";
+    public string BannerUrl { get; private set; } = "/actualites";
+
     public MediaFile? LogoMediaFile { get; private set; }
     public MediaFile? FaviconMediaFile { get; private set; }
     public ICollection<SocialLink> SocialLinks { get; private set; } = new List<SocialLink>();
@@ -64,6 +68,9 @@ public class SiteSettings : Entity
     public void SetMaintenanceMode(bool isActive) => IsMaintenanceMode = isActive;
     public void SetMaintenanceMessage(string message) => MaintenanceMessage = message;
     public void SetMaintenanceRetryAfter(int seconds) => MaintenanceRetryAfter = seconds;
+    public void SetBannerEnabled(bool isEnabled) => IsBannerEnabled = isEnabled;
+    public void SetBannerText(string text) => BannerText = text;
+    public void SetBannerUrl(string url) => BannerUrl = url;
 
     private static void ValidateHexColor(string color)
     {

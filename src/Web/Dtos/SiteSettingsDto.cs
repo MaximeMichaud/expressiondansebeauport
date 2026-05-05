@@ -24,6 +24,9 @@ public class SiteSettingsDto
     public bool IsMaintenanceMode { get; set; }
     public string MaintenanceMessage { get; set; } = null!;
     public int MaintenanceRetryAfter { get; set; }
+    public bool IsBannerEnabled { get; set; }
+    public string BannerText { get; set; } = null!;
+    public string BannerUrl { get; set; } = null!;
     public List<SocialLinkDto> SocialLinks { get; set; } = [];
     public List<FooterPartnerDto> FooterPartners { get; set; } = [];
 }

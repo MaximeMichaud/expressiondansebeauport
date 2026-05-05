@@ -107,6 +107,26 @@
         </div>
       </div>
 
+      <div class="customizer__panel customizer__panel--banner">
+        <h2>{{ t('pages.customizer.banner.title') }}</h2>
+        <p class="customizer__description">{{ t('pages.customizer.banner.description') }}</p>
+        <div class="maintenance-toggle">
+          <label class="toggle-label">
+            <input type="checkbox" v-model="settings.isBannerEnabled" class="toggle-input" />
+            <span class="toggle-switch"></span>
+            <span class="toggle-text">{{ settings.isBannerEnabled ? t('pages.customizer.banner.enabled') : t('pages.customizer.banner.disabled') }}</span>
+          </label>
+        </div>
+        <div class="form-group" style="margin-top:1rem">
+          <label>{{ t('pages.customizer.banner.text') }}</label>
+          <input type="text" v-model="settings.bannerText" class="form-input" :placeholder="t('pages.customizer.banner.textPlaceholder')" />
+        </div>
+        <div class="form-group">
+          <label>{{ t('pages.customizer.banner.url') }}</label>
+          <input type="text" v-model="settings.bannerUrl" class="form-input" placeholder="/actualites" />
+        </div>
+      </div>
+
       <div class="customizer__panel customizer__panel--maintenance">
         <h2>{{ t('pages.customizer.maintenance.title') }}</h2>
         <p class="customizer__description">{{ t('pages.customizer.maintenance.description') }}</p>
@@ -404,6 +424,10 @@ async function removePartner(partner: FooterPartner) {
 .btn--small {
   font-size: 0.8125rem;
   padding: 0.375rem 0.75rem;
+}
+
+.customizer__panel--banner {
+  border-left: 4px solid var(--primary);
 }
 
 .customizer__panel--maintenance {
