@@ -9,6 +9,7 @@
                :rules="[required]"
                name="password"
                type="password"
+               autocomplete="new-password"
                @validated="handleValidation"/>
     <FormInput :ref="addFormInputRef"
                v-model="resetPasswordRequest.passwordConfirmation"
@@ -16,6 +17,7 @@
                :rules="[required]"
                name="passwordConfirmation"
                type="password"
+               autocomplete="new-password"
                @validated="handleValidation"/>
     <button class="btn btn--full btn--purple btn--big" @click="sendResetPasswordRequest" :disabled="preventMultipleSubmit">
       {{ t('global.submit') }}

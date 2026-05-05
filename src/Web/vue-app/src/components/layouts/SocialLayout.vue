@@ -3,9 +3,9 @@
     <!-- Theme toggle (fixed, top-right) — only shown on non-auth pages.
          Authenticated users get an inline toggle inside the header to avoid
          overlap with the right-side nav at narrow desktop widths. -->
-    <button v-if="!isAuthenticated" @click="toggleTheme" class="soc-theme-toggle" :title="isDarkMode ? 'Mode clair' : 'Mode sombre'">
-      <svg v-if="isDarkMode" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-      <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+    <button v-if="!isAuthenticated" @click="toggleTheme" class="soc-theme-toggle" :title="isDarkMode ? 'Mode clair' : 'Mode sombre'" :aria-label="isDarkMode ? 'Activer le mode clair' : 'Activer le mode sombre'">
+      <svg v-if="isDarkMode" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <svg v-else aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
     </button>
 
     <!-- Header -->
@@ -20,14 +20,14 @@
           </router-link>
 
           <!-- Nav tabs (desktop) -->
-          <nav v-if="isAuthenticated" class="soc-header__nav">
+          <nav v-if="isAuthenticated" class="soc-header__nav" aria-label="Navigation EDB Social">
             <router-link
               v-for="tab in tabs"
               :key="tab.name"
               :to="{ name: tab.name }"
               :class="['soc-header__nav-item', isActive(tab.name) && 'is-active']"
             >
-              <component :is="tab.icon" class="soc-header__nav-icon" />
+              <component :is="tab.icon" class="soc-header__nav-icon" aria-hidden="true" />
               <span>{{ tab.label }}</span>
             </router-link>
           </nav>
@@ -41,18 +41,18 @@
             </span>
             <span class="soc-header__profile-name">{{ userName }}</span>
           </router-link>
-          <router-link :to="{ name: 'socialMessages' }" class="soc-header__icon-btn" title="Messages">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <router-link :to="{ name: 'socialMessages' }" class="soc-header__icon-btn" title="Messages" aria-label="Messages">
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
             </svg>
             <span v-if="unreadCount > 0" class="soc-header__notif">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
           </router-link>
-          <button @click="toggleTheme" class="soc-header__icon-btn soc-header__icon-btn--theme" :title="isDarkMode ? 'Mode clair' : 'Mode sombre'">
-            <svg v-if="isDarkMode" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-            <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          <button @click="toggleTheme" class="soc-header__icon-btn soc-header__icon-btn--theme" :title="isDarkMode ? 'Mode clair' : 'Mode sombre'" :aria-label="isDarkMode ? 'Activer le mode clair' : 'Activer le mode sombre'">
+            <svg v-if="isDarkMode" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <svg v-else aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
           </button>
-          <button @click="handleLogout" class="soc-header__icon-btn soc-header__icon-btn--logout" title="Se déconnecter">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <button @click="handleLogout" class="soc-header__icon-btn soc-header__icon-btn--logout" title="Se déconnecter" aria-label="Se déconnecter">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
           </button>
@@ -61,6 +61,8 @@
           <button
             class="soc-header__hamburger"
             aria-label="Menu"
+            aria-controls="social-mobile-navigation"
+            :aria-expanded="isMenuOpen"
             @click="isMenuOpen = !isMenuOpen"
           >
             <span :class="['soc-header__ham-line', isMenuOpen && 'is-open']" />
@@ -71,8 +73,8 @@
       </div>
 
       <!-- Mobile nav -->
-      <div v-if="isAuthenticated" :class="['soc-header__mobile-wrap', isMenuOpen && 'is-open']">
-      <nav class="soc-header__mobile-nav">
+      <div v-if="isAuthenticated" id="social-mobile-navigation" :class="['soc-header__mobile-wrap', isMenuOpen && 'is-open']">
+      <nav class="soc-header__mobile-nav" aria-label="Navigation mobile EDB Social">
         <router-link
           :to="{ name: 'socialAccount' }"
           :class="['soc-header__mobile-item', isActive('socialAccount') && 'is-active']"
@@ -91,7 +93,7 @@
           :class="['soc-header__mobile-item', isActive(tab.name) && 'is-active']"
           @click="isMenuOpen = false"
         >
-          <component :is="tab.icon" class="soc-header__nav-icon" />
+          <component :is="tab.icon" class="soc-header__nav-icon" aria-hidden="true" />
           <span>{{ tab.label }}</span>
         </router-link>
         <button
@@ -111,7 +113,7 @@
     <div class="soc-above-main"></div>
 
     <!-- Content -->
-    <main class="soc-main">
+    <main class="soc-main" aria-label="Contenu EDB Social">
       <RouterView v-slot="{ Component }">
         <template v-if="Component">
           <Suspense>
@@ -125,6 +127,23 @@
         </template>
       </RouterView>
     </main>
+
+    <!-- Footer -->
+    <footer v-if="isAuthenticated" class="soc-footer" aria-label="Pied de page EDB Social">
+      <div class="soc-footer__strip">
+        <div class="soc-footer__left">
+          <span class="soc-footer__brand">EDB Social</span>
+          <span class="soc-footer__sub">Expression Danse de Beauport</span>
+        </div>
+        <div class="soc-footer__right">
+          <a :href="mainSiteUrl" class="soc-footer__link">
+            Site principal
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </a>
+          <a href="tel:4186666158" class="soc-footer__link">418-666-6158</a>
+        </div>
+      </div>
+    </footer>
 
     <SocialToastHost />
   </div>
@@ -283,6 +302,8 @@ const isMessagesRoute = computed(() => {
     || name === 'socialAnnouncement'
     || name === 'socialGroup'
 })
+
+const mainSiteUrl = computed(() => '/')
 
 const IconBell = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('path', { d: 'M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9' }), h('path', { d: 'M13.73 21a2 2 0 01-3.46 0' })]) }
 const IconGrid = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('rect', { x: '3', y: '3', width: '7', height: '7', rx: '1' }), h('rect', { x: '14', y: '3', width: '7', height: '7', rx: '1' }), h('rect', { x: '3', y: '14', width: '7', height: '7', rx: '1' }), h('rect', { x: '14', y: '14', width: '7', height: '7', rx: '1' })]) }

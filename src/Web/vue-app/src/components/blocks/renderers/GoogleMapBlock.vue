@@ -13,6 +13,7 @@
       class="google-map-block__wrapper">
       <iframe
         :src="data.embedUrl"
+        :title="data.address ? `Carte Google Maps : ${data.address}` : 'Carte Google Maps'"
         :style="{ height: (data.height ?? 400) + 'px' }"
         class="google-map-block__iframe"
         loading="lazy"

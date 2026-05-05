@@ -10,6 +10,27 @@
   }
 }
 
+.skip-link {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 10000;
+  padding: 12px 16px;
+  color: #111827;
+  background: #ffffff;
+  border: 2px solid #111827;
+  border-radius: 8px;
+  font-family: $font-montserrat;
+  font-weight: 700;
+  transform: translateY(-150%);
+  transition: transform 0.15s ease;
+
+  &:focus,
+  &:focus-visible {
+    transform: translateY(0);
+  }
+}
+
 .home-hero {
   display: flex;
   align-items: center;
@@ -76,7 +97,7 @@
     font-family: $font-montserrat;
     font-weight: 700;
     font-size: rem(15);
-    color: $color-white;
+    color: var(--primary-foreground, #ffffff);
     background-color: var(--primary);
     padding: 15px 38px;
     border-radius: 100px;

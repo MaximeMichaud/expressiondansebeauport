@@ -9,7 +9,7 @@
           :id="`${name}-${option.name}`"
           :value="option.name"
           :aria-invalid="!status.valid"
-          :aria-describedby="`error__${name}`"
+          :aria-describedby="!status.valid ? `error__${name}` : undefined"
           :checked="modelValue === option.name"
           @change="handleChange"
           @blur="handleBlur"
