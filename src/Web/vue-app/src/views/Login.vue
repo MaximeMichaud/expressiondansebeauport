@@ -11,6 +11,7 @@
                :rules="[required]"
                name="username"
                type="email"
+               autocomplete="username"
                @validated="handleValidation"/>
     <FormInput ref="passwordRef"
                v-model="loginRequest.password"
@@ -19,6 +20,7 @@
                :rules="[required]"
                name="password"
                type="password"
+               autocomplete="current-password"
                @validated="handleValidation">
       <template v-slot:to-label-right>
         <TextLink :path="{path: t('routes.forgotPassword.path') }"

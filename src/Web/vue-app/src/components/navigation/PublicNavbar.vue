@@ -1,13 +1,14 @@
 <template>
-  <nav class="public-navbar" :class="{ 'is-menu-open': isMenuOpen, 'is-hidden': isNavbarHidden }">
+  <nav class="public-navbar" :class="{ 'is-menu-open': isMenuOpen, 'is-hidden': isNavbarHidden }" aria-label="Navigation principale">
     <div class="public-navbar__inner">
-      <RouterLink :to="{ name: 'home' }" class="public-navbar__logo" @click="closeAll">
-        <LogoEdb class="public-navbar__logo-icon" />
+      <RouterLink :to="{ name: 'home' }" class="public-navbar__logo" aria-label="Accueil" @click="closeAll">
+        <LogoEdb class="public-navbar__logo-icon" aria-hidden="true" focusable="false" />
       </RouterLink>
 
       <button
         class="public-navbar__hamburger"
         :aria-label="t('global.menu')"
+        aria-controls="public-navigation-menu"
         :aria-expanded="isMenuOpen"
         @click="toggleMenu">
         <span class="public-navbar__hamburger-line" :class="{ 'is-open': isMenuOpen }" />
@@ -15,7 +16,7 @@
         <span class="public-navbar__hamburger-line" :class="{ 'is-open': isMenuOpen }" />
       </button>
 
-      <div class="public-navbar__menu" :class="{ 'is-open': isMenuOpen }">
+      <div id="public-navigation-menu" class="public-navbar__menu" :class="{ 'is-open': isMenuOpen }">
         <ul class="public-navbar__links">
           <li
             v-for="item in menuItems"
@@ -27,6 +28,17 @@
               'is-active-parent': isParentActive(item),
             }"
           >
+            <a
+              v-if="!hasChildren(item) && isExternalUrl(resolveMenuItemUrl(item))"
+              :href="resolveMenuItemUrl(item)"
+              :target="item.target === 'Blank' ? '_blank' : undefined"
+              :rel="item.target === 'Blank' ? 'noopener noreferrer' : undefined"
+              class="public-navbar__link"
+              @click="closeAll"
+            >
+              {{ item.label }}
+            </a>
+
             <RouterLink
               v-if="!hasChildren(item) && shouldUseRouterLink(item)"
               :to="getItemUrl(item)"
@@ -54,6 +66,8 @@
               :aria-controls="`submenu-${item.id}`"
               aria-haspopup="true"
               @click="toggleItem(item.id)"
+              @keydown.down.prevent="focusFirstSubmenuLink(item.id)"
+              @keydown.esc.prevent="closeAll"
             >
               <span>{{ item.label }}</span>
               <ChevronDown :size="10" class="nav-parent__chevron" aria-hidden="true" />
@@ -65,8 +79,19 @@
               class="submenu"
               :aria-hidden="!isOpen(item.id) && isMenuOpen"
               :inert="!isOpen(item.id) && isMenuOpen"
+              @keydown.esc.prevent="focusParentItem(item.id)"
             >
               <li v-for="child in item.children" :key="child.id">
+                <a
+                  v-if="isExternalUrl(resolveMenuItemUrl(child))"
+                  :href="resolveMenuItemUrl(child)"
+                  :target="child.target === 'Blank' ? '_blank' : undefined"
+                  :rel="child.target === 'Blank' ? 'noopener noreferrer' : undefined"
+                  class="submenu-link"
+                  @click="closeAll"
+                >
+                  {{ child.label }}
+                </a>
                 <RouterLink
                   v-if="shouldUseRouterLink(child)"
                   :to="getItemUrl(child)"
@@ -91,9 +116,9 @@
 
           <template v-if="menuItems.length === 0">
             <li v-for="link in fallbackLinks" :key="link.key">
-              <a href="#" class="public-navbar__link" @click="isMenuOpen = false">
+              <RouterLink :to="link.to" class="public-navbar__link" @click="closeAll">
                 {{ t(`public.nav.${link.key}`) }}
-              </a>
+              </RouterLink>
             </li>
           </template>
         </ul>
@@ -143,11 +168,11 @@ function handleScroll() {
 }
 
 const fallbackLinks = [
-  { key: "school" },
-  { key: "recreational" },
-  { key: "summerCamp" },
-  { key: "troupes" },
-  { key: "contact" },
+  { key: "school", to: "/notre-ecole" },
+  { key: "recreational", to: "/recreatif" },
+  { key: "summerCamp", to: "/camp-d-ete" },
+  { key: "troupes", to: "/troupes-competitives" },
+  { key: "contact", to: "/nous-joindre" },
 ];
 
 function hasChildren(item: NavigationMenuItem): boolean {
@@ -186,6 +211,26 @@ function isOpen(id: string | undefined): boolean {
 function toggleItem(id: string | undefined) {
   if (!id) return;
   openItemId.value = openItemId.value === id ? null : id;
+}
+
+function resolveMenuItemUrl(item: NavigationMenuItem): string {
+  return item.url || (item.pageSlug ? `/${item.pageSlug}` : '/');
+}
+
+function focusFirstSubmenuLink(id: string | undefined) {
+  if (!id) return;
+  openItemId.value = id;
+  requestAnimationFrame(() => {
+    document.querySelector<HTMLElement>(`#submenu-${CSS.escape(id)} a`)?.focus();
+  });
+}
+
+function focusParentItem(id: string | undefined) {
+  if (!id) return;
+  openItemId.value = null;
+  document
+    .querySelector<HTMLElement>(`[aria-controls="submenu-${CSS.escape(id)}"]`)
+    ?.focus();
 }
 
 function toggleMenu() {
@@ -320,7 +365,7 @@ onBeforeUnmount(() => {
 
   .submenu-link {
     padding: 10px 12px;
-    color: rgba(255, 255, 255, 0.75);
+    color: color-mix(in srgb, var(--primary-foreground, #ffffff) 78%, transparent);
     min-height: 44px;
     display: flex;
     align-items: center;
@@ -329,13 +374,13 @@ onBeforeUnmount(() => {
 
   .submenu-link:hover,
   .submenu-link.router-link-active {
-    background: rgba(255, 255, 255, 0.12);
-    color: #ffffff;
+    background: color-mix(in srgb, var(--primary-foreground, #ffffff) 14%, transparent);
+    color: var(--primary-foreground, #ffffff);
   }
 
   .nav-item.is-active-parent > .nav-parent {
-    color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--primary-foreground, #ffffff);
+    background-color: color-mix(in srgb, var(--primary-foreground, #ffffff) 10%, transparent);
   }
 }
 
@@ -395,7 +440,7 @@ onBeforeUnmount(() => {
   }
 
   .nav-item.is-active-parent > .nav-parent {
-    color: #ffffff;
+    color: var(--primary-foreground, #ffffff);
   }
 
   .nav-item.is-active-parent > .nav-parent::after {
@@ -406,7 +451,7 @@ onBeforeUnmount(() => {
     right: 12px;
     height: 2px;
     border-radius: 1px;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: color-mix(in srgb, var(--primary-foreground, #ffffff) 90%, transparent);
   }
 }
 </style>

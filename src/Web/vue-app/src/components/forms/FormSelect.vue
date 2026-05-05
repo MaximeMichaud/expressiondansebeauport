@@ -7,7 +7,7 @@
       @change="handleChange"
       @blur="handleBlur"
       :aria-invalid="!status.valid"
-      :aria-describedby="`error__${name}`"
+      :aria-describedby="!status.valid ? `error__${name}` : undefined"
       >
       <option v-for="option in options" :key="option.name" :value="option.name" :selected="modelValue === option.name">{{option.label}}</option>
     </select>

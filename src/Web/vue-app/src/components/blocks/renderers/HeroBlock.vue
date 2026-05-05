@@ -92,7 +92,7 @@ const heroStyle = computed(() => {
 .hero-block__cta {
   display: inline-block;
   background: #fff;
-  color: var(--color-primary, #be1e2c);
+  color: var(--primary-readable, var(--color-primary, #be1e2c));
   padding: 14px 28px;
   border-radius: 10px;
   font-weight: 700;

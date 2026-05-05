@@ -13,6 +13,7 @@
                :rules="[required]"
                name="code"
                type="text"
+               autocomplete="one-time-code"
                @validated="handleValidation"/>
     <button class="btn btn--full btn--purple btn--big" @click="sendTwoFactorAuthenticationRequest" :disabled="preventMultipleSubmit">
       {{ t('pages.twoFactor.submit') }}

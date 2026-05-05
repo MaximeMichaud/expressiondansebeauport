@@ -1,14 +1,14 @@
 <template>
-  <footer class="public-footer">
+  <footer class="public-footer" aria-label="Pied de page">
     <div class="public-footer__inner">
       <div class="public-footer__col public-footer__col--brand">
-        <LogoEdb class="public-footer__logo" />
+        <LogoEdb class="public-footer__logo" aria-hidden="true" focusable="false" />
         <p v-if="settings.footerDescription" class="public-footer__description">{{ settings.footerDescription }}</p>
         <p v-else class="public-footer__description">{{ t('public.footer.description') }}</p>
         <template v-if="socialLinks.length">
-          <h3 class="public-footer__heading">{{ t('public.footer.followUs') }}</h3>
+          <h2 class="public-footer__heading">{{ t('public.footer.followUs') }}</h2>
           <div class="public-footer__social-links">
-            <a v-for="link in socialLinks" :key="link.id" :href="link.url" target="_blank" rel="noopener noreferrer" :aria-label="link.platform">
+            <a v-for="link in socialLinks" :key="link.id" :href="link.url" target="_blank" rel="noopener noreferrer" :aria-label="`Visiter notre page ${link.platform}`">
               <component :is="getSocialIcon(link.platform)" fill-color="#ffffff" :size="22" />
             </a>
           </div>
@@ -17,24 +17,24 @@
 
       <div class="public-footer__col public-footer__col--contact">
         <template v-if="settings.footerAddress || settings.footerCity">
-          <h3 class="public-footer__heading">{{ t('public.footer.address') }}</h3>
+          <h2 class="public-footer__heading">{{ t('public.footer.address') }}</h2>
           <p v-if="settings.footerAddress">{{ settings.footerAddress }}</p>
           <p v-if="settings.footerCity">{{ settings.footerCity }}</p>
         </template>
 
         <template v-if="settings.footerPhone">
-          <h3 class="public-footer__heading">{{ t('public.footer.phone') }}</h3>
+          <h2 class="public-footer__heading">{{ t('public.footer.phone') }}</h2>
           <p><a :href="'tel:' + settings.footerPhone.replace(/[^0-9+]/g, '')">{{ settings.footerPhone }}</a></p>
         </template>
 
         <template v-if="settings.footerEmail">
-          <h3 class="public-footer__heading">{{ t('public.footer.email') }}</h3>
+          <h2 class="public-footer__heading">{{ t('public.footer.email') }}</h2>
           <p><a :href="'mailto:' + settings.footerEmail">{{ settings.footerEmail }}</a></p>
         </template>
       </div>
 
       <div v-if="footerMenuItems.length" class="public-footer__col public-footer__col--nav">
-        <h3 class="public-footer__heading">{{ t('global.quickLinks') }}</h3>
+        <h2 class="public-footer__heading">{{ t('global.quickLinks') }}</h2>
         <ul class="public-footer__nav-links">
           <li v-for="item in footerMenuItems" :key="item.id">
             <a
@@ -54,11 +54,18 @@
       <div v-if="footerPartners.length" class="public-footer__col public-footer__col--partners">
         <div class="public-footer__partners-logos">
           <template v-for="partner in footerPartners" :key="partner.id">
-            <a v-if="partner.url" :href="partner.url" target="_blank" rel="noopener noreferrer" class="public-footer__partner-link">
-              <img :src="partner.mediaUrl" :alt="partner.altText" class="public-footer__partner-logo" />
+            <a
+              v-if="partner.url"
+              :href="partner.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="public-footer__partner-link"
+              :aria-label="partner.altText || 'Visiter le site du partenaire'"
+            >
+              <img :src="partner.mediaUrl" :alt="partner.altText || 'Logo partenaire'" class="public-footer__partner-logo" />
             </a>
             <div v-else class="public-footer__partner-link">
-              <img :src="partner.mediaUrl" :alt="partner.altText" class="public-footer__partner-logo" />
+              <img :src="partner.mediaUrl" :alt="partner.altText || 'Logo partenaire'" class="public-footer__partner-logo" />
             </div>
           </template>
         </div>
