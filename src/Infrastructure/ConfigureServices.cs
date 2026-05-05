@@ -1,16 +1,19 @@
 ﻿using System.Text;
 using Application.Interfaces.Imaging;
 using Application.Interfaces.Services;
+using Application.Services.Push;
 using Domain.Entities.Identity;
 using Domain.Repositories;
 using Infrastructure.Imaging;
 using Infrastructure.Mailing;
 using Infrastructure.Repositories.Admins;
+using Infrastructure.Services.Push;
 using Infrastructure.Repositories.Authentication;
 using Infrastructure.Repositories.Media;
 using Infrastructure.Repositories.Groups;
 using Infrastructure.Repositories.JoinRequests;
 using Infrastructure.Repositories.Messaging;
+using Infrastructure.Repositories.Notifications;
 using Infrastructure.Repositories.Posts;
 using Infrastructure.Repositories.Members;
 using Infrastructure.Repositories.Menus;
@@ -90,6 +93,9 @@ public static class ConfigureServices
         services.AddScoped<IConversationRepository, ConversationRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddScoped<IJoinRequestRepository, JoinRequestRepository>();
+        services.AddScoped<IPushSubscriptionRepository, PushSubscriptionRepository>();
+        services.AddScoped<INotificationPreferencesRepository, NotificationPreferencesRepository>();
+        services.AddSingleton<IPushSenderClient, WebPushSenderClient>();
 
         services.AddScoped<IBackupService>(sp =>
         {
@@ -155,12 +161,22 @@ public static class ConfigureServices
                 {
                     OnMessageReceived = context =>
                     {
-                        var accessToken = context.Request.Query["access_token"];
                         var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                        var queryToken = context.Request.Query["access_token"];
+                        if (!string.IsNullOrEmpty(queryToken) && path.StartsWithSegments("/hubs"))
                         {
-                            context.Token = accessToken;
+                            context.Token = queryToken;
+                            return Task.CompletedTask;
                         }
+
+                        var hasAuthHeader = context.Request.Headers.ContainsKey("Authorization")
+                            && !string.IsNullOrWhiteSpace(context.Request.Headers["Authorization"]);
+                        if (!hasAuthHeader && context.Request.Cookies.TryGetValue("accessToken", out var cookieToken)
+                            && !string.IsNullOrWhiteSpace(cookieToken))
+                        {
+                            context.Token = cookieToken;
+                        }
+
                         return Task.CompletedTask;
                     }
                 };

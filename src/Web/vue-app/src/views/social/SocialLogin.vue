@@ -2,27 +2,42 @@
   <div>
     <h2 class="mb-6 text-center text-2xl font-bold text-gray-900">Connexion</h2>
 
-    <form @submit.prevent="handleLogin" class="space-y-4">
+    <form @submit.prevent="handleLogin" class="space-y-4" novalidate>
       <div>
         <label class="mb-1 block text-sm font-medium text-gray-700">Courriel</label>
         <input
           v-model="email"
           type="email"
-          required
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
+          :class="[
+            'w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1',
+            emailError
+              ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+              : 'border-gray-300 focus:border-[#1a1a1a] focus:ring-[#1a1a1a]'
+          ]"
           placeholder="votre@courriel.com"
         />
+        <p v-if="emailError" class="mt-1 text-xs text-red-500">{{ emailError }}</p>
       </div>
 
       <div>
-        <label class="mb-1 block text-sm font-medium text-gray-700">Mot de passe</label>
+        <div class="mb-1 flex items-center justify-between">
+          <label class="block text-sm font-medium text-gray-700">Mot de passe</label>
+          <router-link :to="{ name: 'socialForgotPassword' }" class="text-xs text-[#1a1a1a] hover:underline">
+            Mot de passe oublié?
+          </router-link>
+        </div>
         <input
           v-model="password"
           type="password"
-          required
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#1a1a1a]"
+          :class="[
+            'w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1',
+            passwordError
+              ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+              : 'border-gray-300 focus:border-[#1a1a1a] focus:ring-[#1a1a1a]'
+          ]"
           placeholder="••••••••••"
         />
+        <p v-if="passwordError" class="mt-1 text-xs text-red-500">{{ passwordError }}</p>
       </div>
 
       <button
@@ -57,9 +72,23 @@ const toast = useSocialToast()
 
 const email = ref('')
 const password = ref('')
+const emailError = ref('')
+const passwordError = ref('')
 const loading = ref(false)
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function validate() {
+  emailError.value = ''
+  passwordError.value = ''
+  if (!email.value.trim()) emailError.value = 'Veuillez entrer votre courriel.'
+  else if (!emailRegex.test(email.value.trim())) emailError.value = 'Courriel invalide.'
+  if (!password.value) passwordError.value = 'Veuillez entrer votre mot de passe.'
+  return !emailError.value && !passwordError.value
+}
+
 async function handleLogin() {
+  if (!validate()) return
   loading.value = true
 
   try {

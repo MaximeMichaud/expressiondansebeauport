@@ -159,6 +159,12 @@ dotnet ef database update --startup-project ../Web/
 
 Voir [CONTRIBUTING.md](./CONTRIBUTING.md) pour la stratégie de branches et la convention de commits.
 
+## VARIABLES D'ENVIRONNEMENT DE PRODUCTION
+
+Ajouter au fichier `.env` du serveur de prod :
+
+- `VAPID_PRIVATE_KEY` — clé privée VAPID pour les notifications push (générée une fois, jamais committée)
+
 ## LICENCE
 
 Ce projet est développé dans le cadre du cours Projet intégrateur au Cégep Garneau.

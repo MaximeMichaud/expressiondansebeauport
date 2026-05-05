@@ -8,6 +8,7 @@ using Application.Services.JoinRequests;
 using Application.Services.Messaging;
 using Application.Services.Posts;
 using Application.Services.Notifications;
+using Application.Services.Push;
 using Application.Services.Users;
 using Application.Settings;
 using Microsoft.Extensions.Configuration;
@@ -40,6 +41,7 @@ public static class ConfigureServices
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IConversationService, ConversationService>();
         services.AddScoped<IJoinRequestService, JoinRequestService>();
+        services.AddScoped<IPushNotificationDispatcher, PushNotificationDispatcher>();
 
         services.AddAutoMapper(cfg => cfg.AddMaps(typeof(ConfigureServices).Assembly));
 

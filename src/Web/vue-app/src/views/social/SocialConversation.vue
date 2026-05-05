@@ -61,6 +61,7 @@
             :join-request-id="msg.joinRequest.id"
             :group-name="msg.joinRequest.groupName"
             :requester-name="msg.joinRequest.requesterName"
+            :reason="msg.joinRequest.reason"
             :status="msg.joinRequest.status"
             :resolved-by-name="msg.joinRequest.resolvedByName"
             :is-mine="msg.isMine"
@@ -291,6 +292,7 @@ interface ChatMessage {
     groupName: string
     requesterMemberId: string
     requesterName: string
+    reason?: string
     status: 'Pending' | 'Accepted' | 'Rejected'
     resolvedByName?: string
   }
@@ -386,8 +388,8 @@ const messageInput = ref<HTMLInputElement | null>(null)
 const ready = ref(false)
 
 const allMessages = computed(() => {
-  const sorted = [...scrollMessages.value].reverse()
-  return [...sorted, ...pendingMessages.value]
+  return [...scrollMessages.value, ...pendingMessages.value]
+    .sort((a, b) => new Date(a.created).getTime() - new Date(b.created).getTime())
 })
 
 function formatTime(dateStr: string) {
@@ -819,6 +821,13 @@ $convo-font-body: 'Karla', sans-serif;
     padding: 12px 16px;
     border-top: 1px solid var(--soc-divider, #f0f0f0);
     flex-shrink: 0;
+
+    @media (max-width: 48em) {
+      // More breathing room above the iOS home bar / Android nav.
+      // env(safe-area-inset-bottom) is the device-reported home-indicator
+      // height (e.g. 34px on iPhones with home bar, 0 on older devices).
+      padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    }
   }
 
   &__input {

@@ -1,5 +1,6 @@
 import * as signalR from '@microsoft/signalr'
 import { ref, onUnmounted } from 'vue'
+import Cookies from 'universal-cookie'
 
 const connection = ref<signalR.HubConnection | null>(null)
 const isConnected = ref(false)
@@ -8,19 +9,17 @@ const joinRequestCallbacks = new Set<(data: any) => void>()
 let _hasJoinRequestHandler = false
 
 export function useSignalR() {
-  function getAccessToken(): string {
-    const cookies = document.cookie.split('; ')
-    const accessCookie = cookies.find(c => c.startsWith('accessToken='))
-    return accessCookie?.split('=')[1] ?? ''
+  function hasSession(): boolean {
+    return !!new Cookies().get('hasSession')
   }
 
   async function start() {
     if (connection.value?.state === signalR.HubConnectionState.Connected) return
-    if (!getAccessToken()) return
+    if (!hasSession()) return
 
     connection.value = new signalR.HubConnectionBuilder()
       .withUrl('/hubs/chat', {
-        accessTokenFactory: () => getAccessToken()
+        withCredentials: true
       })
       .configureLogging(signalR.LogLevel.None)
       .withAutomaticReconnect()

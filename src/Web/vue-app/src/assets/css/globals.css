@@ -143,3 +143,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* iOS Safari auto-zooms when focusing any form field whose computed font-size
+   is below 16px. Force 16px on inputs/selects/textareas on small screens to
+   suppress that without disabling pinch-zoom in the viewport meta. */
+@media only screen and (max-width: 47.99em) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}

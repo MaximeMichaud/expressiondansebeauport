@@ -14,6 +14,7 @@ public class SendGridMessageFactoryTests
     private const string AnyEmail = "garneau@spektrummedia.com";
     private const string AnyLocale = "fr";
     private const string AnyName = "Garneau Template";
+    private const string AnyCode = "123456";
 
     private readonly Mock<IWebHostEnvironment> _webHostEnvironment;
 
@@ -80,7 +81,7 @@ public class SendGridMessageFactoryTests
     public void WhenCreateFromModel_ThenUseModelTemplateIdAsTemplateId()
     {
         // Arrange
-        var model = new ForgotPasswordNotificationModel(AnyEmail, AnyLocale, AnyLink);
+        var model = new TwoFactorAuthenticationNotificationModel(AnyEmail, AnyLocale, AnyCode);
 
         // Act
         var msg = _sendGridMessageFactory.CreateFromModel(model);

@@ -4,4 +4,5 @@ public class CookieSettings
 {
     public string Domain { get; set; } = null!;
     public bool Secure { get; set; }
+    public int MaxAgeDays { get; set; } = 90;
 }

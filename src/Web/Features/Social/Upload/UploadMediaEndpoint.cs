@@ -12,7 +12,7 @@ public class UploadMediaEndpoint : EndpointWithoutRequest
     private const string SocialSubDirectory = "social";
     private const long MaxImageSize = 10 * 1024 * 1024; // 10 MB
     private const long MaxPdfSize = 50 * 1024 * 1024; // 50 MB
-    private const long MaxVideoSize = 50 * 1024 * 1024; // 50 MB
+    private const long MaxVideoSize = 2L * 1024 * 1024 * 1024; // 2 GB
 
     private static readonly string[] AllowedImageTypes =
     {
@@ -85,7 +85,7 @@ public class UploadMediaEndpoint : EndpointWithoutRequest
         {
             if (file.Length > MaxVideoSize)
             {
-                await Send.OkAsync(new SucceededOrNotResponse(false, new Error("TooLarge", "Vidéo trop volumineuse. Maximum 50 Mo.")), ct);
+                await Send.OkAsync(new SucceededOrNotResponse(false, new Error("TooLarge", "Vidéo trop volumineuse. Maximum 2 Go.")), ct);
                 return;
             }
 

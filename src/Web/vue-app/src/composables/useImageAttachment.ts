@@ -5,6 +5,7 @@ export interface UseImageAttachmentOptions {
   maxFiles?: number
   maxSizeBytes?: number
   allowedTypes?: string[]
+  maxVideoDurationSeconds?: number
 }
 
 export interface AttachmentPreview {
@@ -31,16 +32,38 @@ const DEFAULT_ALLOWED = [
   'video/mp4', 'video/quicktime', 'video/webm'
 ]
 const IMAGE_MAX_SIZE = 10 * 1024 * 1024
-const VIDEO_MAX_SIZE = 50 * 1024 * 1024
+const VIDEO_MAX_SIZE = 2 * 1024 * 1024 * 1024
+const DEFAULT_VIDEO_MAX_DURATION_SECONDS = 600
 
 function isVideoType(type: string): boolean {
   return type.startsWith('video/')
+}
+
+function getVideoDuration(file: File): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file)
+    const video = document.createElement('video')
+    video.preload = 'metadata'
+    video.muted = true
+    video.onloadedmetadata = () => {
+      const duration = video.duration
+      URL.revokeObjectURL(url)
+      if (!isFinite(duration)) reject(new Error('unreadable duration'))
+      else resolve(duration)
+    }
+    video.onerror = () => {
+      URL.revokeObjectURL(url)
+      reject(new Error('failed to read metadata'))
+    }
+    video.src = url
+  })
 }
 
 export function useImageAttachment(options: UseImageAttachmentOptions): UseImageAttachmentReturn {
   const maxFiles = options.maxFiles ?? (options.mode === 'single' ? 1 : 10)
   const explicitMaxSize = options.maxSizeBytes
   const allowed = options.allowedTypes ?? DEFAULT_ALLOWED
+  const maxVideoDuration = options.maxVideoDurationSeconds ?? DEFAULT_VIDEO_MAX_DURATION_SECONDS
 
   const files = ref<File[]>([])
   const previews = ref<AttachmentPreview[]>([])
@@ -48,7 +71,7 @@ export function useImageAttachment(options: UseImageAttachmentOptions): UseImage
   const isDraggingOver = ref(false)
   let dragCounter = 0
 
-  function addFiles(incoming: File[]) {
+  async function addFiles(incoming: File[]) {
     error.value = null
     for (const file of incoming) {
       if (files.value.length >= maxFiles) {
@@ -63,8 +86,24 @@ export function useImageAttachment(options: UseImageAttachmentOptions): UseImage
       const maxSize = explicitMaxSize ?? (isVideo ? VIDEO_MAX_SIZE : IMAGE_MAX_SIZE)
       if (file.size > maxSize) {
         const label = isVideo ? 'Vidéo' : 'Image'
-        error.value = `${label} trop volumineuse (max ${Math.round(maxSize / 1024 / 1024)} MB) : ${file.name}`
+        const sizeLabel = maxSize >= 1024 * 1024 * 1024
+          ? `${(maxSize / 1024 / 1024 / 1024).toFixed(1)} Go`
+          : `${Math.round(maxSize / 1024 / 1024)} Mo`
+        error.value = `${label} trop volumineuse (max ${sizeLabel}) : ${file.name}`
         continue
+      }
+      if (isVideo) {
+        try {
+          const duration = await getVideoDuration(file)
+          if (duration > maxVideoDuration) {
+            const minutes = Math.floor(maxVideoDuration / 60)
+            error.value = `Vidéo trop longue (max ${minutes} min) : ${file.name}`
+            continue
+          }
+        } catch {
+          error.value = `Impossible de lire la vidéo : ${file.name}`
+          continue
+        }
       }
       const url = URL.createObjectURL(file)
       files.value.push(file)
@@ -75,7 +114,7 @@ export function useImageAttachment(options: UseImageAttachmentOptions): UseImage
   function handleFileInput(e: Event) {
     const target = e.target as HTMLInputElement
     if (!target.files) return
-    addFiles(Array.from(target.files))
+    void addFiles(Array.from(target.files))
     target.value = ''
   }
 
@@ -85,7 +124,7 @@ export function useImageAttachment(options: UseImageAttachmentOptions): UseImage
     dragCounter = 0
     isDraggingOver.value = false
     if (!e.dataTransfer?.files) return
-    addFiles(Array.from(e.dataTransfer.files))
+    void addFiles(Array.from(e.dataTransfer.files))
   }
 
   function handleDragEnter(e: DragEvent) {

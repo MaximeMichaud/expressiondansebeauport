@@ -34,7 +34,7 @@ public class JoinRequestService : IJoinRequestService
         _conversationRepository = conversationRepository;
     }
 
-    public async Task<JoinRequest> CreateRequest(Guid groupId, Guid requesterMemberId)
+    public async Task<JoinRequest> CreateRequest(Guid groupId, Guid requesterMemberId, string reason)
     {
         var group = await _groupRepository.FindById(groupId);
         if (group == null)
@@ -69,12 +69,13 @@ public class JoinRequestService : IJoinRequestService
         joinRequest.SetId(Guid.NewGuid());
         joinRequest.SetGroupId(groupId);
         joinRequest.SetRequesterMemberId(requesterMemberId);
+        joinRequest.SetReason(reason);
         joinRequest.SetStatus(JoinRequestStatus.Pending);
         joinRequest.SetCreatedAt(InstantHelper.GetLocalNow());
 
         await _joinRequestRepository.Add(joinRequest);
 
-        var content = $"{requester.FullName} souhaite rejoindre le groupe {group.Name}";
+        var content = $"{requester.FullName} souhaite rejoindre le groupe {group.Name}.\n\n« {reason} »";
 
         foreach (var recipientId in recipientMemberIds)
         {

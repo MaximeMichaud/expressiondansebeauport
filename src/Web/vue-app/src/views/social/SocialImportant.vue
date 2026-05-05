@@ -1,5 +1,12 @@
 <template>
   <div class="p-4">
+    <!-- Quick links block (teleported above soc-main) -->
+    <Teleport to=".soc-above-main">
+      <QuickLinks />
+    </Teleport>
+
+    <!-- Annonces section (own rounded card) -->
+    <div class="annonces-card rounded-xl bg-white p-4">
     <!-- Header -->
     <div class="mb-4 flex items-center justify-between">
       <h2 class="text-lg font-bold text-gray-900">Annonces</h2>
@@ -195,6 +202,8 @@
         <div class="h-5 w-5 animate-spin rounded-full border-2 border-[#1a1a1a] border-t-transparent"></div>
       </div>
     </div>
+    </div>
+    <!-- /Annonces card -->
 
     <!-- Delete modal -->
     <Teleport to="body">
@@ -232,6 +241,7 @@ import { useImageAttachment } from '@/composables/useImageAttachment'
 import { useInfiniteScroll } from '@/composables/useInfiniteScroll'
 import { Role } from '@/types/enums'
 import type { Post } from '@/types/entities'
+import QuickLinks from '@/components/social/QuickLinks.vue'
 
 const socialService = useSocialService()
 const toast = useSocialToast()
@@ -424,6 +434,11 @@ onUnmounted(() => {
 
 <style lang="scss">
 $ann-font-display: 'Montserrat', sans-serif;
+
+.annonces-card {
+  margin: -1rem;
+}
+
 
 .ann-modal {
   &__overlay {

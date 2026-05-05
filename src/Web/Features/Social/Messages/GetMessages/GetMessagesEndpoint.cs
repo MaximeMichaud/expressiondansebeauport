@@ -102,6 +102,7 @@ public class GetMessagesEndpoint : Endpoint<GetMessagesRequest>
                     GroupName = m.JoinRequest.Group?.Name,
                     RequesterMemberId = m.JoinRequest.RequesterMemberId,
                     RequesterName = m.JoinRequest.RequesterMember?.FullName ?? "Inconnu",
+                    m.JoinRequest.Reason,
                     Status = m.JoinRequest.Status.ToString(),
                     ResolvedByName = m.JoinRequest.ResolvedByMember?.FullName
                 } : null

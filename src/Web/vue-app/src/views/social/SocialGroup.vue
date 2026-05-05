@@ -110,7 +110,6 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
                   </button>
                   <button
-                    v-if="canCreatePolls"
                     type="button"
                     class="soc-composer-icon flex h-9 w-9 items-center justify-center rounded-lg transition cursor-pointer"
                     title="Créer un sondage"
@@ -160,9 +159,20 @@
                 <p class="text-sm font-semibold text-gray-900">{{ post.authorName }}</p>
                 <p class="text-xs text-gray-500">{{ formatDate(post.created) }}</p>
               </div>
-              <span v-if="post.isPinned" class="rounded bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-700">
-                Épinglé
-              </span>
+              <button
+                v-if="canPin || post.isPinned"
+                @click="canPin ? togglePin(post) : undefined"
+                :disabled="!canPin"
+                class="soc-header__icon-btn"
+                :class="!canPin ? 'cursor-default opacity-100' : ''"
+                style="width: 30px; height: 30px;"
+                :title="post.isPinned ? (canPin ? 'Désépingler la publication' : 'Publication épinglée') : 'Épingler la publication'"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" :fill="post.isPinned ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 17v5"/>
+                  <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>
+                </svg>
+              </button>
               <button
                 v-if="isAdmin || post.authorMemberId === myMemberId"
                 @click="deleteTarget = post"
@@ -370,7 +380,7 @@ const memberStore = useMemberStore()
 const avatarRegistry = useAvatarRegistryStore()
 
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
-const canCreatePolls = computed(() => userStore.hasOneOfTheseRoles([Role.Professor, Role.Admin]))
+const canPin = computed(() => userStore.hasOneOfTheseRoles([Role.Admin, Role.Professor]))
 const myMemberId = computed(() => memberStore.member?.id || '')
 const groupId = computed(() => route.params.id as string)
 const showPollModal = ref(false)
@@ -586,6 +596,25 @@ async function submitComment(post: Post) {
     post.commentCount = (post.commentCount || 0) + 1
   } catch { /* */ }
   submittingComment.value = false
+}
+
+async function togglePin(post: Post) {
+  const wasPinned = post.isPinned
+  try {
+    const result = await socialService.pinPost(post.id, groupId.value)
+    const fresh = await socialService.getGroupFeed(groupId.value, 1)
+    posts.value = fresh.items
+    avatarRegistry.populateFromList(fresh.items as any[], 'authorMemberId', 'authorProfileImageUrl')
+    if (!wasPinned && result.replacedExisting) {
+      toast.success('Publication épinglée. La précédente a été retirée.')
+    } else if (!wasPinned && result.isPinned) {
+      toast.success('Publication épinglée.')
+    } else if (wasPinned && !result.isPinned) {
+      toast.success('Publication désépinglée.')
+    }
+  } catch {
+    toast.error("Erreur lors de l'épinglage de la publication.")
+  }
 }
 
 async function removeComment(commentId: string) {
