@@ -216,6 +216,18 @@ export interface IAuditLogService {
   ): Promise<PaginatedResponse<AuditLog>>
 }
 
+export interface IContactService {
+  submit(payload: {
+    name: string
+    email: string
+    message: string
+    honeypot?: string
+    recipientEmail?: string
+    blockId?: string
+    pageSlug?: string
+  }): Promise<SucceededOrNotResponse>
+}
+
 export interface IBackupService {
   getAll(): Promise<BackupRecord[]>
 

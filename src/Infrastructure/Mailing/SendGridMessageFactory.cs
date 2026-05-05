@@ -27,16 +27,17 @@ public class SendGridMessageFactory : ISendGridMessageFactory
             From = new EmailAddress(_mailingSettings.FromAddress, _mailingSettings.FromName)
         };
 
-        var htmlBody = model.HtmlBody();
-        if (!string.IsNullOrEmpty(htmlBody))
+        var templateId = model.TemplateId();
+        if (!string.IsNullOrWhiteSpace(templateId))
         {
-            msg.Subject = model.Subject() ?? string.Empty;
-            msg.HtmlContent = htmlBody;
+            msg.TemplateId = templateId;
+            msg.SetTemplateData(model.TemplateData());
         }
         else
         {
-            msg.TemplateId = model.TemplateId();
-            msg.SetTemplateData(model.TemplateData());
+            msg.Subject = model.Subject() ?? string.Empty;
+            msg.PlainTextContent = model.PlainTextContent();
+            msg.HtmlContent = model.HtmlContent();
         }
 
         if (model.Attachments.Any())

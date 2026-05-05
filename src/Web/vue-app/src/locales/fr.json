@@ -343,6 +343,37 @@
         "alignCenter": "Centre",
         "alignRight": "Droite",
         "openInNewTab": "Ouvrir dans un nouvel onglet"
+      },
+      "contactForm": {
+        "title": "Titre du formulaire",
+        "titlePlaceholder": "Écrivez-nous",
+        "introText": "Texte d'introduction",
+        "introPlaceholder": "Expliquez brièvement comment vous joindre ou le délai de réponse.",
+        "submitLabel": "Texte du bouton d'envoi",
+        "submitPlaceholder": "Envoyer le message",
+        "successMessage": "Message de succès",
+        "successPlaceholder": "Merci! Votre message a bien été envoyé.",
+        "recipientEmail": "Courriel destinataire",
+        "recipientPlaceholder": "contact{'@'}exemple.com",
+        "recipientHint": "Laissez vide pour utiliser le courriel du pied de page dans les réglages du site.",
+        "enabled": "Formulaire actif",
+        "defaultTitle": "Contactez-nous",
+        "defaultSubmitLabel": "Envoyer",
+        "defaultSuccessMessage": "Votre message a été envoyé.",
+        "public": {
+          "name": "Nom",
+          "namePlaceholder": "Votre nom",
+          "email": "Courriel",
+          "emailPlaceholder": "vous{'@'}exemple.com",
+          "message": "Message",
+          "messagePlaceholder": "Décrivez votre demande.",
+          "sending": "Envoi en cours...",
+          "disabled": "Le formulaire est temporairement indisponible.",
+          "error": "Impossible d’envoyer votre message pour le moment.",
+          "validation": {
+            "contactUnavailable": "Impossible d’envoyer votre message pour le moment."
+          }
+        }
       }
     },
     "menus": {

@@ -12,7 +12,7 @@ public class ForgotPasswordNotificationModel : NotificationModel
 
     public override string Subject() => "Réinitialisation de votre mot de passe";
 
-    public override string HtmlBody() => $@"<!DOCTYPE html>
+    public override string HtmlContent() => $@"<!DOCTYPE html>
 <html lang=""fr"">
 <head><meta charset=""utf-8""></head>
 <body style=""font-family: Arial, Helvetica, sans-serif; color: #1a1a1a; line-height: 1.5; max-width: 560px; margin: 0 auto; padding: 24px;"">

@@ -1,4 +1,4 @@
-﻿using Application.Helpers;
+using Application.Helpers;
 using Application.Services.Notifications.Dtos;
 
 namespace Application.Services.Notifications.Models;
@@ -23,5 +23,6 @@ public abstract class NotificationModel
     public virtual string TemplateId() => string.Empty;
     public virtual object TemplateData() => new { };
     public virtual string? Subject() => null;
-    public virtual string? HtmlBody() => null;
+    public virtual string? PlainTextContent() => null;
+    public virtual string? HtmlContent() => null;
 }
