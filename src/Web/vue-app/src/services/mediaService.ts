@@ -6,11 +6,14 @@ import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
 import {MediaFile} from "@/types/entities"
 
 export class MediaService extends ApiService implements IMediaService {
-  public async getAll(pageIndex: number, pageSize: number): Promise<PaginatedResponse<MediaFile>> {
+  public async getAll(pageIndex: number, pageSize: number, fileType?: string): Promise<PaginatedResponse<MediaFile>> {
+    let url = `${import.meta.env.VITE_API_BASE_URL}/admin/media?pageIndex=${pageIndex}&pageSize=${pageSize}`
+    if (fileType && fileType !== 'all') url += `&fileType=${encodeURIComponent(fileType)}`
+
     const response = await this
       ._httpClient
       .get<any, AxiosResponse<PaginatedResponse<MediaFile>>>(
-        `${import.meta.env.VITE_API_BASE_URL}/admin/media?pageIndex=${pageIndex}&pageSize=${pageSize}`)
+        url)
       .catch(function (error: AxiosError): AxiosResponse<PaginatedResponse<MediaFile>> {
         return error.response as AxiosResponse<PaginatedResponse<MediaFile>>
       })

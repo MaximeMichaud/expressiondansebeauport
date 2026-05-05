@@ -8,7 +8,9 @@
       class="google-map-block__address">
       {{ data.address }}
     </a>
-    <div class="google-map-block__wrapper">
+    <div
+      v-if="hasEmbedUrl"
+      class="google-map-block__wrapper">
       <iframe
         :src="data.embedUrl"
         :style="{ height: (data.height ?? 400) + 'px' }"
@@ -28,6 +30,8 @@ import type {GoogleMapBlockData} from "@/types/entities/pageBlock"
 const props = defineProps<{
   data: GoogleMapBlockData
 }>()
+
+const hasEmbedUrl = computed(() => Boolean(props.data.embedUrl?.trim()))
 
 const mapsUrl = computed(() =>
   `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(props.data.address ?? '')}`

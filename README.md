@@ -79,14 +79,6 @@ L'application comprend un CMS sur mesure pour gérer le site public (pages, menu
 - **CI/CD :** GitHub Actions (lint, build, tests, déploiement VPS, PR previews sur Azure Container Apps)
 - **Conteneurisation :** Docker (multi-stage build)
 
-## BRANCHES
-
-- **main** - Production uniquement. Protégée, aucun push direct. Reçoit les merges depuis `dev` lors des releases.
-- **dev** - Branche d'intégration. Cible de toutes les PRs (`feat/*`, `fix/*`, `chore/*`).
-- **feat/\*, fix/\*, chore/\*** - Branches de travail, créées depuis `dev`.
-
-Quand `dev` est stable, une PR `dev → main` est créée pour déployer en production.
-
 ## PRÉREQUIS
 
 - .NET SDK 10
@@ -105,6 +97,27 @@ docker compose up
 ```
 
 L'application sera accessible à : http://localhost:8080/
+
+### Production VPS
+
+En production, Caddy expose `80/443` publiquement et relaie vers `web:8080` sur le réseau Docker interne. Le service `web` ne doit pas publier `8080` sur l'hôte en prod.
+
+Utiliser les cibles Makefile pour éviter de lancer la stack de développement par erreur :
+
+```bash
+make prod-up      # build + démarre la stack prod
+make prod-ps      # état des conteneurs prod
+make prod-logs    # logs prod
+make prod-down    # arrêt de la stack prod
+```
+
+Équivalent direct :
+
+```bash
+docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build --remove-orphans
+```
+
+Ne pas utiliser `docker compose up` seul sur le VPS : cette commande charge `docker-compose.yml`, prévu pour le développement local.
 
 ### Développement local
 
@@ -126,10 +139,6 @@ dotnet dev-certs https --trust
 dotnet watch run
 ```
 
-### Seed
-
-- Utilisateur par défaut : `admin@gmail.com` / `Qwerty123!`
-
 ### Migrations
 
 ```bash
@@ -142,39 +151,13 @@ dotnet ef migrations add {NomMigration} --startup-project ../Web/
 dotnet ef database update --startup-project ../Web/
 ```
 
-## STRUCTURE DU PROJET
+### Seed
 
-```
-expressiondansebeauport/
-├── src/
-│   ├── Domain/              # Entités, value objects, interfaces repositories
-│   ├── Application/         # Services, DTOs, mappings, exceptions
-│   ├── Infrastructure/      # SendGrid, repositories EF Core, backup providers
-│   ├── Persistence/         # DbContext, migrations, configurations EF, intercepteurs
-│   └── Web/                 # API FastEndpoints + frontend Vue
-│       ├── Features/        # Endpoints (Admins, Public, Social, Users)
-│       ├── Hubs/            # SignalR (ChatHub)
-│       ├── BackgroundServices/  # Scheduler de sauvegardes
-│       └── vue-app/         # Application Vue 3 SPA
-├── tests/
-│   ├── Tests.Application/
-│   ├── Tests.Domain/
-│   ├── Tests.Infrastructure/
-│   ├── Tests.Web/
-│   └── Tests.Common/
-├── deploy/                  # Script de setup VPS
-├── docker-compose.yml       # Développement
-├── docker-compose.prod.yml  # Production
-├── Caddyfile                # Reverse proxy HTTPS
-├── Dockerfile               # Build multi-stage (Node + .NET)
-└── .github/workflows/       # CI, PR previews, cleanup
-```
+- Utilisateur par défaut : `admin@gmail.com` / `Qwerty123!`
 
-## INSTANT (NodaTime)
+## CONTRIBUTION
 
-Un `Instant` représente un moment dans le temps, toujours en UTC. `InstantHelper.GetLocalNow()` retourne la date/heure UTC courante.
-
-Lors du parsing d'une chaîne vers un Instant, la date est conservée telle quelle mais sauvegardée en UTC en base de données.
+Voir [CONTRIBUTING.md](./CONTRIBUTING.md) pour la stratégie de branches et la convention de commits.
 
 ## VARIABLES D'ENVIRONNEMENT DE PRODUCTION
 

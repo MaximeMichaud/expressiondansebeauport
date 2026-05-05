@@ -22,18 +22,19 @@
       :is-loading="pagesAreLoading"
       :items="tablePages"
       :total-items="paginatedResponse.totalItems"
+      v-model:server-options="serverOptions"
       :search-value="''"
       @delete="onDelete"
       @duplicate="onDuplicate"
-      @reload="loadPages"
     />
   </div>
 </template>
 
 <script lang="ts" setup>
 import {useI18n} from "vue-i18n"
-import {computed, onMounted, ref} from "vue"
+import {computed, ref, watch} from "vue"
 import {useRouter} from "vue-router"
+import type {ServerOptions} from "vue3-easy-data-table"
 import {usePageService} from "@/serviceRegistry"
 import {Page} from "@/types/entities"
 import {PaginatedResponse} from "@/types/responses"
@@ -52,6 +53,10 @@ const pagesAreLoading = ref(false)
 const pageItems = ref<Page[]>([])
 const paginatedResponse = ref<PaginatedResponse<Page>>({totalItems: 0})
 const pageSize = Tables.DefaultRowsPerPage
+const serverOptions = ref<ServerOptions>({
+  page: 1,
+  rowsPerPage: pageSize
+})
 
 const statusLabels: Record<string, string> = {
   Published: t('pages.pages.published'),
@@ -75,9 +80,9 @@ const tablePages = computed(() => {
   })
 })
 
-onMounted(async () => {
-  await loadPages(1, pageSize)
-})
+watch(serverOptions, async (value) => {
+  await loadPages(value.page, value.rowsPerPage)
+}, {deep: true, immediate: true})
 
 async function loadPages(pageIndex: number, size: number) {
   pagesAreLoading.value = true
@@ -120,8 +125,7 @@ async function onDelete(item: any) {
 
   const response = await pageService.delete(item.id)
   if (response && response.succeeded) {
-    const index = pageItems.value.findIndex(x => x.id === item.id)
-    if (index !== -1) pageItems.value.splice(index, 1)
+    await loadPages(serverOptions.value.page, serverOptions.value.rowsPerPage)
   }
   preventMultipleSubmit.value = false
 }

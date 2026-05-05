@@ -11,7 +11,8 @@
     "build": "vite build --mode production",
     "build:check": "vue-tsc --noEmit && vite build --mode production",
     "preview": "vite preview",
-    "lint": "eslint . --fix"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@kyvg/vue3-notification": "^3.4.0",
@@ -55,7 +56,7 @@
     "eslint-plugin-vue": "^10.7.0",
     "globals": "^17.3.0",
     "sass": "^1.83.0",
-    "typescript": "^5.7.0",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.54.0",
     "vite": "^8.0.3",
     "vite-plugin-pwa": "^1.2.0",
