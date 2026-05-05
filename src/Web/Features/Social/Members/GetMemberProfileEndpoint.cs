@@ -39,6 +39,12 @@ public class GetMemberProfileEndpoint : Endpoint<GetMemberProfileRequest>
         var member = _memberRepository.FindById(req.Id);
         if (member == null) { await Send.NotFoundAsync(ct); return; }
 
+        var caller = _authenticatedUserService.GetAuthenticatedUser();
+        var callerIsStaff = caller != null
+            && (caller.HasRole(Domain.Constants.User.Roles.ADMINISTRATOR)
+                || caller.HasRole(Domain.Constants.User.Roles.PROFESSOR));
+        var callerIsSelf = caller != null && member.User.Id == caller.Id;
+
         var groups = await _groupMemberRepository.GetGroupsForMember(member.Id);
 
         await Send.OkAsync(new
@@ -47,7 +53,7 @@ public class GetMemberProfileEndpoint : Endpoint<GetMemberProfileRequest>
             member.FullName,
             member.FirstName,
             member.LastName,
-            member.Email,
+            Email = (callerIsStaff || callerIsSelf) ? member.Email : null,
             member.ProfileImageUrl,
             member.AvatarColor,
             Roles = member.User.UserRoles.Select(ur => ur.Role.Name).ToList(),

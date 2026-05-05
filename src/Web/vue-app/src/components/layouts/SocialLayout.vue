@@ -126,21 +126,7 @@
       </RouterView>
     </main>
 
-    <!-- Toasts -->
-    <Teleport to="body">
-      <TransitionGroup name="soc-toast" tag="div" class="soc-toast-container">
-        <div
-          v-for="toast in toasts"
-          :key="toast.id"
-          :class="['soc-toast', `soc-toast--${toast.type}`]"
-          @click="dismissToast(toast.id)"
-        >
-          <svg v-if="toast.type === 'success'" class="soc-toast__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-          <svg v-else class="soc-toast__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-          <span>{{ toast.message }}</span>
-        </div>
-      </TransitionGroup>
-    </Teleport>
+    <SocialToastHost />
   </div>
 </template>
 
@@ -149,12 +135,14 @@ import { ref, computed, h, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import { useMemberStore } from '@/stores/memberStore'
+import { Role } from '@/types/enums'
 import { useSocialService, useAuthenticationService } from '@/serviceRegistry'
 import { useSignalR } from '@/composables/useSignalR'
 import { useSocialToast } from '@/composables/useSocialToast'
 import LogoEdb from '@/assets/icons/logo__edb.svg'
+import SocialToastHost from '@/components/layouts/items/SocialToastHost.vue'
 
-const { toasts, dismiss: dismissToast, success: toastSuccess, error: toastError } = useSocialToast()
+const { success: toastSuccess, error: toastError } = useSocialToast()
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -300,11 +288,13 @@ const IconBell = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0
 const IconGrid = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('rect', { x: '3', y: '3', width: '7', height: '7', rx: '1' }), h('rect', { x: '14', y: '3', width: '7', height: '7', rx: '1' }), h('rect', { x: '3', y: '14', width: '7', height: '7', rx: '1' }), h('rect', { x: '14', y: '14', width: '7', height: '7', rx: '1' })]) }
 const IconUsers = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('path', { d: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2' }), h('circle', { cx: '9', cy: '7', r: '4' }), h('path', { d: 'M23 21v-2a4 4 0 00-3-3.87' }), h('path', { d: 'M16 3.13a4 4 0 010 7.75' })]) }
 
-const tabs = [
+const isStaff = computed(() => userStore.hasOneOfTheseRoles([Role.Admin, Role.Professor]))
+
+const tabs = computed(() => [
   { name: 'socialImportant', label: 'Annonces', icon: IconBell },
   { name: 'socialPortal', label: 'Groupes', icon: IconGrid },
-  { name: 'socialMembers', label: 'Professeurs', icon: IconUsers },
-]
+  { name: 'socialMembers', label: isStaff.value ? 'Membres' : 'Professeurs', icon: IconUsers },
+])
 </script>
 
 <style lang="scss">
@@ -819,75 +809,6 @@ $soc-font-body: 'Karla', sans-serif;
   }
 }
 
-// Toast system
-.soc-toast-container {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 8px;
-  pointer-events: none;
-}
-
-.soc-toast {
-  pointer-events: auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 18px;
-  border-radius: 12px;
-  font-family: $soc-font-body;
-  font-size: 0.82rem;
-  font-weight: 500;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
-  backdrop-filter: blur(8px);
-  max-width: 360px;
-
-  &--success {
-    background: rgba(21, 128, 61, 0.06);
-    color: #15803d;
-    border: 1px solid rgba(21, 128, 61, 0.15);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(21, 128, 61, 0.1);
-  }
-
-  &--error {
-    background: rgba(220, 38, 38, 0.06);
-    color: #dc2626;
-    border: 1px solid rgba(220, 38, 38, 0.15);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(220, 38, 38, 0.1);
-  }
-
-  &__icon { flex-shrink: 0; }
-}
-
-// Transitions
-.soc-toast-enter-active {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.soc-toast-leave-active {
-  transition: all 0.2s ease-in;
-}
-.soc-toast-enter-from {
-  opacity: 0;
-  transform: translateX(30px) scale(0.95);
-}
-.soc-toast-leave-to {
-  opacity: 0;
-  transform: translateX(10px) scale(0.98);
-}
-
-@media (max-width: 47.99em) {
-  .soc-toast-container {
-    left: 16px;
-    right: 16px;
-    bottom: 16px;
-  }
-  .soc-toast { max-width: 100%; }
-}
-
 // ============================================
 // Dark mode: global overrides for child content
 // ============================================
@@ -1002,22 +923,6 @@ body.soc--dark {
   --soc-card-bg: #222120;
   --soc-card-border: rgba(255,255,255,0.1);
   --soc-divider: rgba(255,255,255,0.08);
-
-  // Toasts
-  .soc-toast {
-    &--success {
-      background: rgba(21, 128, 61, 0.15);
-      color: #86efac;
-      border-color: rgba(21, 128, 61, 0.3);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(21, 128, 61, 0.2);
-    }
-    &--error {
-      background: rgba(220, 38, 38, 0.15);
-      color: #fca5a5;
-      border-color: rgba(220, 38, 38, 0.3);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(220, 38, 38, 0.2);
-    }
-  }
 
   // Portal modal icon needs light stroke in dark mode
   .portal-modal__icon-ring:not([style*="rgba(220"]) svg { stroke: white; }
