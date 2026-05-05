@@ -39,7 +39,7 @@
           <h3>Informations</h3>
         </div>
         <div class="mp__card-body">
-          <div class="mp__info-row">
+          <div v-if="isStaff" class="mp__info-row">
             <span class="mp__info-label">Courriel</span>
             <span class="mp__info-value">{{ member.email }}</span>
           </div>
@@ -173,6 +173,7 @@ const deleting = ref(false)
 const promoting = ref(false)
 
 const isAdmin = computed(() => userStore.hasRole(Role.Admin))
+const isStaff = computed(() => userStore.hasOneOfTheseRoles([Role.Admin, Role.Professor]))
 const isProfessor = computed(() => member.value?.roles?.includes('professor'))
 const highestRoleKey = computed(() => {
   const roles = member.value?.roles || []
