@@ -421,6 +421,15 @@
       "placeholderTagline": "L'art du mouvement, le cœur du quartier",
       "placeholderFooterDescription": "École de danse offrant des cours pour tous les âges...",
       "placeholderCopyright": "Expression Danse de Beauport inc. Tous droits réservés.",
+      "banner": {
+        "title": "Bannière actualités",
+        "description": "Affichez une bannière cliquable en haut du site pour informer vos visiteurs.",
+        "enabled": "Bannière activée",
+        "disabled": "Bannière désactivée",
+        "text": "Texte de la bannière",
+        "textPlaceholder": "📣 Inscriptions ouvertes ! Consultez nos actualités du moment",
+        "url": "Lien de la bannière"
+      },
       "maintenance": {
         "title": "Mode maintenance",
         "description": "Activez ce mode pour afficher une page temporaire aux visiteurs pendant les mises à jour. Les administrateurs connectés continueront d'accéder normalement au panneau admin.",
@@ -525,6 +534,7 @@
   "global": {
     "free": "Gratuit(e)",
     "menu": "Menu",
+    "close": "Fermer",
     "title": "Titre",
     "date": "Date",
     "at": "à",
