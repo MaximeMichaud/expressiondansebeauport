@@ -135,6 +135,7 @@ import { ref, computed, h, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import { useMemberStore } from '@/stores/memberStore'
+import { Role } from '@/types/enums'
 import { useSocialService, useAuthenticationService } from '@/serviceRegistry'
 import { useSignalR } from '@/composables/useSignalR'
 import { useSocialToast } from '@/composables/useSocialToast'
@@ -287,11 +288,13 @@ const IconBell = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0
 const IconGrid = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('rect', { x: '3', y: '3', width: '7', height: '7', rx: '1' }), h('rect', { x: '14', y: '3', width: '7', height: '7', rx: '1' }), h('rect', { x: '3', y: '14', width: '7', height: '7', rx: '1' }), h('rect', { x: '14', y: '14', width: '7', height: '7', rx: '1' })]) }
 const IconUsers = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('path', { d: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2' }), h('circle', { cx: '9', cy: '7', r: '4' }), h('path', { d: 'M23 21v-2a4 4 0 00-3-3.87' }), h('path', { d: 'M16 3.13a4 4 0 010 7.75' })]) }
 
-const tabs = [
+const isStaff = computed(() => userStore.hasOneOfTheseRoles([Role.Admin, Role.Professor]))
+
+const tabs = computed(() => [
   { name: 'socialImportant', label: 'Annonces', icon: IconBell },
   { name: 'socialPortal', label: 'Groupes', icon: IconGrid },
-  { name: 'socialMembers', label: 'Professeurs', icon: IconUsers },
-]
+  { name: 'socialMembers', label: isStaff.value ? 'Membres' : 'Professeurs', icon: IconUsers },
+])
 </script>
 
 <style lang="scss">
