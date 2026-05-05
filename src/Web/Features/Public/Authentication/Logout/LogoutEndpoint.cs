@@ -35,19 +35,7 @@ public class LogoutEndpoint : EndpointWithoutRequest<SucceededOrNotResponse>
         if (!string.IsNullOrWhiteSpace(currentRefreshToken))
             await _authenticationService.DeleteRefreshToken(currentRefreshToken);
 
-        HttpContext.Response.SetCookieValue(
-            CookieName.ACCESS,
-            string.Empty,
-            _cookieSettings.Domain,
-            _cookieSettings.Secure,
-            false);
-
-        HttpContext.Response.SetCookieValue(
-            CookieName.REFRESH,
-            string.Empty,
-            _cookieSettings.Domain,
-            _cookieSettings.Secure,
-            true);
+        HttpContext.Response.ClearAuthCookies(_cookieSettings.Domain, _cookieSettings.Secure);
 
         await Send.OkAsync(new SucceededOrNotResponse(succeeded: true), ct);
     }

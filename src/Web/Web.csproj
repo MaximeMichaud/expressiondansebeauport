@@ -6,7 +6,8 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<PreserveCompilationContext>true</PreserveCompilationContext>
 		<LangVersion>14</LangVersion>
-	</PropertyGroup>
+	  <UserSecretsId>2a4f4e0d-4e48-40ef-9fa2-3d0a23b367b4</UserSecretsId>
+  </PropertyGroup>
 
 	<ItemGroup>
 		<Content Update="vue-app\public\favicon.ico">

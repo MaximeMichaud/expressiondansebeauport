@@ -24,14 +24,23 @@ public class SendGridMessageFactory : ISendGridMessageFactory
     {
         var msg = new SendGridMessage
         {
-            From = new EmailAddress(_mailingSettings.FromAddress, _mailingSettings.FromName),
-            TemplateId = model.TemplateId()
+            From = new EmailAddress(_mailingSettings.FromAddress, _mailingSettings.FromName)
         };
+
+        var htmlBody = model.HtmlBody();
+        if (!string.IsNullOrEmpty(htmlBody))
+        {
+            msg.Subject = model.Subject() ?? string.Empty;
+            msg.HtmlContent = htmlBody;
+        }
+        else
+        {
+            msg.TemplateId = model.TemplateId();
+            msg.SetTemplateData(model.TemplateData());
+        }
 
         if (model.Attachments.Any())
             msg.Attachments = model.Attachments.Select(x => _mapper.Map<Attachment>(x)).ToList();
-
-        msg.SetTemplateData(model.TemplateData());
 
         if (_webHostEnvironment.IsProduction())
             msg.AddTo(model.Destination);

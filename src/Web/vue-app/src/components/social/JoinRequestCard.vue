@@ -4,6 +4,7 @@
       <p class="jr-card__text">
         <strong>{{ requesterName }}</strong> souhaite rejoindre <strong>{{ groupName }}</strong>
       </p>
+      <p v-if="reason" class="jr-card__reason">« {{ reason }} »</p>
       <div class="jr-card__actions">
         <button
           class="jr-card__btn jr-card__btn--accept"
@@ -51,6 +52,7 @@ const props = defineProps<{
   joinRequestId: string
   groupName: string
   requesterName: string
+  reason?: string
   status: 'Pending' | 'Accepted' | 'Rejected'
   resolvedByName?: string
   isMine: boolean
@@ -121,6 +123,20 @@ async function handleReject() {
       font-weight: 600;
     }
 
+  }
+
+  &__reason {
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--soc-text, #1a1a1a);
+    font-style: italic;
+    background: var(--soc-input-bg, #f0eeeb);
+    border-left: 3px solid var(--soc-border, #e5e3df);
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin: 0 0 10px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
   }
 
   &__result {

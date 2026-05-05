@@ -51,19 +51,12 @@ public class TwoFactorEndpoint : EndpointWithSanitizedRequest<TwoFactorRequest, 
         user.UpdateLastTwoFactorAuthentication();
         await _userRepository.UpdateUser(user);
 
-        HttpContext.Response.SetCookieValue(
-            CookieName.ACCESS,
+        HttpContext.Response.IssueAuthCookies(
             _authenticationService.CreateJwtAccessToken(user),
-            _cookieSettings.Domain,
-            _cookieSettings.Secure,
-            false);
-
-        HttpContext.Response.SetCookieValue(
-            CookieName.REFRESH,
             await _authenticationService.CreateRefreshToken(user),
             _cookieSettings.Domain,
             _cookieSettings.Secure,
-            true);
+            TimeSpan.FromDays(_cookieSettings.MaxAgeDays));
 
         await Send.OkAsync(new SucceededOrNotResponse(true), ct);
     }

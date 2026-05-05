@@ -38,7 +38,7 @@
             </svg>
             {{ option.text }}
           </span>
-          <span :style="{ color: 'var(--soc-text-muted)' }">
+          <span class="font-medium" :style="{ color: 'var(--soc-text)' }">
             {{ option.voteCount }} · {{ Math.round(option.percentage) }}%
           </span>
         </div>

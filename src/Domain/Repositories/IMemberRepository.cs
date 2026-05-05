@@ -11,4 +11,5 @@ public interface IMemberRepository
     Task<int> Count(string? search);
     Task Update(Member member);
     Task<List<Member>> GetAdminMembers();
+    Task<List<Member>> GetAll();
 }

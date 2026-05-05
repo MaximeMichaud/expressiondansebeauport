@@ -144,17 +144,20 @@ public class PostService : IPostService
         await _postRepository.Update(post);
     }
 
-    public async Task PinPost(Guid postId, Guid groupId)
+    public async Task<PinPostResult> PinPost(Guid postId, Guid groupId)
     {
+        var post = await _postRepository.FindById(postId, asNoTracking: false);
+        if (post == null) throw new InvalidOperationException("Post not found.");
+
         var currentPinned = await _postRepository.GetPinnedPost(groupId);
-        if (currentPinned != null)
+        var replacedExisting = false;
+
+        if (currentPinned != null && currentPinned.Id != post.Id)
         {
             currentPinned.Unpin();
             await _postRepository.Update(currentPinned);
+            replacedExisting = true;
         }
-
-        var post = await _postRepository.FindById(postId, asNoTracking: false);
-        if (post == null) throw new InvalidOperationException("Post not found.");
 
         if (post.IsPinned)
             post.Unpin();
@@ -162,6 +165,8 @@ public class PostService : IPostService
             post.Pin();
 
         await _postRepository.Update(post);
+
+        return new PinPostResult(IsPinned: post.IsPinned, ReplacedExisting: replacedExisting && post.IsPinned);
     }
 
     public async Task<bool> ToggleLike(Guid postId, Guid memberId)

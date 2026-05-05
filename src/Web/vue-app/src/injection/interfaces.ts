@@ -8,6 +8,7 @@ import {
 } from "@/types/requests"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
 import {Administrator, BackupRecord, ErrorLog, FooterPartner, MediaFile, NavigationMenu, NavigationMenuItem, Page, PageRevision, PageRevisionListItem, SiteHealth, SiteSettings, SocialLink, User, Group, GroupMember, Post, Comment, Conversation, Message} from "@/types/entities"
+import type {PinPostResponse} from "@/services/socialService"
 export interface IApiService {
   headersWithJsonContentType(): any
 
@@ -150,7 +151,7 @@ export interface ISocialService {
   deletePost(id: string): Promise<SucceededOrNotResponse>
   toggleLike(postId: string): Promise<SucceededOrNotResponse>
   recordView(postId: string): Promise<void>
-  pinPost(postId: string, groupId: string): Promise<SucceededOrNotResponse>
+  pinPost(postId: string, groupId: string): Promise<PinPostResponse>
   getComments(postId: string, page?: number): Promise<{ items: Comment[]; hasMore: boolean }>
   addComment(postId: string, content: string): Promise<SucceededOrNotResponse>
   deleteComment(id: string): Promise<SucceededOrNotResponse>
@@ -184,7 +185,7 @@ export interface ISocialService {
   deleteMember(id: string): Promise<SucceededOrNotResponse>
   promoteMember(id: string): Promise<SucceededOrNotResponse>
   demoteMember(id: string): Promise<SucceededOrNotResponse>
-  requestJoinGroup(groupId: string): Promise<any>
+  requestJoinGroup(groupId: string, reason: string): Promise<any>
   acceptJoinRequest(joinRequestId: string): Promise<SucceededOrNotResponse>
   rejectJoinRequest(joinRequestId: string): Promise<SucceededOrNotResponse>
   getMyJoinRequest(groupId: string): Promise<any>

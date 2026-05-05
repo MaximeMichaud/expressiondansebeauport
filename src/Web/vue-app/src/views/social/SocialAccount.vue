@@ -143,6 +143,9 @@
       </form>
     </section>
 
+    <!-- Notifications card -->
+    <NotificationsCard />
+
     <!-- Danger zone -->
     <section class="soc-account__card">
       <div class="soc-account__card-header">
@@ -197,6 +200,7 @@ import { useAvatarRegistryStore } from '@/stores/avatarRegistryStore'
 import { useSocialToast } from '@/composables/useSocialToast'
 import AvatarUploader from '@/components/social/AvatarUploader.vue'
 import ConfirmModal from '@/components/social/ConfirmModal.vue'
+import NotificationsCard from '@/components/social/account/NotificationsCard.vue'
 
 const router = useRouter()
 const authService = useAuthenticationService()

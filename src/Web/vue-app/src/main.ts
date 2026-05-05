@@ -48,3 +48,8 @@ const app = createApp(App)
   .use(Notifications);
 
 Router.isReady().then(() => app.mount("#app"));
+
+import { registerSW } from 'virtual:pwa-register'
+if ('serviceWorker' in navigator) {
+  registerSW({ immediate: true })
+}

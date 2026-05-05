@@ -13,10 +13,11 @@ import {
 } from "@/services"
 import {AdministratorService} from "@/services/administratorService"
 import {SocialService} from "@/services/socialService"
+import {PushService} from "@/services/pushService"
 import {BackupService} from "@/services/backupService"
 import {setupInterceptors} from "@/services/apiService"
 
-const axiosInstance = axios.create()
+const axiosInstance = axios.create({ withCredentials: true })
 setupInterceptors(axiosInstance)
 
 const administratorService = new AdministratorService(axiosInstance)
@@ -29,6 +30,7 @@ const siteSettingsService = new SiteSettingsService(axiosInstance)
 const siteHealthService = new SiteHealthService(axiosInstance)
 const importExportService = new ImportExportService(axiosInstance)
 const socialService = new SocialService(axiosInstance)
+const pushService = new PushService(axiosInstance)
 const errorLogsService = new ErrorLogsService(axiosInstance)
 const backupService = new BackupService(axiosInstance)
 
@@ -72,6 +74,10 @@ function useSocialService() {
   return socialService
 }
 
+function usePushService() {
+  return pushService
+}
+
 function useErrorLogsService() {
   return errorLogsService
 }
@@ -92,5 +98,6 @@ export {
   useErrorLogsService,
   useImportExportService,
   useSocialService,
+  usePushService,
   useBackupService
 };

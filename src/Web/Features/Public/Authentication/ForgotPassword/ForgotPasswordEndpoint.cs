@@ -41,7 +41,8 @@ public class ForgotPasswordEndpoint : EndpointWithSanitizedRequest<ForgotPasswor
         if (user == null)
         {
             _logger.LogInformation("Could not send reset password email since no user with email {email} exists.", req.Username);
-            await Send.OkAsync(new SucceededOrNotResponse(true), ct);
+            var errors = new List<Error> { new("UserNotFound", "No account exists with this email.") };
+            await Send.OkAsync(new SucceededOrNotResponse(false, errors), ct);
             return;
         }
 

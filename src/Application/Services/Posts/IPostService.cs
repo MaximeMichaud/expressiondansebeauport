@@ -25,7 +25,7 @@ public interface IPostService
         IReadOnlyList<string> options,
         bool allowMultipleAnswers);
     Task DeletePost(Guid postId);
-    Task PinPost(Guid postId, Guid groupId);
+    Task<PinPostResult> PinPost(Guid postId, Guid groupId);
     Task<bool> ToggleLike(Guid postId, Guid memberId);
     Task AddComment(Guid postId, Guid authorMemberId, string content);
     Task DeleteComment(Guid commentId);

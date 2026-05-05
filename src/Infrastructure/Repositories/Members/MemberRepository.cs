@@ -88,4 +88,11 @@ public class MemberRepository : IMemberRepository
             .Where(m => m.User.UserRoles.Any(ur => ur.Role.NormalizedName == "ADMIN"))
             .ToListAsync();
     }
+
+    public async Task<List<Member>> GetAll()
+    {
+        return await _context.Members
+            .AsNoTracking()
+            .ToListAsync();
+    }
 }

@@ -37,6 +37,18 @@ const socialRoutes = [
     meta: { title: 'Confirmation', public: true, socialAuth: true, social: true }
   },
   {
+    path: '/social/mot-de-passe-oublie',
+    name: 'socialForgotPassword',
+    component: () => import('@/views/social/SocialForgotPassword.vue'),
+    meta: { title: 'Mot de passe oublié', public: true, socialAuth: true, social: true }
+  },
+  {
+    path: '/social/reinitialiser-mot-de-passe',
+    name: 'socialResetPassword',
+    component: () => import('@/views/social/SocialResetPassword.vue'),
+    meta: { title: 'Réinitialiser le mot de passe', public: true, socialAuth: true, social: true }
+  },
+  {
     path: '/social',
     redirect: '/social/annonces'
   },
@@ -70,7 +82,7 @@ const socialRoutes = [
     path: '/social/membres',
     name: 'socialMembers',
     component: () => import('@/views/social/SocialMembers.vue'),
-    meta: { title: 'Membres', requiredRole: [Role.Member, Role.Professor, Role.Admin], social: true }
+    meta: { title: 'Professeurs', requiredRole: [Role.Member, Role.Professor, Role.Admin], social: true }
   },
   {
     path: '/social/membres/:id',

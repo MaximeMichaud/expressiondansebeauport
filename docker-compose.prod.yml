@@ -63,12 +63,13 @@ services:
       JwtToken__TokenExpiry: "720"
       SendGrid__ApiKey: "${SENDGRID_API_KEY:-SG.placeholder}"
       Mailing__FromName: "Expression Danse Beauport"
-      Mailing__FromAddress: "mailing@expressiondansebeauport.com"
+      Mailing__FromAddress: "info@expressiondansebeauport.com"
       Mailing__ToAddressForDevelopment: ""
       Application__BaseUrl: "https://expression.mich.sh"
       Application__RedirectUrl: "https://expression.mich.sh"
       Cookies__Domain: "expression.mich.sh"
       Cookies__Secure: "true"
+      Vapid__PrivateKey: ${VAPID_PRIVATE_KEY}
     healthcheck:
       test: wget -qO- http://localhost:8080/api/health || exit 1
       interval: 10s
@@ -81,7 +82,7 @@ services:
     volumes:
       - app-logs:/app/logs
       - backups:/app/backups
-      - uploads:/app/wwwroot/uploads
+      - uploads:/app/app-data/uploads
       - dataprotection-keys:/home/app/.aspnet/DataProtection-Keys
     networks:
       - frontend

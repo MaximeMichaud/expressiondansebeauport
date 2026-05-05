@@ -14,6 +14,10 @@ public class JoinRequestConfiguration : IEntityTypeConfiguration<JoinRequest>
             .HasConversion<string>()
             .HasMaxLength(20);
 
+        builder.Property(jr => jr.Reason)
+            .IsRequired()
+            .HasMaxLength(200);
+
         builder.HasOne(jr => jr.Group)
             .WithMany()
             .HasForeignKey(jr => jr.GroupId)
