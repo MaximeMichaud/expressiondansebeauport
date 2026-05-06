@@ -34,7 +34,8 @@ const icons: Record<BlockType, string> = {
   'image-gallery': '\u{1F5BC}',
   'hero': '\u{2B50}',
   'faq': '?',
-  'cta-button': '\u{1F517}'
+  'cta-button': '\u{1F517}',
+  'contact-form': '\u{2709}'
 }
 </script>
 

@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Domain.Entities;
 using Domain.Repositories;
 using FastEndpoints;
@@ -45,8 +47,34 @@ public class GetPublicPageEndpoint : Endpoint<GetPublicPageRequest, PageDto>
         }
 
         var dto = _mapper.Map<PageDto>(page);
+        dto.Blocks = StripPrivateBlockData(dto.Blocks);
         dto.Breadcrumbs = _breadcrumbService.GetForPage(page).ToList();
 
         await Send.OkAsync(dto, cancellation: ct);
+    }
+
+    private static string? StripPrivateBlockData(string? blocksJson)
+    {
+        if (string.IsNullOrWhiteSpace(blocksJson)) return blocksJson;
+
+        try
+        {
+            if (JsonNode.Parse(blocksJson) is not JsonArray array) return blocksJson;
+
+            foreach (var node in array)
+            {
+                if (node is not JsonObject block) continue;
+                if (block["type"]?.GetValue<string>() != "contact-form") continue;
+                if (block["data"] is not JsonObject data) continue;
+
+                data.Remove("recipientEmail");
+            }
+
+            return array.ToJsonString();
+        }
+        catch (JsonException)
+        {
+            return blocksJson;
+        }
     }
 }

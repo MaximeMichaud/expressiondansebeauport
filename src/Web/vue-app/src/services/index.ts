@@ -10,5 +10,6 @@ export * from './importExportService';
 export * from './backupService';
 export * from './errorLogsService';
 export * from './auditLogService';
+export * from './contactService';
 export * from './cookiePreferencesService';
 export * from './cookieControlledScripts';
