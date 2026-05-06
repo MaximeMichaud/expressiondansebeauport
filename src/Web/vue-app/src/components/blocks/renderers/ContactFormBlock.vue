@@ -7,7 +7,6 @@
     :intro-text="resolvedData.introText"
     :submit-label="resolvedData.submitLabel"
     :success-message="resolvedData.successMessage"
-    :recipient-email="resolvedData.recipientEmail"
     :enabled="resolvedData.enabled"
   />
 </template>

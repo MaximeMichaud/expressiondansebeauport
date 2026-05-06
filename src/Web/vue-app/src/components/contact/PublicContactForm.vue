@@ -14,6 +14,7 @@
             id="contact-name"
             v-model.trim="form.name"
             type="text"
+            maxlength="100"
             :placeholder="t('pages.blocks.contactForm.public.namePlaceholder')"
             :disabled="isSubmitting"
           />
@@ -26,6 +27,7 @@
             id="contact-email"
             v-model.trim="form.email"
             type="email"
+            maxlength="320"
             :placeholder="t('pages.blocks.contactForm.public.emailPlaceholder')"
             :disabled="isSubmitting"
           />
@@ -39,6 +41,7 @@
           id="contact-message"
           v-model.trim="form.message"
           rows="6"
+          maxlength="2000"
           :placeholder="t('pages.blocks.contactForm.public.messagePlaceholder')"
           :disabled="isSubmitting"
         />
@@ -74,7 +77,6 @@ const props = defineProps<{
   introText?: string
   submitLabel?: string
   successMessage?: string
-  recipientEmail?: string
   enabled?: boolean
 }>()
 
@@ -117,7 +119,6 @@ async function submitForm() {
       email: form.email,
       message: form.message,
       honeypot: form.honeypot,
-      recipientEmail: props.recipientEmail,
       blockId: props.blockId,
       pageSlug: props.pageSlug,
     })

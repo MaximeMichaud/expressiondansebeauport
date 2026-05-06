@@ -9,7 +9,6 @@ export class ContactService extends ApiService implements IContactService {
     email: string
     message: string
     honeypot?: string
-    recipientEmail?: string
     blockId?: string
     pageSlug?: string
   }): Promise<SucceededOrNotResponse> {

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Application.Interfaces.Services.Notifications;
 using Domain.Common;
 using Domain.Repositories;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Web.Extensions;
 using Web.Features.Common;
+using PageStatus = Domain.Entities.PageStatus;
 
 namespace Web.Features.Public.Contact;
 
@@ -16,17 +18,15 @@ public class SubmitContactRequest : ISanitizable
     public string Email { get; set; } = null!;
     public string Message { get; set; } = null!;
     public string? Honeypot { get; set; }
-    public string? RecipientEmail { get; set; }
     public string? BlockId { get; set; }
     public string? PageSlug { get; set; }
 
     public void Sanitize()
     {
-        Name = Name.Trim();
-        Email = Email.SanitizeEmailAddress();
-        Message = Message.Trim();
+        Name = (Name ?? string.Empty).Trim();
+        Email = (Email ?? string.Empty).SanitizeEmailAddress();
+        Message = (Message ?? string.Empty).Trim();
         Honeypot = Honeypot?.Trim();
-        RecipientEmail = string.IsNullOrWhiteSpace(RecipientEmail) ? null : RecipientEmail.SanitizeEmailAddress();
         BlockId = BlockId?.Trim();
         PageSlug = PageSlug?.Trim();
     }
@@ -37,22 +37,17 @@ public class SubmitContactValidator : Validator<SubmitContactRequest>
     public SubmitContactValidator()
     {
         RuleFor(x => x.Name)
-            .NotEmpty()
-            .MaximumLength(100);
+            .NotEmpty().WithErrorCode("NameRequired")
+            .MaximumLength(100).WithErrorCode("NameTooLong");
 
         RuleFor(x => x.Email)
-            .NotEmpty()
-            .EmailAddress()
-            .MaximumLength(320);
+            .NotEmpty().WithErrorCode("EmailRequired")
+            .EmailAddress().WithErrorCode("EmailInvalid")
+            .MaximumLength(320).WithErrorCode("EmailTooLong");
 
         RuleFor(x => x.Message)
-            .NotEmpty()
-            .MaximumLength(2000);
-
-        RuleFor(x => x.RecipientEmail)
-            .EmailAddress()
-            .MaximumLength(320)
-            .When(x => !string.IsNullOrWhiteSpace(x.RecipientEmail));
+            .NotEmpty().WithErrorCode("MessageRequired")
+            .MaximumLength(2000).WithErrorCode("MessageTooLong");
 
         RuleFor(x => x.BlockId).MaximumLength(100);
         RuleFor(x => x.PageSlug).MaximumLength(200);
@@ -63,17 +58,20 @@ public class SubmitContactEndpoint : EndpointWithSanitizedRequest<SubmitContactR
 {
     private readonly INotificationService _notificationService;
     private readonly ISiteSettingsRepository _siteSettingsRepository;
+    private readonly IPageRepository _pageRepository;
     private readonly IHostEnvironment _hostEnvironment;
     private readonly ILogger<SubmitContactEndpoint> _logger;
 
     public SubmitContactEndpoint(
         INotificationService notificationService,
         ISiteSettingsRepository siteSettingsRepository,
+        IPageRepository pageRepository,
         IHostEnvironment hostEnvironment,
         ILogger<SubmitContactEndpoint> logger)
     {
         _notificationService = notificationService;
         _siteSettingsRepository = siteSettingsRepository;
+        _pageRepository = pageRepository;
         _hostEnvironment = hostEnvironment;
         _logger = logger;
     }
@@ -94,9 +92,24 @@ public class SubmitContactEndpoint : EndpointWithSanitizedRequest<SubmitContactR
             return;
         }
 
+        var blockRecipient = ResolveRecipientFromBlock(req.PageSlug, req.BlockId);
+        if (blockRecipient is null)
+        {
+            _logger.LogWarning(
+                "Contact form submission rejected: no published contact-form block found. Page {PageSlug}, block {BlockId}, sender {SenderEmail}.",
+                req.PageSlug,
+                req.BlockId,
+                req.Email);
+
+            await Send.OkAsync(
+                new SucceededOrNotResponse(false, new Error("ContactUnavailable", "Le formulaire de contact est indisponible pour le moment.")),
+                ct);
+            return;
+        }
+
         var settings = await _siteSettingsRepository.Get();
-        var destinationEmail = !string.IsNullOrWhiteSpace(req.RecipientEmail)
-            ? req.RecipientEmail
+        var destinationEmail = !string.IsNullOrWhiteSpace(blockRecipient)
+            ? blockRecipient
             : settings.FooterEmail;
 
         if (string.IsNullOrWhiteSpace(destinationEmail))
@@ -183,6 +196,51 @@ public class SubmitContactEndpoint : EndpointWithSanitizedRequest<SubmitContactR
             req.Email);
 
         await Send.OkAsync(new SucceededOrNotResponse(true), ct);
+    }
+
+    /// <summary>
+    /// Resolves the configured recipient email for a contact-form block.
+    /// Returns null when the page or block is missing, not published, not a contact-form, or disabled.
+    /// Returns an empty string when the block exists but has no per-block recipient (caller falls back to site settings).
+    /// </summary>
+    private string? ResolveRecipientFromBlock(string? pageSlug, string? blockId)
+    {
+        if (string.IsNullOrWhiteSpace(pageSlug) || string.IsNullOrWhiteSpace(blockId))
+            return null;
+
+        var page = _pageRepository.FindBySlug(pageSlug);
+        if (page is null || page.Status != PageStatus.Published || string.IsNullOrWhiteSpace(page.Blocks))
+            return null;
+
+        try
+        {
+            using var doc = JsonDocument.Parse(page.Blocks);
+            if (doc.RootElement.ValueKind != JsonValueKind.Array) return null;
+
+            foreach (var block in doc.RootElement.EnumerateArray())
+            {
+                if (block.ValueKind != JsonValueKind.Object) continue;
+                if (!block.TryGetProperty("id", out var idEl) || idEl.GetString() != blockId) continue;
+                if (!block.TryGetProperty("type", out var typeEl) || typeEl.GetString() != "contact-form") return null;
+                if (!block.TryGetProperty("data", out var dataEl) || dataEl.ValueKind != JsonValueKind.Object) return null;
+
+                var enabled = !dataEl.TryGetProperty("enabled", out var enabledEl)
+                              || enabledEl.ValueKind != JsonValueKind.False;
+                if (!enabled) return null;
+
+                if (dataEl.TryGetProperty("recipientEmail", out var recipientEl)
+                    && recipientEl.ValueKind == JsonValueKind.String)
+                    return recipientEl.GetString() ?? string.Empty;
+
+                return string.Empty;
+            }
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+
+        return null;
     }
 
     private bool TryHandleDevelopmentFallback(SubmitContactRequest req, string reason)

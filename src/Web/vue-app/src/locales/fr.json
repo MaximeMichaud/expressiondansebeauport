@@ -371,7 +371,14 @@
           "disabled": "Le formulaire est temporairement indisponible.",
           "error": "Impossible d’envoyer votre message pour le moment.",
           "validation": {
-            "contactUnavailable": "Impossible d’envoyer votre message pour le moment."
+            "contactUnavailable": "Impossible d’envoyer votre message pour le moment.",
+            "nameRequired": "Veuillez entrer votre nom.",
+            "nameTooLong": "Le nom doit faire 100 caractères ou moins.",
+            "emailRequired": "Veuillez entrer votre courriel.",
+            "emailInvalid": "Le courriel n’est pas valide.",
+            "emailTooLong": "Le courriel doit faire 320 caractères ou moins.",
+            "messageRequired": "Veuillez entrer un message.",
+            "messageTooLong": "Le message doit faire 2000 caractères ou moins."
           }
         }
       }
