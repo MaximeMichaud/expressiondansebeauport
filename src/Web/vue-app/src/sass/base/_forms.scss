@@ -147,7 +147,20 @@ form {
     align-items: baseline;
     justify-content: space-between;
     gap: 8px;
-    order: -1;
+  }
+
+  &__field:has(> input:not(:read-only):not(:disabled):focus) > .form__label-row > label {
+    color: var(--primary);
+  }
+
+  @media (hover: hover) {
+    &__field:has(> input:not(:read-only):not(:disabled):hover) > .form__label-row > label {
+      color: var(--primary);
+    }
+  }
+
+  &__field.error > .form__label-row > label {
+    color: $color-red;
   }
 
   &__label-right {
