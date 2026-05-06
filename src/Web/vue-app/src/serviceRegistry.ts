@@ -2,6 +2,8 @@ import axios from 'axios'
 
 import {
   AuthenticationService,
+  AuditLogService,
+  ContactService,
   ErrorLogsService,
   ImportExportService,
   MediaService,
@@ -32,6 +34,8 @@ const importExportService = new ImportExportService(axiosInstance)
 const socialService = new SocialService(axiosInstance)
 const pushService = new PushService(axiosInstance)
 const errorLogsService = new ErrorLogsService(axiosInstance)
+const auditLogService = new AuditLogService(axiosInstance)
+const contactService = new ContactService(axiosInstance)
 const backupService = new BackupService(axiosInstance)
 
 function useAdministratorService() {
@@ -82,6 +86,14 @@ function useErrorLogsService() {
   return errorLogsService
 }
 
+function useAuditLogService() {
+  return auditLogService
+}
+
+function useContactService() {
+  return contactService
+}
+
 function useBackupService() {
   return backupService
 }
@@ -96,6 +108,8 @@ export {
   useSiteSettingsService,
   useSiteHealthService,
   useErrorLogsService,
+  useAuditLogService,
+  useContactService,
   useImportExportService,
   useSocialService,
   usePushService,

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Web.Dtos;
+using Application.Interfaces.Services;
 using IMapper = AutoMapper.IMapper;
 
 namespace Web.Features.Admins.SiteSettings.SocialLinks;
@@ -30,11 +31,13 @@ public class CreateSocialLinkValidator : Validator<CreateSocialLinkRequest>
 public class CreateSocialLinkEndpoint : Endpoint<CreateSocialLinkRequest, SocialLinkDto>
 {
     private readonly GarneauTemplateDbContext _context;
+    private readonly IAuditLogService _auditLogService;
     private readonly IMapper _mapper;
 
-    public CreateSocialLinkEndpoint(GarneauTemplateDbContext context, IMapper mapper)
+    public CreateSocialLinkEndpoint(GarneauTemplateDbContext context, IAuditLogService auditLogService, IMapper mapper)
     {
         _context = context;
+        _auditLogService = auditLogService;
         _mapper = mapper;
     }
 
@@ -56,6 +59,7 @@ public class CreateSocialLinkEndpoint : Endpoint<CreateSocialLinkRequest, Social
         var link = new SocialLink(settings.Id, req.Platform, req.Url, maxOrder + 1);
         _context.SocialLinks.Add(link);
         await _context.SaveChangesAsync(ct);
+        await _auditLogService.LogAsync("update", "site-settings", settings.Id, $"Social link '{link.Platform}' added (item: {link.Id}).");
         await Send.OkAsync(_mapper.Map<SocialLinkDto>(link), cancellation: ct);
     }
 }
@@ -82,11 +86,13 @@ public class UpdateSocialLinkValidator : Validator<UpdateSocialLinkRequest>
 public class UpdateSocialLinkEndpoint : Endpoint<UpdateSocialLinkRequest, SocialLinkDto>
 {
     private readonly GarneauTemplateDbContext _context;
+    private readonly IAuditLogService _auditLogService;
     private readonly IMapper _mapper;
 
-    public UpdateSocialLinkEndpoint(GarneauTemplateDbContext context, IMapper mapper)
+    public UpdateSocialLinkEndpoint(GarneauTemplateDbContext context, IAuditLogService auditLogService, IMapper mapper)
     {
         _context = context;
+        _auditLogService = auditLogService;
         _mapper = mapper;
     }
 
@@ -106,6 +112,7 @@ public class UpdateSocialLinkEndpoint : Endpoint<UpdateSocialLinkRequest, Social
         link.SetPlatform(req.Platform);
         link.SetUrl(req.Url);
         await _context.SaveChangesAsync(ct);
+        await _auditLogService.LogAsync("update", "site-settings", link.SiteSettingsId, $"Social link '{link.Platform}' updated (item: {link.Id}).");
         await Send.OkAsync(_mapper.Map<SocialLinkDto>(link), cancellation: ct);
     }
 }
@@ -119,10 +126,12 @@ public class DeleteSocialLinkRequest
 public class DeleteSocialLinkEndpoint : Endpoint<DeleteSocialLinkRequest, EmptyResponse>
 {
     private readonly GarneauTemplateDbContext _context;
+    private readonly IAuditLogService _auditLogService;
 
-    public DeleteSocialLinkEndpoint(GarneauTemplateDbContext context)
+    public DeleteSocialLinkEndpoint(GarneauTemplateDbContext context, IAuditLogService auditLogService)
     {
         _context = context;
+        _auditLogService = auditLogService;
     }
 
     public override void Configure()
@@ -138,8 +147,10 @@ public class DeleteSocialLinkEndpoint : Endpoint<DeleteSocialLinkRequest, EmptyR
         var link = await _context.SocialLinks.FirstOrDefaultAsync(s => s.Id == req.Id, ct);
         if (link is null) { await Send.NotFoundAsync(ct); return; }
 
+        var details = $"Social link '{link.Platform}' deleted.";
         _context.SocialLinks.Remove(link);
         await _context.SaveChangesAsync(ct);
+        await _auditLogService.LogAsync("update", "site-settings", link.SiteSettingsId, $"{details} (item: {link.Id}).");
         await Send.NoContentAsync(ct);
     }
 }

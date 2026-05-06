@@ -3,6 +3,7 @@ using FastEndpoints;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Web.Dtos;
+using Application.Interfaces.Services;
 using IMapper = AutoMapper.IMapper;
 
 namespace Web.Features.Admins.SiteSettings.Update;
@@ -28,6 +29,7 @@ public class UpdateSiteSettingsRequest
     public bool IsMaintenanceMode { get; set; }
     public string MaintenanceMessage { get; set; } = "Le site est en maintenance. Revenez bientôt !";
     public int MaintenanceRetryAfter { get; set; } = 3600;
+    public int AuditLogRetentionDays { get; set; } = 90;
     public bool IsBannerEnabled { get; set; }
     public string BannerText { get; set; } = "Actualités du moment";
     public string BannerUrl { get; set; } = "/actualites";
@@ -77,17 +79,20 @@ public class UpdateSiteSettingsValidator : Validator<UpdateSiteSettingsRequest>
         RuleFor(x => x.FacebookUrl).MaximumLength(500);
         RuleFor(x => x.InstagramUrl).MaximumLength(500);
         RuleFor(x => x.CopyrightText).MaximumLength(200);
+        RuleFor(x => x.AuditLogRetentionDays).InclusiveBetween(1, 3650);
     }
 }
 
 public class UpdateSiteSettingsEndpoint : Endpoint<UpdateSiteSettingsRequest, SiteSettingsDto>
 {
     private readonly ISiteSettingsRepository _settingsRepository;
+    private readonly IAuditLogService _auditLogService;
     private readonly IMapper _mapper;
 
-    public UpdateSiteSettingsEndpoint(ISiteSettingsRepository settingsRepository, IMapper mapper)
+    public UpdateSiteSettingsEndpoint(ISiteSettingsRepository settingsRepository, IAuditLogService auditLogService, IMapper mapper)
     {
         _settingsRepository = settingsRepository;
+        _auditLogService = auditLogService;
         _mapper = mapper;
     }
 
@@ -102,6 +107,7 @@ public class UpdateSiteSettingsEndpoint : Endpoint<UpdateSiteSettingsRequest, Si
     public override async Task HandleAsync(UpdateSiteSettingsRequest req, CancellationToken ct)
     {
         var settings = await _settingsRepository.Get();
+        var changedFields = GetChangedFields(settings, req);
         settings.SetSiteTitle(req.SiteTitle);
         settings.SetTagline(req.Tagline);
         settings.SetPrimaryColor(req.PrimaryColor);
@@ -121,11 +127,46 @@ public class UpdateSiteSettingsEndpoint : Endpoint<UpdateSiteSettingsRequest, Si
         settings.SetMaintenanceMode(req.IsMaintenanceMode);
         settings.SetMaintenanceMessage(req.MaintenanceMessage);
         settings.SetMaintenanceRetryAfter(req.MaintenanceRetryAfter);
+        settings.SetAuditLogRetentionDays(req.AuditLogRetentionDays);
         settings.SetBannerEnabled(req.IsBannerEnabled);
         settings.SetBannerText(req.BannerText);
         settings.SetBannerUrl(req.BannerUrl);
 
         await _settingsRepository.Update(settings);
+        if (changedFields.Count > 0)
+        {
+            await _auditLogService.LogAsync(
+                "update",
+                "site-settings",
+                settings.Id,
+                $"Site settings updated: {string.Join(", ", changedFields)}.");
+        }
         await Send.OkAsync(_mapper.Map<SiteSettingsDto>(settings), cancellation: ct);
+    }
+
+    private static List<string> GetChangedFields(Domain.Entities.SiteSettings settings, UpdateSiteSettingsRequest req)
+    {
+        var changedFields = new List<string>();
+        if (settings.SiteTitle != req.SiteTitle) changedFields.Add("site title");
+        if (settings.Tagline != req.Tagline) changedFields.Add("tagline");
+        if (settings.PrimaryColor != req.PrimaryColor) changedFields.Add("primary color");
+        if (settings.SecondaryColor != req.SecondaryColor) changedFields.Add("secondary color");
+        if (settings.LogoMediaFileId != req.LogoMediaFileId) changedFields.Add("logo");
+        if (settings.FaviconMediaFileId != req.FaviconMediaFileId) changedFields.Add("favicon");
+        if (settings.HeadingFont != req.HeadingFont) changedFields.Add("heading font");
+        if (settings.BodyFont != req.BodyFont) changedFields.Add("body font");
+        if (settings.FooterDescription != req.FooterDescription) changedFields.Add("footer description");
+        if (settings.FooterAddress != req.FooterAddress) changedFields.Add("footer address");
+        if (settings.FooterCity != req.FooterCity) changedFields.Add("footer city");
+        if (settings.FooterPhone != req.FooterPhone) changedFields.Add("footer phone");
+        if (settings.FooterEmail != req.FooterEmail) changedFields.Add("footer email");
+        if (settings.FacebookUrl != req.FacebookUrl) changedFields.Add("facebook url");
+        if (settings.InstagramUrl != req.InstagramUrl) changedFields.Add("instagram url");
+        if (settings.CopyrightText != req.CopyrightText) changedFields.Add("copyright text");
+        if (settings.IsMaintenanceMode != req.IsMaintenanceMode) changedFields.Add("maintenance mode");
+        if (settings.MaintenanceMessage != req.MaintenanceMessage) changedFields.Add("maintenance message");
+        if (settings.MaintenanceRetryAfter != req.MaintenanceRetryAfter) changedFields.Add("maintenance retry after");
+        if (settings.AuditLogRetentionDays != req.AuditLogRetentionDays) changedFields.Add("audit log retention");
+        return changedFields;
     }
 }

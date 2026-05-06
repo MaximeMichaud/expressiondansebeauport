@@ -84,6 +84,11 @@
             :modelValue="block.data as CtaButtonBlockData"
             @update:modelValue="updateBlockData(index, $event)"
           />
+          <ContactFormBlockEditor
+            v-else-if="block.type === 'contact-form'"
+            :modelValue="block.data as ContactFormBlockData"
+            @update:modelValue="updateBlockData(index, $event)"
+          />
         </div>
       </div>
     </VueDraggable>
@@ -103,28 +108,31 @@
 </template>
 
 <script lang="ts" setup>
+import {ref, watchEffect} from "vue"
 import {useI18n} from "vue-i18n"
-import {ref} from "vue"
 import {VueDraggable} from "vue-draggable-plus"
-import {GripVertical, ChevronUp, ChevronDown, Trash2, Square, Columns2} from "lucide-vue-next"
-import {
-  PageBlock,
-  BlockType,
-  BLOCK_LABELS,
-  RichTextBlockData,
-  GoogleMapBlockData,
-  ImageGalleryBlockData,
-  HeroBlockData,
-  FaqBlockData,
-  CtaButtonBlockData
-} from "@/types/entities/pageBlock"
+import {ChevronDown, ChevronUp, Columns2, GripVertical, Square, Trash2} from "lucide-vue-next"
 import BlockSelector from "@/components/blocks/BlockSelector.vue"
-import RichTextBlockEditor from "@/components/blocks/editors/RichTextBlockEditor.vue"
-import GoogleMapBlockEditor from "@/components/blocks/editors/GoogleMapBlockEditor.vue"
-import ImageGalleryBlockEditor from "@/components/blocks/editors/ImageGalleryBlockEditor.vue"
-import HeroBlockEditor from "@/components/blocks/editors/HeroBlockEditor.vue"
-import FaqBlockEditor from "@/components/blocks/editors/FaqBlockEditor.vue"
+import ContactFormBlockEditor from "@/components/blocks/editors/ContactFormBlockEditor.vue"
 import CtaButtonBlockEditor from "@/components/blocks/editors/CtaButtonBlockEditor.vue"
+import FaqBlockEditor from "@/components/blocks/editors/FaqBlockEditor.vue"
+import GoogleMapBlockEditor from "@/components/blocks/editors/GoogleMapBlockEditor.vue"
+import HeroBlockEditor from "@/components/blocks/editors/HeroBlockEditor.vue"
+import ImageGalleryBlockEditor from "@/components/blocks/editors/ImageGalleryBlockEditor.vue"
+import RichTextBlockEditor from "@/components/blocks/editors/RichTextBlockEditor.vue"
+import {
+  BLOCK_LABELS,
+  BlockType,
+  ContactFormBlockData,
+  CtaButtonBlockData,
+  createDefaultContactFormBlockData,
+  FaqBlockData,
+  GoogleMapBlockData,
+  HeroBlockData,
+  ImageGalleryBlockData,
+  PageBlock,
+  RichTextBlockData
+} from "@/types/entities/pageBlock"
 
 const {t} = useI18n()
 
@@ -133,6 +141,7 @@ const emit = defineEmits<{ 'update:modelValue': [value: PageBlock[]] }>()
 
 const blocks = ref<PageBlock[]>([...props.modelValue])
 const showSelector = ref(false)
+const isDev = import.meta.env.DEV
 
 function emitUpdate() {
   emit('update:modelValue', [...blocks.value])
@@ -144,7 +153,8 @@ const defaultData: Record<BlockType, () => Record<string, any>> = {
   'image-gallery': () => ({ images: [], columns: 3 }),
   'hero': () => ({ title: '', subtitle: '', backgroundImageUrl: '', ctaLabel: '', ctaUrl: '', overlayOpacity: 0.5 }),
   'faq': () => ({ items: [] }),
-  'cta-button': () => ({ label: '', url: '', style: 'primary', alignment: 'center', openInNewTab: false })
+  'cta-button': () => ({ label: '', url: '', style: 'primary', alignment: 'center', openInNewTab: false }),
+  'contact-form': () => createDefaultContactFormBlockData()
 }
 
 function addBlock(type: BlockType) {
@@ -180,6 +190,20 @@ function toggleWidth(index: number) {
   const current = blocks.value[index].width ?? 'full'
   blocks.value[index] = { ...blocks.value[index], width: current === 'half' ? 'full' : 'half' }
   emitUpdate()
+}
+
+if (isDev) {
+  watchEffect(() => {
+    for (const block of blocks.value) {
+      if (block.type === 'contact-form') {
+        console.log('[PageBlocksEditor] contact-form block detected', {
+          type: block.type,
+          data: block.data,
+          editorChosen: 'ContactFormBlockEditor',
+        })
+      }
+    }
+  })
 }
 </script>
 

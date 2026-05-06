@@ -108,6 +108,11 @@
           "path": "logs-erreurs",
           "fullPath": "/admin/logs-erreurs",
           "name": "Logs d'erreurs"
+        },
+        "auditLogs": {
+          "path": "journal-audit",
+          "fullPath": "/admin/journal-audit",
+          "name": "Journal d'audit"
         }
       }
     }
@@ -338,6 +343,44 @@
         "alignCenter": "Centre",
         "alignRight": "Droite",
         "openInNewTab": "Ouvrir dans un nouvel onglet"
+      },
+      "contactForm": {
+        "title": "Titre du formulaire",
+        "titlePlaceholder": "Écrivez-nous",
+        "introText": "Texte d'introduction",
+        "introPlaceholder": "Expliquez brièvement comment vous joindre ou le délai de réponse.",
+        "submitLabel": "Texte du bouton d'envoi",
+        "submitPlaceholder": "Envoyer le message",
+        "successMessage": "Message de succès",
+        "successPlaceholder": "Merci! Votre message a bien été envoyé.",
+        "recipientEmail": "Courriel destinataire",
+        "recipientPlaceholder": "contact{'@'}exemple.com",
+        "recipientHint": "Laissez vide pour utiliser le courriel du pied de page dans les réglages du site.",
+        "enabled": "Formulaire actif",
+        "defaultTitle": "Contactez-nous",
+        "defaultSubmitLabel": "Envoyer",
+        "defaultSuccessMessage": "Votre message a été envoyé.",
+        "public": {
+          "name": "Nom",
+          "namePlaceholder": "Votre nom",
+          "email": "Courriel",
+          "emailPlaceholder": "vous{'@'}exemple.com",
+          "message": "Message",
+          "messagePlaceholder": "Décrivez votre demande.",
+          "sending": "Envoi en cours...",
+          "disabled": "Le formulaire est temporairement indisponible.",
+          "error": "Impossible d’envoyer votre message pour le moment.",
+          "validation": {
+            "contactUnavailable": "Impossible d’envoyer votre message pour le moment.",
+            "nameRequired": "Veuillez entrer votre nom.",
+            "nameTooLong": "Le nom doit faire 100 caractères ou moins.",
+            "emailRequired": "Veuillez entrer votre courriel.",
+            "emailInvalid": "Le courriel n’est pas valide.",
+            "emailTooLong": "Le courriel doit faire 320 caractères ou moins.",
+            "messageRequired": "Veuillez entrer un message.",
+            "messageTooLong": "Le message doit faire 2000 caractères ou moins."
+          }
+        }
       }
     },
     "menus": {
@@ -439,6 +482,9 @@
         "messagePlaceholder": "Le site est en maintenance. Revenez bientôt !",
         "retryAfter": "Délai de réessai (secondes)"
       },
+      "auditLogs": {
+        "retentionDays": "Rétention du journal d'audit (jours)"
+      },
       "update": {
         "validation": {
           "successMessage": "Les paramètres ont été mis à jour avec succès.",
@@ -465,6 +511,43 @@
       "message": "Message",
       "source": "Source",
       "noLogs": "Aucune erreur récente."
+    },
+    "auditLogs": {
+      "refresh": "Rafraîchir",
+      "clearFilters": "Effacer les filtres",
+      "empty": "Aucune entrée d'audit trouvée.",
+      "error": "Impossible de charger le journal d'audit.",
+      "technicalHint": "L’ID technique sert à retracer précisément l’élément modifié en base de données.",
+      "technicalId": "ID technique",
+      "technicalReference": "référence technique",
+      "filters": {
+        "user": "Nom, courriel ou utilisateur",
+        "userLabel": "Utilisateur",
+        "actionLabel": "Type d’action",
+        "actionDateLabel": "Date de l’action",
+        "actionDatePlaceholder": "Sélectionner une date",
+        "allActions": "Toutes les actions"
+      },
+      "columns": {
+        "date": "Date",
+        "user": "Utilisateur",
+        "action": "Action",
+        "entity": "Entité",
+        "details": "Détails"
+      },
+      "actions": {
+        "create": "Création",
+        "update": "Modification",
+        "delete": "Suppression",
+        "login": "Connexion",
+        "logout": "Déconnexion"
+      },
+      "entities": {
+        "page": "Page",
+        "menu": "Menu",
+        "site-settings": "Réglages du site",
+        "admin-session": "Session admin"
+      }
     },
     "backup": {
       "createBackup": "Créer un backup",
@@ -644,6 +727,8 @@
       "backHome": "Retour à l'accueil",
       "serverError": "Erreur serveur",
       "serverErrorMessage": "Une erreur inattendue s'est produite. Veuillez réessayer ou contacter notre équipe si le problème persiste.",
+      "forbiddenTitle": "Accès refusé",
+      "forbiddenMessage": "Vous n’avez pas les permissions nécessaires pour consulter cette page.",
       "retry": "Réessayer"
     },
     "maintenance": {

@@ -47,4 +47,22 @@ public class EmailNotificationService : INotificationService
 
         return await _emailSender.SendAsync(model);
     }
+
+    public async Task<SucceededOrNotResponse> SendContactFormNotification(
+        string destinationEmail,
+        string senderName,
+        string senderEmail,
+        string message,
+        string? pageSlug = null)
+    {
+        var model = new ContactFormNotificationModel(
+            destinationEmail,
+            EMAIL_DEFAULT_CULTURE,
+            senderName,
+            senderEmail,
+            message,
+            pageSlug);
+
+        return await _emailSender.SendAsync(model);
+    }
 }

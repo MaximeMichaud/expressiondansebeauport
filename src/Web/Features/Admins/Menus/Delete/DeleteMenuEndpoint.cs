@@ -1,4 +1,5 @@
 using Domain.Repositories;
+using Application.Interfaces.Services;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
@@ -12,10 +13,12 @@ public class DeleteMenuRequest
 public class DeleteMenuEndpoint : Endpoint<DeleteMenuRequest, EmptyResponse>
 {
     private readonly INavigationMenuRepository _menuRepository;
+    private readonly IAuditLogService _auditLogService;
 
-    public DeleteMenuEndpoint(INavigationMenuRepository menuRepository)
+    public DeleteMenuEndpoint(INavigationMenuRepository menuRepository, IAuditLogService auditLogService)
     {
         _menuRepository = menuRepository;
+        _auditLogService = auditLogService;
     }
 
     public override void Configure()
@@ -34,7 +37,9 @@ public class DeleteMenuEndpoint : Endpoint<DeleteMenuRequest, EmptyResponse>
             await Send.NotFoundAsync(ct);
             return;
         }
+        var details = $"Menu '{menu.Name}' supprimé.";
         await _menuRepository.Delete(menu);
+        await _auditLogService.LogAsync("delete", "menu", req.Id, details);
         await Send.NoContentAsync(ct);
     }
 }
