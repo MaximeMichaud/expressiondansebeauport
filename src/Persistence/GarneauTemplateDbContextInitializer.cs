@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Persistence;
 
@@ -859,39 +860,88 @@ public class GarneauTemplateDbContextInitializer
             await _context.SaveChangesAsync();
         }
 
-        var imagesJson = string.Join(",", seedImages.Select((img, i) =>
-            $"{{\"url\":\"{SeedMediaUrl(img.Item1)}\",\"alt\":\"{img.Item4.Replace("\"", "\\\"")}\"}}"
-        ));
+        var blocks = new object[]
+        {
+            new
+            {
+                id = Guid.NewGuid(),
+                type = "rich-text",
+                data = new
+                {
+                    html =
+                        "<h2>Nous joindre</h2>" +
+                        "<p>Pour toutes questions ou informations supplémentaires, n'hésitez surtout pas à nous joindre.</p>" +
+                        "<p><strong>Téléphone :</strong> <a href=\"tel:4186666158\">418-666-6158</a></p>" +
+                        "<p><strong>Courriel :</strong> <a href=\"mailto:info@expressiondansebeauport.com\">info@expressiondansebeauport.com</a></p>" +
+                        "<h3>Nos locaux</h3>" +
+                        "<p>Centre de loisirs Ste-Gertrude<br/>788, avenue du Cénacle</p>" +
+                        "<h3>Adresse postale</h3>" +
+                        "<p>CP 29009 QUÉ CP RAYMOND PO<br/>G1B 3G0, Québec, QC</p>"
+                }
+            },
+            new
+            {
+                id = Guid.NewGuid(),
+                type = "google-map",
+                data = new
+                {
+                    embedUrl = "https://www.google.com/maps?q=788+avenue+du+C%C3%A9nacle,+Qu%C3%A9bec,+QC+G1E+5J4&z=15&output=embed",
+                    address = "788 avenue du Cénacle, Québec, QC G1E 5J4",
+                    height = 400
+                }
+            },
+            new
+            {
+                id = Guid.NewGuid(),
+                type = "rich-text",
+                data = new
+                {
+                    html =
+                        "<h2>Comment s'y rendre?</h2>" +
+                        "<p>L'accès au stationnement et au local se fait par l'Avenue de l'Éducation. " +
+                        "Google Maps peut parfois manquer de précision sur ce point, donc voici les repères visuels à suivre.</p>"
+                }
+            },
+            new
+            {
+                id = Guid.NewGuid(),
+                type = "image-gallery",
+                data = new
+                {
+                    images = seedImages.Select(img => new { url = SeedMediaUrl(img.Item1), alt = img.Item4 }).ToArray(),
+                    columns = 3
+                }
+            },
+            new
+            {
+                id = Guid.NewGuid(),
+                type = "contact-form",
+                data = new
+                {
+                    title = "Contactez-nous",
+                    introText = "Vous avez une question? Envoyez-nous un message et nous vous répondrons dès que possible.",
+                    submitLabel = "Envoyer",
+                    successMessage = "Votre message a été envoyé.",
+                    recipientEmail = "",
+                    enabled = true
+                }
+            },
+            new
+            {
+                id = Guid.NewGuid(),
+                type = "cta-button",
+                data = new
+                {
+                    label = "S'inscrire maintenant",
+                    url = "https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session",
+                    style = "primary",
+                    alignment = "center",
+                    openInNewTab = true
+                }
+            }
+        };
 
-        var blocksJson =
-            "[" +
-                "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
-                    "<h2>Nous joindre</h2>" +
-                    "<p>Pour toutes questions ou informations supplémentaires, n'hésitez surtout pas à nous joindre.</p>" +
-                    "<p><strong>Téléphone :</strong> <a href=\\\"tel:4186666158\\\">418-666-6158</a></p>" +
-                    "<p><strong>Courriel :</strong> <a href=\\\"mailto:info@expressiondansebeauport.com\\\">info@expressiondansebeauport.com</a></p>" +
-                    "<h3>Nos locaux</h3>" +
-                    "<p>Centre de loisirs Ste-Gertrude<br/>788, avenue du Cénacle</p>" +
-                    "<h3>Adresse postale</h3>" +
-                    "<p>CP 29009 QUÉ CP RAYMOND PO<br/>G1B 3G0, Québec, QC</p>" +
-                "\"}}," +
-                "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"google-map\",\"data\":{" +
-                    "\"embedUrl\":\"https://www.google.com/maps?q=788+avenue+du+C%C3%A9nacle,+Qu%C3%A9bec,+QC+G1E+5J4&z=15&output=embed\"," +
-                    "\"address\":\"788 avenue du Cénacle, Québec, QC G1E 5J4\"," +
-                    "\"height\":400" +
-                "}}," +
-                "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"rich-text\",\"data\":{\"html\":\"" +
-                    "<h2>Comment s'y rendre?</h2>" +
-                    "<p>L'accès au stationnement et au local se fait par l'Avenue de l'Éducation. " +
-                    "Google Maps peut parfois manquer de précision sur ce point, donc voici les repères visuels à suivre.</p>" +
-                "\"}}," +
-                "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"image-gallery\",\"data\":{\"images\":[" + imagesJson + "],\"columns\":3}}," +
-                "{\"id\":\"" + Guid.NewGuid() + "\",\"type\":\"cta-button\",\"data\":{" +
-                    "\"label\":\"S'inscrire maintenant\"," +
-                    "\"url\":\"https://www.qidigo.com/u/Expression-danse-de-Beauport/activities/session\"," +
-                    "\"style\":\"primary\",\"alignment\":\"center\",\"openInNewTab\":true" +
-                "}}" +
-            "]";
+        var blocksJson = JsonSerializer.Serialize(blocks);
 
         // Si la page est déjà en mode blocks, migrer les URLs de médias seedés vers /uploads.
         if (page.ContentMode == "blocks")
