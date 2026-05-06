@@ -24,6 +24,7 @@ export class SiteSettings {
   isMaintenanceMode?: boolean
   maintenanceMessage?: string
   maintenanceRetryAfter?: number
+  auditLogRetentionDays?: number
   isBannerEnabled?: boolean
   bannerText?: string
   bannerUrl?: string

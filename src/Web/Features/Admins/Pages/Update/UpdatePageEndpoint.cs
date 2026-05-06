@@ -54,13 +54,20 @@ public class UpdatePageEndpoint : Endpoint<UpdatePageRequest, PageDto>
     private readonly IPageRepository _pageRepository;
     private readonly IPageRevisionRepository _revisionRepository;
     private readonly IHttpContextUserService _userService;
+    private readonly IAuditLogService _auditLogService;
     private readonly IMapper _mapper;
 
-    public UpdatePageEndpoint(IPageRepository pageRepository, IPageRevisionRepository revisionRepository, IHttpContextUserService userService, IMapper mapper)
+    public UpdatePageEndpoint(
+        IPageRepository pageRepository,
+        IPageRevisionRepository revisionRepository,
+        IHttpContextUserService userService,
+        IAuditLogService auditLogService,
+        IMapper mapper)
     {
         _pageRepository = pageRepository;
         _revisionRepository = revisionRepository;
         _userService = userService;
+        _auditLogService = auditLogService;
         _mapper = mapper;
     }
 
@@ -135,6 +142,12 @@ public class UpdatePageEndpoint : Endpoint<UpdatePageRequest, PageDto>
 
         // Supprimer l'autosave quand on sauvegarde manuellement
         await _revisionRepository.DeleteAutosave(page.Id);
+
+        await _auditLogService.LogAsync(
+            "update",
+            "page",
+            page.Id,
+            $"Page '{page.Title}' modifiée.");
 
         await Send.OkAsync(_mapper.Map<PageDto>(page), cancellation: ct);
     }

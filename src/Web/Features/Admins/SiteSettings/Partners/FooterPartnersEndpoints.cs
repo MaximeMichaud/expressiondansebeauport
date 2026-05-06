@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Web.Dtos;
+using Application.Interfaces.Services;
 using IMapper = AutoMapper.IMapper;
 
 namespace Web.Features.Admins.SiteSettings.Partners;
@@ -32,11 +33,13 @@ public class CreateFooterPartnerValidator : Validator<CreateFooterPartnerRequest
 public class CreateFooterPartnerEndpoint : Endpoint<CreateFooterPartnerRequest, FooterPartnerDto>
 {
     private readonly GarneauTemplateDbContext _context;
+    private readonly IAuditLogService _auditLogService;
     private readonly IMapper _mapper;
 
-    public CreateFooterPartnerEndpoint(GarneauTemplateDbContext context, IMapper mapper)
+    public CreateFooterPartnerEndpoint(GarneauTemplateDbContext context, IAuditLogService auditLogService, IMapper mapper)
     {
         _context = context;
+        _auditLogService = auditLogService;
         _mapper = mapper;
     }
 
@@ -61,6 +64,7 @@ public class CreateFooterPartnerEndpoint : Endpoint<CreateFooterPartnerRequest, 
         var partner = new FooterPartner(settings.Id, req.MediaFileId, req.AltText, req.Url, maxOrder + 1);
         _context.FooterPartners.Add(partner);
         await _context.SaveChangesAsync(ct);
+        await _auditLogService.LogAsync("update", "site-settings", settings.Id, $"Footer partner '{partner.AltText}' added (item: {partner.Id}).");
 
         var created = await _context.FooterPartners
             .Include(p => p.MediaFile)
@@ -93,11 +97,13 @@ public class UpdateFooterPartnerValidator : Validator<UpdateFooterPartnerRequest
 public class UpdateFooterPartnerEndpoint : Endpoint<UpdateFooterPartnerRequest, FooterPartnerDto>
 {
     private readonly GarneauTemplateDbContext _context;
+    private readonly IAuditLogService _auditLogService;
     private readonly IMapper _mapper;
 
-    public UpdateFooterPartnerEndpoint(GarneauTemplateDbContext context, IMapper mapper)
+    public UpdateFooterPartnerEndpoint(GarneauTemplateDbContext context, IAuditLogService auditLogService, IMapper mapper)
     {
         _context = context;
+        _auditLogService = auditLogService;
         _mapper = mapper;
     }
 
@@ -121,6 +127,7 @@ public class UpdateFooterPartnerEndpoint : Endpoint<UpdateFooterPartnerRequest, 
         partner.SetAltText(req.AltText);
         partner.SetUrl(req.Url);
         await _context.SaveChangesAsync(ct);
+        await _auditLogService.LogAsync("update", "site-settings", partner.SiteSettingsId, $"Footer partner '{partner.AltText}' updated (item: {partner.Id}).");
 
         var updated = await _context.FooterPartners
             .Include(p => p.MediaFile)
@@ -138,10 +145,12 @@ public class DeleteFooterPartnerRequest
 public class DeleteFooterPartnerEndpoint : Endpoint<DeleteFooterPartnerRequest, EmptyResponse>
 {
     private readonly GarneauTemplateDbContext _context;
+    private readonly IAuditLogService _auditLogService;
 
-    public DeleteFooterPartnerEndpoint(GarneauTemplateDbContext context)
+    public DeleteFooterPartnerEndpoint(GarneauTemplateDbContext context, IAuditLogService auditLogService)
     {
         _context = context;
+        _auditLogService = auditLogService;
     }
 
     public override void Configure()
@@ -157,8 +166,10 @@ public class DeleteFooterPartnerEndpoint : Endpoint<DeleteFooterPartnerRequest, 
         var partner = await _context.FooterPartners.FirstOrDefaultAsync(p => p.Id == req.Id, ct);
         if (partner is null) { await Send.NotFoundAsync(ct); return; }
 
+        var details = $"Footer partner '{partner.AltText}' deleted.";
         _context.FooterPartners.Remove(partner);
         await _context.SaveChangesAsync(ct);
+        await _auditLogService.LogAsync("update", "site-settings", partner.SiteSettingsId, $"{details} (item: {partner.Id}).");
         await Send.NoContentAsync(ct);
     }
 }
