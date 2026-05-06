@@ -22,6 +22,7 @@
     </main>
     <PublicFooter />
     <CookieBanner />
+    <BackToTop v-if="route.name !== 'home'" />
   </div>
 </template>
 
@@ -32,6 +33,7 @@ import PublicNavbar from "@/components/navigation/PublicNavbar.vue";
 import PublicFooter from "@/components/layouts/items/PublicFooter.vue";
 import CookieBanner from "@/components/layouts/items/CookieBanner.vue";
 import NewsBanner from "@/components/layouts/items/NewsBanner.vue";
+import BackToTop from "@/components/layouts/items/BackToTop.vue";
 
 const route = useRoute();
 const mainContent = ref<HTMLElement | null>(null);
