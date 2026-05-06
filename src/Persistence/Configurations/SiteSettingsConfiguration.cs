@@ -26,6 +26,7 @@ public class SiteSettingsConfiguration : IEntityTypeConfiguration<SiteSettings>
         builder.Property(s => s.IsMaintenanceMode).HasDefaultValue(false).IsRequired();
         builder.Property(s => s.MaintenanceMessage).HasMaxLength(500).HasDefaultValue("Le site est en maintenance. Revenez bientôt !");
         builder.Property(s => s.MaintenanceRetryAfter).HasDefaultValue(3600).IsRequired();
+        builder.Property(s => s.AuditLogRetentionDays).HasDefaultValue(90).IsRequired();
         builder.Property(s => s.IsBannerEnabled).HasDefaultValue(false).IsRequired();
         builder.Property(s => s.BannerText).HasMaxLength(300).HasDefaultValue("Actualités du moment");
         builder.Property(s => s.BannerUrl).HasMaxLength(500).HasDefaultValue("/actualites");

@@ -108,6 +108,11 @@
           "path": "logs-erreurs",
           "fullPath": "/admin/logs-erreurs",
           "name": "Logs d'erreurs"
+        },
+        "auditLogs": {
+          "path": "journal-audit",
+          "fullPath": "/admin/journal-audit",
+          "name": "Journal d'audit"
         }
       }
     }
@@ -439,6 +444,9 @@
         "messagePlaceholder": "Le site est en maintenance. Revenez bientôt !",
         "retryAfter": "Délai de réessai (secondes)"
       },
+      "auditLogs": {
+        "retentionDays": "Rétention du journal d'audit (jours)"
+      },
       "update": {
         "validation": {
           "successMessage": "Les paramètres ont été mis à jour avec succès.",
@@ -465,6 +473,43 @@
       "message": "Message",
       "source": "Source",
       "noLogs": "Aucune erreur récente."
+    },
+    "auditLogs": {
+      "refresh": "Rafraîchir",
+      "clearFilters": "Effacer les filtres",
+      "empty": "Aucune entrée d'audit trouvée.",
+      "error": "Impossible de charger le journal d'audit.",
+      "technicalHint": "L’ID technique sert à retracer précisément l’élément modifié en base de données.",
+      "technicalId": "ID technique",
+      "technicalReference": "référence technique",
+      "filters": {
+        "user": "Nom, courriel ou utilisateur",
+        "userLabel": "Utilisateur",
+        "actionLabel": "Type d’action",
+        "actionDateLabel": "Date de l’action",
+        "actionDatePlaceholder": "Sélectionner une date",
+        "allActions": "Toutes les actions"
+      },
+      "columns": {
+        "date": "Date",
+        "user": "Utilisateur",
+        "action": "Action",
+        "entity": "Entité",
+        "details": "Détails"
+      },
+      "actions": {
+        "create": "Création",
+        "update": "Modification",
+        "delete": "Suppression",
+        "login": "Connexion",
+        "logout": "Déconnexion"
+      },
+      "entities": {
+        "page": "Page",
+        "menu": "Menu",
+        "site-settings": "Réglages du site",
+        "admin-session": "Session admin"
+      }
     },
     "backup": {
       "createBackup": "Créer un backup",
@@ -644,6 +689,8 @@
       "backHome": "Retour à l'accueil",
       "serverError": "Erreur serveur",
       "serverErrorMessage": "Une erreur inattendue s'est produite. Veuillez réessayer ou contacter notre équipe si le problème persiste.",
+      "forbiddenTitle": "Accès refusé",
+      "forbiddenMessage": "Vous n’avez pas les permissions nécessaires pour consulter cette page.",
       "retry": "Réessayer"
     },
     "maintenance": {

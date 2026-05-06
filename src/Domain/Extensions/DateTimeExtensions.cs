@@ -19,4 +19,9 @@ public static class DateTimeExtensions
     {
         return dateTime.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
     }
+
+    public static string FormatAsStringWithSeconds(this DateTime dateTime)
+    {
+        return dateTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+    }
 }

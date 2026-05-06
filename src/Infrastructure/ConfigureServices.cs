@@ -7,6 +7,7 @@ using Domain.Repositories;
 using Infrastructure.Imaging;
 using Infrastructure.Mailing;
 using Infrastructure.Repositories.Admins;
+using Infrastructure.Repositories.AuditLogs;
 using Infrastructure.Services.Push;
 using Infrastructure.Repositories.Authentication;
 using Infrastructure.Repositories.Media;
@@ -74,6 +75,7 @@ public static class ConfigureServices
         services.AddScoped<IImageProcessor, SkiaSharpImageProcessor>();
 
         services.AddScoped<IAdministratorRepository, AdministratorRepository>();
+        services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();

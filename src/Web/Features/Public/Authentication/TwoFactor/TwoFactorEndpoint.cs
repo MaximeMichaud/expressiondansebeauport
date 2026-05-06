@@ -1,4 +1,5 @@
 using Application.Interfaces.Services.Users;
+using Application.Interfaces.Services;
 using Application.Settings;
 using Domain.Common;
 using Domain.Repositories;
@@ -13,15 +14,18 @@ public class TwoFactorEndpoint : EndpointWithSanitizedRequest<TwoFactorRequest, 
     private readonly CookieSettings _cookieSettings;
     private readonly IUserRepository _userRepository;
     private readonly IAuthenticationService _authenticationService;
+    private readonly IAuditLogService _auditLogService;
 
     public TwoFactorEndpoint(
         IUserRepository userRepository,
         IOptions<CookieSettings> cookieSettings,
-        IAuthenticationService authenticationService)
+        IAuthenticationService authenticationService,
+        IAuditLogService auditLogService)
     {
         _userRepository = userRepository;
         _authenticationService = authenticationService;
         _cookieSettings = cookieSettings.Value;
+        _auditLogService = auditLogService;
     }
 
     public override void Configure()
@@ -57,6 +61,9 @@ public class TwoFactorEndpoint : EndpointWithSanitizedRequest<TwoFactorRequest, 
             _cookieSettings.Domain,
             _cookieSettings.Secure,
             TimeSpan.FromDays(_cookieSettings.MaxAgeDays));
+
+        if (user.HasRole(Domain.Constants.User.Roles.ADMINISTRATOR))
+            await _auditLogService.LogAsync("login", "admin-session", user.Id, "Connexion admin réussie avec authentification à deux facteurs.", user.Id, null, user.Email);
 
         await Send.OkAsync(new SucceededOrNotResponse(true), ct);
     }
