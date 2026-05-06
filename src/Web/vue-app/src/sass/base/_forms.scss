@@ -142,8 +142,17 @@ form {
     }
   }
 
+  &__label-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    order: -1;
+  }
+
   &__label-right {
     margin-left: auto;
+    font-size: rem(13);
   }
 
   &__tooltip {
