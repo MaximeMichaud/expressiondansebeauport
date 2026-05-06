@@ -2,9 +2,9 @@
   <div class="error-page">
     <div class="error-page__container">
       <Breadcrumbs :items="breadcrumbs" class="error-page__breadcrumbs" />
-      <p class="error-page__code">500</p>
-      <h1 class="error-page__title">{{ t('public.page.serverError') }}</h1>
-      <p class="error-page__message">{{ t('public.page.serverErrorMessage') }}</p>
+      <p class="error-page__code">{{ code }}</p>
+      <h1 class="error-page__title">{{ title }}</h1>
+      <p class="error-page__message">{{ message }}</p>
       <div class="error-page__actions">
         <button class="error-page__btn error-page__btn--outline" @click="retry">
           {{ t('public.page.retry') }}
@@ -20,16 +20,26 @@
 <script lang="ts" setup>
 import { computed } from "vue"
 import { useI18n } from "vue-i18n"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import Breadcrumbs from "@/components/layouts/items/Breadcrumbs.vue"
 import type {BreadcrumbItem} from "@/types/entities"
 
 const { t } = useI18n()
 const router = useRouter()
+const route = useRoute()
+
+const isForbidden = computed(() => route.query.reason === 'forbidden')
+const code = computed(() => isForbidden.value ? '403' : '500')
+const title = computed(() => isForbidden.value
+  ? t('public.page.forbiddenTitle')
+  : t('public.page.serverError'))
+const message = computed(() => isForbidden.value
+  ? t('public.page.forbiddenMessage')
+  : t('public.page.serverErrorMessage'))
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   { label: t('routes.home.name'), url: '/', isCurrent: false },
-  { label: t('public.page.serverError'), isCurrent: true }
+  { label: title.value, isCurrent: true }
 ])
 
 function retry() {

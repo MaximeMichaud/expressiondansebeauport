@@ -2,15 +2,13 @@ import i18n from "@/i18n";
 import {Role} from "@/types/enums";
 import {createRouter, createWebHistory} from "vue-router";
 import type {Component} from "vue";
-import {Library, FileText, LayoutList, Palette, Activity, ArrowLeftRight, HardDriveDownload, AlertTriangle, UserCircle} from "lucide-vue-next";
+import {Library, FileText, LayoutList, Palette, Activity, ArrowLeftRight, HardDriveDownload, AlertTriangle, ScrollText, UserCircle} from "lucide-vue-next";
 
 declare module "vue-router" {
   interface RouteMeta {
     navIcon?: Component;
   }
 }
-
-import Home from "@/views/public/Home.vue";
 
 import {useUserStore} from "@/stores/userStore";
 import {useApiStore} from "@/stores/apiStore";
@@ -123,7 +121,7 @@ const mainRoutes = [
   {
     path: "/",
     name: "home",
-    component: Home,
+    component: () => import("@/views/public/Home.vue"),
     meta: {
       title: "routes.home.name"
     }
@@ -252,6 +250,12 @@ const mainRoutes = [
         component: () => import("@/views/admin/errorlogs/AdminErrorLogs.vue"),
         meta: { navIcon: AlertTriangle },
       },
+      {
+        path: i18n.global.t("routes.admin.children.auditLogs.path"),
+        name: "admin.children.auditLogs",
+        component: () => import("@/views/admin/auditlogs/AdminAuditLogs.vue"),
+        meta: { navIcon: ScrollText },
+      },
     ]
   },
   {
@@ -352,6 +356,14 @@ router.beforeEach(async (to, from) => {
   if (!requiredRole)
     return;
 
+  if (!rehydrationAttempted && !userStore.user.email && !hasAuthCookie()) {
+    if (isSocialRoute(to)) {
+      return { name: "socialLogin" };
+    }
+
+    return { name: "login" };
+  }
+
   // On a hard reload the Pinia store is empty, but the auth cookie may still
   // be valid server-side. Try to rehydrate from /users/me before deciding to
   // bounce the user to login. Retries when an auth cookie exists but the
@@ -368,11 +380,23 @@ router.beforeEach(async (to, from) => {
   const doesNotHaveGivenRole = !isRoleArray && !userStore.hasRole(requiredRole as Role);
   const hasNoRoleAmongRoleList = isRoleArray && !userStore.hasOneOfTheseRoles(requiredRole as Role[]);
   if (doesNotHaveGivenRole || hasNoRoleAmongRoleList) {
+    if (!userStore.user.email) {
+      if (isSocialRoute(to)) {
+        return { name: "socialLogin" };
+      }
+
+      return {
+        name: "login",
+      };
+    }
+
     if (isSocialRoute(to)) {
       return { name: "socialLogin" };
     }
+
     return {
-      name: "login",
+      name: "internalError",
+      query: { reason: "forbidden" },
     };
   }
 });

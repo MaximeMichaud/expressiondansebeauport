@@ -3,6 +3,7 @@ using Application.Interfaces.Services.Users;
 using Application.Settings;
 using Domain.Common;
 using Domain.Entities.Identity;
+using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Web.Cookies;
@@ -15,17 +16,20 @@ public class LoginEndpoint : EndpointWithSanitizedRequest<LoginRequest, Succeede
     private readonly CookieSettings _cookieSettings;
     private readonly INotificationService _notificationService;
     private readonly IAuthenticationService _authenticationService;
+    private readonly IAuditLogService _auditLogService;
     private readonly UserManager<User> _userManager;
 
     public LoginEndpoint(
         IOptions<CookieSettings> cookieSettings,
         INotificationService notificationService,
         IAuthenticationService authenticationService,
+        IAuditLogService auditLogService,
         UserManager<User> userManager)
     {
         _cookieSettings = cookieSettings.Value;
         _notificationService = notificationService;
         _authenticationService = authenticationService;
+        _auditLogService = auditLogService;
         _userManager = userManager;
     }
 
@@ -59,6 +63,7 @@ public class LoginEndpoint : EndpointWithSanitizedRequest<LoginRequest, Succeede
         if (code == null)
         {
             await CreateAccessAndRefreshTokenForUser(user);
+            await LogAdminAuthenticationAsync(user, "login");
             await Send.OkAsync(new SucceededOrNotResponse(succeeded: true), ct);
             return;
         }
@@ -76,5 +81,13 @@ public class LoginEndpoint : EndpointWithSanitizedRequest<LoginRequest, Succeede
             _cookieSettings.Domain,
             _cookieSettings.Secure,
             TimeSpan.FromDays(_cookieSettings.MaxAgeDays));
+    }
+
+    private async Task LogAdminAuthenticationAsync(User user, string actionType)
+    {
+        if (!user.HasRole(Domain.Constants.User.Roles.ADMINISTRATOR))
+            return;
+
+        await _auditLogService.LogAsync(actionType, "admin-session", user.Id, "Connexion admin réussie.", user.Id, null, user.Email);
     }
 }

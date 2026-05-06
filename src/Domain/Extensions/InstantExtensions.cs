@@ -13,4 +13,9 @@ public static class InstantExtensions
     {
         return instant.ToDateTimeUtc().FormatAsStringWithTime();
     }
+
+    public static string FormatAsStringWithSeconds(this Instant instant)
+    {
+        return instant.ToDateTimeUtc().FormatAsStringWithSeconds();
+    }
 }
