@@ -16,7 +16,17 @@
         @input="handleInput"
     />
 
-    <label :for="name">
+    <div v-if="$slots['to-label-right']" class="form__label-row">
+      <label :for="name">
+        {{ label ? label : name }}
+        <span v-if="isRequired" class="form__indicator">*</span>
+        <span v-if="tooltip" class="form__tooltip">{{ tooltip }}</span>
+      </label>
+      <span class="form__label-right">
+        <slot name="to-label-right"></slot>
+      </span>
+    </div>
+    <label v-else :for="name">
       {{ label ? label : name }}
       <span v-if="isRequired" class="form__indicator">*</span>
       <span v-if="tooltip" class="form__tooltip">{{ tooltip }}</span>
