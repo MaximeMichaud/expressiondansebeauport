@@ -6,14 +6,15 @@ namespace Domain.Repositories;
 
 public interface IAuditLogRepository
 {
-    PaginatedList<AuditLog> GetPaginated(
+    Task<PaginatedList<AuditLog>> GetPaginated(
         int pageIndex,
         int pageSize,
         string? userQuery = null,
         string? actionType = null,
         Instant? fromInclusive = null,
-        Instant? toExclusive = null);
+        Instant? toExclusive = null,
+        CancellationToken cancellationToken = default);
 
     Task Create(AuditLog auditLog);
-    Task DeleteOlderThan(Instant cutoff);
+    Task<int> DeleteOlderThan(Instant cutoff);
 }

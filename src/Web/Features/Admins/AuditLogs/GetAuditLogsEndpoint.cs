@@ -1,9 +1,10 @@
+using System.Globalization;
 using Domain.Common;
-using Domain.Helpers;
 using Domain.Repositories;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using NodaTime;
+using NodaTime.Text;
 using Web.Dtos;
 using Web.Features.Common;
 using IMapper = AutoMapper.IMapper;
@@ -20,6 +21,9 @@ public class GetAuditLogsRequest : PaginateRequest
 
 public class GetAuditLogsEndpoint : Endpoint<GetAuditLogsRequest, PaginatedList<AuditLogDto>>
 {
+    private static readonly DateTimeZone QuebecZone = DateTimeZoneProviders.Tzdb["America/Toronto"];
+    private static readonly LocalDatePattern DatePattern = LocalDatePattern.CreateWithInvariantCulture("uuuu-MM-dd");
+
     private readonly IAuditLogRepository _auditLogRepository;
     private readonly IMapper _mapper;
 
@@ -39,16 +43,17 @@ public class GetAuditLogsEndpoint : Endpoint<GetAuditLogsRequest, PaginatedList<
 
     public override async Task HandleAsync(GetAuditLogsRequest req, CancellationToken ct)
     {
-        var fromInclusive = InstantHelper.ParseFromNullableString(req.FromDate);
-        var toExclusive = BuildToExclusive(req.ToDate);
+        var fromInclusive = ParseStartOfDay(req.FromDate);
+        var toExclusive = ParseStartOfNextDay(req.ToDate);
 
-        var paginatedLogs = _auditLogRepository.GetPaginated(
-            req.PageIndex,
-            req.PageSize,
+        var paginatedLogs = await _auditLogRepository.GetPaginated(
+            req.NormalizedPageIndex,
+            req.NormalizedPageSize,
             req.User,
             req.ActionType,
             fromInclusive,
-            toExclusive);
+            toExclusive,
+            ct);
 
         await Send.OkAsync(
             new PaginatedList<AuditLogDto>(
@@ -57,9 +62,23 @@ public class GetAuditLogsEndpoint : Endpoint<GetAuditLogsRequest, PaginatedList<
             cancellation: ct);
     }
 
-    private static Instant? BuildToExclusive(string? toDate)
+    private static Instant? ParseStartOfDay(string? dateString)
     {
-        var parsedDate = InstantHelper.ParseFromNullableString(toDate);
-        return parsedDate?.Plus(Duration.FromDays(1));
+        var localDate = ParseLocalDate(dateString);
+        return localDate?.AtStartOfDayInZone(QuebecZone).ToInstant();
+    }
+
+    private static Instant? ParseStartOfNextDay(string? dateString)
+    {
+        var localDate = ParseLocalDate(dateString);
+        return localDate?.PlusDays(1).AtStartOfDayInZone(QuebecZone).ToInstant();
+    }
+
+    private static LocalDate? ParseLocalDate(string? dateString)
+    {
+        if (string.IsNullOrWhiteSpace(dateString))
+            return null;
+        var parseResult = DatePattern.Parse(dateString);
+        return parseResult.Success ? parseResult.Value : null;
     }
 }

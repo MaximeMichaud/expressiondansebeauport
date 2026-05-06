@@ -69,7 +69,9 @@ public partial class AuditLogService : IAuditLogService
         var settings = await _siteSettingsRepository.Get();
         var retentionDays = Math.Max(settings.AuditLogRetentionDays, 1);
         var cutoff = InstantHelper.GetLocalNow().Minus(Duration.FromDays(retentionDays));
-        await _auditLogRepository.DeleteOlderThan(cutoff);
+        var deleted = await _auditLogRepository.DeleteOlderThan(cutoff);
+        if (deleted > 0)
+            _logger.LogInformation("Purged {Count} expired audit logs older than {Cutoff}", deleted, cutoff);
     }
 
     private (Guid? UserId, string? UserDisplayName, string? UserEmail) ResolveActor(

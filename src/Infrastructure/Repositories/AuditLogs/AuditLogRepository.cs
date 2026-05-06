@@ -16,13 +16,14 @@ public class AuditLogRepository : IAuditLogRepository
         _context = context;
     }
 
-    public PaginatedList<AuditLog> GetPaginated(
+    public async Task<PaginatedList<AuditLog>> GetPaginated(
         int pageIndex,
         int pageSize,
         string? userQuery = null,
         string? actionType = null,
         Instant? fromInclusive = null,
-        Instant? toExclusive = null)
+        Instant? toExclusive = null,
+        CancellationToken cancellationToken = default)
     {
         var query = _context.AuditLogs
             .AsNoTracking()
@@ -30,16 +31,16 @@ public class AuditLogRepository : IAuditLogRepository
 
         if (!string.IsNullOrWhiteSpace(userQuery))
         {
-            var normalized = userQuery.Trim().ToLower();
+            var pattern = $"%{userQuery.Trim()}%";
             query = query.Where(x =>
-                (x.UserDisplayName != null && x.UserDisplayName.ToLower().Contains(normalized)) ||
-                (x.UserEmail != null && x.UserEmail.ToLower().Contains(normalized)));
+                (x.UserDisplayName != null && EF.Functions.ILike(x.UserDisplayName, pattern)) ||
+                (x.UserEmail != null && EF.Functions.ILike(x.UserEmail, pattern)));
         }
 
         if (!string.IsNullOrWhiteSpace(actionType))
         {
-            var normalizedActionType = actionType.Trim().ToLower();
-            query = query.Where(x => x.ActionType.ToLower() == normalizedActionType);
+            var normalizedActionType = actionType.Trim();
+            query = query.Where(x => x.ActionType == normalizedActionType);
         }
 
         if (fromInclusive.HasValue)
@@ -48,12 +49,12 @@ public class AuditLogRepository : IAuditLogRepository
         if (toExclusive.HasValue)
             query = query.Where(x => x.CreatedAt < toExclusive.Value);
 
-        var totalItems = query.Count();
-        var items = query
+        var totalItems = await query.CountAsync(cancellationToken);
+        var items = await query
             .OrderByDescending(x => x.CreatedAt)
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
-            .ToList();
+            .ToListAsync(cancellationToken);
 
         return new PaginatedList<AuditLog>(items, totalItems);
     }
@@ -64,16 +65,10 @@ public class AuditLogRepository : IAuditLogRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteOlderThan(Instant cutoff)
+    public async Task<int> DeleteOlderThan(Instant cutoff)
     {
-        var expiredLogs = await _context.AuditLogs
+        return await _context.AuditLogs
             .Where(x => x.CreatedAt < cutoff)
-            .ToListAsync();
-
-        if (expiredLogs.Count == 0)
-            return;
-
-        _context.AuditLogs.RemoveRange(expiredLogs);
-        await _context.SaveChangesAsync();
+            .ExecuteDeleteAsync();
     }
 }

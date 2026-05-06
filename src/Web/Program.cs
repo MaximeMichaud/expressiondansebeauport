@@ -72,6 +72,7 @@ builder.Logging.AddSerilog(Log.Logger);
 
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
 builder.Services.AddHostedService<BackupSchedulerService>();
+builder.Services.AddHostedService<AuditLogRetentionScheduler>();
 builder.Services.AddDefaultSitemapServices();
 builder.Services.AddScoped<IBreadcrumbService, BreadcrumbService>();
 builder.Services.AddScoped<ISeoFilesService, SeoFilesService>();

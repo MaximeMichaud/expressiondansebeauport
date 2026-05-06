@@ -69,7 +69,7 @@ public class SiteSettings : Entity
     public void SetMaintenanceMode(bool isActive) => IsMaintenanceMode = isActive;
     public void SetMaintenanceMessage(string message) => MaintenanceMessage = message;
     public void SetMaintenanceRetryAfter(int seconds) => MaintenanceRetryAfter = seconds;
-    public void SetAuditLogRetentionDays(int days) => AuditLogRetentionDays = Math.Max(days, 1);
+    public void SetAuditLogRetentionDays(int days) => AuditLogRetentionDays = Math.Clamp(days, 1, 3650);
     public void SetBannerEnabled(bool isEnabled) => IsBannerEnabled = isEnabled;
     public void SetBannerText(string text) => BannerText = text;
     public void SetBannerUrl(string url) => BannerUrl = url;
