@@ -128,23 +128,6 @@
       </RouterView>
     </main>
 
-    <!-- Footer -->
-    <footer v-if="isAuthenticated" class="soc-footer" aria-label="Pied de page EDB Social">
-      <div class="soc-footer__strip">
-        <div class="soc-footer__left">
-          <span class="soc-footer__brand">EDB Social</span>
-          <span class="soc-footer__sub">Expression Danse de Beauport</span>
-        </div>
-        <div class="soc-footer__right">
-          <a :href="mainSiteUrl" class="soc-footer__link">
-            Site principal
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-          </a>
-          <a href="tel:4186666158" class="soc-footer__link">418-666-6158</a>
-        </div>
-      </div>
-    </footer>
-
     <SocialToastHost />
   </div>
 </template>
@@ -302,8 +285,6 @@ const isMessagesRoute = computed(() => {
     || name === 'socialAnnouncement'
     || name === 'socialGroup'
 })
-
-const mainSiteUrl = computed(() => '/')
 
 const IconBell = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('path', { d: 'M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9' }), h('path', { d: 'M13.73 21a2 2 0 01-3.46 0' })]) }
 const IconGrid = { render: () => h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, [h('rect', { x: '3', y: '3', width: '7', height: '7', rx: '1' }), h('rect', { x: '14', y: '3', width: '7', height: '7', rx: '1' }), h('rect', { x: '3', y: '14', width: '7', height: '7', rx: '1' }), h('rect', { x: '14', y: '14', width: '7', height: '7', rx: '1' })]) }
