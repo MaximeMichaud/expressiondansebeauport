@@ -1,5 +1,6 @@
 using Domain.Entities;
 using Domain.Repositories;
+using Application.Interfaces.Services;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -31,11 +32,13 @@ public class CreateMenuValidator : Validator<CreateMenuRequest>
 public class CreateMenuEndpoint : Endpoint<CreateMenuRequest, NavigationMenuDto>
 {
     private readonly INavigationMenuRepository _menuRepository;
+    private readonly IAuditLogService _auditLogService;
     private readonly IMapper _mapper;
 
-    public CreateMenuEndpoint(INavigationMenuRepository menuRepository, IMapper mapper)
+    public CreateMenuEndpoint(INavigationMenuRepository menuRepository, IAuditLogService auditLogService, IMapper mapper)
     {
         _menuRepository = menuRepository;
+        _auditLogService = auditLogService;
         _mapper = mapper;
     }
 
@@ -52,6 +55,7 @@ public class CreateMenuEndpoint : Endpoint<CreateMenuRequest, NavigationMenuDto>
         var location = Enum.TryParse<MenuLocation>(req.Location, true, out var loc) ? loc : MenuLocation.Primary;
         var menu = new NavigationMenu(req.Name, location);
         await _menuRepository.Create(menu);
+        await _auditLogService.LogAsync("create", "menu", menu.Id, $"Menu '{menu.Name}' créé.");
         await Send.OkAsync(_mapper.Map<NavigationMenuDto>(menu), cancellation: ct);
     }
 }

@@ -1,13 +1,15 @@
-﻿using Application.Interfaces.Services.Admins;
+using Application.Interfaces.Services;
+using Application.Interfaces.Services.Admins;
 using Application.Interfaces.Services.Notifications;
 using Application.Interfaces.Services.Users;
+using Application.Services;
 using Application.Services.Admins;
 using Application.Services.Groups;
-using Application.Services.Members;
 using Application.Services.JoinRequests;
+using Application.Services.Members;
 using Application.Services.Messaging;
-using Application.Services.Posts;
 using Application.Services.Notifications;
+using Application.Services.Posts;
 using Application.Services.Push;
 using Application.Services.Users;
 using Application.Settings;
@@ -29,6 +31,7 @@ public static class ConfigureServices
         services.AddScoped<ISlugHelper, SlugHelper>();
 
         services.AddScoped<IAuthenticatedAdminService, AuthenticatedAdminService>();
+        services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<IUserCreationService, UserCreationService>();
         services.AddScoped<INotificationService, EmailNotificationService>();
 

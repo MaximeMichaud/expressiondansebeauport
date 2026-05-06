@@ -70,6 +70,7 @@ const TOOL_NAMES = new Set([
   'admin.children.importExport',
   'admin.children.backup',
   'admin.children.errorLogs',
+  'admin.children.auditLogs',
 ]);
 
 const allAdminRoutes = computed(() =>

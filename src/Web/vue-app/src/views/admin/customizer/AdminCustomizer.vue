@@ -145,6 +145,10 @@
           <label>{{ t('pages.customizer.maintenance.retryAfter') }}</label>
           <input type="number" v-model.number="settings.maintenanceRetryAfter" class="form-input" min="60" max="86400" />
         </div>
+        <div class="form-group">
+          <label>{{ t('pages.customizer.auditLogs.retentionDays') }}</label>
+          <input type="number" v-model.number="settings.auditLogRetentionDays" class="form-input" min="1" max="3650" />
+        </div>
       </div>
 
       <div class="customizer__actions">

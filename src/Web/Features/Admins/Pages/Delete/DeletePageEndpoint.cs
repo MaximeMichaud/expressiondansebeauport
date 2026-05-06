@@ -1,4 +1,5 @@
 using Domain.Repositories;
+using Application.Interfaces.Services;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
@@ -12,10 +13,12 @@ public class DeletePageRequest
 public class DeletePageEndpoint : Endpoint<DeletePageRequest, EmptyResponse>
 {
     private readonly IPageRepository _pageRepository;
+    private readonly IAuditLogService _auditLogService;
 
-    public DeletePageEndpoint(IPageRepository pageRepository)
+    public DeletePageEndpoint(IPageRepository pageRepository, IAuditLogService auditLogService)
     {
         _pageRepository = pageRepository;
+        _auditLogService = auditLogService;
     }
 
     public override void Configure()
@@ -34,7 +37,9 @@ public class DeletePageEndpoint : Endpoint<DeletePageRequest, EmptyResponse>
             await Send.NotFoundAsync(ct);
             return;
         }
+        var details = $"Page '{page.Title}' supprimée.";
         await _pageRepository.Delete(page);
+        await _auditLogService.LogAsync("delete", "page", req.Id, details);
         await Send.NoContentAsync(ct);
     }
 }

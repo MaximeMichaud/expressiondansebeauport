@@ -1,5 +1,6 @@
 using Domain.Entities;
 using Domain.Repositories;
+using Application.Interfaces.Services;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -49,11 +50,13 @@ public class CreatePageValidator : Validator<CreatePageRequest>
 public class CreatePageEndpoint : Endpoint<CreatePageRequest, PageDto>
 {
     private readonly IPageRepository _pageRepository;
+    private readonly IAuditLogService _auditLogService;
     private readonly IMapper _mapper;
 
-    public CreatePageEndpoint(IPageRepository pageRepository, IMapper mapper)
+    public CreatePageEndpoint(IPageRepository pageRepository, IAuditLogService auditLogService, IMapper mapper)
     {
         _pageRepository = pageRepository;
+        _auditLogService = auditLogService;
         _mapper = mapper;
     }
 
@@ -85,6 +88,7 @@ public class CreatePageEndpoint : Endpoint<CreatePageRequest, PageDto>
             page.Publish();
 
         await _pageRepository.Create(page);
+        await _auditLogService.LogAsync("create", "page", page.Id, $"Page '{page.Title}' créée.");
         await Send.OkAsync(_mapper.Map<PageDto>(page), cancellation: ct);
     }
 }

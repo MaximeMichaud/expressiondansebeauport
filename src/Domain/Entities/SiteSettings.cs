@@ -26,6 +26,7 @@ public class SiteSettings : Entity
     public bool IsMaintenanceMode { get; private set; } = false;
     public string MaintenanceMessage { get; private set; } = "Le site est en maintenance. Revenez bientôt !";
     public int MaintenanceRetryAfter { get; private set; } = 3600;
+    public int AuditLogRetentionDays { get; private set; } = 90;
 
     public bool IsBannerEnabled { get; private set; } = false;
     public string BannerText { get; private set; } = "Actualités du moment";
@@ -68,6 +69,7 @@ public class SiteSettings : Entity
     public void SetMaintenanceMode(bool isActive) => IsMaintenanceMode = isActive;
     public void SetMaintenanceMessage(string message) => MaintenanceMessage = message;
     public void SetMaintenanceRetryAfter(int seconds) => MaintenanceRetryAfter = seconds;
+    public void SetAuditLogRetentionDays(int days) => AuditLogRetentionDays = Math.Clamp(days, 1, 3650);
     public void SetBannerEnabled(bool isEnabled) => IsBannerEnabled = isEnabled;
     public void SetBannerText(string text) => BannerText = text;
     public void SetBannerUrl(string url) => BannerUrl = url;

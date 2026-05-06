@@ -1,5 +1,6 @@
 using Domain.Entities;
 using Domain.Repositories;
+using Application.Interfaces.Services;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -39,11 +40,13 @@ public class CreateMenuItemValidator : Validator<CreateMenuItemRequest>
 public class CreateMenuItemEndpoint : Endpoint<CreateMenuItemRequest, NavigationMenuItemDto>
 {
     private readonly GarneauTemplateDbContext _context;
+    private readonly IAuditLogService _auditLogService;
     private readonly IMapper _mapper;
 
-    public CreateMenuItemEndpoint(GarneauTemplateDbContext context, IMapper mapper)
+    public CreateMenuItemEndpoint(GarneauTemplateDbContext context, IAuditLogService auditLogService, IMapper mapper)
     {
         _context = context;
+        _auditLogService = auditLogService;
         _mapper = mapper;
     }
 
@@ -78,6 +81,7 @@ public class CreateMenuItemEndpoint : Endpoint<CreateMenuItemRequest, Navigation
 
         _context.NavigationMenuItems.Add(item);
         await _context.SaveChangesAsync();
+        await _auditLogService.LogAsync("create", "menu", req.MenuId, $"Item de menu '{item.Label}' ajouté au menu.");
         await Send.OkAsync(_mapper.Map<NavigationMenuItemDto>(item), cancellation: ct);
     }
 
@@ -128,11 +132,13 @@ public class UpdateMenuItemValidator : Validator<UpdateMenuItemRequest>
 public class UpdateMenuItemEndpoint : Endpoint<UpdateMenuItemRequest, NavigationMenuItemDto>
 {
     private readonly GarneauTemplateDbContext _context;
+    private readonly IAuditLogService _auditLogService;
     private readonly IMapper _mapper;
 
-    public UpdateMenuItemEndpoint(GarneauTemplateDbContext context, IMapper mapper)
+    public UpdateMenuItemEndpoint(GarneauTemplateDbContext context, IAuditLogService auditLogService, IMapper mapper)
     {
         _context = context;
+        _auditLogService = auditLogService;
         _mapper = mapper;
     }
 
@@ -171,6 +177,7 @@ public class UpdateMenuItemEndpoint : Endpoint<UpdateMenuItemRequest, Navigation
 
         _context.NavigationMenuItems.Update(item);
         await _context.SaveChangesAsync();
+        await _auditLogService.LogAsync("update", "menu", req.MenuId, $"Item de menu '{item.Label}' modifié dans le menu.");
         await Send.OkAsync(_mapper.Map<NavigationMenuItemDto>(item), cancellation: ct);
     }
 
@@ -207,10 +214,12 @@ public class DeleteMenuItemRequest
 public class DeleteMenuItemEndpoint : Endpoint<DeleteMenuItemRequest, EmptyResponse>
 {
     private readonly GarneauTemplateDbContext _context;
+    private readonly IAuditLogService _auditLogService;
 
-    public DeleteMenuItemEndpoint(GarneauTemplateDbContext context)
+    public DeleteMenuItemEndpoint(GarneauTemplateDbContext context, IAuditLogService auditLogService)
     {
         _context = context;
+        _auditLogService = auditLogService;
     }
 
     public override void Configure()
@@ -229,6 +238,7 @@ public class DeleteMenuItemEndpoint : Endpoint<DeleteMenuItemRequest, EmptyRespo
             await Send.NotFoundAsync(ct);
             return;
         }
+        var details = $"Item de menu '{item.Label}' supprimé du menu.";
 
         var children = await _context.NavigationMenuItems
             .Where(i => i.ParentId == item.Id)
@@ -238,6 +248,7 @@ public class DeleteMenuItemEndpoint : Endpoint<DeleteMenuItemRequest, EmptyRespo
 
         _context.NavigationMenuItems.Remove(item);
         await _context.SaveChangesAsync();
+        await _auditLogService.LogAsync("delete", "menu", req.MenuId, details);
         await Send.NoContentAsync(ct);
     }
 }
@@ -258,10 +269,12 @@ public class ReorderItem
 public class ReorderMenuItemsEndpoint : Endpoint<ReorderMenuItemsRequest, EmptyResponse>
 {
     private readonly GarneauTemplateDbContext _context;
+    private readonly IAuditLogService _auditLogService;
 
-    public ReorderMenuItemsEndpoint(GarneauTemplateDbContext context)
+    public ReorderMenuItemsEndpoint(GarneauTemplateDbContext context, IAuditLogService auditLogService)
     {
         _context = context;
+        _auditLogService = auditLogService;
     }
 
     public override void Configure()
@@ -281,6 +294,7 @@ public class ReorderMenuItemsEndpoint : Endpoint<ReorderMenuItemsRequest, EmptyR
             item?.SetSortOrder(reorder.SortOrder);
         }
         await _context.SaveChangesAsync();
+        await _auditLogService.LogAsync("update", "menu", req.MenuId, "Ordre des items du menu mis à jour.");
         await Send.NoContentAsync(ct);
     }
 }

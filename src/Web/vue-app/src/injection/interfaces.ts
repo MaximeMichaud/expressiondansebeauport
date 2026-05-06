@@ -1,4 +1,4 @@
- 
+
 import {
   IChangePasswordRequest,
   IForgotPasswordRequest,
@@ -7,7 +7,7 @@ import {
   ITwoFactorRequest
 } from "@/types/requests"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
-import {Administrator, BackupRecord, ErrorLog, FooterPartner, MediaFile, NavigationMenu, NavigationMenuItem, Page, PageRevision, PageRevisionListItem, SiteHealth, SiteSettings, SocialLink, User, Group, GroupMember, Post, Comment, Conversation, Message} from "@/types/entities"
+import {Administrator, AuditLog, BackupRecord, ErrorLog, FooterPartner, MediaFile, NavigationMenu, NavigationMenuItem, Page, PageRevision, PageRevisionListItem, SiteHealth, SiteSettings, SocialLink, User, Group, GroupMember, Post, Comment, Conversation, Message} from "@/types/entities"
 import type {PinPostResponse} from "@/services/socialService"
 export interface IApiService {
   headersWithJsonContentType(): any
@@ -206,6 +206,14 @@ export interface ISocialService {
 
 export interface IErrorLogsService {
   getAll(): Promise<ErrorLog[]>
+}
+
+export interface IAuditLogService {
+  getAll(
+    pageIndex: number,
+    pageSize: number,
+    filters?: { user?: string; actionType?: string; fromDate?: string; toDate?: string }
+  ): Promise<PaginatedResponse<AuditLog>>
 }
 
 export interface IBackupService {
