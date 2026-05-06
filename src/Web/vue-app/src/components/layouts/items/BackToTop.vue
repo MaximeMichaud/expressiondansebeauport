@@ -19,8 +19,8 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ChevronUp } from "lucide-vue-next";
 
-const SCROLL_THRESHOLD = 600;
-const PAGE_LENGTH_RATIO = 2;
+const SCROLL_THRESHOLD = 300;
+const MIN_SCROLLABLE_PIXELS = 400;
 const RECHECK_DELAY_MS = 120;
 
 const { t } = useI18n();
@@ -33,8 +33,8 @@ let resizeObserver: ResizeObserver | null = null;
 
 function checkPageLength() {
   isPageLong.value =
-    document.documentElement.scrollHeight >
-    window.innerHeight * PAGE_LENGTH_RATIO;
+    document.documentElement.scrollHeight - window.innerHeight >
+    MIN_SCROLLABLE_PIXELS;
   if (!isPageLong.value) isVisible.value = false;
   else updateVisibility();
 }
