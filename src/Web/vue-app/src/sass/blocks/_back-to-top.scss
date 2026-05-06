@@ -1,0 +1,77 @@
+@use "../tools" as *;
+
+.back-to-top {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 50;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+
+  transition: transform 0.2s cb(snappy),
+    box-shadow 0.2s cb(snappy),
+    background-color 0.2s cb(snappy);
+
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
+    }
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--primary-focus-ring, #111827);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.back-to-top-enter-active,
+.back-to-top-leave-active {
+  transition: opacity 0.2s cb(snappy), transform 0.25s cb(snappy);
+}
+
+.back-to-top-enter-from,
+.back-to-top-leave-to {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back-to-top-enter-active,
+  .back-to-top-leave-active {
+    transition: opacity 0.1s linear;
+  }
+
+  .back-to-top-enter-from,
+  .back-to-top-leave-to {
+    transform: none;
+  }
+}
+
+@include breakpoint(xs-down) {
+  .back-to-top {
+    bottom: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+  }
+}
