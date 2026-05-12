@@ -60,7 +60,7 @@ public class GetAdminVersionEndpoint : EndpointWithoutRequest<AppVersionDto>
             ReleasesUrl = $"https://github.com/{owner}/{name}/releases"
         };
 
-        var (releases, updateError) = await GetReleasesAsync(owner, name, token, ct);
+        var (releases, fetchedAt, updateError) = await GetReleasesAsync(owner, name, token, ct);
 
         var latest = releases.FirstOrDefault(r => !r.IsDraft && !r.IsPrerelease) ?? releases.FirstOrDefault();
         var isUpToDate = latest is null
@@ -75,16 +75,16 @@ public class GetAdminVersionEndpoint : EndpointWithoutRequest<AppVersionDto>
             Releases = releases,
             IsUpToDate = isUpToDate,
             UpdateError = updateError,
-            FetchedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+            FetchedAt = fetchedAt
         }, cancellation: ct);
     }
 
-    private async Task<(List<AppVersionReleaseDto> Releases, string? Error)> GetReleasesAsync(
+    private async Task<(List<AppVersionReleaseDto> Releases, long FetchedAt, string? Error)> GetReleasesAsync(
         string owner, string name, string? token, CancellationToken ct)
     {
-        if (_cache.TryGetValue(CacheKey, out List<AppVersionReleaseDto>? cached) && cached is not null)
+        if (_cache.TryGetValue(CacheKey, out CachedReleases? cached) && cached is not null)
         {
-            return (cached, null);
+            return (cached.Releases, cached.FetchedAt, null);
         }
 
         try
@@ -100,11 +100,12 @@ public class GetAdminVersionEndpoint : EndpointWithoutRequest<AppVersionDto>
 
             var url = $"https://api.github.com/repos/{owner}/{name}/releases?per_page=20";
             using var response = await client.GetAsync(url, ct);
+            var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync(ct);
                 _logger.LogWarning("Échec de récupération des releases GitHub: {Status} {Body}", response.StatusCode, body);
-                return (new List<AppVersionReleaseDto>(), $"GitHub a répondu {(int)response.StatusCode}.");
+                return (new List<AppVersionReleaseDto>(), now, $"GitHub a répondu {(int)response.StatusCode}.");
             }
 
             await using var stream = await response.Content.ReadAsStreamAsync(ct);
@@ -114,15 +115,17 @@ public class GetAdminVersionEndpoint : EndpointWithoutRequest<AppVersionDto>
                 .OrderByDescending(r => r.PublishedAt)
                 .ToList();
 
-            _cache.Set(CacheKey, releases, CacheDuration);
-            return (releases, null);
+            _cache.Set(CacheKey, new CachedReleases(releases, now), CacheDuration);
+            return (releases, now, null);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erreur inattendue lors de la récupération des releases GitHub.");
-            return (new List<AppVersionReleaseDto>(), "Impossible de joindre l'API GitHub.");
+            return (new List<AppVersionReleaseDto>(), DateTimeOffset.UtcNow.ToUnixTimeSeconds(), "Impossible de joindre l'API GitHub.");
         }
     }
+
+    private sealed record CachedReleases(List<AppVersionReleaseDto> Releases, long FetchedAt);
 
     private static AppVersionCurrentDto ResolveCurrentVersion()
     {
@@ -189,7 +192,26 @@ public class GetAdminVersionEndpoint : EndpointWithoutRequest<AppVersionDto>
 
         if (installedSuffix is null) return latestSuffix is null ? 0 : 1;
         if (IsPostReleaseSuffix(installedSuffix)) return latestSuffix is null ? 1 : 0;
-        return latestSuffix is null ? -1 : 0;
+        return latestSuffix is null ? -1 : ComparePreReleaseSuffix(installedSuffix, latestSuffix);
+    }
+
+    private static int ComparePreReleaseSuffix(string a, string b)
+    {
+        var aParts = a.Split('.');
+        var bParts = b.Split('.');
+        var minLen = Math.Min(aParts.Length, bParts.Length);
+        for (var i = 0; i < minLen; i++)
+        {
+            var aIsNum = int.TryParse(aParts[i], out var aNum);
+            var bIsNum = int.TryParse(bParts[i], out var bNum);
+            int cmp;
+            if (aIsNum && bIsNum) cmp = aNum.CompareTo(bNum);
+            else if (aIsNum) cmp = -1;
+            else if (bIsNum) cmp = 1;
+            else cmp = string.CompareOrdinal(aParts[i], bParts[i]);
+            if (cmp != 0) return cmp;
+        }
+        return aParts.Length.CompareTo(bParts.Length);
     }
 
     private static int CompareVersionBase(string a, string b)
