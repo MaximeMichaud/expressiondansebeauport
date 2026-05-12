@@ -1,0 +1,43 @@
+# https://lefthook.dev
+# Pour installer les hooks localement : `lefthook install` a la racine du projet.
+
+no_auto_install: true
+
+pre-commit:
+  parallel: true
+  commands:
+    check-merge-conflict:
+      glob: "*"
+      run: bash -c '! grep -lE "^(<{7}|={7}|>{7})( |$)" {staged_files} 2>/dev/null'
+      fail_text: "Marqueurs de conflit (<<<<<<<, =======, >>>>>>>) detectes. Resoudre avant de commiter."
+
+    check-large-files:
+      glob: "*"
+      run: bash -c '! find {staged_files} -type f -size +500k 2>/dev/null | grep -q .'
+      fail_text: "Fichiers > 500 Ko detectes. Verifier qu'ils doivent vraiment etre commites."
+
+    eslint:
+      root: "src/Web/vue-app"
+      glob: "*.{ts,vue,js,mjs,cjs}"
+      run: npx eslint {staged_files}
+      fail_text: "Erreurs ESLint. Lance: cd src/Web/vue-app && npm run lint:fix"
+
+    check-lockfile-sync:
+      glob: "src/Web/vue-app/package.json"
+      run: cd src/Web/vue-app && npm ci --dry-run --no-audit --no-fund > /dev/null 2>&1
+      fail_text: "package-lock.json desynchronise. Lance: cd src/Web/vue-app && npm install"
+
+pre-push:
+  piped: true
+  commands:
+    01-npm-ci:
+      run: cd src/Web/vue-app && npm ci --no-audit --no-fund > /dev/null
+      fail_text: "Le CI ne pourra pas faire `npm ci`. Verifier package-lock.json."
+
+    02-type-check:
+      run: cd src/Web/vue-app && npx vue-tsc --noEmit
+      fail_text: "Erreurs de types TypeScript. Le CI Frontend va echouer."
+
+    03-dotnet-build:
+      run: dotnet build --nologo -v q
+      fail_text: "Echec du build .NET. Le CI Backend va echouer."
