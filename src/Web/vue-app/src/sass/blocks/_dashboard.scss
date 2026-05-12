@@ -14,9 +14,18 @@
 
   &__content-header {
     display: flex;
+    align-items: center;
     justify-content: flex-end;
     gap: 32px;
     margin-bottom: 32px;
+  }
+
+  &__help-button {
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
 }
 

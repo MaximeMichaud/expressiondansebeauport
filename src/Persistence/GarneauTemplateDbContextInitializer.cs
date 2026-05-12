@@ -67,6 +67,7 @@ public class GarneauTemplateDbContextInitializer
             await SeedRoles();
             await SeedAdmins();
             await SeedPages();
+            await SeedHelpArticles();
             await SeedMenus();
             await FixMenuHierarchy();
             await SeedSiteSettings();
@@ -980,6 +981,225 @@ public class GarneauTemplateDbContextInitializer
         page.SetSortOrder(sortOrder);
         page.Publish();
         return page;
+    }
+
+    private async Task SeedHelpArticles()
+    {
+        if (_context.HelpArticles.Any())
+            return;
+
+        var articles = new List<HelpArticle>
+        {
+            CreateHelpArticle(
+                "Premiers pas après WordPress",
+                "premiers-pas",
+                HelpCategory.PremiersPas,
+                sortOrder: 1,
+                routeHint: null,
+                content:
+                    "<h2>Bienvenue dans votre nouveau panneau d'administration</h2>" +
+                    "<p>L'école Expression Danse de Beauport remplace son ancien site WordPress par une plateforme sur mesure, " +
+                    "pensée pour la réalité d'un organisme à but non lucratif. L'objectif : vous faire gagner du temps, réduire " +
+                    "le nombre d'outils à connaître et garder votre contenu en sécurité sans dépendre d'extensions externes.</p>" +
+                    "<p>Si vous avez l'habitude de WordPress, vous retrouverez la même logique : un menu d'administration sur le côté, " +
+                    "des pages à éditer, une médiathèque pour vos images et des menus à organiser. Quelques détails changent toutefois, " +
+                    "et cette courte introduction vous aide à prendre vos repères.</p>" +
+                    "<h3>Ce qui change par rapport à votre ancien site</h3>" +
+                    "<ul>" +
+                        "<li><strong>Le tableau de bord se trouve à gauche.</strong> Toutes les sections (Pages, Menus, Médias, Membres, " +
+                        "Sauvegardes, etc.) sont regroupées dans le menu latéral. Plus besoin de chercher dans plusieurs onglets.</li>" +
+                        "<li><strong>Aucune extension à installer.</strong> Les outils dont vous avez besoin sont déjà inclus : éditeur " +
+                        "de pages, gestion des membres, sauvegardes, formulaires de contact.</li>" +
+                        "<li><strong>Sauvegardes automatiques.</strong> Votre site est sauvegardé régulièrement sans aucune intervention " +
+                        "de votre part. Vous pouvez aussi déclencher une sauvegarde manuelle à tout moment.</li>" +
+                        "<li><strong>Mises à jour invisibles.</strong> Le site est entretenu en arrière-plan ; vous ne verrez plus de bannière " +
+                        "vous demandant de tout mettre à jour avant chaque modification.</li>" +
+                        "<li><strong>Le contenu et la présentation sont bien séparés.</strong> Vous écrivez le texte ; le style graphique reste " +
+                        "cohérent avec l'identité de l'école.</li>" +
+                    "</ul>" +
+                    "<h3>Vos premières actions recommandées</h3>" +
+                    "<ul>" +
+                        "<li><strong>Vérifier les pages existantes.</strong> Ouvrez la section <em>Pages</em> dans le menu de gauche et " +
+                        "parcourez chaque page (Notre école, Récréatif, Nous joindre, etc.) pour confirmer que les informations sont à jour.</li>" +
+                        "<li><strong>Mettre à jour le menu principal si nécessaire.</strong> Si vous avez créé une nouvelle page, n'oubliez pas " +
+                        "de l'ajouter au menu pour qu'elle soit visible des visiteurs.</li>" +
+                        "<li><strong>Déposer une nouvelle annonce ou photo.</strong> Profitez-en pour téléverser une image récente de l'école " +
+                        "dans la médiathèque et la placer sur la page d'accueil ou une page d'activité.</li>" +
+                        "<li><strong>Tester une sauvegarde manuelle.</strong> Cela ne prend que quelques secondes et vous rassure sur le fait " +
+                        "que vos contenus sont protégés.</li>" +
+                    "</ul>" +
+                    "<p><strong>En cas de pépin, ouvrez ce centre d'aide en tout temps avec le bouton ? dans le coin supérieur droit.</strong> " +
+                    "Vous y trouverez des articles détaillés sur chaque section du panneau, avec des explications pas à pas.</p>"
+            ),
+            CreateHelpArticle(
+                "Modifier une page existante",
+                "modifier-une-page",
+                HelpCategory.Pages,
+                sortOrder: 1,
+                routeHint: "admin.children.pages.index",
+                content:
+                    "<h2>Modifier le contenu d'une page</h2>" +
+                    "<p>Les pages sont les sections de votre site visibles par les visiteurs : Notre école, Récréatif, Camps, Nous joindre, etc. " +
+                    "Vous pouvez les modifier à tout moment sans toucher au design du site.</p>" +
+                    "<h3>Étapes à suivre</h3>" +
+                    "<ul>" +
+                        "<li><strong>Étape 1 :</strong> Dans le menu de gauche du panneau d'administration, cliquez sur <em>Pages</em>. " +
+                        "La liste de toutes les pages du site s'affiche.</li>" +
+                        "<li><strong>Étape 2 :</strong> Repérez la page à modifier, puis cliquez sur son titre (ou sur le bouton Modifier). " +
+                        "L'éditeur s'ouvre.</li>" +
+                        "<li><strong>Étape 3 :</strong> Apportez vos changements dans le contenu. Vous pouvez ajouter du texte, changer un " +
+                        "paragraphe, insérer une image depuis la médiathèque ou ajouter un lien. Deux modes d'édition sont disponibles : " +
+                        "le mode <em>blocs visuels</em> (recommandé) ou le mode <em>HTML</em> pour les utilisateurs plus à l'aise.</li>" +
+                        "<li><strong>Étape 4 :</strong> Choisissez l'état de publication. Sélectionnez <strong>Publié</strong> pour rendre " +
+                        "la page visible aux visiteurs, ou <strong>Brouillon</strong> pour la garder cachée pendant que vous travaillez dessus.</li>" +
+                        "<li><strong>Étape 5 :</strong> Cliquez sur le bouton <strong>Enregistrer</strong> en haut ou en bas de la page. " +
+                        "Vos modifications sont appliquées immédiatement.</li>" +
+                    "</ul>" +
+                    "<h3>Brouillon ou publié, quelle différence ?</h3>" +
+                    "<p>Une page en <strong>Brouillon</strong> est invisible pour les visiteurs : elle n'apparaît ni dans le menu ni dans une " +
+                    "recherche. Utilisez ce mode pour préparer un contenu sans le diffuser tout de suite. Une page <strong>Publiée</strong>, " +
+                    "au contraire, est accessible immédiatement à toute personne qui visite le site.</p>" +
+                    "<p>Vous pouvez basculer entre les deux états à tout moment. C'est utile par exemple pour mettre une page hors ligne " +
+                    "temporairement, sans la supprimer.</p>" +
+                    "<h3>Attention au slug de la page</h3>" +
+                    "<p>Le <strong>slug</strong> est la partie de l'adresse qui identifie la page (par exemple <em>/camp-d-ete</em>). " +
+                    "Une fois qu'une page est en ligne et partagée, son slug fait partie de son adresse web. Si vous le modifiez sans précaution, " +
+                    "les anciens liens (par exemple ceux partagés dans une infolettre ou sur Facebook) ne fonctionneront plus.</p>" +
+                    "<p><strong>Notre conseil :</strong> ne changez le slug d'une page déjà en ligne que si c'est vraiment intentionnel. " +
+                    "Pour une nouvelle page, vous pouvez choisir librement le slug avant la publication.</p>"
+            ),
+            CreateHelpArticle(
+                "Ajouter un élément au menu principal",
+                "gerer-le-menu",
+                HelpCategory.Menus,
+                sortOrder: 1,
+                routeHint: "admin.children.menus",
+                content:
+                    "<h2>Organiser les menus du site</h2>" +
+                    "<p>Les menus sont les listes de liens qui guident les visiteurs sur le site. Le <strong>menu principal</strong> est " +
+                    "celui qui apparaît en haut de chaque page ; le <strong>menu du pied de page</strong> (footer) regroupe les liens utiles " +
+                    "comme la politique de confidentialité ou les coordonnées de l'école.</p>" +
+                    "<h3>Étapes à suivre</h3>" +
+                    "<ul>" +
+                        "<li><strong>Étape 1 :</strong> Dans le menu de gauche, cliquez sur <em>Menus</em>. Vous verrez la liste des menus " +
+                        "disponibles (Principal et Pied de page).</li>" +
+                        "<li><strong>Étape 2 :</strong> Choisissez le menu à modifier (généralement le <em>Menu principal</em>). " +
+                        "Sa structure actuelle s'affiche sous forme de liste.</li>" +
+                        "<li><strong>Étape 3 :</strong> Cliquez sur <strong>Ajouter une entrée</strong>. Vous pouvez choisir entre deux types " +
+                        "de liens : un <em>lien interne</em> (vers une page de votre site, comme Récréatif ou Nous joindre) ou un " +
+                        "<em>lien externe</em> (vers un site partenaire, par exemple le portail d'inscription Qidigo).</li>" +
+                        "<li><strong>Étape 4 :</strong> Donnez un titre clair à votre entrée (c'est ce que verront les visiteurs) et associez-la " +
+                        "à la page ou à l'adresse souhaitée.</li>" +
+                        "<li><strong>Étape 5 :</strong> Réorganisez vos entrées par <strong>glisser-déposer</strong>. Saisissez une entrée " +
+                        "avec la souris et déplacez-la vers le haut ou vers le bas pour changer son ordre d'apparition.</li>" +
+                        "<li><strong>Étape 6 :</strong> Cliquez sur <strong>Enregistrer</strong> pour appliquer vos changements. Le menu " +
+                        "se met à jour immédiatement sur le site public.</li>" +
+                    "</ul>" +
+                    "<h3>Créer un sous-menu</h3>" +
+                    "<p>Vous pouvez regrouper plusieurs entrées sous un même titre parent. C'est particulièrement utile pour les pages liées entre " +
+                    "elles, par exemple les différents camps (Camp d'été, Camp d'hiver, Camp relâche) sous une seule entrée <em>Camps</em>.</p>" +
+                    "<p>Pour créer un sous-menu, glissez une entrée vers la droite, sous l'entrée parente. Vous verrez l'élément se décaler pour " +
+                    "indiquer qu'il devient un sous-élément. Sur le site, le parent affichera un petit indicateur (souvent une flèche) et le " +
+                    "sous-menu apparaîtra au survol ou au clic.</p>" +
+                    "<p>N'oubliez pas d'<strong>enregistrer</strong> après chaque réorganisation pour conserver vos changements.</p>"
+            ),
+            CreateHelpArticle(
+                "Téléverser une image ou un document",
+                "mediatheque",
+                HelpCategory.Medias,
+                sortOrder: 1,
+                routeHint: "admin.children.media",
+                content:
+                    "<h2>Utiliser la médiathèque</h2>" +
+                    "<p>La <strong>médiathèque</strong> centralise toutes les images, documents et fichiers utilisés sur votre site. " +
+                    "Une fois qu'un fichier y est déposé, vous pouvez le réutiliser autant de fois que vous voulez dans n'importe quelle " +
+                    "page sans avoir à le téléverser de nouveau.</p>" +
+                    "<h3>Étapes à suivre pour téléverser un fichier</h3>" +
+                    "<ul>" +
+                        "<li><strong>Étape 1 :</strong> Dans le menu de gauche, cliquez sur <em>Médias</em>. La galerie de fichiers s'affiche.</li>" +
+                        "<li><strong>Étape 2 :</strong> Glissez votre fichier directement dans la zone d'upload (la grande zone en pointillé) " +
+                        "ou cliquez sur <strong>Téléverser</strong> pour le sélectionner depuis votre ordinateur.</li>" +
+                        "<li><strong>Étape 3 :</strong> Attendez la fin du transfert (une barre de progression vous indique où en est " +
+                        "le téléversement). Une fois terminé, le fichier apparaît dans la galerie.</li>" +
+                        "<li><strong>Étape 4 :</strong> Cliquez sur la miniature pour ajouter une description ou un texte alternatif " +
+                        "(important pour l'accessibilité aux personnes utilisant un lecteur d'écran).</li>" +
+                    "</ul>" +
+                    "<h3>Formats acceptés</h3>" +
+                    "<ul>" +
+                        "<li><strong>Images :</strong> jpg, jpeg, png, webp, gif</li>" +
+                        "<li><strong>Documents :</strong> pdf</li>" +
+                        "<li><strong>Autres :</strong> selon la configuration du site, vous pouvez aussi téléverser des fichiers Word ou Excel</li>" +
+                    "</ul>" +
+                    "<h3>Pourquoi compresser vos images avant de les téléverser</h3>" +
+                    "<p>Une image prise avec un téléphone récent peut peser plusieurs mégaoctets. Si vous mettez en ligne plusieurs photos " +
+                    "non compressées, votre site devient plus lent à charger pour les visiteurs, surtout sur mobile. Un site lent décourage " +
+                    "les visites et nuit au référencement sur Google.</p>" +
+                    "<p>Avant de téléverser, pensez à <strong>réduire le poids</strong> de vos images avec un outil gratuit comme " +
+                    "<em>tinypng.com</em> ou <em>squoosh.app</em>. Ces sites compressent l'image sans perte visible de qualité. Visez moins " +
+                    "de 500 Ko par photo dans la mesure du possible.</p>" +
+                    "<h3>Réutiliser une image dans une page</h3>" +
+                    "<p>Lorsque vous éditez une page, cliquez sur l'icône <em>Image</em> dans la barre d'édition. La médiathèque s'ouvre et " +
+                    "vous pouvez choisir n'importe quel fichier déjà téléversé. Pas besoin de le mettre en ligne deux fois : un même fichier " +
+                    "peut servir sur plusieurs pages.</p>"
+            ),
+            CreateHelpArticle(
+                "Lancer une sauvegarde manuelle",
+                "sauvegarde-manuelle",
+                HelpCategory.Sauvegardes,
+                sortOrder: 1,
+                routeHint: "admin.children.backup",
+                content:
+                    "<h2>Sauvegardes du site</h2>" +
+                    "<p>Une sauvegarde est une copie complète de votre site (toutes les pages, les images, les membres, les paramètres) " +
+                    "à un instant donné. Elle vous permet de revenir en arrière en cas de fausse manœuvre, de bug ou de problème technique. " +
+                    "C'est votre filet de sécurité.</p>" +
+                    "<h3>Où trouver les sauvegardes</h3>" +
+                    "<p>Dans le menu de gauche du panneau d'administration, cliquez sur <em>Sauvegardes</em>. Vous verrez la liste des " +
+                    "sauvegardes existantes, avec leur date de création et leur taille. Plus la sauvegarde est récente, plus la copie reflète " +
+                    "l'état actuel du site.</p>" +
+                    "<h3>Déclencher une sauvegarde manuelle</h3>" +
+                    "<ul>" +
+                        "<li><strong>Étape 1 :</strong> Ouvrez la section <em>Sauvegardes</em>.</li>" +
+                        "<li><strong>Étape 2 :</strong> Cliquez sur le bouton <strong>Lancer une sauvegarde maintenant</strong> " +
+                        "(habituellement en haut à droite de la page).</li>" +
+                        "<li><strong>Étape 3 :</strong> Patientez quelques secondes à quelques minutes selon la quantité de contenus. " +
+                        "Une fois la sauvegarde terminée, elle apparaît en haut de la liste avec la date et l'heure exactes.</li>" +
+                    "</ul>" +
+                    "<h3>Combien de temps ça prend</h3>" +
+                    "<p>Pour un site de la taille de celui d'Expression Danse, comptez généralement entre <strong>quelques secondes et deux " +
+                    "ou trois minutes</strong>. Le temps dépend surtout du nombre d'images et de documents dans la médiathèque. Vous pouvez " +
+                    "continuer à naviguer dans le panneau pendant que la sauvegarde se fait.</p>" +
+                    "<h3>Où est stocké le fichier de sauvegarde</h3>" +
+                    "<p>Les fichiers de sauvegarde sont conservés <strong>sur le serveur</strong> qui héberge le site. Ils sont protégés et " +
+                    "ne sont accessibles qu'aux administrateurs. <strong>Attention à l'espace disponible :</strong> chaque sauvegarde prend " +
+                    "de la place. Si vous accumulez beaucoup de sauvegardes manuelles, pensez à supprimer les plus anciennes pour ne pas " +
+                    "remplir l'espace de stockage.</p>" +
+                    "<p>Pour une sécurité supplémentaire, vous pouvez aussi télécharger un fichier de sauvegarde sur votre ordinateur " +
+                    "personnel ou sur un disque externe.</p>" +
+                    "<h3>Et les sauvegardes automatiques ?</h3>" +
+                    "<p>Bonne nouvelle : votre site est <strong>sauvegardé automatiquement</strong> à intervalle régulier, sans que vous " +
+                    "ayez à faire quoi que ce soit. La sauvegarde manuelle est donc surtout utile <em>avant</em> une modification importante " +
+                    "(refonte d'une page, suppression de membres, changement de paramètres) pour avoir un point de retour précis si jamais " +
+                    "quelque chose se passe mal.</p>"
+            )
+        };
+
+        foreach (var article in articles)
+        {
+            _context.HelpArticles.Add(article);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    private static HelpArticle CreateHelpArticle(string title, string slug, HelpCategory category, int sortOrder, string? routeHint, string content)
+    {
+        var article = new HelpArticle(title, slug, category);
+        article.SetContentMode("html");
+        article.SetContent(content);
+        article.SetSortOrder(sortOrder);
+        article.SetRouteHint(routeHint);
+        article.Publish();
+        return article;
     }
 
     private static readonly string[] CampSlugs = ["camp-d-ete", "camp-d-hiver", "camp-relache"];

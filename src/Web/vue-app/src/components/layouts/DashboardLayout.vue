@@ -10,6 +10,7 @@
       <div>
         <div class="dashboard__content-header" v-if="!isMobile">
           <UserAvatar/>
+          <HelpButton v-if="isAdminRoute" class="dashboard__help-button"/>
         </div>
 
         <RouterView v-slot="{Component}">
@@ -24,11 +25,13 @@
         </RouterView>
       </div>
     </main>
+
+    <HelpDrawer v-if="isAdminRoute"/>
   </div>
 </template>
 <script setup lang="ts">
 import {onMounted, ref, computed} from "vue";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import {useAdministratorService} from "@/serviceRegistry";
 import Navbar from "@/components/navigation/Navbar.vue";
@@ -37,12 +40,15 @@ import Notifications from "@/components/layouts/items/Notifications.vue";
 import Loader from "@/components/layouts/items/Loader.vue";
 import {useWindowSize} from "@/composables/useWindowSize";
 import UserAvatar from "@/components/account/UserAvatar.vue";
+import HelpButton from "@/components/help/HelpButton.vue";
+import HelpDrawer from "@/components/help/HelpDrawer.vue";
 import {Administrator} from "@/types";
 import {useAdministratorStore} from "@/stores/administratorStore";
 import {usePersonStore} from "@/stores/personStore";
 
 const {t} = useI18n()
 const router = useRouter()
+const route = useRoute()
 const personStore = usePersonStore()
 const administratorStore = useAdministratorStore()
 
@@ -52,6 +58,12 @@ const userIsLoading = ref(true)
 
 const {width} = useWindowSize();
 const isMobile = computed(() => width.value < 1200);
+const isAdminRoute = computed(() => {
+  const name = route.name
+  if (!name) return false
+  const value = String(name)
+  return value === 'admin' || value.startsWith('admin.children.')
+})
 
 onMounted(async () => {
   userIsLoading.value = true

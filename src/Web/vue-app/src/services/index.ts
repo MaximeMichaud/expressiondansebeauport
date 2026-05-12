@@ -13,3 +13,4 @@ export * from './auditLogService';
 export * from './contactService';
 export * from './cookiePreferencesService';
 export * from './cookieControlledScripts';
+export * from './helpArticleService';
