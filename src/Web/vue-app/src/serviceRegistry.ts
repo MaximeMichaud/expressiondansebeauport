@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 import {
+  AppVersionService,
   AuthenticationService,
   AuditLogService,
   ContactService,
@@ -37,6 +38,7 @@ const errorLogsService = new ErrorLogsService(axiosInstance)
 const auditLogService = new AuditLogService(axiosInstance)
 const contactService = new ContactService(axiosInstance)
 const backupService = new BackupService(axiosInstance)
+const appVersionService = new AppVersionService(axiosInstance)
 
 function useAdministratorService() {
   return administratorService
@@ -98,6 +100,10 @@ function useBackupService() {
   return backupService
 }
 
+function useAppVersionService() {
+  return appVersionService
+}
+
 export {
   useAdministratorService,
   useAuthenticationService,
@@ -113,5 +119,6 @@ export {
   useImportExportService,
   useSocialService,
   usePushService,
-  useBackupService
+  useBackupService,
+  useAppVersionService
 };
