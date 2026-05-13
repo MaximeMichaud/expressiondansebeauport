@@ -14,3 +14,4 @@ export * from './contactService';
 export * from './appVersionService';
 export * from './cookiePreferencesService';
 export * from './cookieControlledScripts';
+export * from './helpArticleService';

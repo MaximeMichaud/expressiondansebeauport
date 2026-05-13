@@ -14,9 +14,28 @@
 
   &__content-header {
     display: flex;
+    align-items: center;
     justify-content: flex-end;
     gap: 32px;
     margin-bottom: 32px;
+  }
+
+  &__help-button {
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__help-button--floating {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 9000;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 9999px;
   }
 }
 
