@@ -71,6 +71,8 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(Log.Logger);
 
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
+builder.Services.AddHttpClient();
+builder.Services.AddMemoryCache();
 builder.Services.AddHostedService<BackupSchedulerService>();
 builder.Services.AddHostedService<AuditLogRetentionScheduler>();
 builder.Services.AddDefaultSitemapServices();

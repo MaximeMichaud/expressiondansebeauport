@@ -71,6 +71,7 @@ const TOOL_NAMES = new Set([
   'admin.children.backup',
   'admin.children.errorLogs',
   'admin.children.auditLogs',
+  'admin.children.version',
 ]);
 
 const allAdminRoutes = computed(() =>

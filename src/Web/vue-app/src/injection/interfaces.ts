@@ -7,7 +7,7 @@ import {
   ITwoFactorRequest
 } from "@/types/requests"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
-import {Administrator, AuditLog, BackupRecord, ErrorLog, FooterPartner, MediaFile, NavigationMenu, NavigationMenuItem, Page, PageRevision, PageRevisionListItem, SiteHealth, SiteSettings, SocialLink, User, Group, GroupMember, Post, Comment, Conversation, Message} from "@/types/entities"
+import {Administrator, AppVersion, AuditLog, BackupRecord, ErrorLog, FooterPartner, MediaFile, NavigationMenu, NavigationMenuItem, Page, PageRevision, PageRevisionListItem, SiteHealth, SiteSettings, SocialLink, User, Group, GroupMember, Post, Comment, Conversation, Message} from "@/types/entities"
 import type {PinPostResponse} from "@/services/socialService"
 export interface IApiService {
   headersWithJsonContentType(): any
@@ -225,6 +225,10 @@ export interface IContactService {
     blockId?: string
     pageSlug?: string
   }): Promise<SucceededOrNotResponse>
+}
+
+export interface IAppVersionService {
+  get(): Promise<AppVersion>
 }
 
 export interface IBackupService {
