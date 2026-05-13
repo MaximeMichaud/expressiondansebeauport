@@ -26,6 +26,7 @@
       </div>
     </main>
 
+    <HelpButton v-if="isAdminRoute && isMobile" class="dashboard__help-button--floating"/>
     <HelpDrawer v-if="isAdminRoute"/>
   </div>
 </template>

@@ -37,7 +37,7 @@
         <BookOpenIcon :size="40" class="help-index__empty-icon" />
         <p class="help-index__empty-title">{{ t('pages.help.index.emptyGlobal') }}</p>
         <p class="help-index__empty-sub">{{ t('pages.help.index.emptyGlobalSub') }}</p>
-        <RouterLink :to="{ name: 'admin.children.help.add' }" class="btn help-index__empty-btn">
+        <RouterLink v-if="canEdit" :to="{ name: 'admin.children.help.add' }" class="btn help-index__empty-btn">
           <PlusIcon :size="16" class="help-index__btn-icon" />
           {{ t('pages.help.index.emptyGlobalCta') }}
         </RouterLink>

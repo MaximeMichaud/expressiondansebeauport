@@ -27,6 +27,16 @@
     justify-content: center;
     flex-shrink: 0;
   }
+
+  &__help-button--floating {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 9000;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 9999px;
+  }
 }
 
 //Breakpoints ==================================

@@ -7,6 +7,7 @@ import type {HelpArticle} from '@/types/entities'
 export const useHelpDrawerStore = defineStore('helpDrawer', () => {
   const isOpen = ref(false)
   const currentArticle = ref<HelpArticle | null>(null)
+  const isCurrentArticleContextual = ref(false)
   const isLoading = ref(false)
   const allArticles = ref<HelpArticle[]>([])
   const searchQuery = ref('')
@@ -34,6 +35,7 @@ export const useHelpDrawerStore = defineStore('helpDrawer', () => {
 
   function setCurrentArticle(article: HelpArticle | null) {
     currentArticle.value = article
+    isCurrentArticleContextual.value = false
     if (article === null) {
       lastLoadedRouteName.value = null
     }
@@ -43,6 +45,7 @@ export const useHelpDrawerStore = defineStore('helpDrawer', () => {
     hasLoadedAll.value = false
     lastLoadedRouteName.value = null
     currentArticle.value = null
+    isCurrentArticleContextual.value = false
   }
 
   async function loadPermissions() {
@@ -76,6 +79,7 @@ export const useHelpDrawerStore = defineStore('helpDrawer', () => {
   async function loadForRoute(routeName: string | null | undefined) {
     if (!routeName) {
       currentArticle.value = null
+      isCurrentArticleContextual.value = false
       lastLoadedRouteName.value = null
       return
     }
@@ -86,9 +90,13 @@ export const useHelpDrawerStore = defineStore('helpDrawer', () => {
       const article = await service.getByRoute(routeName)
       if (seq !== _routeLoadSeq) return
       currentArticle.value = article
+      isCurrentArticleContextual.value = article !== null
       lastLoadedRouteName.value = routeName
     } catch {
-      if (seq === _routeLoadSeq) currentArticle.value = null
+      if (seq === _routeLoadSeq) {
+        currentArticle.value = null
+        isCurrentArticleContextual.value = false
+      }
     } finally {
       if (seq === _routeLoadSeq) isLoading.value = false
     }
@@ -101,8 +109,10 @@ export const useHelpDrawerStore = defineStore('helpDrawer', () => {
       const service = useHelpArticleService()
       const article = await service.getById(id)
       currentArticle.value = article
+      isCurrentArticleContextual.value = false
     } catch {
       currentArticle.value = null
+      isCurrentArticleContextual.value = false
     } finally {
       isLoading.value = false
     }
@@ -112,6 +122,7 @@ export const useHelpDrawerStore = defineStore('helpDrawer', () => {
     _routeLoadSeq++
     isOpen.value = false
     currentArticle.value = null
+    isCurrentArticleContextual.value = false
     isLoading.value = false
     allArticles.value = []
     searchQuery.value = ''
@@ -124,6 +135,7 @@ export const useHelpDrawerStore = defineStore('helpDrawer', () => {
   return {
     isOpen,
     currentArticle,
+    isCurrentArticleContextual,
     isLoading,
     allArticles,
     searchQuery,

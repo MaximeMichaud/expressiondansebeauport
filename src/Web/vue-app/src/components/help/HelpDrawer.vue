@@ -94,7 +94,7 @@
                 <ChevronLeft :size="14" aria-hidden="true" />
                 {{ t('components.helpDrawer.browseAll') }}
               </button>
-              <p class="help-drawer__article-context">
+              <p v-if="helpDrawer.isCurrentArticleContextual" class="help-drawer__article-context">
                 {{ t('components.helpDrawer.contextual') }}
               </p>
               <h3 class="help-drawer__article-title">
