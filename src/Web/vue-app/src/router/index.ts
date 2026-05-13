@@ -209,6 +209,29 @@ const mainRoutes = [
         ],
       },
       {
+        path: i18n.global.t("routes.admin.children.help.path"),
+        name: "admin.children.help",
+        component: () => import("@/views/admin/Admin.vue"),
+        children: [
+          {
+            path: "",
+            name: "admin.children.help.index",
+            component: () => import("@/views/admin/help/AdminHelpIndex.vue"),
+          },
+          {
+            path: i18n.global.t("routes.admin.children.help.add.path"),
+            name: "admin.children.help.add",
+            component: () => import("@/views/admin/help/AdminHelpEditor.vue"),
+          },
+          {
+            path: i18n.global.t("routes.admin.children.help.edit.path"),
+            name: "admin.children.help.edit",
+            component: () => import("@/views/admin/help/AdminHelpEditor.vue"),
+            props: true,
+          },
+        ],
+      },
+      {
         path: i18n.global.t("routes.admin.children.menus.path"),
         name: "admin.children.menus",
         component: () => import("@/views/admin/menus/AdminMenuIndex.vue"),

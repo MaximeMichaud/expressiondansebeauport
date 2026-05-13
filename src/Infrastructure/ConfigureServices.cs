@@ -12,6 +12,7 @@ using Infrastructure.Services.Push;
 using Infrastructure.Repositories.Authentication;
 using Infrastructure.Repositories.Media;
 using Infrastructure.Repositories.Groups;
+using Infrastructure.Repositories.HelpArticles;
 using Infrastructure.Repositories.JoinRequests;
 using Infrastructure.Repositories.Messaging;
 using Infrastructure.Repositories.Notifications;
@@ -83,6 +84,7 @@ public static class ConfigureServices
         services.AddScoped<ISiteSettingsRepository, Infrastructure.Repositories.SiteSettings.SiteSettingsRepository>();
         services.AddScoped<INavigationMenuRepository, NavigationMenuRepository>();
         services.AddScoped<IPageRepository, PageRepository>();
+        services.AddScoped<IHelpArticleRepository, HelpArticleRepository>();
         services.AddScoped<IPageRevisionRepository, PageRevisionRepository>();
         services.AddScoped<IPreviewTokenRepository, PreviewTokenRepository>();
         services.AddScoped<IMemberRepository, MemberRepository>();

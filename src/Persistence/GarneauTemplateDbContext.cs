@@ -43,6 +43,7 @@ public class GarneauTemplateDbContext : IdentityDbContext<User, Role, Guid,
     public DbSet<NavigationMenu> NavigationMenus { get; set; } = null!;
     public DbSet<NavigationMenuItem> NavigationMenuItems { get; set; } = null!;
     public DbSet<Page> Pages { get; set; } = null!;
+    public DbSet<HelpArticle> HelpArticles { get; set; } = null!;
     public DbSet<PageRevision> PageRevisions { get; set; } = null!;
     public DbSet<PreviewToken> PreviewTokens { get; set; } = null!;
     public DbSet<SocialLink> SocialLinks { get; set; } = null!;
