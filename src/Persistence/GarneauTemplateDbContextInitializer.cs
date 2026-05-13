@@ -1374,11 +1374,8 @@ public class GarneauTemplateDbContextInitializer
             )
         };
 
-        foreach (var article in articles)
-        {
-            _context.HelpArticles.Add(article);
-            await _context.SaveChangesAsync();
-        }
+        _context.HelpArticles.AddRange(articles);
+        await _context.SaveChangesAsync();
     }
 
     private static HelpArticle CreateHelpArticle(string title, string slug, HelpCategory category, int sortOrder, string? routeHint, string content)

@@ -35,6 +35,9 @@ public class UpdateHelpArticleValidator : Validator<UpdateHelpArticleRequest>
             .WithMessage("Title must be 200 characters or less.");
 
         RuleFor(x => x.Slug)
+            .Must(value => !string.IsNullOrWhiteSpace(value))
+            .WithErrorCode("SlugRequired")
+            .WithMessage("Slug is required.")
             .MaximumLength(200)
             .WithErrorCode("SlugTooLong")
             .WithMessage("Slug must be 200 characters or less.");
@@ -97,25 +100,23 @@ public class UpdateHelpArticleEndpoint : Endpoint<UpdateHelpArticleRequest, Help
         }
 
         var category = Enum.Parse<HelpCategory>(req.Category, true);
+        var slug = HelpArticle.GenerateSlug(req.Slug!);
+
+        if (string.IsNullOrEmpty(slug))
+        {
+            AddError(r => r.Slug, "Le slug normalisé est vide. Utilisez un slug contenant des caractères alphanumériques.", "InvalidSlug");
+            await Send.ErrorsAsync(400, ct);
+            return;
+        }
+        if (await _repository.SlugExists(slug, excludeId: article.Id))
+        {
+            AddError(r => r.Slug, "Un article avec ce slug existe déjà.", "DuplicateSlug");
+            await Send.ErrorsAsync(409, ct);
+            return;
+        }
 
         article.SetTitle(req.Title);
-        if (!string.IsNullOrWhiteSpace(req.Slug))
-        {
-            var slug = HelpArticle.GenerateSlug(req.Slug);
-            if (string.IsNullOrEmpty(slug))
-            {
-                AddError(r => r.Slug, "Le slug normalisé est vide. Utilisez un slug contenant des caractères alphanumériques.", "InvalidSlug");
-                await Send.ErrorsAsync(400, ct);
-                return;
-            }
-            if (await _repository.SlugExists(slug, excludeId: article.Id))
-            {
-                AddError(r => r.Slug, "Un article avec ce slug existe déjà.", "DuplicateSlug");
-                await Send.ErrorsAsync(409, ct);
-                return;
-            }
-            article.SetSlug(req.Slug);
-        }
+        article.SetSlug(slug);
         article.SetCategory(category);
         article.SetContent(_sanitizer.Sanitize(req.Content));
         article.SetContentMode(req.ContentMode);

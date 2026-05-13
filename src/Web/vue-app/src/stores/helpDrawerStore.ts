@@ -36,9 +36,7 @@ export const useHelpDrawerStore = defineStore('helpDrawer', () => {
   function setCurrentArticle(article: HelpArticle | null) {
     currentArticle.value = article
     isCurrentArticleContextual.value = false
-    if (article === null) {
-      lastLoadedRouteName.value = null
-    }
+    lastLoadedRouteName.value = null
   }
 
   function invalidate() {

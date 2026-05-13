@@ -33,7 +33,6 @@ public class HelpHtmlSanitizer : IHelpHtmlSanitizer
         _sanitizer.AllowedAttributes.Add("src");
         _sanitizer.AllowedAttributes.Add("alt");
         _sanitizer.AllowedAttributes.Add("title");
-        _sanitizer.AllowedAttributes.Add("target");
         _sanitizer.AllowedAttributes.Add("rel");
 
         _sanitizer.AllowedSchemes.Clear();
