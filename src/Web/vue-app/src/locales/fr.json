@@ -113,6 +113,11 @@
           "path": "journal-audit",
           "fullPath": "/admin/journal-audit",
           "name": "Journal d'audit"
+        },
+        "version": {
+          "path": "version",
+          "fullPath": "/admin/version",
+          "name": "Version"
         }
       }
     }
@@ -547,6 +552,34 @@
         "menu": "Menu",
         "site-settings": "Réglages du site",
         "admin-session": "Session admin"
+      }
+    },
+    "version": {
+      "refresh": "Rafraîchir",
+      "viewLatest": "Voir sur GitHub",
+      "prerelease": "Pré-version",
+      "openOnGithub": "Ouvrir {name} sur GitHub",
+      "noNotes": "Aucune note de version.",
+      "fetchedAt": "Données récupérées le {date}",
+      "status": {
+        "upToDate": "À jour",
+        "upToDateDetail": "La version installée ({version}) est la dernière disponible.",
+        "updateAvailable": "Mise à jour disponible",
+        "updateDetail": "Version installée : {current}. Dernière version : {latest}.",
+        "unknown": "Vérification impossible"
+      },
+      "current": {
+        "title": "Version installée",
+        "tag": "Version",
+        "commit": "Commit",
+        "builtAt": "Date du build",
+        "repository": "Dépôt"
+      },
+      "latest": {
+        "title": "Dernière version publiée"
+      },
+      "history": {
+        "title": "Historique des versions"
       }
     },
     "backup": {

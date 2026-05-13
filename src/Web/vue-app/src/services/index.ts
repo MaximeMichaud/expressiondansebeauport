@@ -11,5 +11,6 @@ export * from './backupService';
 export * from './errorLogsService';
 export * from './auditLogService';
 export * from './contactService';
+export * from './appVersionService';
 export * from './cookiePreferencesService';
 export * from './cookieControlledScripts';
