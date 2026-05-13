@@ -1010,8 +1010,8 @@ public class GarneauTemplateDbContextInitializer
                         "Sauvegardes, etc.) sont regroupées dans le menu latéral. Plus besoin de chercher dans plusieurs onglets.</li>" +
                         "<li><strong>Aucune extension à installer.</strong> Les outils dont vous avez besoin sont déjà inclus : éditeur " +
                         "de pages, gestion des membres, sauvegardes, formulaires de contact.</li>" +
-                        "<li><strong>Sauvegardes automatiques.</strong> Votre site est sauvegardé régulièrement sans aucune intervention " +
-                        "de votre part. Vous pouvez aussi déclencher une sauvegarde manuelle à tout moment.</li>" +
+                        "<li><strong>Sauvegardes.</strong> Vous pouvez déclencher une sauvegarde manuelle à tout moment. " +
+                        "Selon l'environnement, des sauvegardes automatiques peuvent aussi être activées par le développeur.</li>" +
                         "<li><strong>Mises à jour invisibles.</strong> Le site est entretenu en arrière-plan ; vous ne verrez plus de bannière " +
                         "vous demandant de tout mettre à jour avant chaque modification.</li>" +
                         "<li><strong>Le contenu et la présentation sont bien séparés.</strong> Vous écrivez le texte ; le style graphique reste " +
@@ -1067,6 +1067,46 @@ public class GarneauTemplateDbContextInitializer
                     "les anciens liens (par exemple ceux partagés dans une infolettre ou sur Facebook) ne fonctionneront plus.</p>" +
                     "<p><strong>Notre conseil :</strong> ne changez le slug d'une page déjà en ligne que si c'est vraiment intentionnel. " +
                     "Pour une nouvelle page, vous pouvez choisir librement le slug avant la publication.</p>"
+            ),
+            CreateHelpArticle(
+                "Créer une nouvelle page",
+                "creer-une-page",
+                HelpCategory.Pages,
+                sortOrder: 2,
+                routeHint: "admin.children.pages.add",
+                content:
+                    "<h2>Créer une page dans le CMS</h2>" +
+                    "<p>Une nouvelle page sert à ajouter une section complète au site public, par exemple une activité, une annonce durable " +
+                    "ou une page d'information qui doit rester accessible dans le menu.</p>" +
+                    "<h3>Avant de commencer</h3>" +
+                    "<ul>" +
+                        "<li><strong>Choisissez un titre clair.</strong> Il sera visible dans l'administration et peut aussi servir à générer l'adresse de la page.</li>" +
+                        "<li><strong>Préparez les images.</strong> Téléversez-les d'abord dans la médiathèque si elles doivent être réutilisées ailleurs.</li>" +
+                        "<li><strong>Décidez si la page doit être publiée immédiatement.</strong> Utilisez le mode brouillon si le contenu doit être relu.</li>" +
+                    "</ul>" +
+                    "<h3>Créer puis rendre la page visible</h3>" +
+                    "<p>Après l'enregistrement, vérifiez l'aperçu de la page. Si elle doit apparaître dans la navigation publique, ouvrez ensuite " +
+                    "la section <em>Menus</em> et ajoutez une entrée vers cette page dans le menu principal ou le pied de page.</p>"
+            ),
+            CreateHelpArticle(
+                "Travailler dans l'éditeur de page",
+                "editeur-de-page",
+                HelpCategory.Pages,
+                sortOrder: 3,
+                routeHint: "admin.children.pages.edit",
+                content:
+                    "<h2>Utiliser l'éditeur de page</h2>" +
+                    "<p>L'éditeur permet de modifier le contenu sans toucher au code du site. Le mode blocs visuels est recommandé pour la majorité " +
+                    "des changements : il garde une mise en page cohérente et limite les erreurs de HTML.</p>" +
+                    "<h3>Bonnes pratiques</h3>" +
+                    "<ul>" +
+                        "<li><strong>Modifier un bloc à la fois.</strong> Relisez le résultat après chaque changement important.</li>" +
+                        "<li><strong>Utiliser des titres courts.</strong> Les titres trop longs sont difficiles à lire sur mobile.</li>" +
+                        "<li><strong>Éviter de coller du contenu formaté depuis Word.</strong> Collez le texte puis appliquez les styles avec l'éditeur.</li>" +
+                        "<li><strong>Enregistrer avant de quitter.</strong> Les changements ne sont visibles qu'après l'enregistrement.</li>" +
+                    "</ul>" +
+                    "<p>Si une modification importante doit être préparée tranquillement, basculez la page en brouillon ou travaillez sur une copie " +
+                    "du contenu avant de publier.</p>"
             ),
             CreateHelpArticle(
                 "Ajouter un élément au menu principal",
@@ -1143,6 +1183,156 @@ public class GarneauTemplateDbContextInitializer
                     "peut servir sur plusieurs pages.</p>"
             ),
             CreateHelpArticle(
+                "Personnaliser l'identité du site",
+                "personnalisation-du-site",
+                HelpCategory.Parametres,
+                sortOrder: 1,
+                routeHint: "admin.children.customizer",
+                content:
+                    "<h2>Personnaliser l'apparence et les informations publiques</h2>" +
+                    "<p>La section Personnalisation regroupe les réglages qui influencent l'identité du site : couleurs, logo, favicon, " +
+                    "coordonnées, réseaux sociaux, bandeau d'information et paramètres visibles par les visiteurs.</p>" +
+                    "<h3>Ce qu'il faut vérifier avant d'enregistrer</h3>" +
+                    "<ul>" +
+                        "<li><strong>Logo et favicon :</strong> utilisez des fichiers propres, déjà téléversés dans la médiathèque.</li>" +
+                        "<li><strong>Coordonnées :</strong> relisez le courriel, le téléphone et l'adresse, car ils peuvent apparaître à plusieurs endroits.</li>" +
+                        "<li><strong>Bandeau public :</strong> gardez le message court et retirez-le quand il n'est plus pertinent.</li>" +
+                        "<li><strong>Couleurs :</strong> privilégiez les couleurs officielles de l'école pour garder une image cohérente.</li>" +
+                    "</ul>" +
+                    "<p>Après une modification visuelle, ouvrez le site public dans un nouvel onglet et vérifiez la page d'accueil sur ordinateur " +
+                    "et sur téléphone.</p>"
+            ),
+            CreateHelpArticle(
+                "Vérifier la santé du site",
+                "sante-du-site",
+                HelpCategory.Parametres,
+                sortOrder: 2,
+                routeHint: "admin.children.siteHealth",
+                content:
+                    "<h2>Comprendre la santé du site</h2>" +
+                    "<p>La page Santé du site donne un portrait rapide de l'état technique de l'application : connexion à la base de données, " +
+                    "version .NET, mémoire disponible et indicateurs de contenu.</p>" +
+                    "<h3>Quand consulter cette page</h3>" +
+                    "<ul>" +
+                        "<li><strong>Avant de signaler un problème technique.</strong> Elle aide à voir si le site répond normalement.</li>" +
+                        "<li><strong>Après un déploiement.</strong> Vérifiez que la base de données et l'application sont bien accessibles.</li>" +
+                        "<li><strong>Si l'administration semble lente.</strong> Les indicateurs de mémoire peuvent aider le développeur à diagnostiquer.</li>" +
+                    "</ul>" +
+                    "<p>Si un statut critique apparaît, évitez les changements importants et contactez la personne responsable du support technique " +
+                    "avec une capture d'écran de la page.</p>"
+            ),
+            CreateHelpArticle(
+                "Importer ou exporter les données CMS",
+                "import-export-cms",
+                HelpCategory.Parametres,
+                sortOrder: 3,
+                routeHint: "admin.children.importExport",
+                content:
+                    "<h2>Utiliser l'import et l'export</h2>" +
+                    "<p>L'export télécharge une copie JSON des données CMS. L'import sert à réinjecter un fichier compatible dans le site. " +
+                    "C'est un outil puissant, à utiliser seulement quand l'objectif est clair.</p>" +
+                    "<h3>Exporter</h3>" +
+                    "<p>Utilisez l'export avant une série de modifications importantes ou pour transmettre l'état du CMS au développeur. " +
+                    "Conservez le fichier dans un endroit privé, car il peut contenir du contenu administratif.</p>" +
+                    "<h3>Importer</h3>" +
+                    "<ul>" +
+                        "<li><strong>Vérifiez la provenance du fichier.</strong> N'importez jamais un fichier reçu d'une source inconnue.</li>" +
+                        "<li><strong>Faites une sauvegarde avant.</strong> L'import peut modifier des données existantes.</li>" +
+                        "<li><strong>Relisez les pages importantes après l'import.</strong> Confirmez que le menu, les pages et les médias attendus sont présents.</li>" +
+                    "</ul>"
+            ),
+            CreateHelpArticle(
+                "Lire les logs d'erreurs",
+                "logs-erreurs",
+                HelpCategory.Parametres,
+                sortOrder: 4,
+                routeHint: "admin.children.errorLogs",
+                content:
+                    "<h2>Comprendre les logs d'erreurs</h2>" +
+                    "<p>Les logs d'erreurs listent les problèmes techniques récents détectés par l'application. Cette page est surtout utile " +
+                    "pour transmettre une information précise au développeur.</p>" +
+                    "<h3>Comment s'en servir</h3>" +
+                    "<ul>" +
+                        "<li><strong>Filtrez par date ou par niveau</strong> pour isoler ce qui s'est passé au moment du problème.</li>" +
+                        "<li><strong>Copiez le message principal</strong> ou prenez une capture d'écran avant de demander de l'aide.</li>" +
+                        "<li><strong>Ne supprimez pas le contexte.</strong> L'heure, la source et le niveau de l'erreur sont souvent importants.</li>" +
+                    "</ul>" +
+                    "<p>Un log d'erreur ne veut pas toujours dire que le site est inutilisable. Il indique surtout qu'un événement doit être vérifié.</p>"
+            ),
+            CreateHelpArticle(
+                "Consulter le journal d'audit",
+                "journal-audit",
+                HelpCategory.Parametres,
+                sortOrder: 5,
+                routeHint: "admin.children.auditLogs",
+                content:
+                    "<h2>Suivre les actions administratives</h2>" +
+                    "<p>Le journal d'audit garde une trace des actions importantes réalisées dans l'administration : créations, modifications, " +
+                    "suppressions, connexions et déconnexions.</p>" +
+                    "<h3>Quand l'utiliser</h3>" +
+                    "<ul>" +
+                        "<li><strong>Retrouver qui a modifié une page.</strong> Filtrez par utilisateur ou par type d'action.</li>" +
+                        "<li><strong>Comprendre une suppression.</strong> Cherchez l'entité concernée et la date de l'action.</li>" +
+                        "<li><strong>Préparer une demande de support.</strong> Mentionnez l'heure et l'action observées.</li>" +
+                    "</ul>" +
+                    "<p>Le journal d'audit sert à comprendre ce qui s'est passé. Il ne remplace pas une sauvegarde pour restaurer du contenu.</p>"
+            ),
+            CreateHelpArticle(
+                "Vérifier la version installée",
+                "version-installee",
+                HelpCategory.Parametres,
+                sortOrder: 6,
+                routeHint: "admin.children.version",
+                content:
+                    "<h2>Vérifier la version du site</h2>" +
+                    "<p>La page Version indique la version actuellement installée, le commit de build quand il est disponible, et la dernière " +
+                    "version publiée sur GitHub.</p>" +
+                    "<h3>Pourquoi c'est utile</h3>" +
+                    "<ul>" +
+                        "<li><strong>Après un déploiement :</strong> confirmer que la nouvelle version est bien en ligne.</li>" +
+                        "<li><strong>Avant de rapporter un bug :</strong> transmettre le numéro de version aide à reproduire le problème.</li>" +
+                        "<li><strong>Pour suivre les mises à jour :</strong> comparer la version installée avec la dernière version publiée.</li>" +
+                    "</ul>" +
+                    "<p>Si la vérification GitHub échoue, la version installée peut quand même être correcte. Réessayez plus tard ou contactez " +
+                    "le développeur si l'information reste indisponible.</p>"
+            ),
+            CreateHelpArticle(
+                "Comprendre les membres du portail social",
+                "membres-portail-social",
+                HelpCategory.Membres,
+                sortOrder: 1,
+                routeHint: null,
+                content:
+                    "<h2>Membres et professeurs dans EDB Social</h2>" +
+                    "<p>Les membres utilisent le portail social pour consulter les annonces, rejoindre leurs groupes, écrire des messages et " +
+                    "mettre leur profil à jour. Certains membres peuvent aussi avoir le rôle de professeur.</p>" +
+                    "<h3>Points à surveiller</h3>" +
+                    "<ul>" +
+                        "<li><strong>Adresse courriel :</strong> elle sert à la connexion et aux communications importantes.</li>" +
+                        "<li><strong>Rôle professeur :</strong> donne plus de responsabilités dans les groupes et les annonces.</li>" +
+                        "<li><strong>Profil :</strong> les noms et photos doivent rester appropriés pour un contexte d'école de danse.</li>" +
+                    "</ul>" +
+                    "<p>Si une personne ne reçoit pas ses courriels, vérifiez d'abord l'adresse saisie et demandez-lui de consulter ses pourriels.</p>"
+            ),
+            CreateHelpArticle(
+                "Comprendre les groupes de danse",
+                "groupes-de-danse",
+                HelpCategory.Groupes,
+                sortOrder: 1,
+                routeHint: null,
+                content:
+                    "<h2>Groupes dans EDB Social</h2>" +
+                    "<p>Les groupes rassemblent les membres autour d'un cours, d'une troupe ou d'une saison. Ils servent à diffuser des annonces, " +
+                    "partager des fichiers et centraliser les discussions liées à un groupe précis.</p>" +
+                    "<h3>Bonnes pratiques</h3>" +
+                    "<ul>" +
+                        "<li><strong>Nommer le groupe clairement.</strong> Incluez le niveau, la saison ou le nom du cours si nécessaire.</li>" +
+                        "<li><strong>Garder les codes d'invitation privés.</strong> Partagez-les seulement avec les personnes qui doivent rejoindre le groupe.</li>" +
+                        "<li><strong>Archiver les groupes terminés.</strong> Cela évite de mélanger les anciennes saisons avec les groupes actifs.</li>" +
+                    "</ul>" +
+                    "<p>Avant de supprimer un groupe, assurez-vous que les informations importantes ont été sauvegardées ou transférées ailleurs.</p>"
+            ),
+            CreateHelpArticle(
                 "Lancer une sauvegarde manuelle",
                 "sauvegarde-manuelle",
                 HelpCategory.Sauvegardes,
@@ -1177,10 +1367,10 @@ public class GarneauTemplateDbContextInitializer
                     "<p>Pour une sécurité supplémentaire, vous pouvez aussi télécharger un fichier de sauvegarde sur votre ordinateur " +
                     "personnel ou sur un disque externe.</p>" +
                     "<h3>Et les sauvegardes automatiques ?</h3>" +
-                    "<p>Bonne nouvelle : votre site est <strong>sauvegardé automatiquement</strong> à intervalle régulier, sans que vous " +
-                    "ayez à faire quoi que ce soit. La sauvegarde manuelle est donc surtout utile <em>avant</em> une modification importante " +
-                    "(refonte d'une page, suppression de membres, changement de paramètres) pour avoir un point de retour précis si jamais " +
-                    "quelque chose se passe mal.</p>"
+                    "<p>Les sauvegardes automatiques peuvent être activées par le développeur selon l'environnement. Quand elles sont " +
+                    "activées, elles se lancent à intervalle régulier sans intervention de votre part. La sauvegarde manuelle reste utile " +
+                    "<em>avant</em> une modification importante (refonte d'une page, suppression de membres, changement de paramètres) " +
+                    "pour avoir un point de retour précis si jamais quelque chose se passe mal.</p>"
             )
         };
 

@@ -34,6 +34,11 @@ public class UpdateHelpArticleValidator : Validator<UpdateHelpArticleRequest>
             .WithErrorCode("TitleTooLong")
             .WithMessage("Title must be 200 characters or less.");
 
+        RuleFor(x => x.Slug)
+            .MaximumLength(200)
+            .WithErrorCode("SlugTooLong")
+            .WithMessage("Slug must be 200 characters or less.");
+
         RuleFor(x => x.Category)
             .NotNull().NotEmpty()
             .WithErrorCode("CategoryRequired")

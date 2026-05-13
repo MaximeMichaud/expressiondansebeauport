@@ -37,6 +37,7 @@
     "focus-trap": "^8.2.0",
     "lucide-vue-next": "^1.0.0",
     "luxon": "^3.5.0",
+    "marked": "^18.0.3",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
     "tailwind-merge": "^3.4.0",

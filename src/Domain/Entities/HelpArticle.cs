@@ -43,7 +43,11 @@ public class HelpArticle : AuditableAndSoftDeletableEntity
     public void SetContent(string? content) => Content = content;
     public void SetContentMode(string mode) => ContentMode = mode;
     public void SetSortOrder(int sortOrder) => SortOrder = sortOrder;
-    public void SetRouteHint(string? routeHint) => RouteHint = routeHint;
+    public void SetRouteHint(string? routeHint)
+    {
+        var trimmed = routeHint?.Trim();
+        RouteHint = string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
+    }
 
     public void Publish() => IsPublished = true;
     public void Unpublish() => IsPublished = false;

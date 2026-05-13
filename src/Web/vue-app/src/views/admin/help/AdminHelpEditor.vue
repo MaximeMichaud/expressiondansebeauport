@@ -161,7 +161,8 @@ const routeHintModel = computed({
     return article.value.routeHint ?? ''
   },
   set(value: string) {
-    article.value.routeHint = value.trim() === '' ? null : value
+    const trimmed = value.trim()
+    article.value.routeHint = trimmed === '' ? null : trimmed
   }
 })
 
