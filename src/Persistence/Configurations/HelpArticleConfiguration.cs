@@ -9,7 +9,9 @@ public class HelpArticleConfiguration : IEntityTypeConfiguration<HelpArticle>
     public void Configure(EntityTypeBuilder<HelpArticle> builder)
     {
         builder.HasKey(p => p.Id);
-        builder.HasIndex(p => p.Slug).IsUnique();
+        builder.HasIndex(p => p.Slug)
+            .IsUnique()
+            .HasFilter("\"Deleted\" IS NULL");
         builder.HasIndex(p => p.RouteHint);
         builder.Property(p => p.Title).HasMaxLength(200).IsRequired();
         builder.Property(p => p.Slug).HasMaxLength(200).IsRequired();

@@ -46,7 +46,8 @@ namespace Persistence.Migrations
                 name: "IX_HelpArticles_Slug",
                 table: "HelpArticles",
                 column: "Slug",
-                unique: true);
+                unique: true,
+                filter: "\"Deleted\" IS NULL");
         }
 
         /// <inheritdoc />

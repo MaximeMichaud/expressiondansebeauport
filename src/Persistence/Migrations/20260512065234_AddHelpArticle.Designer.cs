@@ -505,7 +505,8 @@ namespace Persistence.Migrations
                     b.HasIndex("RouteHint");
 
                     b.HasIndex("Slug")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"Deleted\" IS NULL");
 
                     b.ToTable("HelpArticles");
                 });

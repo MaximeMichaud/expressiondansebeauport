@@ -63,9 +63,7 @@ public class HelpArticle : AuditableAndSoftDeletableEntity
         }
 
         var stripped = sb.ToString().Normalize(NormalizationForm.FormC);
-        stripped = Regex.Replace(stripped, @"[^a-z0-9\s-]", "");
-        stripped = Regex.Replace(stripped, @"\s+", "-");
-        stripped = Regex.Replace(stripped, @"-+", "-");
+        stripped = Regex.Replace(stripped, @"[^a-z0-9]+", "-");
         return stripped.Trim('-');
     }
 }

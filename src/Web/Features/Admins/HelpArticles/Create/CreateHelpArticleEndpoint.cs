@@ -88,6 +88,13 @@ public class CreateHelpArticleEndpoint : Endpoint<CreateHelpArticleRequest, Help
             ? HelpArticle.GenerateSlug(req.Title)
             : HelpArticle.GenerateSlug(req.Slug);
 
+        if (string.IsNullOrEmpty(slug))
+        {
+            AddError(r => r.Slug, "Le slug normalisé est vide. Utilisez un titre ou un slug contenant des caractères alphanumériques.", "InvalidSlug");
+            await Send.ErrorsAsync(400, ct);
+            return;
+        }
+
         if (await _repository.SlugExists(slug))
         {
             AddError(r => r.Slug, "Un article avec ce slug existe déjà.", "DuplicateSlug");
