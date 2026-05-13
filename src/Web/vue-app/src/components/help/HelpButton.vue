@@ -12,31 +12,15 @@
 
 <script lang="ts" setup>
 import {useI18n} from 'vue-i18n'
-import {useRoute} from 'vue-router'
 import {HelpCircle} from 'lucide-vue-next'
 
 import {useHelpDrawerStore} from '@/stores/helpDrawerStore'
 
 const {t} = useI18n()
-const route = useRoute()
 const helpDrawer = useHelpDrawerStore()
 
-async function onClick() {
-  const willOpen = !helpDrawer.isOpen
+function onClick() {
   helpDrawer.toggle()
-  if (willOpen) {
-    const routeName = route.name ? String(route.name) : null
-    const tasks: Promise<unknown>[] = []
-    if (!helpDrawer.hasLoadedAll) {
-      tasks.push(helpDrawer.loadAll())
-    }
-    if (routeName && helpDrawer.lastLoadedRouteName !== routeName) {
-      tasks.push(helpDrawer.loadForRoute(routeName))
-    }
-    if (tasks.length > 0) {
-      await Promise.all(tasks)
-    }
-  }
 }
 </script>
 

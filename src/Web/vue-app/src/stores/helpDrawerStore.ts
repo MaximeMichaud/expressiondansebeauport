@@ -61,19 +61,26 @@ export const useHelpDrawerStore = defineStore('helpDrawer', () => {
     }
   }
 
+  let _loadAllInFlight: Promise<void> | null = null
+
   async function loadAll(force = false) {
     if (hasLoadedAll.value && !force) return
+    if (_loadAllInFlight) return _loadAllInFlight
     isLoading.value = true
-    try {
-      const service = useHelpArticleService()
-      const articles = await service.getAll(undefined, true)
-      allArticles.value = articles ?? []
-      hasLoadedAll.value = true
-    } catch {
-      allArticles.value = []
-    } finally {
-      isLoading.value = false
-    }
+    _loadAllInFlight = (async () => {
+      try {
+        const service = useHelpArticleService()
+        const articles = await service.getAll(undefined, true)
+        allArticles.value = articles ?? []
+        hasLoadedAll.value = true
+      } catch {
+        allArticles.value = []
+      } finally {
+        isLoading.value = false
+        _loadAllInFlight = null
+      }
+    })()
+    return _loadAllInFlight
   }
 
   async function loadForRoute(routeName: string | null | undefined) {

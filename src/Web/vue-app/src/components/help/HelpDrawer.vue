@@ -155,6 +155,7 @@ import {computed, nextTick, onBeforeUnmount, onMounted, ref, watch} from 'vue'
 import {useI18n} from 'vue-i18n'
 import {useRoute} from 'vue-router'
 import {ChevronLeft, Search, X} from 'lucide-vue-next'
+import {createFocusTrap, type FocusTrap} from 'focus-trap'
 
 import {useHelpDrawerStore} from '@/stores/helpDrawerStore'
 import {HELP_CATEGORIES} from '@/types/entities/helpArticle'
@@ -167,6 +168,7 @@ const helpDrawer = useHelpDrawerStore()
 const headerId = 'help-drawer-title'
 const drawerRef = ref<HTMLElement | null>(null)
 const searchInputRef = ref<HTMLInputElement | null>(null)
+const focusTrap = ref<FocusTrap | null>(null)
 
 const searchInput = ref(helpDrawer.searchQuery ?? '')
 
@@ -247,7 +249,21 @@ watch(
         await Promise.all(tasks)
       }
       await nextTick()
-      searchInputRef.value?.focus()
+      if (drawerRef.value) {
+        focusTrap.value = createFocusTrap(drawerRef.value, {
+          allowOutsideClick: true,
+          escapeDeactivates: false,
+          fallbackFocus: drawerRef.value,
+          initialFocus: () => searchInputRef.value ?? drawerRef.value,
+          returnFocusOnDeactivate: true,
+        })
+        focusTrap.value.activate()
+      } else {
+        searchInputRef.value?.focus()
+      }
+    } else {
+      focusTrap.value?.deactivate()
+      focusTrap.value = null
     }
   }
 )
@@ -269,6 +285,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeydown)
+  focusTrap.value?.deactivate()
+  focusTrap.value = null
 })
 </script>
 
