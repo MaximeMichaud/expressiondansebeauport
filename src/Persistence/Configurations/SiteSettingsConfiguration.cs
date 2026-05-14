@@ -30,6 +30,9 @@ public class SiteSettingsConfiguration : IEntityTypeConfiguration<SiteSettings>
         builder.Property(s => s.IsBannerEnabled).HasDefaultValue(false).IsRequired();
         builder.Property(s => s.BannerText).HasMaxLength(300).HasDefaultValue("Actualités du moment");
         builder.Property(s => s.BannerUrl).HasMaxLength(500).HasDefaultValue("/actualites");
+        builder.Property(s => s.ReviewsSectionEyebrow).HasMaxLength(80).HasDefaultValue("Avis de notre communauté").IsRequired();
+        builder.Property(s => s.ReviewsSectionTitle).HasMaxLength(140).HasDefaultValue("Ce que les familles disent de nous").IsRequired();
+        builder.Property(s => s.ReviewsSectionSubtitle).HasMaxLength(400).HasDefaultValue("Quelques témoignages gérés par l’équipe du site pour refléter l’expérience vécue à l’école.").IsRequired();
 
         builder.HasOne(s => s.LogoMediaFile)
             .WithMany()

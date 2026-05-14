@@ -33,6 +33,9 @@ public class UpdateSiteSettingsRequest
     public bool IsBannerEnabled { get; set; }
     public string BannerText { get; set; } = "Actualités du moment";
     public string BannerUrl { get; set; } = "/actualites";
+    public string ReviewsSectionEyebrow { get; set; } = "Avis de notre communauté";
+    public string ReviewsSectionTitle { get; set; } = "Ce que les familles disent de nous";
+    public string ReviewsSectionSubtitle { get; set; } = "Quelques témoignages gérés par l’équipe du site pour refléter l’expérience vécue à l’école.";
 }
 
 public class UpdateSiteSettingsValidator : Validator<UpdateSiteSettingsRequest>
@@ -80,6 +83,9 @@ public class UpdateSiteSettingsValidator : Validator<UpdateSiteSettingsRequest>
         RuleFor(x => x.InstagramUrl).MaximumLength(500);
         RuleFor(x => x.CopyrightText).MaximumLength(200);
         RuleFor(x => x.AuditLogRetentionDays).InclusiveBetween(1, 3650);
+        RuleFor(x => x.ReviewsSectionEyebrow).NotEmpty().MaximumLength(80);
+        RuleFor(x => x.ReviewsSectionTitle).NotEmpty().MaximumLength(140);
+        RuleFor(x => x.ReviewsSectionSubtitle).NotEmpty().MaximumLength(400);
     }
 }
 
@@ -131,6 +137,9 @@ public class UpdateSiteSettingsEndpoint : Endpoint<UpdateSiteSettingsRequest, Si
         settings.SetBannerEnabled(req.IsBannerEnabled);
         settings.SetBannerText(req.BannerText);
         settings.SetBannerUrl(req.BannerUrl);
+        settings.SetReviewsSectionEyebrow(req.ReviewsSectionEyebrow);
+        settings.SetReviewsSectionTitle(req.ReviewsSectionTitle);
+        settings.SetReviewsSectionSubtitle(req.ReviewsSectionSubtitle);
 
         await _settingsRepository.Update(settings);
         if (changedFields.Count > 0)
@@ -167,6 +176,9 @@ public class UpdateSiteSettingsEndpoint : Endpoint<UpdateSiteSettingsRequest, Si
         if (settings.MaintenanceMessage != req.MaintenanceMessage) changedFields.Add("maintenance message");
         if (settings.MaintenanceRetryAfter != req.MaintenanceRetryAfter) changedFields.Add("maintenance retry after");
         if (settings.AuditLogRetentionDays != req.AuditLogRetentionDays) changedFields.Add("audit log retention");
+        if (settings.ReviewsSectionEyebrow != req.ReviewsSectionEyebrow) changedFields.Add("reviews section eyebrow");
+        if (settings.ReviewsSectionTitle != req.ReviewsSectionTitle) changedFields.Add("reviews section title");
+        if (settings.ReviewsSectionSubtitle != req.ReviewsSectionSubtitle) changedFields.Add("reviews section subtitle");
         return changedFields;
     }
 }

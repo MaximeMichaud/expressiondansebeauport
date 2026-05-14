@@ -1362,6 +1362,43 @@ namespace Persistence.Migrations
                     b.ToTable("PushSubscriptions", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(600)
+                        .HasColumnType("character varying(600)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("SiteSettingsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SiteSettingsId");
+
+                    b.ToTable("Reviews");
+                });
+
             modelBuilder.Entity("Domain.Entities.SiteSettings", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1385,6 +1422,27 @@ namespace Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasDefaultValue("/actualites");
+
+                    b.Property<string>("ReviewsSectionEyebrow")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasDefaultValue("Avis de notre communauté");
+
+                    b.Property<string>("ReviewsSectionSubtitle")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)")
+                        .HasDefaultValue("Quelques témoignages gérés par l’équipe du site pour refléter l’expérience vécue à l’école.");
+
+                    b.Property<string>("ReviewsSectionTitle")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(140)
+                        .HasColumnType("character varying(140)")
+                        .HasDefaultValue("Ce que les familles disent de nous");
 
                     b.Property<string>("BodyFont")
                         .IsRequired()
@@ -2080,6 +2138,17 @@ namespace Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Review", b =>
+                {
+                    b.HasOne("Domain.Entities.SiteSettings", "SiteSettings")
+                        .WithMany("Reviews")
+                        .HasForeignKey("SiteSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SiteSettings");
+                });
+
             modelBuilder.Entity("Domain.Entities.SiteSettings", b =>
                 {
                     b.HasOne("Domain.Entities.MediaFile", "FaviconMediaFile")
@@ -2235,6 +2304,8 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.SiteSettings", b =>
                 {
                     b.Navigation("FooterPartners");
+
+                    b.Navigation("Reviews");
 
                     b.Navigation("SocialLinks");
                 });

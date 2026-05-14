@@ -47,6 +47,7 @@ public class GarneauTemplateDbContext : IdentityDbContext<User, Role, Guid,
     public DbSet<PreviewToken> PreviewTokens { get; set; } = null!;
     public DbSet<SocialLink> SocialLinks { get; set; } = null!;
     public DbSet<FooterPartner> FooterPartners { get; set; } = null!;
+    public DbSet<Review> Reviews { get; set; } = null!;
     public DbSet<BackupRecord> BackupRecords { get; set; } = null!;
     public DbSet<AuditLog> AuditLogs { get; set; } = null!;
 
