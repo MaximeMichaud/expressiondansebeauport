@@ -2,7 +2,7 @@ import i18n from "@/i18n";
 import {Role} from "@/types/enums";
 import {createRouter, createWebHistory} from "vue-router";
 import type {Component} from "vue";
-import {Library, FileText, LayoutList, Palette, Activity, ArrowLeftRight, HardDriveDownload, AlertTriangle, ScrollText, UserCircle} from "lucide-vue-next";
+import {Library, FileText, LayoutList, Palette, Activity, ArrowLeftRight, HardDriveDownload, AlertTriangle, ScrollText, Tag, UserCircle} from "lucide-vue-next";
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -209,6 +209,29 @@ const mainRoutes = [
         ],
       },
       {
+        path: i18n.global.t("routes.admin.children.help.path"),
+        name: "admin.children.help",
+        component: () => import("@/views/admin/Admin.vue"),
+        children: [
+          {
+            path: "",
+            name: "admin.children.help.index",
+            component: () => import("@/views/admin/help/AdminHelpIndex.vue"),
+          },
+          {
+            path: i18n.global.t("routes.admin.children.help.add.path"),
+            name: "admin.children.help.add",
+            component: () => import("@/views/admin/help/AdminHelpEditor.vue"),
+          },
+          {
+            path: i18n.global.t("routes.admin.children.help.edit.path"),
+            name: "admin.children.help.edit",
+            component: () => import("@/views/admin/help/AdminHelpEditor.vue"),
+            props: true,
+          },
+        ],
+      },
+      {
         path: i18n.global.t("routes.admin.children.menus.path"),
         name: "admin.children.menus",
         component: () => import("@/views/admin/menus/AdminMenuIndex.vue"),
@@ -255,6 +278,12 @@ const mainRoutes = [
         name: "admin.children.auditLogs",
         component: () => import("@/views/admin/auditlogs/AdminAuditLogs.vue"),
         meta: { navIcon: ScrollText },
+      },
+      {
+        path: i18n.global.t("routes.admin.children.version.path"),
+        name: "admin.children.version",
+        component: () => import("@/views/admin/version/AdminVersion.vue"),
+        meta: { navIcon: Tag },
       },
     ]
   },

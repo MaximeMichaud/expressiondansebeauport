@@ -62,5 +62,10 @@ public class ResponseMappingProfile : Profile
 
         CreateMap<AuditLog, AuditLogDto>()
             .ForMember(x => x.CreatedAt, opt => opt.MapFrom(x => x.CreatedAt.FormatAsStringWithSeconds()));
+
+        CreateMap<HelpArticle, HelpArticleDto>()
+            .ForMember(x => x.Category, opt => opt.MapFrom(x => x.Category.ToString()))
+            .ForMember(x => x.CreatedAt, opt => opt.MapFrom(x => x.Created.ToDateTimeUtc()))
+            .ForMember(x => x.UpdatedAt, opt => opt.MapFrom(x => x.LastModified != null ? x.LastModified.Value.ToDateTimeUtc() : (DateTime?)null));
     }
 }

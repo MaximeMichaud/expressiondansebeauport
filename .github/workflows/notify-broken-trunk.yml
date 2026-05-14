@@ -1,0 +1,64 @@
+name: Notify broken trunk
+
+# Crée ou met à jour une issue quand le CI échoue sur dev ou main.
+# Le but : qu'aucune branche de tronc ne reste cassée sans qu'on s'en aperçoive.
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [dev, main]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  notify:
+    name: Ouvrir une issue si le CI a échoué
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Créer ou commenter l'issue
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const branch = context.payload.workflow_run.head_branch;
+            const sha = context.payload.workflow_run.head_sha.substring(0, 7);
+            const url = context.payload.workflow_run.html_url;
+            const title = `CI cassé sur ${branch}`;
+
+            const { data: existing } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-broken',
+              per_page: 50,
+            });
+
+            const match = existing.find(i => i.title === title);
+
+            if (match) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: match.number,
+                body: `Nouvelle occurrence sur le commit \`${sha}\`. Voir : ${url}`,
+              });
+              core.info(`Commenté l'issue existante #${match.number}`);
+            } else {
+              const { data: created } = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body: [
+                  `Le workflow CI a échoué sur la branche \`${branch}\` au commit \`${sha}\`.`,
+                  ``,
+                  `Voir le détail : ${url}`,
+                  ``,
+                  `À corriger avant les prochains merges. Cette issue se ferme manuellement quand le CI redevient vert.`,
+                ].join('\n'),
+                labels: ['ci-broken'],
+              });
+              core.info(`Issue créée : #${created.number}`);
+            }

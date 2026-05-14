@@ -60,7 +60,67 @@ updates:
     commit-message:
       prefix: "build(deps)"
       prefix-development: "build(deps-dev)"
+    # Groupes par écosystème pour limiter le blast radius : quand un bump
+    # casse le lockfile (ex. peer deps Vite/oxc), seul ce groupe est bloqué.
+    # L'ordre compte : Dependabot place un paquet dans le premier groupe
+    # qui correspond, donc les patterns spécifiques doivent venir avant les
+    # filets prod/dev catch-all.
     groups:
+      npm-vite-ecosystem:
+        patterns:
+          - "vite"
+          - "vite-*"
+          - "@vitejs/*"
+          - "@oxc-project/*"
+          - "rolldown*"
+        update-types:
+          - minor
+          - patch
+      npm-vue-ecosystem:
+        patterns:
+          - "vue"
+          - "vue-*"
+          - "@vue/*"
+          - "vue-tsc"
+          - "vue-i18n"
+          - "@unhead/*"
+          - "pinia"
+          - "pinia-*"
+        update-types:
+          - minor
+          - patch
+      npm-eslint-ecosystem:
+        patterns:
+          - "eslint"
+          - "eslint-*"
+          - "@eslint/*"
+          - "@typescript-eslint/*"
+          - "typescript-eslint"
+          - "globals"
+        update-types:
+          - minor
+          - patch
+      npm-tiptap-ecosystem:
+        patterns:
+          - "@tiptap/*"
+        update-types:
+          - minor
+          - patch
+      npm-playwright-ecosystem:
+        patterns:
+          - "@playwright/*"
+          - "playwright"
+          - "@axe-core/playwright"
+          - "lighthouse"
+        update-types:
+          - minor
+          - patch
+      npm-types:
+        patterns:
+          - "@types/*"
+        update-types:
+          - minor
+          - patch
       npm-prod-minor-patch:
         dependency-type: "production"
         update-types:

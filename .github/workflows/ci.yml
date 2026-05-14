@@ -9,6 +9,32 @@ permissions:
   contents: read
 
 jobs:
+  lockfile-sync:
+    name: Lockfile Sync
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/Web/vue-app
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Vérifier que package-lock.json est synchronisé
+        run: |
+          cp package-lock.json /tmp/lockfile-before.json
+          npm install --package-lock-only --no-audit --no-fund
+          if ! diff -q /tmp/lockfile-before.json package-lock.json > /dev/null; then
+            echo "::error::package-lock.json est désynchronisé avec package.json"
+            echo "Différences détectées :"
+            diff /tmp/lockfile-before.json package-lock.json | head -40 || true
+            echo ""
+            echo "Pour corriger : cd src/Web/vue-app && npm install"
+            exit 1
+          fi
+
   frontend:
     name: Frontend
     runs-on: ubuntu-latest

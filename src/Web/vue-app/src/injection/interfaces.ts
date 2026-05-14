@@ -7,7 +7,7 @@ import {
   ITwoFactorRequest
 } from "@/types/requests"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
-import {Administrator, AuditLog, BackupRecord, ErrorLog, FooterPartner, MediaFile, NavigationMenu, NavigationMenuItem, Page, PageRevision, PageRevisionListItem, SiteHealth, SiteSettings, SocialLink, User, Group, GroupMember, Post, Comment, Conversation, Message, Review} from "@/types/entities"
+import {Administrator, AppVersion, AuditLog, BackupRecord, ErrorLog, FooterPartner, HelpArticle, MediaFile, NavigationMenu, NavigationMenuItem, Page, PageRevision, PageRevisionListItem, SiteHealth, SiteSettings, SocialLink, User, Group, GroupMember, Post, Comment, Conversation, Message} from "@/types/entities"
 import type {PinPostResponse} from "@/services/socialService"
 export interface IApiService {
   headersWithJsonContentType(): any
@@ -233,6 +233,10 @@ export interface IContactService {
   }): Promise<SucceededOrNotResponse>
 }
 
+export interface IAppVersionService {
+  get(): Promise<AppVersion>
+}
+
 export interface IBackupService {
   getAll(): Promise<BackupRecord[]>
 
@@ -245,4 +249,22 @@ export interface IBackupService {
   restore(fileName: string): Promise<SucceededOrNotResponse>
 
   checkStatus(): Promise<boolean>
+}
+
+export interface IHelpArticleService {
+  getAll(category?: string, isPublished?: boolean): Promise<HelpArticle[]>
+
+  getById(id: string): Promise<HelpArticle | null>
+
+  getBySlug(slug: string): Promise<HelpArticle | null>
+
+  getByRoute(routeName: string): Promise<HelpArticle | null>
+
+  create(article: HelpArticle): Promise<{ succeeded: boolean; article?: HelpArticle }>
+
+  update(article: HelpArticle): Promise<{ succeeded: boolean; article?: HelpArticle }>
+
+  delete(id: string): Promise<SucceededOrNotResponse>
+
+  getPermissions(): Promise<{ canEdit: boolean }>
 }
