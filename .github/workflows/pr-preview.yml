@@ -102,7 +102,7 @@ jobs:
               },
               "template": {
                 "scale": {
-                  "minReplicas": 0,
+                  "minReplicas": 1,
                   "maxReplicas": 1
                 },
                 "containers": [
@@ -199,6 +199,25 @@ jobs:
           done
           echo "Preview health check failed"
           exit 1
+
+      - name: Collect preview diagnostics
+        if: failure()
+        run: |
+          az containerapp show \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query '{provisioningState:properties.provisioningState,runningStatus:properties.runningStatus,latestRevisionName:properties.latestRevisionName,latestReadyRevisionName:properties.latestReadyRevisionName}' \
+            -o json || true
+
+          az containerapp revision list \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            -o table || true
+
+          az containerapp logs show \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --tail 100 || true
 
       - name: Comment PR with preview URL
         uses: marocchino/sticky-pull-request-comment@v3
