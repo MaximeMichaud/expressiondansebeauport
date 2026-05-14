@@ -7,7 +7,30 @@ import {
   ITwoFactorRequest
 } from "@/types/requests"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
-import {Administrator, AuditLog, BackupRecord, ErrorLog, FooterPartner, MediaFile, NavigationMenu, NavigationMenuItem, Page, PageRevision, PageRevisionListItem, SiteHealth, SiteSettings, SocialLink, User, Group, GroupMember, Post, Comment, Conversation, Message, Review} from "@/types/entities"
+import type {
+  Administrator,
+  AuditLog,
+  BackupRecord,
+  Comment,
+  Conversation,
+  ErrorLog,
+  FooterPartner,
+  Group,
+  GroupMember,
+  MediaFile,
+  Message,
+  NavigationMenu,
+  NavigationMenuItem,
+  Page,
+  PageRevision,
+  PageRevisionListItem,
+  Post,
+  Review,
+  SiteHealth,
+  SiteSettings,
+  SocialLink,
+  User
+} from "@/types/entities"
 import type {PinPostResponse} from "@/services/socialService"
 export interface IApiService {
   headersWithJsonContentType(): any
