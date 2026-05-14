@@ -9,6 +9,7 @@ import {
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
 import type {
   Administrator,
+  AppVersion,
   AuditLog,
   BackupRecord,
   Comment,
@@ -17,6 +18,7 @@ import type {
   FooterPartner,
   Group,
   GroupMember,
+  HelpArticle,
   MediaFile,
   Message,
   NavigationMenu,
@@ -256,6 +258,10 @@ export interface IContactService {
   }): Promise<SucceededOrNotResponse>
 }
 
+export interface IAppVersionService {
+  get(): Promise<AppVersion>
+}
+
 export interface IBackupService {
   getAll(): Promise<BackupRecord[]>
 
@@ -268,4 +274,22 @@ export interface IBackupService {
   restore(fileName: string): Promise<SucceededOrNotResponse>
 
   checkStatus(): Promise<boolean>
+}
+
+export interface IHelpArticleService {
+  getAll(category?: string, isPublished?: boolean): Promise<HelpArticle[]>
+
+  getById(id: string): Promise<HelpArticle | null>
+
+  getBySlug(slug: string): Promise<HelpArticle | null>
+
+  getByRoute(routeName: string): Promise<HelpArticle | null>
+
+  create(article: HelpArticle): Promise<{ succeeded: boolean; article?: HelpArticle }>
+
+  update(article: HelpArticle): Promise<{ succeeded: boolean; article?: HelpArticle }>
+
+  delete(id: string): Promise<SucceededOrNotResponse>
+
+  getPermissions(): Promise<{ canEdit: boolean }>
 }

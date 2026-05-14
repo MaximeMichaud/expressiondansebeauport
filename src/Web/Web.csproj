@@ -20,6 +20,7 @@
 		<PackageReference Include="FastEndpoints" Version="8.1.0" />
 		<PackageReference Include="FastEndpoints.Security" Version="8.1.0" />
 		<PackageReference Include="FastEndpoints.Swagger" Version="8.1.0" />
+		<PackageReference Include="HtmlSanitizer" Version="9.0.892" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
