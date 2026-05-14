@@ -66,6 +66,10 @@ jobs:
           ACR_USER: ${{ secrets.ACR_USERNAME }}
           ACR_PASS: ${{ secrets.ACR_PASSWORD }}
           JWT_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          # Paire VAPID factice réservée aux previews PR. La production utilise VAPID_PRIVATE_KEY.
+          VAPID_SUBJECT: "mailto:preview@example.invalid"
+          VAPID_PUBLIC_KEY: "BDO1sFs8EAVm_dB8B7Mw1KQsEzPHYIURL6vEBdaGV3DCslbhhXukENqIsrNlLsL5KVPhXGqpVGNzqm5xcP4AXPg"
+          VAPID_PRIVATE_KEY: "67n9w--U7JzjF4e758itien7NsV8oLuGg0WSxtKwOmk"
         run: |
           APP="${{ env.CONTAINER_APP_NAME }}"
           RG="${{ env.RESOURCE_GROUP }}"
@@ -117,7 +121,10 @@ jobs:
                       { "name": "Application__RedirectUrl", "value": "https://${PREVIEW_FQDN}" },
                       { "name": "Cookies__Domain", "value": "${PREVIEW_FQDN}" },
                       { "name": "Cookies__Secure", "value": "true" },
-                      { "name": "SendGrid__ApiKey", "value": "SG.preview-placeholder" }
+                      { "name": "SendGrid__ApiKey", "value": "SG.preview-placeholder" },
+                      { "name": "Vapid__Subject", "value": "${VAPID_SUBJECT}" },
+                      { "name": "Vapid__PublicKey", "value": "${VAPID_PUBLIC_KEY}" },
+                      { "name": "Vapid__PrivateKey", "value": "${VAPID_PRIVATE_KEY}" }
                     ]
                   },
                   {
@@ -173,6 +180,25 @@ jobs:
             exit 1
           fi
           echo "url=https://${FQDN}" >> "$GITHUB_OUTPUT"
+
+      - name: Smoke test preview
+        run: |
+          URL="${{ steps.preview-url.outputs.url }}/api/health"
+          for i in $(seq 1 30); do
+            CODE=$(curl -sS -o /tmp/preview-health.txt -w "%{http_code}" --max-time 20 "$URL" || true)
+            echo "Health status: ${CODE} (attempt ${i}/30)"
+            if [ "$CODE" = "200" ]; then
+              cat /tmp/preview-health.txt
+              exit 0
+            fi
+            if [ -s /tmp/preview-health.txt ]; then
+              head -c 500 /tmp/preview-health.txt || true
+              echo
+            fi
+            sleep 10
+          done
+          echo "Preview health check failed"
+          exit 1
 
       - name: Comment PR with preview URL
         uses: marocchino/sticky-pull-request-comment@v3
