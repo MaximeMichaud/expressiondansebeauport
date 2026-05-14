@@ -1584,31 +1584,7 @@ public class GarneauTemplateDbContextInitializer
 
         await _context.SaveChangesAsync();
 
-        await SeedReviews(settings);
         await SeedFooterPartners(settings);
-    }
-
-    private async Task SeedReviews(SiteSettings settings)
-    {
-        var existingReviews = await _context.Reviews
-            .Where(r => r.SiteSettingsId == settings.Id)
-            .OrderBy(r => r.SortOrder)
-            .ToListAsync();
-
-        if (existingReviews.Count > 0)
-            return;
-
-        var seededReviews = new[]
-        {
-            new Review(settings.Id, "Une ambiance qui met en confiance", "Ma fille a trouvé sa place dès le premier cours. L’équipe est chaleureuse, structurée et très attentive aux enfants.", "Sophie, parent", 5, 0),
-            new Review(settings.Id, "Des cours dynamiques et bien encadrés", "On sent une vraie passion dans l’enseignement. Les explications sont claires et les jeunes progressent rapidement.", "Karine, parent", 5, 1),
-            new Review(settings.Id, "Un milieu positif pour évoluer", "Les professeurs encouragent vraiment chaque danseur. C’est motivant, bienveillant et toujours professionnel.", "Mélanie, élève adulte", 5, 2),
-            new Review(settings.Id, "Organisation rassurante", "L’accueil, les communications et le suivi sont constants. Comme parent, c’est exactement le genre d’encadrement qu’on recherche.", "David, parent", 4, 3),
-            new Review(settings.Id, "Des spectacles mémorables", "Chaque fin de session est préparée avec soin. On voit le travail derrière chaque chorégraphie et les enfants sont très fiers.", "Julie, parent", 5, 4),
-        };
-
-        _context.Reviews.AddRange(seededReviews);
-        await _context.SaveChangesAsync();
     }
 
     private static readonly (string FileName, string ContentType, string AltText)[] SeedFooterPartnerAssets =
