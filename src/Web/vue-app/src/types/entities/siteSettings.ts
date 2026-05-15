@@ -1,5 +1,6 @@
 import type { SocialLink } from "./socialLink"
 import type { FooterPartner } from "./footerPartner"
+import type { Review } from "./review"
 
 export class SiteSettings {
   id?: string
@@ -28,6 +29,10 @@ export class SiteSettings {
   isBannerEnabled?: boolean
   bannerText?: string
   bannerUrl?: string
+  reviewsSectionEyebrow?: string
+  reviewsSectionTitle?: string
+  reviewsSectionSubtitle?: string
   socialLinks?: SocialLink[]
   footerPartners?: FooterPartner[]
+  reviews?: Review[]
 }
