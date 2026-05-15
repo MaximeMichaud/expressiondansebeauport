@@ -1567,6 +1567,13 @@ public class GarneauTemplateDbContextInitializer
             settings.SetBannerUrl("/actualites");
         }
 
+        if (string.IsNullOrWhiteSpace(settings.ReviewsSectionEyebrow))
+            settings.SetReviewsSectionEyebrow("Avis de notre communauté");
+        if (string.IsNullOrWhiteSpace(settings.ReviewsSectionTitle))
+            settings.SetReviewsSectionTitle("Ce que les familles disent de nous");
+        if (string.IsNullOrWhiteSpace(settings.ReviewsSectionSubtitle))
+            settings.SetReviewsSectionSubtitle("Quelques témoignages gérés par l’équipe du site pour refléter l’expérience vécue à l’école.");
+
         if (created)
             await _context.SaveChangesAsync();
 

@@ -20,6 +20,7 @@ public class SiteSettingsRepository : ISiteSettingsRepository
             .Include(s => s.LogoMediaFile)
             .Include(s => s.FaviconMediaFile)
             .Include(s => s.SocialLinks.OrderBy(sl => sl.SortOrder))
+            .Include(s => s.Reviews.OrderBy(r => r.SortOrder))
             .Include(s => s.FooterPartners.OrderBy(fp => fp.SortOrder))
                 .ThenInclude(fp => fp.MediaFile)
             .FirstOrDefaultAsync();

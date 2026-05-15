@@ -31,11 +31,15 @@ public class SiteSettings : Entity
     public bool IsBannerEnabled { get; private set; } = false;
     public string BannerText { get; private set; } = "Actualités du moment";
     public string BannerUrl { get; private set; } = "/actualites";
+    public string ReviewsSectionEyebrow { get; private set; } = "Avis de notre communauté";
+    public string ReviewsSectionTitle { get; private set; } = "Ce que les familles disent de nous";
+    public string ReviewsSectionSubtitle { get; private set; } = "Quelques témoignages gérés par l’équipe du site pour refléter l’expérience vécue à l’école.";
 
     public MediaFile? LogoMediaFile { get; private set; }
     public MediaFile? FaviconMediaFile { get; private set; }
     public ICollection<SocialLink> SocialLinks { get; private set; } = new List<SocialLink>();
     public ICollection<FooterPartner> FooterPartners { get; private set; } = new List<FooterPartner>();
+    public ICollection<Review> Reviews { get; private set; } = new List<Review>();
 
     public SiteSettings() { }
 
@@ -73,6 +77,9 @@ public class SiteSettings : Entity
     public void SetBannerEnabled(bool isEnabled) => IsBannerEnabled = isEnabled;
     public void SetBannerText(string text) => BannerText = text;
     public void SetBannerUrl(string url) => BannerUrl = url;
+    public void SetReviewsSectionEyebrow(string text) => ReviewsSectionEyebrow = text;
+    public void SetReviewsSectionTitle(string text) => ReviewsSectionTitle = text;
+    public void SetReviewsSectionSubtitle(string text) => ReviewsSectionSubtitle = text;
 
     private static void ValidateHexColor(string color)
     {

@@ -7,7 +7,32 @@ import {
   ITwoFactorRequest
 } from "@/types/requests"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
-import {Administrator, AppVersion, AuditLog, BackupRecord, ErrorLog, FooterPartner, HelpArticle, MediaFile, NavigationMenu, NavigationMenuItem, Page, PageRevision, PageRevisionListItem, SiteHealth, SiteSettings, SocialLink, User, Group, GroupMember, Post, Comment, Conversation, Message} from "@/types/entities"
+import type {
+  Administrator,
+  AppVersion,
+  AuditLog,
+  BackupRecord,
+  Comment,
+  Conversation,
+  ErrorLog,
+  FooterPartner,
+  Group,
+  GroupMember,
+  HelpArticle,
+  MediaFile,
+  Message,
+  NavigationMenu,
+  NavigationMenuItem,
+  Page,
+  PageRevision,
+  PageRevisionListItem,
+  Post,
+  Review,
+  SiteHealth,
+  SiteSettings,
+  SocialLink,
+  User
+} from "@/types/entities"
 import type {PinPostResponse} from "@/services/socialService"
 export interface IApiService {
   headersWithJsonContentType(): any
@@ -115,6 +140,12 @@ export interface ISiteSettingsService {
   updateFooterPartner(partner: FooterPartner): Promise<SucceededOrNotResponse>
 
   deleteFooterPartner(id: string): Promise<SucceededOrNotResponse>
+
+  addReview(review: Review): Promise<Review | null>
+
+  updateReview(review: Review): Promise<SucceededOrNotResponse>
+
+  deleteReview(id: string): Promise<SucceededOrNotResponse>
 }
 
 export interface ISiteHealthService {

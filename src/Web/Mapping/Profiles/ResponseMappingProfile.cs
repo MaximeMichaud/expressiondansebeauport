@@ -58,6 +58,8 @@ public class ResponseMappingProfile : Profile
         CreateMap<FooterPartner, FooterPartnerDto>()
             .ForMember(x => x.MediaUrl, opt => opt.MapFrom(x => x.MediaFile != null ? x.MediaFile.BlobUrl : null));
 
+        CreateMap<Review, ReviewDto>();
+
         CreateMap<AuditLog, AuditLogDto>()
             .ForMember(x => x.CreatedAt, opt => opt.MapFrom(x => x.CreatedAt.FormatAsStringWithSeconds()));
 

@@ -538,6 +538,30 @@
       "selectPlatform": "Sélectionner un réseau",
       "partners": "Logos partenaires",
       "noPartners": "Aucun logo partenaire.",
+      "reviews": {
+        "title": "Avis clients",
+        "description": "Gérez les témoignages affichés sur la page d’accueil. Ces avis sont internes au site et administrés ici.",
+        "empty": "Aucun avis configuré.",
+        "newReview": "Ajouter un avis",
+        "saved": "Avis enregistré.",
+        "fields": {
+          "sectionEyebrow": "Surtitre de la section",
+          "sectionTitle": "Titre de la section",
+          "sectionSubtitle": "Texte d’introduction",
+          "title": "Titre",
+          "comment": "Commentaire",
+          "author": "Auteur",
+          "rating": "Note"
+        },
+        "placeholders": {
+          "sectionEyebrow": "Avis de notre communauté",
+          "sectionTitle": "Ce que les familles disent de nous",
+          "sectionSubtitle": "Quelques témoignages gérés par l’équipe du site pour refléter l’expérience vécue à l’école.",
+          "title": "Titre de la carte",
+          "comment": "Commentaire de l’avis",
+          "author": "Nom de l’auteur et rôle"
+        }
+      },
       "selectImage": "Sélectionner une image",
       "placeholderTagline": "L'art du mouvement, le cœur du quartier",
       "placeholderFooterDescription": "École de danse offrant des cours pour tous les âges...",
@@ -784,7 +808,18 @@
     "home": {
       "eyebrow": "École de danse — Beauport, Québec",
       "subtitle": "Quand le talent et la passion riment avec le plaisir !",
-      "cta": "S'inscrire maintenant"
+      "cta": "S'inscrire maintenant",
+      "reviews": {
+        "eyebrow": "Avis de notre communauté",
+        "title": "Ce que les familles disent de nous",
+        "subtitle": "Quelques témoignages gérés par l’équipe du site pour refléter l’expérience vécue à l’école.",
+        "empty": "Aucun avis n’est disponible pour le moment.",
+        "error": "Impossible de charger les avis pour le moment.",
+        "previous": "Voir les avis précédents",
+        "next": "Voir les avis suivants",
+        "carouselAriaLabel": "Carrousel d’avis clients",
+        "ratingAriaLabel": "{rating} étoiles sur 5"
+      }
     },
     "nav": {
       "school": "Notre école",

@@ -28,8 +28,12 @@ public class SiteSettingsDto
     public bool IsBannerEnabled { get; set; }
     public string BannerText { get; set; } = null!;
     public string BannerUrl { get; set; } = null!;
+    public string ReviewsSectionEyebrow { get; set; } = null!;
+    public string ReviewsSectionTitle { get; set; } = null!;
+    public string ReviewsSectionSubtitle { get; set; } = null!;
     public List<SocialLinkDto> SocialLinks { get; set; } = [];
     public List<FooterPartnerDto> FooterPartners { get; set; } = [];
+    public List<ReviewDto> Reviews { get; set; } = [];
 }
 
 public class SocialLinkDto
@@ -47,5 +51,15 @@ public class FooterPartnerDto
     public string? MediaUrl { get; set; }
     public string AltText { get; set; } = null!;
     public string? Url { get; set; }
+    public int SortOrder { get; set; }
+}
+
+public class ReviewDto
+{
+    public Guid Id { get; set; }
+    public string Title { get; set; } = null!;
+    public string Comment { get; set; } = null!;
+    public string Author { get; set; } = null!;
+    public int Rating { get; set; }
     public int SortOrder { get; set; }
 }
