@@ -48,34 +48,8 @@ const notFoundBreadcrumbs = computed<BreadcrumbItem[]>(() => [
   { label: t('public.page.notFound'), isCurrent: true }
 ])
 
-const breadcrumbStructuredData = computed(() => {
-  const items = (page.value?.breadcrumbs ?? []).filter(isStructuredBreadcrumb)
-  if (items.length <= 1)
-    return null
-
-  return JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: items.map((item, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      item: {
-        "@id": item.absoluteUrl,
-        name: item.label
-      }
-    }))
-  })
-})
-
 useHead(computed(() => ({
-  title: pageTitle.value,
-  script: breadcrumbStructuredData.value
-    ? [{
-      id: "breadcrumb-json-ld",
-      type: "application/ld+json",
-      textContent: breadcrumbStructuredData.value
-    }]
-    : []
+  title: pageTitle.value
 })))
 
 const parsedBlocks = computed<PageBlock[]>(() => {
@@ -94,10 +68,6 @@ async function loadPage(slug: string) {
     pageTitle.value = ''
   }
   isLoading.value = false
-}
-
-function isStructuredBreadcrumb(item: BreadcrumbItem): item is BreadcrumbItem & { label: string; absoluteUrl: string } {
-  return !!item.label && !!item.absoluteUrl && item.absoluteUrl.startsWith('http')
 }
 
 watch(() => route.params.slug, (newSlug) => {
