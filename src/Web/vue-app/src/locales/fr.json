@@ -151,7 +151,7 @@
       }
     },
     "login": {
-      "username": "Nom d'utilisateur",
+      "username": "Adresse courriel",
       "password": "Mot de passe",
       "passwordPlaceholder": "Votre mot de passe",
       "passwordConfirmation": "Confirmation du mot de passe",
@@ -621,7 +621,7 @@
     "title": "Titre",
     "date": "Date",
     "at": "à",
-    "username": "Nom d'utilisateur",
+    "username": "Adresse courriel",
     "password": "Mot de passe",
     "passwordConfirmation": "Confirmation du mot de passe",
     "submit": "Soumettre",
