@@ -12,7 +12,7 @@ public class UserBuilder
     private string? PhoneNumber { get; set; }
     private Instant? Deleted { get; set; }
     private string? DeletedBy { get; set; }
-    private IList<Role> Roles { get; set; } = new List<Role>();
+    private List<Role> Roles { get; set; } = new List<Role>();
 
     public UserBuilder WithId(Guid id)
     {
