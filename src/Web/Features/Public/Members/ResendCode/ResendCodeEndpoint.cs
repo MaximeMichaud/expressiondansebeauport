@@ -46,11 +46,13 @@ public class ResendCodeEndpoint : Endpoint<ResendCodeRequest, SucceededOrNotResp
         var code = await _confirmationService.ResendCode(user.Id);
         try
         {
-            await _notificationService.SendConfirmationCodeNotification(user, code);
+            var sendResult = await _notificationService.SendConfirmationCodeNotification(user, code);
+            if (!sendResult.Succeeded)
+                _logger.LogError("SendGrid rejected confirmation email for {Email}: {@Errors}", req.Email, sendResult.Errors);
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to resend confirmation email to {Email}.", req.Email);
+            _logger.LogError(ex, "Failed to resend confirmation email to {Email}.", req.Email);
         }
 
         await Send.OkAsync(new SucceededOrNotResponse(true), ct);

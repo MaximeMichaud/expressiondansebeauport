@@ -39,11 +39,13 @@ public class RegisterEndpoint : EndpointWithSanitizedRequest<RegisterRequest, Su
 
             try
             {
-                await _notificationService.SendConfirmationCodeNotification(member.User, code);
+                var sendResult = await _notificationService.SendConfirmationCodeNotification(member.User, code);
+                if (!sendResult.Succeeded)
+                    _logger.LogError("SendGrid rejected confirmation email for {Email}: {@Errors}", req.Email, sendResult.Errors);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to send confirmation email to {Email}.", req.Email);
+                _logger.LogError(ex, "Failed to send confirmation email to {Email}.", req.Email);
             }
 
             await Send.OkAsync(new SucceededOrNotResponse(true), ct);
