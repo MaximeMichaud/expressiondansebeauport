@@ -21,7 +21,6 @@ public class GetPublicSiteSettingsEndpoint : EndpointWithoutRequest<SiteSettings
         DontCatchExceptions();
         Get("public/site-settings");
         AllowAnonymous();
-        Options(x => x.CacheOutput(p => p.Expire(TimeSpan.FromHours(1))));
     }
 
     public override async Task HandleAsync(CancellationToken ct)

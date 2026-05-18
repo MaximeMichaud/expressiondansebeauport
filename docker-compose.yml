@@ -38,6 +38,7 @@ services:
       Application__RedirectUrl: "http://localhost:8080"
       Cookies__Domain: "localhost"
       Cookies__Secure: "false"
+      HelpArticles__EditingEnabled: "true"
     depends_on:
       db:
         condition: service_healthy

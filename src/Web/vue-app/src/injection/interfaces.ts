@@ -7,7 +7,32 @@ import {
   ITwoFactorRequest
 } from "@/types/requests"
 import {PaginatedResponse, SucceededOrNotResponse} from "@/types/responses"
-import {Administrator, AppVersion, AuditLog, BackupRecord, ErrorLog, FooterPartner, MediaFile, NavigationMenu, NavigationMenuItem, Page, PageRevision, PageRevisionListItem, SiteHealth, SiteSettings, SocialLink, User, Group, GroupMember, Post, Comment, Conversation, Message} from "@/types/entities"
+import type {
+  Administrator,
+  AppVersion,
+  AuditLog,
+  BackupRecord,
+  Comment,
+  Conversation,
+  ErrorLog,
+  FooterPartner,
+  Group,
+  GroupMember,
+  HelpArticle,
+  MediaFile,
+  Message,
+  NavigationMenu,
+  NavigationMenuItem,
+  Page,
+  PageRevision,
+  PageRevisionListItem,
+  Post,
+  Review,
+  SiteHealth,
+  SiteSettings,
+  SocialLink,
+  User
+} from "@/types/entities"
 import type {PinPostResponse} from "@/services/socialService"
 export interface IApiService {
   headersWithJsonContentType(): any
@@ -115,6 +140,12 @@ export interface ISiteSettingsService {
   updateFooterPartner(partner: FooterPartner): Promise<SucceededOrNotResponse>
 
   deleteFooterPartner(id: string): Promise<SucceededOrNotResponse>
+
+  addReview(review: Review): Promise<Review | null>
+
+  updateReview(review: Review): Promise<SucceededOrNotResponse>
+
+  deleteReview(id: string): Promise<SucceededOrNotResponse>
 }
 
 export interface ISiteHealthService {
@@ -243,4 +274,22 @@ export interface IBackupService {
   restore(fileName: string): Promise<SucceededOrNotResponse>
 
   checkStatus(): Promise<boolean>
+}
+
+export interface IHelpArticleService {
+  getAll(category?: string, isPublished?: boolean): Promise<HelpArticle[]>
+
+  getById(id: string): Promise<HelpArticle | null>
+
+  getBySlug(slug: string): Promise<HelpArticle | null>
+
+  getByRoute(routeName: string): Promise<HelpArticle | null>
+
+  create(article: HelpArticle): Promise<{ succeeded: boolean; article?: HelpArticle }>
+
+  update(article: HelpArticle): Promise<{ succeeded: boolean; article?: HelpArticle }>
+
+  delete(id: string): Promise<SucceededOrNotResponse>
+
+  getPermissions(): Promise<{ canEdit: boolean }>
 }

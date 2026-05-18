@@ -65,6 +65,54 @@ namespace Persistence.Migrations
                     b.ToTable("Administrators");
                 });
 
+            modelBuilder.Entity("Domain.Entities.AuditLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ActionType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Instant>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Details")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<Guid?>("EntityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("UserDisplayName")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("UserEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActionType");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AuditLogs");
+                });
+
             modelBuilder.Entity("Domain.Entities.Authentication.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -134,54 +182,6 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BackupRecords", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.AuditLog", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ActionType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<Instant>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Details")
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<Guid?>("EntityId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("EntityType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("UserDisplayName")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("UserEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActionType");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AuditLogs");
                 });
 
             modelBuilder.Entity("Domain.Entities.Comment", b =>
@@ -436,6 +436,76 @@ namespace Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("GroupMembers");
+                });
+
+            modelBuilder.Entity("Domain.Entities.HelpArticle", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ContentMode")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasDefaultValue("html");
+
+                    b.Property<Instant>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Instant?>("Deleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("boolean");
+
+                    b.Property<Instant?>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RouteHint")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RouteHint");
+
+                    b.HasIndex("Slug")
+                        .IsUnique()
+                        .HasFilter("\"Deleted\" IS NULL");
+
+                    b.ToTable("HelpArticles");
                 });
 
             modelBuilder.Entity("Domain.Entities.Identity.Role", b =>
@@ -1362,6 +1432,43 @@ namespace Persistence.Migrations
                     b.ToTable("PushSubscriptions", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(600)
+                        .HasColumnType("character varying(600)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("SiteSettingsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SiteSettingsId");
+
+                    b.ToTable("Reviews");
+                });
+
             modelBuilder.Entity("Domain.Entities.SiteSettings", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1372,6 +1479,7 @@ namespace Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(90);
+
                     b.Property<string>("BannerText")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -1460,6 +1568,27 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)");
+
+                    b.Property<string>("ReviewsSectionEyebrow")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasDefaultValue("Avis de notre communauté");
+
+                    b.Property<string>("ReviewsSectionSubtitle")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)")
+                        .HasDefaultValue("Quelques témoignages gérés par l’équipe du site pour refléter l’expérience vécue à l’école.");
+
+                    b.Property<string>("ReviewsSectionTitle")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(140)
+                        .HasColumnType("character varying(140)")
+                        .HasDefaultValue("Ce que les familles disent de nous");
 
                     b.Property<string>("SecondaryColor")
                         .HasMaxLength(7)
@@ -2080,6 +2209,17 @@ namespace Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Review", b =>
+                {
+                    b.HasOne("Domain.Entities.SiteSettings", "SiteSettings")
+                        .WithMany("Reviews")
+                        .HasForeignKey("SiteSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SiteSettings");
+                });
+
             modelBuilder.Entity("Domain.Entities.SiteSettings", b =>
                 {
                     b.HasOne("Domain.Entities.MediaFile", "FaviconMediaFile")
@@ -2235,6 +2375,8 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.SiteSettings", b =>
                 {
                     b.Navigation("FooterPartners");
+
+                    b.Navigation("Reviews");
 
                     b.Navigation("SocialLinks");
                 });

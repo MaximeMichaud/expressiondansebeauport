@@ -107,6 +107,75 @@
         </div>
       </div>
 
+      <div class="customizer__panel">
+        <h2>{{ t('pages.customizer.reviews.title') }}</h2>
+        <p class="customizer__description">{{ t('pages.customizer.reviews.description') }}</p>
+
+        <div class="form-group">
+          <label>{{ t('pages.customizer.reviews.fields.sectionEyebrow') }}</label>
+          <input v-model="settings.reviewsSectionEyebrow" type="text" class="form-input" :placeholder="t('pages.customizer.reviews.placeholders.sectionEyebrow')" />
+        </div>
+        <div class="form-group">
+          <label>{{ t('pages.customizer.reviews.fields.sectionTitle') }}</label>
+          <input v-model="settings.reviewsSectionTitle" type="text" class="form-input" :placeholder="t('pages.customizer.reviews.placeholders.sectionTitle')" />
+        </div>
+        <div class="form-group">
+          <label>{{ t('pages.customizer.reviews.fields.sectionSubtitle') }}</label>
+          <textarea v-model="settings.reviewsSectionSubtitle" class="form-input" rows="3" :placeholder="t('pages.customizer.reviews.placeholders.sectionSubtitle')" />
+        </div>
+
+        <div v-if="reviews.length" class="review-list">
+          <div v-for="review in reviews" :key="review.id" class="review-card">
+            <div class="form-group">
+              <label>{{ t('pages.customizer.reviews.fields.title') }}</label>
+              <input v-model="review.title" type="text" class="form-input" :placeholder="t('pages.customizer.reviews.placeholders.title')" />
+            </div>
+            <div class="form-group">
+              <label>{{ t('pages.customizer.reviews.fields.comment') }}</label>
+              <textarea v-model="review.comment" class="form-input" rows="3" :placeholder="t('pages.customizer.reviews.placeholders.comment')" />
+            </div>
+            <div class="review-card__grid">
+              <div class="form-group">
+                <label>{{ t('pages.customizer.reviews.fields.author') }}</label>
+                <input v-model="review.author" type="text" class="form-input" :placeholder="t('pages.customizer.reviews.placeholders.author')" />
+              </div>
+              <div class="form-group">
+                <label>{{ t('pages.customizer.reviews.fields.rating') }}</label>
+                <select v-model.number="review.rating" class="form-input">
+                  <option v-for="rating in [5, 4, 3, 2, 1]" :key="rating" :value="rating">{{ rating }}/5</option>
+                </select>
+              </div>
+            </div>
+            <div class="review-card__actions">
+              <button class="btn btn--small" @click="saveReview(review)">{{ t('global.save') }}</button>
+              <button class="btn btn--small btn--danger" @click="removeReview(review)">{{ t('global.delete') }}</button>
+            </div>
+          </div>
+        </div>
+        <p v-else class="collection-empty">{{ t('pages.customizer.reviews.empty') }}</p>
+
+        <div class="review-card review-card--new">
+          <div class="form-group">
+            <label>{{ t('pages.customizer.reviews.newReview') }}</label>
+            <input v-model="newReview.title" type="text" class="form-input" :placeholder="t('pages.customizer.reviews.placeholders.title')" />
+          </div>
+          <div class="form-group">
+            <textarea v-model="newReview.comment" class="form-input" rows="3" :placeholder="t('pages.customizer.reviews.placeholders.comment')" />
+          </div>
+          <div class="review-card__grid">
+            <div class="form-group">
+              <input v-model="newReview.author" type="text" class="form-input" :placeholder="t('pages.customizer.reviews.placeholders.author')" />
+            </div>
+            <div class="form-group">
+              <select v-model.number="newReview.rating" class="form-input">
+                <option v-for="rating in [5, 4, 3, 2, 1]" :key="rating" :value="rating">{{ rating }}/5</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn--small" :disabled="!canAddReview" @click="addReview">{{ t('global.add') }}</button>
+        </div>
+      </div>
+
       <div class="customizer__panel customizer__panel--banner">
         <h2>{{ t('pages.customizer.banner.title') }}</h2>
         <p class="customizer__description">{{ t('pages.customizer.banner.description') }}</p>
@@ -162,7 +231,7 @@
 import {useI18n} from "vue-i18n"
 import {computed, onMounted, ref} from "vue"
 import {useMediaService, useSiteSettingsService} from "@/serviceRegistry"
-import {FooterPartner, MediaFile, SiteSettings, SocialLink} from "@/types/entities"
+import {FooterPartner, MediaFile, Review, SiteSettings, SocialLink} from "@/types/entities"
 import Loader from "@/components/layouts/items/Loader.vue"
 import {applyThemeSettings} from "@/theme"
 import {notifyError, notifySuccess} from "@/notify"
@@ -178,6 +247,7 @@ const isSaving = ref(false)
 const settings = ref<SiteSettings>(new SiteSettings())
 const socialLinks = ref<SocialLink[]>([])
 const footerPartners = ref<FooterPartner[]>([])
+const reviews = ref<Review[]>([])
 const allMedia = ref<MediaFile[]>([])
 
 const newSocialPlatform = ref("")
@@ -185,6 +255,7 @@ const newSocialUrl = ref("")
 const newPartnerMediaFileId = ref("")
 const newPartnerAltText = ref("")
 const newPartnerUrl = ref("")
+const newReview = ref<Review>(buildEmptyReview())
 
 const availablePlatforms = computed(() => {
   const used = new Set(socialLinks.value.map(l => l.platform?.toLowerCase()))
@@ -193,6 +264,13 @@ const availablePlatforms = computed(() => {
 
 const availableImages = computed(() =>
   allMedia.value.filter(m => m.contentType?.startsWith("image/"))
+)
+
+const canAddReview = computed(() =>
+  !!newReview.value.title?.trim() &&
+  !!newReview.value.comment?.trim() &&
+  !!newReview.value.author?.trim() &&
+  (newReview.value.rating ?? 0) >= 1
 )
 
 onMounted(async () => {
@@ -205,6 +283,7 @@ onMounted(async () => {
     settings.value = settingsData
     socialLinks.value = settingsData.socialLinks || []
     footerPartners.value = settingsData.footerPartners || []
+    reviews.value = settingsData.reviews || []
     allMedia.value = imageMedia
   } catch {
     notifyError(t('pages.customizer.update.validation.failedMessage'))
@@ -289,6 +368,45 @@ async function removePartner(partner: FooterPartner) {
     footerPartners.value = footerPartners.value.filter(p => p.id !== partner.id)
   } else {
     notifyError(t('pages.customizer.update.validation.failedMessage'))
+  }
+}
+
+async function addReview() {
+  if (!canAddReview.value) return
+  const created = await settingsService.addReview(newReview.value)
+  if (created) {
+    reviews.value.push(created)
+    newReview.value = buildEmptyReview()
+  } else {
+    notifyError(t('pages.customizer.update.validation.failedMessage'))
+  }
+}
+
+async function saveReview(review: Review) {
+  const response = await settingsService.updateReview(review)
+  if (response.succeeded) {
+    notifySuccess(t('pages.customizer.reviews.saved'))
+  } else {
+    notifyError(t('pages.customizer.update.validation.failedMessage'))
+  }
+}
+
+async function removeReview(review: Review) {
+  if (!review.id) return
+  const response = await settingsService.deleteReview(review.id)
+  if (response.succeeded) {
+    reviews.value = reviews.value.filter(r => r.id !== review.id)
+  } else {
+    notifyError(t('pages.customizer.update.validation.failedMessage'))
+  }
+}
+
+function buildEmptyReview(): Review {
+  return {
+    title: "",
+    comment: "",
+    author: "",
+    rating: 5,
   }
 }
 </script>
@@ -425,9 +543,42 @@ async function removePartner(partner: FooterPartner) {
   gap: 0.5rem;
 }
 
+.review-list {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.review-card {
+  padding: 1rem;
+  border: 1px solid var(--color-gray-200, #e5e7eb);
+  border-radius: 0.75rem;
+  background: #fafafa;
+}
+
+.review-card__grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 0.75rem;
+}
+
+.review-card__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.review-card--new {
+  border-style: dashed;
+}
+
 .btn--small {
   font-size: 0.8125rem;
   padding: 0.375rem 0.75rem;
+}
+
+.btn--danger {
+  background: #be1e2c;
+  color: #fff;
 }
 
 .customizer__panel--banner {
@@ -505,6 +656,10 @@ async function removePartner(partner: FooterPartner) {
 
   .customizer__actions {
     grid-column: span 1;
+  }
+
+  .review-card__grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>
