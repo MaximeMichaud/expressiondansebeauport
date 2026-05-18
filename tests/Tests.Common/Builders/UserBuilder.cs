@@ -1,5 +1,4 @@
 ﻿using Domain.Entities.Identity;
-using FluentEmail.Core;
 using NodaTime;
 
 namespace Tests.Common.Builders;
