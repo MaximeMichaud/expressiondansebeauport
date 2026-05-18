@@ -25,9 +25,9 @@ jobs:
           script: |
             set -e
             cd /opt/expressiondansebeauport
-            git fetch --tags origin main
+            git fetch --tags --force origin main
             git reset --hard origin/main
-            APP_VERSION=$(git describe --tags --abbrev=0 2>/dev/null) || APP_VERSION=""
+            APP_VERSION=$(git describe --tags --abbrev=0 --match 'v[0-9]*' 2>/dev/null) || APP_VERSION=""
             APP_VERSION="${APP_VERSION#v}"
             export APP_VERSION="${APP_VERSION:-0.0.0}"
             docker compose -f docker-compose.prod.yml --env-file .env.prod build
