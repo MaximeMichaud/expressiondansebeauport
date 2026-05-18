@@ -22,6 +22,7 @@ L'application comprend un CMS sur mesure pour gérer le site public (pages, menu
 
 ### Panneau d'administration
 - Gestion des pages CMS (créer, modifier, dupliquer, supprimer)
+- Centre d'aide intégré pour accompagner les administrateurs dans le CMS
 - Bibliothèque de médias (images, documents, vidéos)
 - Éditeur de menus avec drag-and-drop
 - Personnalisation du site (couleurs, polices, logo, favicon, informations de contact)
@@ -163,7 +164,8 @@ Voir [CONTRIBUTING.md](./CONTRIBUTING.md) pour la stratégie de branches et la c
 
 Ajouter au fichier `.env` du serveur de prod :
 
-- `VAPID_PRIVATE_KEY` — clé privée VAPID pour les notifications push (générée une fois, jamais committée)
+- `VAPID_PRIVATE_KEY` : clé privée VAPID pour les notifications push (générée une fois, jamais committée)
+- `HelpArticles__EditingEnabled` : `false` par défaut en production. Mettre à `true` seulement sur un environnement où les articles d'aide doivent être modifiés.
 
 ## LICENCE
 

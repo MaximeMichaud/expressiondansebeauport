@@ -3,7 +3,7 @@ import {AxiosError, AxiosResponse} from "axios"
 import {ApiService} from "@/services/apiService"
 import {ISiteSettingsService} from "@/injection/interfaces"
 import {SucceededOrNotResponse} from "@/types/responses"
-import {FooterPartner, SiteSettings, SocialLink} from "@/types/entities"
+import {FooterPartner, Review, SiteSettings, SocialLink} from "@/types/entities"
 
 export class SiteSettingsService extends ApiService implements ISiteSettingsService {
   public async get(): Promise<SiteSettings> {
@@ -77,6 +77,27 @@ export class SiteSettingsService extends ApiService implements ISiteSettingsServ
   public async deleteFooterPartner(id: string): Promise<SucceededOrNotResponse> {
     const response = await this._httpClient
       .delete<any, AxiosResponse<any>>(`${import.meta.env.VITE_API_BASE_URL}/admin/site-settings/partners/${id}`)
+      .catch(function (error: AxiosError): AxiosResponse<any> { return error.response as AxiosResponse<any> })
+    return new SucceededOrNotResponse(response.status >= 200 && response.status < 300)
+  }
+
+  public async addReview(review: Review): Promise<Review | null> {
+    const response = await this._httpClient
+      .post<any, AxiosResponse<Review>>(`${import.meta.env.VITE_API_BASE_URL}/admin/site-settings/reviews`, review, this.headersWithJsonContentType())
+      .catch(function (error: AxiosError): AxiosResponse<Review> { return error.response as AxiosResponse<Review> })
+    return response.status >= 200 && response.status < 300 ? response.data : null
+  }
+
+  public async updateReview(review: Review): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient
+      .patch<any, AxiosResponse<Review>>(`${import.meta.env.VITE_API_BASE_URL}/admin/site-settings/reviews/${review.id}`, review, this.headersWithJsonContentType())
+      .catch(function (error: AxiosError): AxiosResponse<Review> { return error.response as AxiosResponse<Review> })
+    return new SucceededOrNotResponse(response.status >= 200 && response.status < 300)
+  }
+
+  public async deleteReview(id: string): Promise<SucceededOrNotResponse> {
+    const response = await this._httpClient
+      .delete<any, AxiosResponse<any>>(`${import.meta.env.VITE_API_BASE_URL}/admin/site-settings/reviews/${id}`)
       .catch(function (error: AxiosError): AxiosResponse<any> { return error.response as AxiosResponse<any> })
     return new SucceededOrNotResponse(response.status >= 200 && response.status < 300)
   }

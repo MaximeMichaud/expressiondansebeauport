@@ -64,6 +64,21 @@
             "name": "Modifier une page"
           }
         },
+        "help": {
+          "path": "aide",
+          "fullPath": "/admin/aide",
+          "name": "Aide",
+          "add": {
+            "path": "ajouter",
+            "fullPath": "/admin/aide/ajouter",
+            "name": "Ajouter un article d'aide"
+          },
+          "edit": {
+            "path": ":id/modifier",
+            "fullPath": "/admin/aide/:id/modifier",
+            "name": "Modifier un article d'aide"
+          }
+        },
         "menus": {
           "path": "menus",
           "fullPath": "/admin/menus",
@@ -113,6 +128,11 @@
           "path": "journal-audit",
           "fullPath": "/admin/journal-audit",
           "name": "Journal d'audit"
+        },
+        "version": {
+          "path": "version",
+          "fullPath": "/admin/version",
+          "name": "Version"
         }
       }
     }
@@ -151,16 +171,16 @@
       }
     },
     "login": {
-      "username": "Nom d'utilisateur",
+      "username": "Adresse courriel",
       "password": "Mot de passe",
       "passwordPlaceholder": "Votre mot de passe",
       "passwordConfirmation": "Confirmation du mot de passe",
       "submit": "Se connecter",
       "forgotPassword": "Mot de passe oublié ?",
       "validation": {
-        "invalidUsername": "Le nom d'utilisateur est invalide.",
+        "invalidUsername": "L'adresse courriel est invalide.",
         "memberApprobationRevoked": "Votre approbation a été révoquée.",
-        "errorOccured": "Nom d'utilisateur ou mot de passe invalide."
+        "errorOccured": "Adresse courriel ou mot de passe invalide."
       }
     },
     "twoFactor": {
@@ -168,16 +188,16 @@
       "submit": "Se connecter",
       "tooltip": "Un code a été envoyé par email. Veuillez vérifier votre boîte de courriel et coller le code ici.",
       "validation": {
-        "invalidUsername": "Le nom d'utilisateur est invalide.",
+        "invalidUsername": "L'adresse courriel est invalide.",
         "invalidCode": "Le code est invalide.",
         "errorOccured": "Une erreur est survenue lors de la validation de l'authentification à deux facteurs."
       }
     },
     "forgotPassword": {
-      "tooltip": "Si le nom d'utilisateur est valide, un email sera envoyé à l'adresse indiquée avec un lien pour réinitialiser votre mot de passe",
+      "tooltip": "Si l'adresse courriel est valide, un email sera envoyé avec un lien pour réinitialiser votre mot de passe",
       "validation": {
         "success": "Courriel de réinitalisation du mot de passe envoyé.",
-        "invalidUsername": "Le nom d'utilisateur est invalide.",
+        "invalidUsername": "L'adresse courriel est invalide.",
         "invalidResetPasswordRelativeUrl": "L'URL de réinitialisation du mot de passe est introuvable.",
         "errorOccured": "Une erreur est survenue lors de l'envoi du courriel de réinitialisation du mot de passe."
       }
@@ -270,6 +290,64 @@
         "validation": {
           "failedMessage": "Une erreur s'est produite lors de la duplication de la page."
         }
+      }
+    },
+    "help": {
+      "index": {
+        "title": "Centre d'aide",
+        "subtitle": "Articles d'aide pour le panneau d'administration",
+        "addButton": "Ajouter un article",
+        "emptyCategory": "Aucun article dans cette catégorie",
+        "draftBadge": "Brouillon",
+        "updatedBadge": "Mis à jour",
+        "confirmDelete": "Supprimer cet article d'aide ?",
+        "deleteModalTitle": "Supprimer l'article",
+        "deleteModalMessage": "Supprimer définitivement l'article \"{title}\" ? Cette action est irréversible.",
+        "deleteSuccess": "Article supprimé.",
+        "deleteError": "Erreur lors de la suppression.",
+        "emptyGlobal": "Aucun article d'aide",
+        "emptyGlobalSub": "Commencez par créer un premier article pour alimenter le centre d'aide.",
+        "emptyGlobalCta": "Créer le premier article"
+      },
+      "editor": {
+        "createTitle": "Nouvel article d'aide",
+        "editTitle": "Modifier l'article d'aide",
+        "panelTitle": "Paramètres",
+        "saveButton": "Enregistrer",
+        "saving": "Enregistrement…",
+        "cancelButton": "Annuler",
+        "saveSuccess": "Article enregistré.",
+        "saveError": "Erreur lors de l'enregistrement."
+      },
+      "fields": {
+        "title": "Titre",
+        "titlePlaceholder": "Titre de l'article",
+        "slug": "Identifiant URL (slug)",
+        "slugPlaceholder": "genere-depuis-le-titre",
+        "category": "Catégorie",
+        "content": "Contenu",
+        "routeHint": "Route admin liée (optionnel)",
+        "routeHintPlaceholder": "ex: admin.children.pages.index",
+        "routeHintPlaceholderLong": "ex: admin.children.pages.index, admin.children.menus, admin.children.media",
+        "routeHintHelp": "Si rempli, cet article s'affichera dans le drawer quand l'admin navigue vers cette route.",
+        "isPublished": "Publié",
+        "published": "Publié",
+        "draft": "Brouillon",
+        "sortOrder": "Ordre d'affichage"
+      },
+      "categories": {
+        "PremiersPas": "Premiers pas",
+        "Pages": "Pages",
+        "Menus": "Menus",
+        "Medias": "Médias",
+        "Membres": "Membres",
+        "Groupes": "Groupes",
+        "Sauvegardes": "Sauvegardes",
+        "Parametres": "Paramètres"
+      },
+      "permissions": {
+        "readOnlyBanner": "Vue lecture seule. La modification des articles d'aide est réservée au développeur.",
+        "editingDisabled": "L'édition des articles d'aide est désactivée sur cet environnement."
       }
     },
     "blocks": {
@@ -460,6 +538,30 @@
       "selectPlatform": "Sélectionner un réseau",
       "partners": "Logos partenaires",
       "noPartners": "Aucun logo partenaire.",
+      "reviews": {
+        "title": "Avis clients",
+        "description": "Gérez les témoignages affichés sur la page d’accueil. Ces avis sont internes au site et administrés ici.",
+        "empty": "Aucun avis configuré.",
+        "newReview": "Ajouter un avis",
+        "saved": "Avis enregistré.",
+        "fields": {
+          "sectionEyebrow": "Surtitre de la section",
+          "sectionTitle": "Titre de la section",
+          "sectionSubtitle": "Texte d’introduction",
+          "title": "Titre",
+          "comment": "Commentaire",
+          "author": "Auteur",
+          "rating": "Note"
+        },
+        "placeholders": {
+          "sectionEyebrow": "Avis de notre communauté",
+          "sectionTitle": "Ce que les familles disent de nous",
+          "sectionSubtitle": "Quelques témoignages gérés par l’équipe du site pour refléter l’expérience vécue à l’école.",
+          "title": "Titre de la carte",
+          "comment": "Commentaire de l’avis",
+          "author": "Nom de l’auteur et rôle"
+        }
+      },
       "selectImage": "Sélectionner une image",
       "placeholderTagline": "L'art du mouvement, le cœur du quartier",
       "placeholderFooterDescription": "École de danse offrant des cours pour tous les âges...",
@@ -549,6 +651,34 @@
         "admin-session": "Session admin"
       }
     },
+    "version": {
+      "refresh": "Rafraîchir",
+      "viewLatest": "Voir sur GitHub",
+      "prerelease": "Pré-version",
+      "openOnGithub": "Ouvrir {name} sur GitHub",
+      "noNotes": "Aucune note de version.",
+      "fetchedAt": "Données récupérées le {date}",
+      "status": {
+        "upToDate": "À jour",
+        "upToDateDetail": "La version installée ({version}) est la dernière disponible.",
+        "updateAvailable": "Mise à jour disponible",
+        "updateDetail": "Version installée : {current}. Dernière version : {latest}.",
+        "unknown": "Vérification impossible"
+      },
+      "current": {
+        "title": "Version installée",
+        "tag": "Version",
+        "commit": "Commit",
+        "builtAt": "Date du build",
+        "repository": "Dépôt"
+      },
+      "latest": {
+        "title": "Dernière version publiée"
+      },
+      "history": {
+        "title": "Historique des versions"
+      }
+    },
     "backup": {
       "createBackup": "Créer un backup",
       "creating": "Backup en cours...",
@@ -621,7 +751,7 @@
     "title": "Titre",
     "date": "Date",
     "at": "à",
-    "username": "Nom d'utilisateur",
+    "username": "Adresse courriel",
     "password": "Mot de passe",
     "passwordConfirmation": "Confirmation du mot de passe",
     "submit": "Soumettre",
@@ -678,7 +808,18 @@
     "home": {
       "eyebrow": "École de danse — Beauport, Québec",
       "subtitle": "Quand le talent et la passion riment avec le plaisir !",
-      "cta": "S'inscrire maintenant"
+      "cta": "S'inscrire maintenant",
+      "reviews": {
+        "eyebrow": "Avis de notre communauté",
+        "title": "Ce que les familles disent de nous",
+        "subtitle": "Quelques témoignages gérés par l’équipe du site pour refléter l’expérience vécue à l’école.",
+        "empty": "Aucun avis n’est disponible pour le moment.",
+        "error": "Impossible de charger les avis pour le moment.",
+        "previous": "Voir les avis précédents",
+        "next": "Voir les avis suivants",
+        "carouselAriaLabel": "Carrousel d’avis clients",
+        "ratingAriaLabel": "{rating} étoiles sur 5"
+      }
     },
     "nav": {
       "school": "Notre école",
@@ -771,5 +912,24 @@
     "errorOccured": "Une erreur est survenue.",
     "futureDate": "La date doit être dans le futur.",
     "fieldRequired": "Ce champ est requis"
+  },
+  "components": {
+    "helpButton": {
+      "label": "Aide",
+      "tooltip": "Ouvrir le centre d'aide"
+    },
+    "helpDrawer": {
+      "title": "Centre d'aide",
+      "close": "Fermer",
+      "search": {
+        "placeholder": "Rechercher un article..."
+      },
+      "empty": "Aucun article ne correspond à cette page.",
+      "searchEmpty": "Aucun résultat pour « {query} ».",
+      "noArticles": "Aucun article d'aide pour le moment.",
+      "allArticles": "Voir tous les articles",
+      "contextual": "Pour cette page",
+      "browseAll": "Tous les articles"
+    }
   }
 }

@@ -16,6 +16,7 @@ using Web.Extensions;
 using Web.Features.Public.Breadcrumbs;
 using Web.Features.Public.Seo;
 using Web.Middleware;
+using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,6 +72,9 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(Log.Logger);
 
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
+builder.Services.AddSingleton<IHelpHtmlSanitizer, HelpHtmlSanitizer>();
+builder.Services.AddHttpClient();
+builder.Services.AddMemoryCache();
 builder.Services.AddHostedService<BackupSchedulerService>();
 builder.Services.AddHostedService<AuditLogRetentionScheduler>();
 builder.Services.AddDefaultSitemapServices();
