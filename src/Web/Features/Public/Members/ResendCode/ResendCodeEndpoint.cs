@@ -12,15 +12,18 @@ public class ResendCodeEndpoint : Endpoint<ResendCodeRequest, SucceededOrNotResp
     private readonly IEmailConfirmationService _confirmationService;
     private readonly INotificationService _notificationService;
     private readonly UserManager<User> _userManager;
+    private readonly ILogger<ResendCodeEndpoint> _logger;
 
     public ResendCodeEndpoint(
         IEmailConfirmationService confirmationService,
         INotificationService notificationService,
-        UserManager<User> userManager)
+        UserManager<User> userManager,
+        ILogger<ResendCodeEndpoint> logger)
     {
         _confirmationService = confirmationService;
         _notificationService = notificationService;
         _userManager = userManager;
+        _logger = logger;
     }
 
     public override void Configure()
@@ -41,7 +44,17 @@ public class ResendCodeEndpoint : Endpoint<ResendCodeRequest, SucceededOrNotResp
         }
 
         var code = await _confirmationService.ResendCode(user.Id);
-        try { await _notificationService.SendConfirmationCodeNotification(user, code); } catch { /* SendGrid not configured */ }
-        await HttpContext.Response.WriteAsJsonAsync(new { Succeeded = true, ConfirmationCode = code }, ct);
+        try
+        {
+            var sendResult = await _notificationService.SendConfirmationCodeNotification(user, code);
+            if (!sendResult.Succeeded)
+                _logger.LogError("SendGrid rejected confirmation email for {Email}: {@Errors}", req.Email, sendResult.Errors);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to resend confirmation email to {Email}.", req.Email);
+        }
+
+        await Send.OkAsync(new SucceededOrNotResponse(true), ct);
     }
 }

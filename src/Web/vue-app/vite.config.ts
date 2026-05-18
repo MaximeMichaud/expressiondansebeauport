@@ -35,7 +35,7 @@ export default defineConfig({
           // transparent corners, which conflicts with Android's mask.
         ]
       },
-      devOptions: { enabled: true, type: 'module', navigateFallback: 'index.html' }
+      devOptions: { enabled: false, type: 'module', navigateFallback: 'index.html' }
     })
   ],
   base: '/',

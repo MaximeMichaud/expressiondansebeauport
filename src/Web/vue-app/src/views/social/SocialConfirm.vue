@@ -95,10 +95,8 @@ async function handleResend() {
   resendLoading.value = true
 
   try {
-    const result: any = await socialService.resendCode(emailAddress.value)
-    const code = result.confirmationCode || result.ConfirmationCode
-    if (code) toast.success(`Code: ${code}`, 15000)
-    else toast.success('Un nouveau code a été envoyé.')
+    await socialService.resendCode(emailAddress.value)
+    toast.success('Un nouveau code a été envoyé.')
     resendCooldown.value = 60
     const interval = setInterval(() => {
       resendCooldown.value--

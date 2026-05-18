@@ -171,16 +171,16 @@
       }
     },
     "login": {
-      "username": "Nom d'utilisateur",
+      "username": "Adresse courriel",
       "password": "Mot de passe",
       "passwordPlaceholder": "Votre mot de passe",
       "passwordConfirmation": "Confirmation du mot de passe",
       "submit": "Se connecter",
       "forgotPassword": "Mot de passe oublié ?",
       "validation": {
-        "invalidUsername": "Le nom d'utilisateur est invalide.",
+        "invalidUsername": "L'adresse courriel est invalide.",
         "memberApprobationRevoked": "Votre approbation a été révoquée.",
-        "errorOccured": "Nom d'utilisateur ou mot de passe invalide."
+        "errorOccured": "Adresse courriel ou mot de passe invalide."
       }
     },
     "twoFactor": {
@@ -188,16 +188,16 @@
       "submit": "Se connecter",
       "tooltip": "Un code a été envoyé par email. Veuillez vérifier votre boîte de courriel et coller le code ici.",
       "validation": {
-        "invalidUsername": "Le nom d'utilisateur est invalide.",
+        "invalidUsername": "L'adresse courriel est invalide.",
         "invalidCode": "Le code est invalide.",
         "errorOccured": "Une erreur est survenue lors de la validation de l'authentification à deux facteurs."
       }
     },
     "forgotPassword": {
-      "tooltip": "Si le nom d'utilisateur est valide, un email sera envoyé à l'adresse indiquée avec un lien pour réinitialiser votre mot de passe",
+      "tooltip": "Si l'adresse courriel est valide, un email sera envoyé avec un lien pour réinitialiser votre mot de passe",
       "validation": {
         "success": "Courriel de réinitalisation du mot de passe envoyé.",
-        "invalidUsername": "Le nom d'utilisateur est invalide.",
+        "invalidUsername": "L'adresse courriel est invalide.",
         "invalidResetPasswordRelativeUrl": "L'URL de réinitialisation du mot de passe est introuvable.",
         "errorOccured": "Une erreur est survenue lors de l'envoi du courriel de réinitialisation du mot de passe."
       }
@@ -751,7 +751,7 @@
     "title": "Titre",
     "date": "Date",
     "at": "à",
-    "username": "Nom d'utilisateur",
+    "username": "Adresse courriel",
     "password": "Mot de passe",
     "passwordConfirmation": "Confirmation du mot de passe",
     "submit": "Soumettre",
