@@ -36,8 +36,8 @@ public class GarneauTemplateDbContextInitializer
 
     public async Task InitialiseAsync()
     {
-        const int maxRetries = 10;
-        const int delayMs = 2000;
+        const int maxRetries = 15;
+        const int delayMs = 3000;
 
         for (var attempt = 1; attempt <= maxRetries; attempt++)
         {
