@@ -21,7 +21,7 @@ env:
 
 jobs:
   deploy-preview:
-    if: github.event.action != 'closed' && github.actor != 'dependabot[bot]'
+    if: github.event.action != 'closed' && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -244,7 +244,7 @@ jobs:
             > The first request may return a **502 error** — this is expected, the environment starts on demand (cold start). Refresh after ~30 seconds. Credentials: `admin@gmail.com` / `Qwerty123!`
 
   destroy-preview:
-    if: github.event.action == 'closed' && github.actor != 'dependabot[bot]'
+    if: github.event.action == 'closed' && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Log in to Azure
