@@ -1605,6 +1605,9 @@ public class GarneauTemplateDbContextInitializer
             .Include(fp => fp.MediaFile)
             .ToListAsync();
 
+        if (existingPartners.Count > 0)
+            return;
+
         var sortOrder = 0;
         foreach (var asset in SeedFooterPartnerAssets)
         {
@@ -1621,18 +1624,6 @@ public class GarneauTemplateDbContextInitializer
                 mediaFile.SetBlobUrl(blobUrl);
             if (string.IsNullOrWhiteSpace(mediaFile.AltText))
                 mediaFile.SetAltText(asset.AltText);
-
-            var existingPartner = existingPartners.FirstOrDefault(fp =>
-                fp.MediaFileId == mediaFile.Id ||
-                fp.MediaFile.FileName == asset.FileName ||
-                fp.MediaFile.BlobUrl.EndsWith($"/{asset.FileName}", StringComparison.OrdinalIgnoreCase));
-
-            if (existingPartner != null)
-            {
-                existingPartner.SetMediaFileId(mediaFile.Id);
-                sortOrder++;
-                continue;
-            }
 
             _context.FooterPartners.Add(new FooterPartner(settings.Id, mediaFile.Id, asset.AltText, null, sortOrder++));
         }
