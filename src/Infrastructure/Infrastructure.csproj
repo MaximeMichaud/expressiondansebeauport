@@ -13,8 +13,6 @@
 		<PackageReference Include="NetVips.Native.linux-musl-x64" Version="8.18.2" />
 		<PackageReference Include="NetVips.Native.linux-x64" Version="8.18.2" />
 		<PackageReference Include="Npgsql" Version="10.0.2" />
-		<PackageReference Include="FluentEmail.Razor" Version="3.0.2" />
-		<PackageReference Include="Humanizer" Version="3.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.7" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7">
 			<PrivateAssets>all</PrivateAssets>

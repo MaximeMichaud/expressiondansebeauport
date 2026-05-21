@@ -1,5 +1,5 @@
 ﻿using Application.Exceptions.Users;
-using Application.Extensions;
+using Tests.Common.Extensions;
 using Domain.Constants.User;
 using Domain.Entities.Identity;
 using Domain.Repositories;

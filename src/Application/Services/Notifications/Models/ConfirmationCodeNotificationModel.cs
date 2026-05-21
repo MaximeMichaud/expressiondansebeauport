@@ -10,20 +10,15 @@ public class ConfirmationCodeNotificationModel : NotificationModel
         Code = code;
     }
 
-    public override string TemplateId()
-    {
-        // Reuses 2FA template for now — both send a 6-digit code
-        // TODO: Create a dedicated SendGrid template for email confirmation
-        if (Locale == "fr")
-            return "d-b6b894b660614a289e1d3e0e1cc81c17";
-        return "d-0ba3cba8d527436dbebe4ee440104d77";
-    }
+    public override string Subject() => "Votre code de confirmation";
 
-    public override object TemplateData()
-    {
-        return new
-        {
-            Code
-        };
-    }
+    public override string PlainTextContent() => $@"Bonjour,
+
+Voici votre code de confirmation pour activer votre compte Expression Danse Beauport :
+
+{Code}
+
+Si vous n'avez pas créé de compte, vous pouvez ignorer ce courriel.
+
+Expression Danse Beauport";
 }

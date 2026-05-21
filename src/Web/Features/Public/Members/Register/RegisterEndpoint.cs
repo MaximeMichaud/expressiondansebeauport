@@ -37,18 +37,18 @@ public class RegisterEndpoint : EndpointWithSanitizedRequest<RegisterRequest, Su
             var (member, code) = await _registrationService.RegisterMember(
                 req.FirstName, req.LastName, req.Email, req.Password);
 
-            _logger.LogInformation("Confirmation code for {Email}: {Code}", req.Email, code);
-
             try
             {
-                await _notificationService.SendConfirmationCodeNotification(member.User, code);
+                var sendResult = await _notificationService.SendConfirmationCodeNotification(member.User, code);
+                if (!sendResult.Succeeded)
+                    _logger.LogError("SendGrid rejected confirmation email for {Email}: {@Errors}", req.Email, sendResult.Errors);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to send confirmation email to {Email}. Code: {Code}", req.Email, code);
+                _logger.LogError(ex, "Failed to send confirmation email to {Email}.", req.Email);
             }
 
-            await HttpContext.Response.WriteAsJsonAsync(new { Succeeded = true, ConfirmationCode = code }, ct);
+            await Send.OkAsync(new SucceededOrNotResponse(true), ct);
         }
         catch (UserWithEmailAlreadyExistsException)
         {

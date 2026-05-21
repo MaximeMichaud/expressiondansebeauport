@@ -40,8 +40,8 @@ public class GarneauTemplateDbContextInitializer
 
     public async Task InitialiseAsync()
     {
-        var maxRetries = Math.Max(1, _configuration.GetValue("DatabaseInitialization:MaxRetries", 10));
-        var delayMs = Math.Max(100, _configuration.GetValue("DatabaseInitialization:DelayMs", 2000));
+        var maxRetries = Math.Max(1, _configuration.GetValue("DatabaseInitialization:MaxRetries", 15));
+        var delayMs = Math.Max(100, _configuration.GetValue("DatabaseInitialization:DelayMs", 3000));
 
         for (var attempt = 1; attempt <= maxRetries; attempt++)
         {
