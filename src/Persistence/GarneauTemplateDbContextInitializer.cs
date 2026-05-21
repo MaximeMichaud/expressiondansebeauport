@@ -1564,7 +1564,7 @@ public class GarneauTemplateDbContextInitializer
         if (string.IsNullOrWhiteSpace(settings.CopyrightText))
             settings.SetCopyrightText("EDB");
 
-        if (!settings.IsBannerEnabled)
+        if (created)
         {
             settings.SetBannerEnabled(true);
             settings.SetBannerText("📣 Inscriptions ouvertes ! Consultez nos actualités du moment");
@@ -1619,7 +1619,8 @@ public class GarneauTemplateDbContextInitializer
 
             if (mediaFile.BlobUrl != blobUrl)
                 mediaFile.SetBlobUrl(blobUrl);
-            mediaFile.SetAltText(asset.AltText);
+            if (string.IsNullOrWhiteSpace(mediaFile.AltText))
+                mediaFile.SetAltText(asset.AltText);
 
             var existingPartner = existingPartners.FirstOrDefault(fp =>
                 fp.MediaFileId == mediaFile.Id ||
@@ -1629,8 +1630,7 @@ public class GarneauTemplateDbContextInitializer
             if (existingPartner != null)
             {
                 existingPartner.SetMediaFileId(mediaFile.Id);
-                existingPartner.SetAltText(asset.AltText);
-                existingPartner.SetSortOrder(sortOrder++);
+                sortOrder++;
                 continue;
             }
 
