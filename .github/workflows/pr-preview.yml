@@ -214,9 +214,18 @@ jobs:
             --resource-group ${{ env.RESOURCE_GROUP }} \
             -o table || true
 
+          echo "--- web container logs ---"
           az containerapp logs show \
             --name ${{ env.CONTAINER_APP_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
+            --container web \
+            --tail 100 || true
+
+          echo "--- postgres container logs ---"
+          az containerapp logs show \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --container postgres \
             --tail 100 || true
 
       - name: Comment PR with preview URL
