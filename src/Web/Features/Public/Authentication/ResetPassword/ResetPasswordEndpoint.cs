@@ -40,6 +40,7 @@ public class ResetPasswordEndpoint : Endpoint<ResetPasswordRequest, SucceededOrN
         var identityResult = await _userRepository.ResetUserPassword(user, req.Password, req.Token.Base64UrlDecode());
         if (!identityResult.Succeeded)
         {
+            _logger.LogWarning("Password reset failed for user {UserId}. Errors: {Errors}", req.UserId, string.Join("; ", identityResult.Errors.Select(e => $"{e.Code}: {e.Description}")));
             await Send.OkAsync(new SucceededOrNotResponse(false, identityResult.GetErrors()), ct);
             return;
         }

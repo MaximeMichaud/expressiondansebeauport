@@ -3,7 +3,6 @@
 
 # CI/CD, DevOps, dependencies
 .github/ @MaximeMichaud
-appveyor.yml @MaximeMichaud
 Dockerfile @MaximeMichaud
 docker-compose.yml @MaximeMichaud
 src/Web/vue-app/package.json @MaximeMichaud

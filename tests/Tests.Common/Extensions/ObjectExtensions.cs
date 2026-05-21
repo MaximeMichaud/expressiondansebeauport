@@ -11,4 +11,6 @@ public static class ObjectExtensions
     {
         return (List<T>)value.GetType().GetProperties().First(x => x.Name == propertyName).GetValue(value)!;
     }
+
+    public static List<T> IntoList<T>(this T item) => [item];
 }
