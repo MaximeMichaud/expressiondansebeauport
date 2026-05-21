@@ -3,7 +3,6 @@ using Domain.Common;
 using Microsoft.AspNetCore.Identity;
 using Tests.Common.Mapping;
 using Tests.Web.TestCollections;
-using Web.Constants;
 using Web.Mapping.Profiles;
 
 namespace Tests.Web.Mapping.Profiles;
@@ -37,7 +36,7 @@ public class ResponseMappingProfileTests
     public void GivenFailedIdentityResult_WhenMap_ThenSucceededContainsErrorWithIdentityCodeAsErrorType()
     {
         // Arrange
-        var error = new IdentityError { Code = IdentityResultExceptions.USER_ALREADY_HAS_PASSWORD };
+        var error = new IdentityError { Code = "UserAlreadyHasPassword" };
         var identityResult = IdentityResult.Failed(error);
 
         // Act
@@ -65,13 +64,13 @@ public class ResponseMappingProfileTests
     public void GivenIdentityErrorWithCode_WhenMap_ThenErrorHasIdentityResultCodeAsErrorType()
     {
         // Arrange
-        var identityError = new IdentityError { Code = IdentityResultExceptions.USER_ALREADY_HAS_PASSWORD };
+        var identityError = new IdentityError { Code = "UserAlreadyHasPassword" };
 
         // Act
         var error = _mapper.Map<Error>(identityError);
 
         // Assert
-        error.ErrorType.ShouldBe(IdentityResultExceptions.USER_ALREADY_HAS_PASSWORD);
+        error.ErrorType.ShouldBe("UserAlreadyHasPassword");
     }
 
     [Fact]

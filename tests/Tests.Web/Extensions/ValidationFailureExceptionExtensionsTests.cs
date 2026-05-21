@@ -1,4 +1,4 @@
-﻿using Application.Extensions;
+﻿using Tests.Common.Extensions;
 using FastEndpoints;
 using FluentValidation.Results;
 using Web.Extensions;

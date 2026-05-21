@@ -1,5 +1,4 @@
 ﻿using Domain.Entities.Identity;
-using FluentEmail.Core;
 using NodaTime;
 
 namespace Tests.Common.Builders;
@@ -13,7 +12,7 @@ public class UserBuilder
     private string? PhoneNumber { get; set; }
     private Instant? Deleted { get; set; }
     private string? DeletedBy { get; set; }
-    private IList<Role> Roles { get; set; } = new List<Role>();
+    private List<Role> Roles { get; set; } = new List<Role>();
 
     public UserBuilder WithId(Guid id)
     {
