@@ -16,7 +16,7 @@ public class UploadMediaEndpoint : EndpointWithoutRequest
 
     private static readonly string[] AllowedImageTypes =
     {
-        "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"
+        "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp", "image/avif"
     };
 
     private static readonly string[] AllowedVideoTypes =
@@ -163,14 +163,14 @@ public class UploadMediaEndpoint : EndpointWithoutRequest
 
             var displayUrl = await _fileStorage.UploadStreamAsync(
                 processed.DisplayStream,
-                $"{safeBase}-{ticks}.display.webp",
-                "image/webp",
+                $"{safeBase}-{ticks}.display.{processed.DisplayFileExtension}",
+                processed.DisplayContentType,
                 SocialSubDirectory);
 
             var thumbnailUrl = await _fileStorage.UploadStreamAsync(
                 processed.ThumbnailStream,
-                $"{safeBase}-{ticks}.thumb.webp",
-                "image/webp",
+                $"{safeBase}-{ticks}.thumb.{processed.ThumbnailFileExtension}",
+                processed.ThumbnailContentType,
                 SocialSubDirectory);
 
             await Send.OkAsync(new

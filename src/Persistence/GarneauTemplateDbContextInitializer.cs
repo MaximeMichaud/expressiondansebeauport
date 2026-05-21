@@ -4,6 +4,7 @@ using Domain.Entities;
 using Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
@@ -20,24 +21,27 @@ public class GarneauTemplateDbContextInitializer
     private readonly RoleManager<Role> _roleManager;
     private readonly UserManager<User> _userManager;
     private readonly IHostEnvironment _environment;
+    private readonly IConfiguration _configuration;
 
     public GarneauTemplateDbContextInitializer(ILogger<GarneauTemplateDbContextInitializer> logger,
         GarneauTemplateDbContext context,
         RoleManager<Role> roleManager,
         UserManager<User> userManager,
-        IHostEnvironment environment)
+        IHostEnvironment environment,
+        IConfiguration configuration)
     {
         _logger = logger;
         _context = context;
         _roleManager = roleManager;
         _userManager = userManager;
         _environment = environment;
+        _configuration = configuration;
     }
 
     public async Task InitialiseAsync()
     {
-        const int maxRetries = 15;
-        const int delayMs = 3000;
+        var maxRetries = Math.Max(1, _configuration.GetValue("DatabaseInitialization:MaxRetries", 15));
+        var delayMs = Math.Max(100, _configuration.GetValue("DatabaseInitialization:DelayMs", 3000));
 
         for (var attempt = 1; attempt <= maxRetries; attempt++)
         {

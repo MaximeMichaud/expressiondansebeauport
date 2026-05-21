@@ -1,5 +1,6 @@
 using Application;
 using Application.Interfaces.FileStorage;
+using Application.Interfaces.Imaging;
 using Domain.Common;
 using Domain.Extensions;
 using FastEndpoints;
@@ -8,6 +9,7 @@ using Infrastructure;
 using Infrastructure.ExternalApis.Local;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.StaticFiles;
 using Persistence;
 using Serilog;
 using Sidio.Sitemap.Core.Services;
@@ -43,7 +45,11 @@ builder.Services
 // this directory, so DB-stored URLs like /uploads/social/foo.webp keep working.
 var uploadsRootPath = Path.Combine(builder.Environment.ContentRootPath, "app-data");
 Directory.CreateDirectory(Path.Combine(uploadsRootPath, "uploads"));
-builder.Services.AddScoped<IFileStorageApiConsumer>(_ => new LocalFileStorageConsumer(uploadsRootPath));
+builder.Services.AddScoped<IFileStorageApiConsumer>(sp =>
+    new LocalFileStorageConsumer(
+        uploadsRootPath,
+        sp.GetRequiredService<IImageVariantGenerator>(),
+        sp.GetRequiredService<ILogger<LocalFileStorageConsumer>>()));
 
 builder.Services.AddSignalR();
 builder.Configuration.AddJsonFile("appsettings.local.json", true);
@@ -77,6 +83,10 @@ builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
 builder.Services.AddHostedService<BackupSchedulerService>();
 builder.Services.AddHostedService<AuditLogRetentionScheduler>();
+builder.Services.AddSingleton<IHostedService>(sp => new OptimizedImageBackfillService(
+    Path.Combine(uploadsRootPath, "uploads"),
+    sp.GetRequiredService<IImageVariantGenerator>(),
+    sp.GetRequiredService<ILogger<OptimizedImageBackfillService>>()));
 builder.Services.AddDefaultSitemapServices();
 builder.Services.AddScoped<IBreadcrumbService, BreadcrumbService>();
 builder.Services.AddScoped<ISeoFilesService, SeoFilesService>();
@@ -134,17 +144,28 @@ app.UseExceptionHandler(c => c.Run(async context =>
 }));
 
 app.UseResponseCompression();
-app.UseStaticFiles();
+
+var staticFileContentTypes = new FileExtensionContentTypeProvider();
+staticFileContentTypes.Mappings[".avif"] = "image/avif";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = staticFileContentTypes
+});
 
 // Serve user uploads from the protected app-data/uploads/ directory
 // at the URL prefix /uploads/. Kept separate from wwwroot so a Vue build
-// cannot wipe user data.
-app.UseStaticFiles(new Microsoft.AspNetCore.Builder.StaticFileOptions
+// cannot wipe user data. The optimized image middleware runs first so that
+// /uploads/foo.jpg can be rewritten to /foo.jpg.avif when supported.
+app.UseMiddleware<OptimizedImageMiddleware>(uploadsRootPath);
+app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
         Path.Combine(uploadsRootPath, "uploads")),
-    RequestPath = "/uploads"
+    RequestPath = "/uploads",
+    ContentTypeProvider = staticFileContentTypes
 });
+
 
 app.UseRouting();
 app.UseCors("corsDomains");
