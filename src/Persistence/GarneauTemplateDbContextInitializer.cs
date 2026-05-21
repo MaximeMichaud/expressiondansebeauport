@@ -1564,7 +1564,7 @@ public class GarneauTemplateDbContextInitializer
         if (string.IsNullOrWhiteSpace(settings.CopyrightText))
             settings.SetCopyrightText("EDB");
 
-        if (!settings.IsBannerEnabled)
+        if (created)
         {
             settings.SetBannerEnabled(true);
             settings.SetBannerText("📣 Inscriptions ouvertes ! Consultez nos actualités du moment");
@@ -1605,6 +1605,9 @@ public class GarneauTemplateDbContextInitializer
             .Include(fp => fp.MediaFile)
             .ToListAsync();
 
+        if (existingPartners.Count > 0)
+            return;
+
         var sortOrder = 0;
         foreach (var asset in SeedFooterPartnerAssets)
         {
@@ -1619,20 +1622,8 @@ public class GarneauTemplateDbContextInitializer
 
             if (mediaFile.BlobUrl != blobUrl)
                 mediaFile.SetBlobUrl(blobUrl);
-            mediaFile.SetAltText(asset.AltText);
-
-            var existingPartner = existingPartners.FirstOrDefault(fp =>
-                fp.MediaFileId == mediaFile.Id ||
-                fp.MediaFile.FileName == asset.FileName ||
-                fp.MediaFile.BlobUrl.EndsWith($"/{asset.FileName}", StringComparison.OrdinalIgnoreCase));
-
-            if (existingPartner != null)
-            {
-                existingPartner.SetMediaFileId(mediaFile.Id);
-                existingPartner.SetAltText(asset.AltText);
-                existingPartner.SetSortOrder(sortOrder++);
-                continue;
-            }
+            if (string.IsNullOrWhiteSpace(mediaFile.AltText))
+                mediaFile.SetAltText(asset.AltText);
 
             _context.FooterPartners.Add(new FooterPartner(settings.Id, mediaFile.Id, asset.AltText, null, sortOrder++));
         }
