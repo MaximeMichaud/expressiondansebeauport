@@ -1,0 +1,23 @@
+root = true
+
+[*.cs]
+# CA1707: Test methods use underscores by convention
+dotnet_diagnostic.CA1707.severity = none
+
+# CA1716: 'Public' namespace conflicts with VB.NET keyword - not relevant
+dotnet_diagnostic.CA1716.severity = none
+
+# CA1848: Use LoggerMessage delegates for perf - overkill for this app
+dotnet_diagnostic.CA1848.severity = none
+
+# CA1873: Avoid expensive log argument evaluation - minor for this scale
+dotnet_diagnostic.CA1873.severity = none
+
+# CA1305: Specify IFormatProvider - real bug potential with locale
+dotnet_diagnostic.CA1305.severity = warning
+
+# CA1310: Specify StringComparison for correctness
+dotnet_diagnostic.CA1310.severity = warning
+
+# CA1852: Seal internal types
+dotnet_diagnostic.CA1852.severity = suggestion

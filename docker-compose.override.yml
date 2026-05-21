@@ -1,0 +1,6 @@
+services:
+  web:
+    environment:
+      Vapid__Subject: "mailto:dev@expressiondansebeauport.test"
+      Vapid__PublicKey: "BK48L8xLu2IcdJB1nzcnb_dCnbhOMP49qCUG-DzYEMKbUwa5ot264Zm9QKtjY5zEXBnoLtk17kRLLMJOJhlJJJg"
+      Vapid__PrivateKey: "ifJfKGwyExB7iCQLieZp2Th9Npp_p7sb21ZTTInCFy4"
