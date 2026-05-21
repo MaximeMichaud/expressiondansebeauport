@@ -33,7 +33,7 @@ COPY src/ src/
 
 COPY --from=vue-build /app/wwwroot/ src/Web/wwwroot/
 
-RUN dotnet publish src/Web/Web.csproj -c Release -o /app/publish --no-restore -p:MinVerVersion=$APP_VERSION
+RUN dotnet publish src/Web/Web.csproj -c Release -o /app/publish --no-restore -p:MinVerVersionOverride=$APP_VERSION
 
 # ============================================
 # Stage 3: Final runtime image
