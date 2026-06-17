@@ -25,7 +25,6 @@
         <Content Include="appsettings.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <None Remove="appsettings.appveyor.json" />
     </ItemGroup>
 
     <ItemGroup>

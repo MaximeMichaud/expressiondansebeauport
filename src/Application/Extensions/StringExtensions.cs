@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace Application.Extensions;
@@ -29,37 +27,5 @@ public static class StringExtensions
     public static int IntTryParseOrZero(this string? value)
     {
         return int.TryParse(value, out var number) ? number : 0;
-    }
-
-    public static decimal ExtractPriceFromText(string? text)
-    {
-        decimal price = 0;
-        var pattern = @"\$\d+(\.\d+)?|\d+(\.\d+)?\$";
-        var match = Regex.Match(text ?? string.Empty, pattern);
-
-        if (!match.Success) return price;
-        var matchedValue = match.Value;
-
-        return decimal.TryParse(matchedValue.Replace("$", ""), out price) ? price : 0;
-    }
-
-    public static string RemoveDiacritics(this string? value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            return string.Empty;
-
-        var normalizedValue = value.Normalize(NormalizationForm.FormD);
-        var db = new StringBuilder(normalizedValue.Length);
-
-        var i = 0;
-        while (i < normalizedValue.Length)
-        {
-            if (CharUnicodeInfo.GetUnicodeCategory(normalizedValue[i]) != UnicodeCategory.NonSpacingMark)
-                db.Append(normalizedValue[i]);
-
-            i++;
-        }
-
-        return db.ToString().Normalize(NormalizationForm.FormC);
     }
 }

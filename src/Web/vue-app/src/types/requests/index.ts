@@ -1,4 +1,3 @@
-export * from './changeEmailRequest'
 export * from './changePasswordRequest'
 export * from './forgotPasswordRequest'
 export * from './loginRequest'
