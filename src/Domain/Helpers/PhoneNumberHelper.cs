@@ -1,18 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿namespace Domain.Helpers;
 
-namespace Domain.Helpers;
-
-public static partial class PhoneNumberHelper
+public static class PhoneNumberHelper
 {
     public const string EXTENSION_SEPARATOR = "poste";
-
-    [GeneratedRegex(@"^(\d-)?\d{3}-\d{3}-\d{4}$")]
-    private static partial Regex PhoneNumberRegex();
-
-    public static bool HasValidPhoneNumberFormat(this string? number)
-    {
-        return PhoneNumberRegex().IsMatch(number ?? "");
-    }
 
     public static string? AddExtensionToPhoneNumber(string? phoneNumber, int? extension)
     {

@@ -23,10 +23,7 @@ public class User : IdentityUser<Guid>, ISoftDeletable
     public List<UserRole> UserRoles { get; private set; } = [];
     public List<string> RoleNames => UserRoles.Select(x => x.Role.Name!).ToList();
 
-    public string? GetPhoneNumberWithExtension() =>
-        PhoneNumberHelper.AddExtensionToPhoneNumber(PhoneNumber, PhoneExtension);
     public bool HasRole(string role) => RoleNames.Contains(role);
-    public void ClearRoles() => UserRoles.Clear();
 
     public void AddRole(Role role)
     {
@@ -36,7 +33,6 @@ public class User : IdentityUser<Guid>, ISoftDeletable
     }
 
     public bool IsActive() => Deleted == null && DeletedBy == null;
-    public void SetPhoneExtension(int? phoneExtension) => PhoneExtension = phoneExtension;
     public void SetDeletedBy(string deletedBy) => DeletedBy = deletedBy;
     public void UpdateCreated(Instant created, string createdBy)
     {
@@ -55,20 +51,10 @@ public class User : IdentityUser<Guid>, ISoftDeletable
         LastTwoFactorAuthentication = InstantHelper.GetLocalNow();
     }
 
-    public void ClearLastTwoFactorAuthentication()
-    {
-        LastTwoFactorAuthentication = null;
-    }
-
     public bool LastTwoFactorAuthenticationWasLessThanGivenNumberOfDaysAgo(int days)
     {
         return LastTwoFactorAuthentication.HasValue &&
                (DateTime.Now - LastTwoFactorAuthentication.Value.ToDateTimeUtc()).TotalDays < days;
-    }
-
-    public void Activate(string firstName)
-    {
-        Restore();
     }
 
     public void SoftDelete(string? deletedBy = null)

@@ -18,12 +18,6 @@ public static class CultureHelper
         return Thread.CurrentThread.CurrentCulture;
     }
 
-    public static void ChangeCurrentCultureTo(string twoLetterLang)
-    {
-        Thread.CurrentThread.CurrentCulture = ConvertTwoLetterIsoToCultureInfo(twoLetterLang);
-        Thread.CurrentThread.CurrentUICulture = ConvertTwoLetterIsoToCultureInfo(twoLetterLang);
-    }
-
     public static string GetCurrentTwoLetterLang()
     {
         return GetCurrentCulture().TwoLetterISOLanguageName;

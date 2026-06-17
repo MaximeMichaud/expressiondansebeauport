@@ -25,10 +25,4 @@ public static class StringExtensions
         }
     }
 
-    public static bool IsValidIsbn(this string value)
-    {
-        if (string.IsNullOrWhiteSpace(value) || value.Length < 17)
-            return false;
-        return value.Split("-").Length == 5;
-    }
 }
