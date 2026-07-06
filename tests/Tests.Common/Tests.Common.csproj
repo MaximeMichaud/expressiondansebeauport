@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="16.1.1" />
+        <PackageReference Include="AutoMapper" Version="16.2.0" />
         <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.9" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
         <PackageReference Include="ScottBrady91.AspNetCore.Identity.Argon2PasswordHasher" Version="2.0.0" />
