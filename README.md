@@ -53,7 +53,7 @@ L'application comprend un CMS sur mesure pour gérer le site public (pages, menu
 
 - **Framework :** ASP.NET Core 10 avec FastEndpoints
 - **Langage :** C# 14 (.NET 10)
-- **Base de données :** SQL Server 2022 (dev) / Azure SQL Edge (prod)
+- **Base de données :** PostgreSQL 18
 - **ORM :** Entity Framework Core 10 avec NodaTime
 - **Authentification :** JWT Bearer + Argon2 + 2FA par courriel
 - **Temps réel :** SignalR
@@ -84,7 +84,7 @@ L'application comprend un CMS sur mesure pour gérer le site public (pages, menu
 
 - .NET SDK 10
 - Node.js 22+
-- SQL Server 2022 (ou Docker)
+- PostgreSQL 18 (ou Docker)
 - Git
 
 ## INSTALLATION
